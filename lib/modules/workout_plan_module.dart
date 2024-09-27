@@ -17,6 +17,7 @@ class WorkoutPlanModule extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+
         children: [
           const SizedBox(height: 40),
           Container(

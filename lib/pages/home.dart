@@ -1,8 +1,8 @@
 import 'package:fitnessapp_idata2503/modules/rings_module.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../components/upcoming_workouts_box.dart';
 import '../modules/nutrition_module.dart';
-import '../modules/today_module.dart';
 
 // Landing page for the user
 // Contains widgets to direct the user to specific pages
@@ -67,8 +67,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            const TodayModule(),
-            const SizedBox(height: 20),
+            const UpcomingWorkoutsBox(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
