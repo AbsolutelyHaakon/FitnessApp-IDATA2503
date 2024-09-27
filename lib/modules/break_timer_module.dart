@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'dart:async';
 
 class BreakTimerModule extends StatefulWidget {
   const BreakTimerModule({Key? key}) : super(key: key);
@@ -10,16 +12,61 @@ class BreakTimerModule extends StatefulWidget {
 
 class _BreakTimerModuleState extends State<BreakTimerModule> {
   int _selectedTime = 0;
+  int _previousSelectedTime = 0;
   int _selectedButton = -1;
 
+  Timer? _timer;
+  int remainingSeconds = 0;
+  final time = '00:00:00'.obs;
+  bool isRunning = false;
+
   void _startTimer() {
-    // Implement the timer start logic here
+    if (_selectedTime == 0) {
+      return;
+    }
+    if (isRunning) {
+      _timer?.cancel();
+      isRunning = false;
+      return;
+    }
+    if (remainingSeconds > 0 && _selectedTime == _previousSelectedTime) {
+      isRunning = true;
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          if (remainingSeconds > 0) {
+            remainingSeconds--;
+            time.value = '00:${(remainingSeconds % 3600 ~/ 60).toString().padLeft(2, '0')}:${(remainingSeconds % 60).toString().padLeft(2, '0')}';
+          } else {
+            timer.cancel();
+            isRunning = false;
+          }
+        });
+      });
+      return;
+    }
+    _previousSelectedTime = _selectedTime;
+    remainingSeconds = _selectedTime * 60;
+    isRunning = true;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          time.value = '00:${(remainingSeconds % 3600 ~/ 60).toString().padLeft(2, '0')}:${(remainingSeconds % 60).toString().padLeft(2, '0')}';
+        } else {
+          timer.cancel();
+          isRunning = false;
+        }
+      });
+    });
   }
 
-  void _setPresetTime(int time, int buttonIndex) {
+  void _setPresetTime(int newTime, int buttonIndex) {
     setState(() {
-      _selectedTime = time;
+      _selectedTime = newTime;
       _selectedButton = buttonIndex;
+      if (remainingSeconds == 0) {
+        time.value = '00:${newTime.toString().padLeft(2, '0')}:00';
+      }
     });
   }
 
@@ -121,14 +168,14 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    '00:${_selectedTime.toString().padLeft(2, '0')}:00',
+                  Obx(() => Text(
+                    time.value,
                     style: const TextStyle(
                       color: CupertinoColors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 64,
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 20),
                   Container(
                     margin: const EdgeInsets.all(20.0),
