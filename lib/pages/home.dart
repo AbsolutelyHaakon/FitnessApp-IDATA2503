@@ -4,6 +4,21 @@ import 'package:intl/intl.dart';
 import '../modules/nutrition_module.dart';
 import '../modules/today_module.dart';
 
+// Landing page for the user
+// Contains widgets to direct the user to specific pages
+// The top bar is supposed to show a progress bar based on the user's progress
+// Secondly, a calendar widget showing today´s workout plan
+// Further down there are also these widgets planned:
+// - A nutrition widget
+// - An intake widget showing BMI, calories, and water intake as radial progress bars
+// - A way to access the workout logs of previous
+
+// Last edited: 27/09/2024
+// Last edited by: All
+
+//TODO: Create the progress bar as it´s own module
+//TODO: Create the workout log page and their corresponding modules
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
