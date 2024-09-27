@@ -1,4 +1,5 @@
 // lib/modules/nutrition_module.dart
+import 'package:fitnessapp_idata2503/pages/pre_workout_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,13 @@ class TodayModule extends StatelessWidget {
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
-          // Define the action when the button is pressed
+          // Open pre workout page
+          Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => const PreWorkoutScreen(),
+            ),
+          );
         },
         child: Container(
           width: 410,
