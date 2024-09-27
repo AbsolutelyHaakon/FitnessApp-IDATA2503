@@ -4,6 +4,13 @@ import 'package:fitnessapp_idata2503/pages/home.dart';
 import 'package:fitnessapp_idata2503/pages/workout.dart';
 import 'package:fitnessapp_idata2503/pages/me.dart';
 
+// Navigation bar for the whole app
+// Contains 3 pages: Home, Workout, and Me with icons
+// The selected page is highlighted with a different color
+
+// Last edited: 27/09/2024
+// Last edited by: Matti Kjellstadli
+
 class CustomNavigationBar extends StatefulWidget {
   @override
   _CustomNavigationBarState createState() => _CustomNavigationBarState();

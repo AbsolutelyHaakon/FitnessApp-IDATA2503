@@ -2,6 +2,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// Nutrition Module which contains an image and text beneath
+// Widget to be displayed on the home screen
+
+// Last edited: 27/09/2024
+// Last edited by: Matti Kjellstadli
+
 class NutritionModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
