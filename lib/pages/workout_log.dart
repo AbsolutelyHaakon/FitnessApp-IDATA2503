@@ -2,16 +2,16 @@ import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class PreWorkoutScreen extends StatefulWidget {
-  const PreWorkoutScreen({super.key});
+class WorkoutLog extends StatefulWidget {
+  const WorkoutLog({super.key});
 
   @override
-  State<PreWorkoutScreen> createState() {
-    return _PreWorkoutScreenState();
+  State<WorkoutLog> createState() {
+    return _WorkoutLogState();
   }
 }
 
-class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
+class _WorkoutLogState extends State<WorkoutLog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

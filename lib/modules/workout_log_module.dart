@@ -1,4 +1,6 @@
 // lib/modules/nutrition_module.dart
+import 'package:fitnessapp_idata2503/pages/pre_workout_screen.dart';
+import 'package:fitnessapp_idata2503/pages/workout_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +11,12 @@ class WorkoutLogModule extends StatelessWidget {
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
-          // -> Workout Log
+          Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => const PreWorkoutScreen(), //TODO: Change to workout log            )
+            ),
+          );
         },
         child: Container(
           width: 200,
@@ -22,11 +29,11 @@ class WorkoutLogModule extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //Add icon here later
-              //Icon(
-                //Icons.dining_rounded,
-                //color: Color(0xFF48CC6D),
-                //size: 80,
-              //),
+            Icon(
+                Icons.dining_rounded,
+                color: Color(0xFF48CC6D),
+                size: 50,
+              ),
               Text(
                 'Workout log',
                 style: TextStyle(
