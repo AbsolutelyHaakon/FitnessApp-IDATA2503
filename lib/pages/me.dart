@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/modules/break_timer_module.dart';
 import 'package:flutter/material.dart';
 
 class Me extends StatelessWidget {
@@ -9,10 +10,7 @@ class Me extends StatelessWidget {
         backgroundColor: Color(0xFF292929),
       ),
       body: const Center(
-        child: Text(
-          'Welcome to the Me page!',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: BreakTimerModule()
       ),
       backgroundColor: Color(0xFF292929),
     );
