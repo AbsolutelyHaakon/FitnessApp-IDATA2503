@@ -188,21 +188,26 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                       fontSize: 64,
                     ),
                   )),
-                  const SizedBox(height: 20),
                   Container(
-                    margin: const EdgeInsets.all(20.0),
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _startTimer,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                      ),
-                      child: const Text(
-                        'Start Timer',
-                        style: TextStyle(
-                          color: CupertinoColors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                    child: CupertinoButton(
+                      onPressed: () { _startTimer(); },
+                      child: Container(
+                        width: 400,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF000000),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        alignment: Alignment.center,
+
+                        child: const Text("Start Timer",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: CupertinoColors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
