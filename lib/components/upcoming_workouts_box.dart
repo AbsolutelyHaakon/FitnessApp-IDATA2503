@@ -90,5 +90,6 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
             ),
           );
         });
+
   }
 }

@@ -68,7 +68,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         backgroundColor: Color(0xFF1A1B1C),
         onTap: _onItemTapped,
         iconSize: 30.0,
-        selectedFontSize: 16.0,
         unselectedFontSize: 14.0,
       ),
     );
