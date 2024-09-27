@@ -31,53 +31,68 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
             borderRadius: BorderRadius.all(Radius.circular(30)),
           ),
           padding: const EdgeInsets.fromLTRB(20, 10, 50, 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Column(
             children: [
-              const Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Heading1(text: 'Day and Time'),
-                    Heading2(text: 'Type of exercise'),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    IconText(
-                        text: 'Icon Data',
-                        color: Color(0xFF848484),
-                        asset: 'placeholder_icon.svg'),
-                    SizedBox(
-                      height: 7,
-                    ),
-                    IconText(
-                        text: 'Icon Data',
-                        color: Color(0xFF848484),
-                        asset: 'placeholder_icon.svg'),
-                    SizedBox(
-                      height: 7,
-                    ),
-                    IconText(
-                        text: 'Icon Data',
-                        color: Color(0xFF848484),
-                        asset: 'placeholder_icon.svg'),
-                    SizedBox(
-                      height: 7,
-                    ),
-                  ],
+              Container(
+                alignment: Alignment.topRight,
+                child: const Text(
+                  'September, 27th',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF787878),
+                    height: 1.1,
+                  ),
                 ),
               ),
-              const SizedBox(width: 20),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  double size = 90;
-                  return SvgPicture.asset(
-                    'assets/icons/stick_figure.svg',
-                    height: size,
-                    width: size,
-                  );
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Heading1(text: 'Exercise Title'),
+                        Heading2(text: 'Type of exercise'),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        IconText(
+                            text: 'Icon Data',
+                            color: Color(0xFF848484),
+                            asset: 'placeholder_icon.svg'),
+                        SizedBox(
+                          height: 7,
+                        ),
+                        IconText(
+                            text: 'Icon Data',
+                            color: Color(0xFF848484),
+                            asset: 'placeholder_icon.svg'),
+                        SizedBox(
+                          height: 7,
+                        ),
+                        IconText(
+                            text: 'Icon Data',
+                            color: Color(0xFF848484),
+                            asset: 'placeholder_icon.svg'),
+                        SizedBox(
+                          height: 7,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      double size = 90;
+                      return SvgPicture.asset(
+                        'assets/icons/stick_figure.svg',
+                        height: size,
+                        width: size,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -90,6 +105,5 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
             ),
           );
         });
-
   }
 }
