@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../modules/nutrition_module.dart';
+import '../modules/today_module.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,7 +20,7 @@ class _HomeState extends State<Home> {
           'Home',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 27.0, // Set font size to 30
+            fontSize: 27.0,
             color: Colors.white,
           ),
         ),
@@ -26,10 +28,20 @@ class _HomeState extends State<Home> {
         titleSpacing: 40,
         backgroundColor: Color(0xFF292929),
       ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Home page!',
-          style: TextStyle(color: Colors.white),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TodayModule(),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                NutritionModule(),
+                NutritionModule(),
+              ],
+            ),
+          ],
         ),
       ),
       backgroundColor: Color(0xFF292929),
