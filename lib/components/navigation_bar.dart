@@ -37,7 +37,9 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color(0xFFDCDCDC),
+        unselectedItemColor: Color(0xFF747474),
+        backgroundColor: Color(0xFF3A3A3A),
         onTap: _onItemTapped,
       ),
     );

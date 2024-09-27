@@ -6,10 +6,15 @@ class Me extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Me'),
+        backgroundColor: Color(0xFF292929),
       ),
       body: const Center(
-        child: Text('Welcome to the Me page!'),
+        child: Text(
+          'Welcome to the Me page!',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
+      backgroundColor: Color(0xFF292929),
     );
   }
 }
