@@ -18,7 +18,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       appBar: AppBar(
         centerTitle: false,
         titleSpacing: 40,
-        backgroundColor: Color(0xFF292929),
+        backgroundColor: Color(0xFF000000),
         leading: IconButton(
           icon: Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
           onPressed: () {
@@ -32,7 +32,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 10.0),
+              padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'My Workout Plan',
                 style: TextStyle(
@@ -43,7 +43,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 10.0),
+              padding: EdgeInsets.only(left: 20.0),
               child: Text(
                 'Hike',
                 style: TextStyle(
@@ -54,11 +54,11 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
               ),
             ),
             WorkoutPlanModule(),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
           ],
         ),
       ),
-      backgroundColor: Color(0xFF292929),
+      backgroundColor: Color(0xFF000000),
     );
   }
 }

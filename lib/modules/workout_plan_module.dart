@@ -20,10 +20,10 @@ class WorkoutPlanModule extends StatelessWidget {
         children: [
           const SizedBox(height: 40),
           Container(
-            width: 410,
-            height: 410,
+            width: 400,
+            height: 400,
             decoration: BoxDecoration(
-              color: const Color(0xFF3A3A3A),
+              color: const Color(0xFF1A1B1C),
               borderRadius: BorderRadius.circular(20),
             ),
           ),

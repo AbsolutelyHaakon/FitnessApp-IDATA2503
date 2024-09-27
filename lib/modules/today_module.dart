@@ -29,10 +29,10 @@ class TodayModule extends StatelessWidget {
           );
         },
         child: Container(
-          width: 410,
+          width: 400,
           height: 200,
           decoration: BoxDecoration(
-            color: Color(0xFF3A3A3A),
+            color: Color(0xFF1A1B1C),
             borderRadius: BorderRadius.circular(30),
           ),
           child: const Icon(
