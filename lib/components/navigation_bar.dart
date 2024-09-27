@@ -27,21 +27,28 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/home.svg',
-              width: 30.0, // Adjust the width
-              height: 30.0, // Adjust the height
+              width: 20.0,
+              height: 20.0,
+              color: _selectedIndex == 0 ? Color(0xFFDCDCDC) : Color(0xFF747474),
             ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/workout.svg',
-              width: 30.0, // Adjust the width
-              height: 30.0, // Adjust the height
+              width: 30.0,
+              height: 30.0,
+              color: _selectedIndex == 1 ? Color(0xFFDCDCDC) : Color(0xFF747474),
             ),
             label: 'Exercise',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/me.svg',
+              width: 25.0,
+              height: 25.0,
+              color: _selectedIndex == 2 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+            ),
             label: 'Me',
           ),
         ],
@@ -50,9 +57,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         unselectedItemColor: Color(0xFF747474),
         backgroundColor: Color(0xFF3A3A3A),
         onTap: _onItemTapped,
-        iconSize: 30.0, // Adjust the icon size
-        selectedFontSize: 16.0, // Adjust the selected font size
-        unselectedFontSize: 14.0, // Adjust the unselected font size
+        iconSize: 30.0,
+        selectedFontSize: 16.0,
+        unselectedFontSize: 14.0,
+
       ),
     );
   }

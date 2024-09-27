@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/pages/home.dart';
-import 'package:fitnessapp_idata2503/pages/workout.dart';
-import 'package:fitnessapp_idata2503/pages/me.dart';
 import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
 
 void main() {
@@ -12,7 +9,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Fitness App',
       theme: ThemeData(
+        fontFamily: 'Inter', // Set Inter as the default font
+        primarySwatch: Colors.blue,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
       ),
