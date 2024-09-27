@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/pages/home.dart';
+import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
+
+import 'components/navigation_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const Home(),
+      home: CustomNavigationBar(),
     );
   }
 }
