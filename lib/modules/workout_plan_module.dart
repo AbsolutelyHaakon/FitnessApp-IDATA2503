@@ -1,6 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// Shows the selected workout plan details before deciding to start it
+// Displays workout info and potentially a map of the workout route
+
+// Last edited: 27/09/2024
+// Last edited by: Matti Kjellstadli
+
+//TODO: Implement map fucntionality
+//TODO: Connect it to the persistent storage
+
 class WorkoutPlanModule extends StatelessWidget {
   const WorkoutPlanModule({super.key});
 

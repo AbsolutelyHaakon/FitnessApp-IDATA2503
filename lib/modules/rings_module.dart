@@ -1,6 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// Module for displaying ring widgets as a progress bar
+// Used to display progress in a certain category
+// Examples: BMI, Calories, Body fat, etc.
+
+// Last edited 27/09/2024
+// Last edited by Matti Kjellstadli
+
+//TODO: Implement the actual progress values as persistent values
+//TODO: Link the values up to the actual data
+
 class RingsModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
