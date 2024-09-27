@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/modules/rings_module.dart';
 import 'package:flutter/material.dart';
 import '../modules/nutrition_module.dart';
 import '../modules/today_module.dart';
@@ -38,7 +39,7 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 NutritionModule(),
-                NutritionModule(),
+                RingsModule(),
               ],
             ),
           ],

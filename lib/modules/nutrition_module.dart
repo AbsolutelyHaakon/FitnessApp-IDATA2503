@@ -22,8 +22,8 @@ class NutritionModule extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                CupertinoIcons.leaf_arrow_circlepath,
-                color: CupertinoColors.white,
+                Icons.dining_rounded,
+                color: Color(0xFF48CC6D),
                 size: 100,
               ),
               Text(

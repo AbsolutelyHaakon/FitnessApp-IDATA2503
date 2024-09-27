@@ -29,7 +29,7 @@ class TodayModule extends StatelessWidget {
           ),
           child: const Icon(
             CupertinoIcons.calendar_today,
-            color: CupertinoColors.white,
+            color: Color(0xFF48CC6D),
             size: 100,
           ),
         ),
