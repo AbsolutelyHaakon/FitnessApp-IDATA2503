@@ -40,11 +40,12 @@ class RingsModule extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          width: 70.0,
-                          height: 70.0,
+                          width: 60.0,
+                          height: 60.0,
                           child: CircularProgressIndicator(
                             value: 0.75, // Example progress value
                             strokeWidth: 8.0,
+                            strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF48CC6D)),
                             backgroundColor: Color(0xFF2B2B2B),
                           ),
@@ -52,7 +53,7 @@ class RingsModule extends StatelessWidget {
                         Text(
                           'KG',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFF48CC6D),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -68,11 +69,12 @@ class RingsModule extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          width: 70.0,
-                          height: 70.0,
+                          width: 60.0,
+                          height: 60.0,
                           child: CircularProgressIndicator(
                             value: 0.5, // Example progress value
                             strokeWidth: 8.0,
+                            strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF)),
                             backgroundColor: Color(0xFF2B2B2B),
                           ),
@@ -101,22 +103,24 @@ class RingsModule extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          width: 70.0,
-                          height: 70.0,
+                          width: 60.0,
+                          height: 60.0,
                           child: CircularProgressIndicator(
                             value: 0.25, // Example progress value
                             strokeWidth: 8.0,
+                            strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCC9748)),
                             backgroundColor: Color(0xFF2B2B2B),
                           ),
                         ),
                         Text(
-                          'Body fat',
+                          'Body\nFat',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFFCC9748),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -129,22 +133,24 @@ class RingsModule extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          width: 70.0,
-                          height: 70.0,
+                          width: 60.0,
+                          height: 60.0,
                           child: CircularProgressIndicator(
                             value: 1, // Example progress value
                             strokeWidth: 8.0,
+                            strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCC4848)),
                             backgroundColor: Color(0xFF2B2B2B),
                           ),
                         ),
                         Text(
-                          'Cal Burn',
+                          'Cal\nBurn',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFFCC4848),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),

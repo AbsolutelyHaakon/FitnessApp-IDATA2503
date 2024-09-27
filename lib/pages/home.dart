@@ -45,7 +45,7 @@ class _HomeState extends State<Home> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   formattedDate,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15.0,
                     color: Color(0xFF434343),
@@ -67,8 +67,8 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            TodayModule(),
-            SizedBox(height: 20),
+            const TodayModule(),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
