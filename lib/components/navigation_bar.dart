@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fitnessapp_idata2503/pages/home.dart';
 import 'package:fitnessapp_idata2503/pages/workout.dart';
 import 'package:fitnessapp_idata2503/pages/me.dart';
@@ -22,16 +23,24 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     return Scaffold(
       body: _getSelectedPage(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: SvgPicture.asset(
+              'assets/icons/home.svg',
+              width: 30.0, // Adjust the width
+              height: 30.0, // Adjust the height
+            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
+            icon: SvgPicture.asset(
+              'assets/icons/workout.svg',
+              width: 30.0, // Adjust the width
+              height: 30.0, // Adjust the height
+            ),
             label: 'Exercise',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Me',
           ),
@@ -41,6 +50,9 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         unselectedItemColor: Color(0xFF747474),
         backgroundColor: Color(0xFF3A3A3A),
         onTap: _onItemTapped,
+        iconSize: 30.0, // Adjust the icon size
+        selectedFontSize: 16.0, // Adjust the selected font size
+        unselectedFontSize: 14.0, // Adjust the unselected font size
       ),
     );
   }
