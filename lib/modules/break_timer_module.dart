@@ -3,6 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 
+// The BreakTimerModule widget allows for counting down time
+// Used for taking breaks between gym sets
+// Last Edited: 27/09/2024
+// Last Edited by: Haakon
+
+// Explainer: As soon as we are able to implement persistent storage we should start working on the TODOs
+// Persistent storage of timer presets should be cloud saved for the user to access on any device
+// The countdown should only be persistent across the application and can be done before cloud storage is implemented
+// TODO: Implement persistent storage for the timer presets and timer countdown
+// TODO: Implement the edit functionality for the timer presets
+// TODO: Potentially give the user the ability to use the timer for any amount of time as a swatch
+
 class BreakTimerModule extends StatefulWidget {
   const BreakTimerModule({Key? key}) : super(key: key);
 
