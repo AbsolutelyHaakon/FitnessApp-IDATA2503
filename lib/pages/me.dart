@@ -1,11 +1,7 @@
 import 'package:fitnessapp_idata2503/database/fitness_app_db.dart';
 import 'package:fitnessapp_idata2503/database/user.dart';
 import 'package:fitnessapp_idata2503/modules/break_timer_module.dart';
-<<<<<<< Updated upstream
-import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
-=======
 import 'package:fitnessapp_idata2503/modules/create_add_user_widget.dart';
->>>>>>> Stashed changes
 import 'package:flutter/material.dart';
 
 class Me extends StatefulWidget {
@@ -37,16 +33,6 @@ class _MeState extends State<Me> {
         backgroundColor: Color(0xFF292929),
       ),
       body: Center(
-<<<<<<< Updated upstream
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            WorkoutLogModule(), //Relocate later
-            SizedBox(height: 20),
-            BreakTimerModule(),
-          ],
-        ),
-=======
         child: FutureBuilder<List<User>>(
           future: users,
           builder: (context, snapshot) {
@@ -142,7 +128,6 @@ class _MeState extends State<Me> {
             ),
           );
         },
->>>>>>> Stashed changes
       ),
       backgroundColor: Color(0xFF292929),
     );
