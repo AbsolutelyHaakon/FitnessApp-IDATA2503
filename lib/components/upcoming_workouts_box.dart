@@ -1,11 +1,12 @@
 import 'dart:ui';
 
-import 'package:fitnessapp_idata2503/components/Elements/icon_text.dart';
+import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
+import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class UpcomingWorkoutsBox extends StatefulWidget {
-  const UpcomingWorkoutsBox({super.key});
+  const UpcomingWorkoutsBox({super.key, required});
 
   @override
   State<StatefulWidget> createState() {
@@ -21,7 +22,7 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
       constraints: const BoxConstraints(minHeight: 180),
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Color(0xFF3A3A3A),
+        color: Color(0xFF1A1B1C),
         borderRadius: BorderRadius.all(Radius.circular(30)),
       ),
       padding: const EdgeInsets.fromLTRB(20, 10, 50, 10),
@@ -33,23 +34,8 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Day and Time',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFFFFFFFF),
-                    height: 1.1,
-                  ),
-                ),
-                Text(
-                  'Type of exercise, sets',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF848484),
-                      height: 1.1),
-                ),
+                Heading1(text: 'Day and Time'),
+                Heading2(text: 'Type of exercise'),
                 SizedBox(
                   height: 20,
                 ),
@@ -80,7 +66,7 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
           const SizedBox(width: 20),
           LayoutBuilder(
             builder: (context, constraints) {
-              double size = 90; // Use height as width
+              double size = 90;
               return SvgPicture.asset(
                 'assets/icons/stick_figure.svg',
                 height: size,

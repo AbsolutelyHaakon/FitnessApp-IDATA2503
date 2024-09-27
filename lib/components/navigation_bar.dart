@@ -36,7 +36,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               'assets/icons/home.svg',
               width: 20.0,
               height: 20.0,
-              color: _selectedIndex == 0 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+              color:
+                  _selectedIndex == 0 ? Color(0xFFDCDCDC) : Color(0xFF747474),
             ),
             label: 'Home',
           ),
@@ -45,16 +46,18 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               'assets/icons/workout.svg',
               width: 30.0,
               height: 30.0,
-              color: _selectedIndex == 1 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+              color:
+                  _selectedIndex == 1 ? Color(0xFFDCDCDC) : Color(0xFF747474),
             ),
-            label: 'Exercise',
+            label: 'Workout',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/me.svg',
               width: 25.0,
               height: 25.0,
-              color: _selectedIndex == 2 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+              color:
+                  _selectedIndex == 2 ? Color(0xFFDCDCDC) : Color(0xFF747474),
             ),
             label: 'Me',
           ),
@@ -67,7 +70,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         iconSize: 30.0,
         selectedFontSize: 16.0,
         unselectedFontSize: 14.0,
-
       ),
     );
   }
