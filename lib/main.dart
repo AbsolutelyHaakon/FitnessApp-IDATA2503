@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
 
-void main() {
+import 'database/dummy_data.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DummyData().insertAllDummyData();
   runApp(MyApp());
 }
 
