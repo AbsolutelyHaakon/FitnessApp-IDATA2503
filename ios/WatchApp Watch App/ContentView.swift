@@ -8,14 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
+    let exercises = [
+        ("Running", "figure.run"),
+        ("Cycling", "bicycle"),
+        ("Swimming", "drop.fill"),
+        ("Yoga", "figure.mind.and.body"),
+        ("Strength Training", "dumbbell.fill")
+    ]
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            List(exercises, id: \.0) { exercise, icon in
+                HStack {
+                    Text(exercise)
+                    Spacer()
+                    Image(systemName: icon)
+                        .imageScale(.medium)
+                        .foregroundColor(.green)
+                    
+                    
+                }
+            }
+            .navigationTitle("Exercises")
+            .navigationBarTitleDisplayMode(.inline) // Shrinking title effect
+            .listStyle(PlainListStyle())
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
