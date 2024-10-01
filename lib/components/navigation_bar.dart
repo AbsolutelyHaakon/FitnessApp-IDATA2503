@@ -1,7 +1,8 @@
+import 'package:fitnessapp_idata2503/pages/upcoming_workouts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fitnessapp_idata2503/pages/home.dart';
-import 'package:fitnessapp_idata2503/pages/workout.dart';
+import 'package:fitnessapp_idata2503/pages/workout_page.dart';
 import 'package:fitnessapp_idata2503/pages/me.dart';
 
 // Navigation bar for the whole app
@@ -78,7 +79,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       case 0:
         return const Home();
       case 1:
-        return Workout();
+        return WorkoutPage();
       case 2:
         return Me();
       default:

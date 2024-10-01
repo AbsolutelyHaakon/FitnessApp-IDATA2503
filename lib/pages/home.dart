@@ -67,7 +67,14 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            const UpcomingWorkoutsBox(),
+            UpcomingWorkoutsBox(
+              title: 'First Workout!',
+              category: Type.fullBody,
+              date: DateTime.now(),
+              workouts: [
+                // Add workouts here..
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
