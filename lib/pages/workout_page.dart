@@ -2,7 +2,44 @@ import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
 import 'package:flutter/material.dart';
 
-class WorkoutPage extends StatelessWidget {
+UpcomingWorkoutsList workoutsList = UpcomingWorkoutsList();
+
+class WorkoutPage extends StatefulWidget {
+  @override
+  _WorkoutPageState createState() => _WorkoutPageState();
+}
+
+class _WorkoutPageState extends State<WorkoutPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    initializeWorkoutData();
+    print(workoutsList.listOfWorkouts.length);
+  }
+
+  void initializeWorkoutData() {
+    // Add a workout to the list
+    workoutsList.insertList([
+      UpcomingWorkoutsBox(
+        title: 'Fart Workout',
+        category: Type.back,
+        date: DateTime.now(),
+        workouts: [],
+      ),
+      UpcomingWorkoutsBox(
+          title: 'Head Workout',
+          category: Type.fullBody,
+          date: DateTime.now(),
+          workouts: []),
+      UpcomingWorkoutsBox(
+          title: 'Throat Workout',
+          category: Type.chest,
+          date: DateTime.now(),
+          workouts: []),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +61,12 @@ class WorkoutPage extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-              itemCount: UpcomingWorkoutsList().listOfWorkouts.length,
+              itemCount: workoutsList.listOfWorkouts.length,
               itemBuilder: (context, index) {
-                final workout = UpcomingWorkoutsList().listOfWorkouts[index];
+                final workout = workoutsList.listOfWorkouts[index];
                 return UpcomingWorkoutsBox(
                   title: workout.title,
-                  category:
-                      Type.values.firstWhere((e) => e.name == workout.category),
+                  category: workout.category,
                   date: workout.date,
                   workouts: workout.workouts,
                 );

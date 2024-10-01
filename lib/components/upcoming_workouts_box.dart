@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
+import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
 import 'package:fitnessapp_idata2503/logic/workout.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';

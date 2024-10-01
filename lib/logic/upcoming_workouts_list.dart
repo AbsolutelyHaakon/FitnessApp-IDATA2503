@@ -4,13 +4,17 @@ import 'package:fitnessapp_idata2503/logic/workout.dart';
 class UpcomingWorkoutsList {
   UpcomingWorkoutsList();
 
-  List<UpcomingWorkoutsBox> workoutList = [];
+  List<UpcomingWorkoutsBox> _workoutList = [];
 
   List<UpcomingWorkoutsBox> get listOfWorkouts {
-    return workoutList;
+    return _workoutList;
   }
 
   void addToList(UpcomingWorkoutsBox workout) {
-    workoutList.add(workout);
+    _workoutList.add(workout);
+  }
+
+  void insertList(List<UpcomingWorkoutsBox> list) {
+    _workoutList = list;
   }
 }
