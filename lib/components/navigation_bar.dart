@@ -37,7 +37,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               width: 20.0,
               height: 20.0,
               color:
-                  _selectedIndex == 0 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+                  _selectedIndex == 0 ? const Color(0xFFDCDCDC) : const Color(0xFF747474),
             ),
             label: 'Home',
           ),
@@ -47,7 +47,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               width: 30.0,
               height: 30.0,
               color:
-                  _selectedIndex == 1 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+                  _selectedIndex == 1 ? const Color(0xFFDCDCDC) : const Color(0xFF747474),
             ),
             label: 'Workout',
           ),
@@ -57,15 +57,15 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               width: 25.0,
               height: 25.0,
               color:
-                  _selectedIndex == 2 ? Color(0xFFDCDCDC) : Color(0xFF747474),
+                  _selectedIndex == 2 ? const Color(0xFFDCDCDC) : const Color(0xFF747474),
             ),
             label: 'Me',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFFDCDCDC),
-        unselectedItemColor: Color(0xFF747474),
-        backgroundColor: Color(0xFF1A1B1C),
+        selectedItemColor: const Color(0xFFDCDCDC),
+        unselectedItemColor: const Color(0xFF747474),
+        backgroundColor: const Color(0xFF1A1B1C),
         onTap: _onItemTapped,
         iconSize: 30.0,
         unselectedFontSize: 14.0,
@@ -76,13 +76,13 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   Widget _getSelectedPage(int index) {
     switch (index) {
       case 0:
-        return Home();
+        return const Home();
       case 1:
         return Workout();
       case 2:
         return Me();
       default:
-        return Home();
+        return const Home();
     }
   }
 }

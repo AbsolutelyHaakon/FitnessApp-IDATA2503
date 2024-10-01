@@ -7,12 +7,11 @@ class FitnessAppDB {
 
   Future<void> createTable(Database database) async {
     await database.execute("""CREATE TABLE IF NOT EXISTS $tableName (
-    "id" INTEGER NOT NULL,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "weight" INTEGER,
-    PRIMARY KEY("id" AUTOINCREMENT)
+    "weight" INTEGER
     );""");
   }
 
@@ -23,9 +22,15 @@ class FitnessAppDB {
     required int weight,
   }) async {
     final database = await DatabaseService().database;
-    return await database.rawInsert(
-      '''INSERT INTO $tableName (name, email, password, weight) VALUES (?, ?, ?, ?)''',
-      [name, email, password, weight],
+    return await database.insert(
+      tableName,
+      {
+        'name': name,
+        'email': email,
+        'password': password,
+        'weight': weight,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
@@ -37,23 +42,36 @@ class FitnessAppDB {
     required int weight,
   }) async {
     final database = await DatabaseService().database;
-    return await database.rawUpdate(
-      '''UPDATE $tableName SET name = ?, email = ?, password = ?, weight = ? WHERE id = ?''',
-      [name, email, password, weight, id],
+    return await database.update(
+      tableName,
+      {
+        'name': name,
+        'email': email,
+        'password': password,
+        'weight': weight,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
   Future<List<User>> fetchAll() async {
     final database = await DatabaseService().database;
-    final users = await database.rawQuery(
-        '''SELECT * from $tableName ORDER BY COALESCE(name)''');
+    final users = await database.query(
+      tableName,
+      orderBy: 'name',
+    );
     return users.map((user) => User.fromSqfliteDatabase(user)).toList();
   }
 
   Future<User> fetchById(int id) async {
     final database = await DatabaseService().database;
-    final user = await database.rawQuery(
-        '''SELECT * from $tableName WHERE id = ?''', [id]);
+    final user = await database.query(
+      tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
     return User.fromSqfliteDatabase(user.first);
   }
 
@@ -65,13 +83,17 @@ class FitnessAppDB {
         'weight': weight,
       },
       where: 'id = ?',
-      conflictAlgorithm: ConflictAlgorithm.rollback,
       whereArgs: [id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
   Future<void> delete(int id) async {
     final database = await DatabaseService().database;
-    await database.rawDelete('''DELETE FROM $tableName WHERE id = ?''', [id]);
+    await database.delete(
+      tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
