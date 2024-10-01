@@ -1,6 +1,5 @@
-import 'package:fitnessapp_idata2503/database/fitness_app_db.dart';
+import 'package:fitnessapp_idata2503/database/user_dao.dart'; // Import UserDao
 import 'package:fitnessapp_idata2503/database/user.dart';
-import 'package:fitnessapp_idata2503/modules/break_timer_module.dart';
 import 'package:fitnessapp_idata2503/modules/create_add_user_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,7 @@ class Me extends StatefulWidget {
 
 class _MeState extends State<Me> {
   Future<List<User>>? users;
-  final fitnessAppDB = FitnessAppDB();
+  final userDao = UserDao(); // Create an instance of UserDao
 
   @override
   void initState() {
@@ -21,7 +20,7 @@ class _MeState extends State<Me> {
 
   void fetchUsers() {
     setState(() {
-      users = fitnessAppDB.fetchAll();
+      users = userDao.fetchAll(); // Use UserDao to fetch users
     });
   }
 
@@ -76,12 +75,14 @@ class _MeState extends State<Me> {
                               userDetails['email'] != null &&
                               userDetails['password'] != null &&
                               userDetails['weight'] != null) {
-                            await fitnessAppDB.update(
-                              id: user.id!,
-                              name: userDetails['name']!,
-                              email: userDetails['email']!,
-                              password: userDetails['password']!,
-                              weight: int.parse(userDetails['weight']!),
+                            await userDao.update( // Use UserDao to update user
+                              User(
+                                id: user.id,
+                                name: userDetails['name']!,
+                                email: userDetails['email']!,
+                                password: userDetails['password']!,
+                                weight: int.parse(userDetails['weight']!),
+                              ),
                             );
                             if (!mounted) return;
                             fetchUsers();
@@ -107,22 +108,27 @@ class _MeState extends State<Me> {
             context: context,
             builder: (_) => CreateAddUserWidget(
               onSubmit: (userDetails) async {
-                if (userDetails['name'] != null &&
-                    userDetails['email'] != null &&
-                    userDetails['password'] != null &&
-                    userDetails['weight'] != null) {
-                  await fitnessAppDB.create(
-                    name: userDetails['name']!,
-                    email: userDetails['email']!,
-                    password: userDetails['password']!,
-                    weight: int.parse(userDetails['weight']!),
-                  );
-                  if (!mounted) return;
-                  fetchUsers();
-                  Navigator.of(context).pop();
-                } else {
-                  // Handle the case where userDetails are null
-                  // For example, show an error message
+                try {
+                  if (userDetails['name'] != null &&
+                      userDetails['email'] != null &&
+                      userDetails['password'] != null &&
+                      userDetails['weight'] != null) {
+                    await userDao.create( // Use UserDao to create user
+                      User(
+                        name: userDetails['name']!,
+                        email: userDetails['email']!,
+                        password: userDetails['password']!,
+                        weight: int.parse(userDetails['weight']!),
+                      ),
+                    );
+                    if (!mounted) return;
+                    fetchUsers();
+                    Navigator.of(context).pop();
+                  } else {
+                    print('Error: Some user details are null');
+                  }
+                } catch (e) {
+                  print('Error creating user: $e');
                 }
               },
             ),

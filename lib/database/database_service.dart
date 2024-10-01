@@ -35,5 +35,5 @@ class DatabaseService{
   }
 
   Future<void> create(Database database, int version) async =>
-      await FitnessAppDB().createTable(database);
+      await FitnessAppDB().createDB(database);
 }
