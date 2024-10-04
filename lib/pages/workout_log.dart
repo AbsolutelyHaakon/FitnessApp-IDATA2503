@@ -198,7 +198,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         child: Row(
           children: [
             // Workout Icon
-            Icon(icon, color: const Color(0xFF48CC6D), size: 50), // Adjusted size
+            Icon(icon, color: const Color(0xFF48CC6D), size: 100),
             const SizedBox(width: 16),
             // Workout info
             Expanded(

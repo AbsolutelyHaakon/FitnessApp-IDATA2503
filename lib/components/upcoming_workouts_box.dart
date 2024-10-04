@@ -78,9 +78,10 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 180),
-          width: 400,
+          constraints: const BoxConstraints(minHeight: 100),
+          width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Color(0xFF1A1B1C),
             borderRadius: BorderRadius.all(Radius.circular(30)),

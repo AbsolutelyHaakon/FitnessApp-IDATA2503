@@ -15,7 +15,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.initState();
 
     initializeWorkoutData();
-    print(workoutsList.listOfWorkouts.length);
   }
 
   void initializeWorkoutData() {
@@ -31,12 +30,19 @@ class _WorkoutPageState extends State<WorkoutPage> {
           title: 'Head Workout',
           category: Type.fullBody,
           date: DateTime.now(),
-          workouts: []),
+          workouts: [],),
       UpcomingWorkoutsBox(
-          title: 'Throat Workout',
-          category: Type.chest,
-          date: DateTime.now(),
-          workouts: []),
+        title: 'Throat Workout',
+        category: Type.chest,
+        date: DateTime.now(),
+        workouts: [],
+      ),
+      UpcomingWorkoutsBox(
+        title: 'Skibidi Workout',
+        category: Type.legs,
+        date: DateTime.now(),
+        workouts: [],
+      )
     ]);
   }
 
@@ -74,6 +80,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
         ),
       ]),
       backgroundColor: const Color(0xFF000000),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

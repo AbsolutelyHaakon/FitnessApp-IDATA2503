@@ -81,6 +81,11 @@ class _HomeState extends State<Home> {
               children: [
                 NutritionModule(),
                 RingsModule(),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
                 WorkoutLogModule(),
               ],
             ),
