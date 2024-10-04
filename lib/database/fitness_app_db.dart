@@ -31,7 +31,7 @@ class FitnessAppDB {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       description TEXT,
-      category TEXT
+      category INTEGER
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS workoutExercises (
       workoutId INTEGER,

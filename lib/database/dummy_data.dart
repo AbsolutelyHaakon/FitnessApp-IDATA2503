@@ -9,7 +9,6 @@ import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_weight_data.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_weight_data_dao.dart';
 
-
 // THIS IS PURELY AI GENERATED AND ONLY USED FOR TESTING PURPOSES
 // DO NOT PUBLISH THIS CODE IN A RELEASE!
 
@@ -22,9 +21,21 @@ class DummyData {
 
   Future<void> insertDummyUsers() async {
     List<User> users = [
-      User(name: 'John Doe', email: 'john@example.com', password: 'password123', weight: 70),
-      User(name: 'Jane Smith', email: 'jane@example.com', password: 'password123', weight: 65),
-      User(name: 'Alice Johnson', email: 'alice@example.com', password: 'password123', weight: 55),
+      User(
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'password123',
+          weight: 70),
+      User(
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          password: 'password123',
+          weight: 65),
+      User(
+          name: 'Alice Johnson',
+          email: 'alice@example.com',
+          password: 'password123',
+          weight: 55),
     ];
 
     for (User user in users) {
@@ -49,9 +60,24 @@ class DummyData {
 
   Future<void> insertDummyExercises() async {
     List<Exercise> exercises = [
-      Exercise(name: 'Push Up', description: 'Upper body exercise', category: 'Strength', videoUrl: 'http://example.com/pushup', lastWeight: 0),
-      Exercise(name: 'Squat', description: 'Lower body exercise', category: 'Strength', videoUrl: 'http://example.com/squat', lastWeight: 0),
-      Exercise(name: 'Plank', description: 'Core exercise', category: 'Strength', videoUrl: 'http://example.com/plank', lastWeight: 0),
+      Exercise(
+          name: 'Push Up',
+          description: 'Upper body exercise',
+          category: 'Strength',
+          videoUrl: 'http://example.com/pushup',
+          lastWeight: 0),
+      Exercise(
+          name: 'Squat',
+          description: 'Lower body exercise',
+          category: 'Strength',
+          videoUrl: 'http://example.com/squat',
+          lastWeight: 0),
+      Exercise(
+          name: 'Plank',
+          description: 'Core exercise',
+          category: 'Strength',
+          videoUrl: 'http://example.com/plank',
+          lastWeight: 0),
     ];
 
     for (Exercise exercise in exercises) {
@@ -61,8 +87,14 @@ class DummyData {
 
   Future<void> insertDummyWorkouts() async {
     List<Workout> workouts = [
-      Workout(name: 'Morning Routine', description: 'A quick morning workout', category: 'General'),
-      Workout(name: 'Evening Routine', description: 'A quick evening workout', category: 'General'),
+      Workout(
+          name: 'Morning Routine',
+          description: 'A quick morning workout',
+          category: WorkoutCategory.general),
+      Workout(
+          name: 'Evening Routine',
+          description: 'A quick evening workout',
+          category: WorkoutCategory.general),
     ];
 
     for (Workout workout in workouts) {

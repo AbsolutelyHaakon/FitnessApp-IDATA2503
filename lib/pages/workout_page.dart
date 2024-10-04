@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
+import 'package:fitnessapp_idata2503/database/Initialization/initialize_upcoming_workouts.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
 import 'package:flutter/material.dart';
 
@@ -17,33 +18,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
     initializeWorkoutData();
   }
 
-  void initializeWorkoutData() {
-    // Add a workout to the list
-    workoutsList.insertList([
-      UpcomingWorkoutsBox(
-        title: 'Fart Workout',
-        category: Type.back,
-        date: DateTime.now(),
-        workouts: [],
-      ),
-      UpcomingWorkoutsBox(
-          title: 'Head Workout',
-          category: Type.fullBody,
-          date: DateTime.now(),
-          workouts: [],),
-      UpcomingWorkoutsBox(
-        title: 'Throat Workout',
-        category: Type.chest,
-        date: DateTime.now(),
-        workouts: [],
-      ),
-      UpcomingWorkoutsBox(
-        title: 'Skibidi Workout',
-        category: Type.legs,
-        date: DateTime.now(),
-        workouts: [],
-      )
-    ]);
+  void initializeWorkoutData() async {
+    List<UpcomingWorkoutsBox> workouts = await initializeUpcomingWorkoutData();
+    workoutsList.insertList(workouts);
   }
 
   @override

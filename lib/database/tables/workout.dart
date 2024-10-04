@@ -1,8 +1,16 @@
+enum WorkoutCategory {
+  general,
+  strength,
+  cardio,
+  flexibility,
+  balance,
+}
+
 class Workout {
   final int? id;
   final String name;
   final String? description;
-  final String? category;
+  final WorkoutCategory? category;
 
   const Workout({
     this.id,
@@ -17,7 +25,7 @@ class Workout {
       'id': id,
       'name': name,
       'description': description,
-      'category': category,
+      'category': category?.index, // Store enum as int
     };
   }
 
@@ -27,7 +35,7 @@ class Workout {
       id: map['id']?.toInt(),
       name: map['name'] ?? '',
       description: map['description'],
-      category: map['category'],
+      category: map['category'] != null ? WorkoutCategory.values[map['category']] : null,
     );
   }
 
@@ -37,7 +45,7 @@ class Workout {
       id: map['id']?.toInt(),
       name: map['name'] ?? '',
       description: map['description'],
-      category: map['category'],
+      category: map['category'] != null ? WorkoutCategory.values[map['category']] : null,
     );
   }
 }
