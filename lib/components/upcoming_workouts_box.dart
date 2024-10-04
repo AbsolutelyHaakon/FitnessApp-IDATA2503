@@ -20,6 +20,7 @@ enum Type {
   back,
   arms,
   fullBody,
+  other,
 }
 
 final Map<Type, String> typeNames = {
