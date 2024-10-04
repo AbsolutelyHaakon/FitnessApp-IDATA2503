@@ -20,25 +20,27 @@ class FitnessAppDB {
     );''');
     // TODO: Connect the lastWeight to the log history of the users last time on that specific exercise
     await database.execute('''CREATE TABLE IF NOT EXISTS exercise (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT,
-    category TEXT,
-    videoUrl TEXT,
-    lastWeight INTEGER,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      category TEXT,
+      videoUrl TEXT,
+      lastWeight INTEGER
     );''');
-    await database.execute('''CREATE TABLE IF NOT EXISTS workouts(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT,
-    category TEXT,
+    await database.execute('''CREATE TABLE IF NOT EXISTS workouts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      category TEXT
     );''');
-    await database.execute('''CREATE TABLE IF NOT EXISTS workout_exercise(
-    workoutId INTEGER,
-    exerciseId INTEGER,
-    FOREIGN KEY (workoutId) REFERENCES workouts (id),
-    FOREIGN KEY (exerciseId) REFERENCES exercise (id),
-    PRIMARY KEY (workoutId, exerciseId)
+    await database.execute('''CREATE TABLE IF NOT EXISTS workoutExercises (
+      workoutId INTEGER,
+      exerciseId INTEGER,
+      FOREIGN KEY (workoutId) REFERENCES workouts (id),
+      FOREIGN KEY (exerciseId) REFERENCES exercise (id),
+      PRIMARY KEY (workoutId, exerciseId)
     );''');
   }
+
+
 }

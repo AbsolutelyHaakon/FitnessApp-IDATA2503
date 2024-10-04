@@ -1,19 +1,17 @@
 import 'dart:async';
-
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
 import 'fitness_app_db.dart';
 
-class DatabaseService{
+
+class DatabaseService {
   Database? _database;
 
   Future<Database> get database async {
     if (_database != null) {
       return _database!;
     }
-    _database = await _initDatabase();
+    _database = await initDatabase();
     return _database!;
   }
 
@@ -23,7 +21,7 @@ class DatabaseService{
     return join(path, name);
   }
 
-  Future<Database> _initDatabase() async {
+  Future<Database> initDatabase() async {
     final path = await fullPath;
     var database = await openDatabase(
       path,
