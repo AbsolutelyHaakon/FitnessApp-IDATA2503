@@ -8,6 +8,8 @@ import 'package:fitnessapp_idata2503/database/tables/user.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_weight_data.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_weight_data_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout_date.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_date_dao.dart';
 
 // THIS IS PURELY AI GENERATED AND ONLY USED FOR TESTING PURPOSES
 // DO NOT PUBLISH THIS CODE IN A RELEASE!
@@ -18,6 +20,7 @@ class DummyData {
   final ExerciseDao exerciseDao = ExerciseDao();
   final WorkoutDao workoutDao = WorkoutDao();
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
+  final WorkoutDateDao workoutDateDao = WorkoutDateDao();
 
   Future<void> insertDummyUsers() async {
     List<User> users = [
@@ -115,11 +118,25 @@ class DummyData {
     }
   }
 
+  Future<void> insertDummyWorkoutDates() async {
+    List<WorkoutDate> workoutDates = [
+      WorkoutDate(workoutId: 1, date: DateTime(2024, 10, 1)), // Before today's date
+      WorkoutDate(workoutId: 2, date: DateTime(2024, 10, 3)), // Before today's date
+      WorkoutDate(workoutId: 2, date: DateTime(2024, 10, 5)), // After today's date
+      WorkoutDate(workoutId: 1, date: DateTime(2024, 10, 6)), // After today's date
+    ];
+
+    for (WorkoutDate workoutDate in workoutDates) {
+      await workoutDateDao.create(workoutDate);
+    }
+  }
+
   Future<void> insertAllDummyData() async {
     await insertDummyUsers();
     await insertDummyUserWeights();
     await insertDummyExercises();
     await insertDummyWorkouts();
     await insertDummyWorkoutExercises();
+    await insertDummyWorkoutDates();
   }
 }

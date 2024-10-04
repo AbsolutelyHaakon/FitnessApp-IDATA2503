@@ -6,6 +6,8 @@ enum WorkoutCategory {
   balance,
 }
 
+// TODO: Add time, cal and sets to the workout do be displayed
+
 class Workout {
   final int? id;
   final String name;

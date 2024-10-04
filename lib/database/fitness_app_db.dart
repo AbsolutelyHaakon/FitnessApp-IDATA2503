@@ -40,6 +40,12 @@ class FitnessAppDB {
       FOREIGN KEY (exerciseId) REFERENCES exercise (id),
       PRIMARY KEY (workoutId, exerciseId)
     );''');
+    await database.execute('''CREATE TABLE IF NOT EXISTS workoutDates (
+      workoutId INTEGER,
+      date TEXT,
+      FOREIGN KEY (workoutId) REFERENCES workouts (id),
+      PRIMARY KEY (workoutId, date)
+    );''');
   }
 
 
