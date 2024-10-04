@@ -14,13 +14,13 @@ class WorkoutLogModule extends StatelessWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => const PreWorkoutScreen(), //TODO: Change to workout log            )
+              builder: (context) => const WorkoutLog(), //TODO: Change to workout log            )
             ),
           );
         },
         child: Container(
-          width: 200,
-          height: 100,
+          width: 190,
+          height: 190,
           decoration: BoxDecoration(
             color: Color(0xFF3A3A3A),
             borderRadius: BorderRadius.circular(30),
@@ -30,9 +30,9 @@ class WorkoutLogModule extends StatelessWidget {
             children: [
               //Add icon here later
             Icon(
-                Icons.dining_rounded,
+                Icons.history,
                 color: Color(0xFF48CC6D),
-                size: 50,
+                size: 100,
               ),
               Text(
                 'Workout log',
