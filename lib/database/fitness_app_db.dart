@@ -27,5 +27,18 @@ class FitnessAppDB {
     videoUrl TEXT,
     lastWeight INTEGER,
     );''');
+    await database.execute('''CREATE TABLE IF NOT EXISTS workouts(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    category TEXT,
+    );''');
+    await database.execute('''CREATE TABLE IF NOT EXISTS workout_exercise(
+    workoutId INTEGER,
+    exerciseId INTEGER,
+    FOREIGN KEY (workoutId) REFERENCES workouts (id),
+    FOREIGN KEY (exerciseId) REFERENCES exercise (id),
+    PRIMARY KEY (workoutId, exerciseId)
+    );''');
   }
 }
