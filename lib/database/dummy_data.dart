@@ -1,7 +1,7 @@
-import 'package:fitnessapp_idata2503/database/user.dart';
-import 'package:fitnessapp_idata2503/database/user_dao.dart';
-import 'package:fitnessapp_idata2503/database/user_weight_data.dart';
-import 'package:fitnessapp_idata2503/database/user_weight_data_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/user.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_weight_data.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_weight_data_dao.dart';
 
 
 // THIS IS PURELY AI GENERATED AND ONLY USED FOR TESTING PURPOSES

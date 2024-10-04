@@ -1,4 +1,4 @@
-import 'package:fitnessapp_idata2503/database/user.dart';
+import 'package:fitnessapp_idata2503/database/tables/user.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/me.dart';
 

@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
-import 'database_service.dart';
-import 'user_weight_data.dart';
+import '../database_service.dart';
+import '../tables/user_weight_data.dart';
 
 class UserWeightDataDao {
   final tableName = 'userWeightData';

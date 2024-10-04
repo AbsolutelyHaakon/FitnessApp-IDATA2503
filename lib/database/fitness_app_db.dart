@@ -1,12 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
-import 'package:fitnessapp_idata2503/database/user.dart';
+import 'package:fitnessapp_idata2503/database/tables/user.dart';
 
 class FitnessAppDB {
-  final tableName = 'users';
-
   Future<void> createDB(Database database) async {
-    await database.execute('''CREATE TABLE IF NOT EXISTS $tableName (
+    await database.execute('''CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT NOT NULL,
@@ -20,11 +18,14 @@ class FitnessAppDB {
       date TEXT,
       FOREIGN KEY (userId) REFERENCES users (id)
     );''');
-  }
-
-  Future<List<User>> fetchAll() async {
-    final database = await DatabaseService().database;
-    final users = await database.query(tableName, orderBy: 'name');
-    return users.map((user) => User.fromMap(user)).toList();
+    // TODO: Connect the lastWeight to the log history of the users last time on that specific exercise
+    await database.execute('''CREATE TABLE IF NOT EXISTS exercise (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    category TEXT,
+    videoUrl TEXT,
+    lastWeight INTEGER,
+    );''');
   }
 }

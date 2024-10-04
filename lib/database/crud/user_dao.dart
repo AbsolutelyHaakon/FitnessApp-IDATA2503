@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
-import 'database_service.dart';
-import 'user.dart';
+import '../database_service.dart';
+import '../tables/user.dart';
 
 class UserDao {
   final tableName = 'users';

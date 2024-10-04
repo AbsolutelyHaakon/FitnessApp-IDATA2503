@@ -1,5 +1,5 @@
-import 'package:fitnessapp_idata2503/database/user_dao.dart'; // Import UserDao
-import 'package:fitnessapp_idata2503/database/user.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart'; // Import UserDao
+import 'package:fitnessapp_idata2503/database/tables/user.dart';
 import 'package:fitnessapp_idata2503/modules/create_add_user_widget.dart';
 import 'package:flutter/material.dart';
 
