@@ -25,21 +25,26 @@ class LoginModule extends StatefulWidget {
 
 class _LoginModuleState extends State<LoginModule> {
   bool _isRegistering = false;
+  String? _errorMessage;
   final _confirmPasswordController = TextEditingController();
 
   Future<void> _login() async {
     try {
-      User? user = await widget.userDao.loginWithEmailAndPassword(
+      final result = await widget.userDao.loginWithEmailAndPassword(
         widget.emailController.text.trim(),
         widget.passwordController.text.trim(),
       );
-      if (user != null) {
-        widget.onLoginSuccess(user);
+      if (result['user'] != null) {
+        widget.onLoginSuccess(result['user']);
       } else {
-        print('Login failed: Invalid credentials');
+        setState(() {
+          _errorMessage = result['error'];
+        });
       }
     } catch (e) {
-      print('Login failed: $e');
+      setState(() {
+        _errorMessage = 'Login failed: $e';
+      });
     }
   }
 
@@ -61,9 +66,30 @@ class _LoginModuleState extends State<LoginModule> {
       key: widget.formKey,
       child: Column(
         children: [
+          Text(
+            _isRegistering ? 'Register' : 'Log in',
+            style: const TextStyle(
+              color: Color(0xFF48CC6D),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
           TextFormField(
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
             controller: widget.emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+              ),
+            ),
+            style: const TextStyle(color: Color(0xFF48CC6D)),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your email';
@@ -72,8 +98,19 @@ class _LoginModuleState extends State<LoginModule> {
             },
           ),
           TextFormField(
+            autocorrect: false,
             controller: widget.passwordController,
-            decoration: const InputDecoration(labelText: 'Password'),
+            decoration: const InputDecoration(
+              labelText: 'Password',
+              labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+              ),
+            ),
+            style: const TextStyle(color: Color(0xFF48CC6D)),
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -82,10 +119,28 @@ class _LoginModuleState extends State<LoginModule> {
               return null;
             },
           ),
+          if (_errorMessage != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
           if (_isRegistering)
             TextFormField(
               controller: _confirmPasswordController,
-              decoration: const InputDecoration(labelText: 'Confirm Password'),
+              decoration: const InputDecoration(
+                labelText: 'Confirm Password',
+                labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                ),
+              ),
+              style: const TextStyle(color: Color(0xFF48CC6D)),
               obscureText: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -108,7 +163,13 @@ class _LoginModuleState extends State<LoginModule> {
                 }
               }
             },
-            child: Text(_isRegistering ? 'Register' : 'Login'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF48CC6D),
+            ),
+            child: Text(
+              _isRegistering ? 'Register' : 'Login',
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -116,7 +177,20 @@ class _LoginModuleState extends State<LoginModule> {
                 _isRegistering = !_isRegistering;
               });
             },
-            child: Text(_isRegistering ? 'Already have an account? Login' : 'Don\'t have an account? Register'),
+            child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: _isRegistering ? 'Already have an account? ' : 'Don\'t have an account? ',
+                  style: const TextStyle(color: Color(0xFF48CC6D)),
+                ),
+                TextSpan(
+                  text: _isRegistering ? 'Login' : 'Register',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
           ),
         ],
       ),

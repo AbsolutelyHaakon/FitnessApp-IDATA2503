@@ -103,24 +103,24 @@ class UserDao {
       height: 0.0));
 }
 
-  Future<User?> loginWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided.');
-      }
-    } catch (e) {
-      print(e);
+  Future<Map<String, dynamic>> loginWithEmailAndPassword(String email, String password) async {
+  try {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return {'user': userCredential.user, 'error': null};
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'invalid-email') {
+      return {'user': null, 'error': 'No user found for that email.'};
+    } else if (e.code == 'invalid-credential') {
+      return {'user': null, 'error': 'Wrong password provided.'};
     }
-    return null;
+  } catch (e) {
+    return {'user': null, 'error': e.toString()};
   }
+  return {'user': null, 'error': 'Unknown error occurred.'};
+}
 
 
 }

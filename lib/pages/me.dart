@@ -42,35 +42,37 @@ class _MeState extends State<Me> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Me'),
-        backgroundColor: const Color(0xFF000000),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_currentUser != null) ...[
-              UserProfileModule(
-                name: _currentUser!.displayName ?? 'Anonymous',
-                height: 1.75, // Replace with actual height
-                weight: 70.0, // Replace with actual weight
-                email: _currentUser!.email ?? 'No email',
-                onLogout: _onLogout,
-              ),
-            ] else ...[
-              LoginModule(
-                formKey: _formKey,
-                emailController: _emailController,
-                passwordController: _passwordController,
-                userDao: _userDao,
-                onLoginSuccess: _onLoginSuccess,
-              ),
-            ],
-          ],
+      body: Container(
+        width: double.infinity,
+        color: const Color(0xFF000000),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_currentUser != null) ...[
+                  UserProfileModule(
+                    name: _currentUser!.displayName ?? 'Anonymous',
+                    height: 1.75, // Replace with actual height
+                    weight: 70.0, // Replace with actual weight
+                    email: _currentUser!.email ?? 'No email',
+                    onLogout: _onLogout,
+                  ),
+                ] else ...[
+                  LoginModule(
+                    formKey: _formKey,
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                    userDao: _userDao,
+                    onLoginSuccess: _onLoginSuccess,
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
-      backgroundColor: const Color(0xFF000000),
     );
   }
 }
