@@ -120,10 +120,10 @@ class DummyData {
 
   Future<void> insertDummyWorkoutDates() async {
     List<WorkoutDate> workoutDates = [
-      WorkoutDate(workoutId: 1, date: DateTime(2024, 10, 1)), // Before today's date
-      WorkoutDate(workoutId: 2, date: DateTime(2024, 10, 3)), // Before today's date
-      WorkoutDate(workoutId: 2, date: DateTime(2024, 10, 5)), // After today's date
-      WorkoutDate(workoutId: 1, date: DateTime(2024, 10, 6)), // After today's date
+      WorkoutDate(userId: 1, workoutId: 1, date: DateTime(2024, 10, 1)), // Before today's date
+      WorkoutDate(userId: 1,workoutId: 2, date: DateTime(2024, 10, 3)), // Before today's date
+      WorkoutDate(userId: 1,workoutId: 2, date: DateTime(2024, 10, 5)), // After today's date
+      WorkoutDate(userId: 1,workoutId: 1, date: DateTime(2024, 10, 6)), // After today's date
     ];
 
     for (WorkoutDate workoutDate in workoutDates) {
