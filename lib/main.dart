@@ -5,7 +5,6 @@ import 'database/database_to_json.dart';
 import 'database/dummy_data.dart';
 import 'database/database_service.dart';
 import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -14,7 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await DatabaseService().initDatabase();
-  await DummyData().insertAllDummyData();
+  // await DummyData().insertAllDummyData();
   final databaseToJson = DatabaseToJson();
   final jsonString = await databaseToJson.convertDatabaseToJson();
   print(jsonString);
@@ -32,8 +31,29 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
       ),
-      home: CustomNavigationBar(),
       debugShowCheckedModeBanner: false, // Remove debug banner
+      home: AuthWrapper(),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show a loading indicator while waiting for the stream
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          // If the user is signed in, pass the user data to the navigation bar
+          return CustomNavigationBar(user: snapshot.data); // Pass user info if needed
+        } else {
+          // If no user is logged in, load the app without any user-specific data
+          return CustomNavigationBar();
+        }
+      },
     );
   }
 }

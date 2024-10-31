@@ -5,11 +5,11 @@ import 'package:fitnessapp_idata2503/database/tables/user.dart';
 class FitnessAppDB {
   Future<void> createDB(Database database) async {
     await database.execute('''CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id STRING PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT NOT NULL,
-      password TEXT NOT NULL,
-      weight INTEGER
+      weight DOUBLE,
+      height DOUBLE
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS userWeightData (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

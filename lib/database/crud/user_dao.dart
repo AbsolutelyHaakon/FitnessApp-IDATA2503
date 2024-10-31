@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
@@ -13,11 +14,13 @@ class UserDao {
 
   Future<int> create(LocalUser user) async {
     final database = await DatabaseService().database;
+    print('User created: ${user.id}');
     return await database.insert(
       tableName,
       user.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
   }
 
   Future<int> update(LocalUser user) async {
@@ -61,14 +64,19 @@ class UserDao {
     return await database.query(tableName);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////// Firebase Authentication /////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   Future<void> createUserWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email.trim(),
+        password: password.trim(),
       );
       User? user = userCredential.user;
       print("User created: ${user?.uid}");
+      createUserData(user?.uid, email);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -79,4 +87,40 @@ class UserDao {
       print(e);
     }
   }
+
+ void createUserData(String? uid, String email) {
+  FirebaseFirestore.instance.collection('users').doc(uid).set({
+    'email': email,
+    'name': 'Not Set',
+    'height': 0.0,
+    'weight': 0.0,
+  });
+  create(LocalUser(
+      id: uid!,
+      name: 'John Doe',
+      email: email,
+      weight: 0.0,
+      height: 0.0));
+}
+
+  Future<User?> loginWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided.');
+      }
+    } catch (e) {
+      print(e);
+    }
+    return null;
+  }
+
+
 }

@@ -1,16 +1,16 @@
 class LocalUser {
-  final int? id;
+  final String id;
   final String name;
   final String email;
-  final String password;
-  final int? weight;
+  final double? weight;
+  final double? height;
 
   const LocalUser({
-    this.id,
+    required this.id,
     required this.name,
     required this.email,
-    required this.password,
     this.weight,
+    this.height,
   });
 
   // Convert a User object into a Map object
@@ -19,30 +19,30 @@ class LocalUser {
       'id': id,
       'name': name,
       'email': email,
-      'password': password,
       'weight': weight,
+      'height': height,
     };
   }
 
   // Extract a User object from a Map object
   factory LocalUser.fromMap(Map<String, dynamic> map) {
     return LocalUser(
-      id: map['id']?.toInt(),
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      password: map['password'] ?? '',
       weight: map['weight']?.toInt(),
+      height: map['height']?.toInt(),
     );
   }
 
   // Extract a User object from a Map object (for Sqflite)
   factory LocalUser.fromSqfliteDatabase(Map<String, dynamic> map) {
     return LocalUser(
-      id: map['id']?.toInt(),
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      password: map['password'] ?? '',
       weight: map['weight']?.toInt(),
+      height: map['height']?.toInt(),
     );
   }
 }

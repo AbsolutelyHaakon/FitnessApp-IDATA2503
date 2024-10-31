@@ -28,7 +28,6 @@ class _CreateAddUserWidgetState extends State<CreateAddUserWidget> {
     super.initState();
     nameController.text = widget.user?.name ?? '';
     emailController.text = widget.user?.email ?? '';
-    passwordController.text = widget.user?.password ?? '';
     weightController.text = widget.user?.weight?.toString() ?? '';
   }
 
