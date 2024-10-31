@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "960616738857",
+    "firebase_url": "https://fitnessapp-group03-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fitnessapp-group03",
+    "storage_bucket": "fitnessapp-group03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960616738857:android:b26a1629a10360b1b72c38",
+        "android_client_info": {
+          "package_name": "ntnu.group03.fitnessapp_idata2503"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLqAMjYEoaaugpoTQmEA4D9eBOLUN478g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

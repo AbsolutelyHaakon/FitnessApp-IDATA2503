@@ -23,25 +23,25 @@ class DummyData {
   final WorkoutDateDao workoutDateDao = WorkoutDateDao();
 
   Future<void> insertDummyUsers() async {
-    List<User> users = [
-      User(
+    List<LocalUser> users = [
+      LocalUser(
           name: 'John Doe',
           email: 'john@example.com',
           password: 'password123',
           weight: 70),
-      User(
+      LocalUser(
           name: 'Jane Smith',
           email: 'jane@example.com',
           password: 'password123',
           weight: 65),
-      User(
+      LocalUser(
           name: 'Alice Johnson',
           email: 'alice@example.com',
           password: 'password123',
           weight: 55),
     ];
 
-    for (User user in users) {
+    for (LocalUser user in users) {
       await userDao.create(user);
     }
   }

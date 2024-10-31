@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/me.dart';
 
 class CreateAddUserWidget extends StatefulWidget {
-  final User? user;
+  final LocalUser? user;
   final ValueChanged<Map<String, String>> onSubmit;
 
   const CreateAddUserWidget({
