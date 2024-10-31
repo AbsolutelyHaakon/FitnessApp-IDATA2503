@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
+import 'database/database_to_json.dart';
 import 'database/dummy_data.dart';
 import 'database/database_service.dart';
 
@@ -7,6 +8,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseService().initDatabase();
   await DummyData().insertAllDummyData();
+  final databaseToJson = DatabaseToJson();
+  final jsonString = await databaseToJson.convertDatabaseToJson();
+  print(jsonString);
   runApp(MyApp());
 }
 

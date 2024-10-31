@@ -1,14 +1,13 @@
 class Exercise {
-  final int? id;
+  final int? exerciseId;
   final String name;
   final String? description;
-  // TODO: Change this into it´s own class "category"
   final String? category;
   final String? videoUrl;
   final int? lastWeight;
 
   const Exercise({
-    this.id,
+    this.exerciseId,
     required this.name,
     this.description,
     this.category,
@@ -19,7 +18,6 @@ class Exercise {
   // Convert an Exercise object into a Map object
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'name': name,
       'description': description,
       'category': category,
@@ -31,7 +29,7 @@ class Exercise {
   // Extract an Exercise object from a Map object
   factory Exercise.fromMap(Map<String, dynamic> map) {
     return Exercise(
-      id: map['id']?.toInt(),
+      exerciseId: map['exerciseId']?.toInt(),
       name: map['name'] ?? '',
       description: map['description'],
       category: map['category'],
@@ -43,7 +41,7 @@ class Exercise {
   // Extract an Exercise object from a Map object (for Sqflite)
   factory Exercise.fromSqfliteDatabase(Map<String, dynamic> map) {
     return Exercise(
-      id: map['id']?.toInt(),
+      exerciseId: map['exerciseID']?.toInt(),
       name: map['name'] ?? '',
       description: map['description'],
       category: map['category'],

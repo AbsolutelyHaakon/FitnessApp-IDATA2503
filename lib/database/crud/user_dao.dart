@@ -49,4 +49,9 @@ class UserDao {
       whereArgs: [id],
     );
   }
+
+  Future<List<Map<String, dynamic>>> fetchAllAsMap() async {
+    final database = await DatabaseService().database;
+    return await database.query(tableName);
+  }
 }
