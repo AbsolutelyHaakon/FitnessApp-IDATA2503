@@ -66,6 +66,7 @@ class _MeState extends State<Me> {
                     passwordController: _passwordController,
                     userDao: _userDao,
                     onLoginSuccess: _onLoginSuccess,
+                    user: _currentUser,
                   ),
                 ],
               ],

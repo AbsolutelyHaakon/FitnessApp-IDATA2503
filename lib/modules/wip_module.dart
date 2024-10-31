@@ -1,10 +1,8 @@
-// lib/modules/nutrition_module.dart
-import 'package:fitnessapp_idata2503/pages/pre_workout_screen.dart';
-import 'package:fitnessapp_idata2503/pages/workout_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fitnessapp_idata2503/pages/account_setup.dart';
 
-class WorkoutLogModule extends StatelessWidget {
+class WipModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -13,8 +11,21 @@ class WorkoutLogModule extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            CupertinoPageRoute(
-              builder: (context) => const WorkoutLog(), //TODO: Change to workout log            )
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AccountSetupPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
             ),
           );
         },
@@ -22,20 +33,19 @@ class WorkoutLogModule extends StatelessWidget {
           width: 180,
           height: 180,
           decoration: BoxDecoration(
-            color: Color(0xFF1A1B1C),
+            color: const Color(0xFF1A1B1C),
             borderRadius: BorderRadius.circular(30),
           ),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //Add icon here later
-            Icon(
-                Icons.history,
+              Icon(
+                CupertinoIcons.hammer,
                 color: Color(0xFF48CC6D),
                 size: 100,
               ),
               Text(
-                'Workout log',
+                'WIP',
                 style: TextStyle(
                   color: CupertinoColors.white,
                   fontWeight: FontWeight.bold,
@@ -46,7 +56,6 @@ class WorkoutLogModule extends StatelessWidget {
           ),
         ),
       ),
-
     );
   }
 }

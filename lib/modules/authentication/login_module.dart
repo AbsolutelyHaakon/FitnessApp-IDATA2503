@@ -1,4 +1,5 @@
 // lib/modules/authentication/login_module.dart
+import 'package:fitnessapp_idata2503/pages/account_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -9,6 +10,7 @@ class LoginModule extends StatefulWidget {
   final TextEditingController passwordController;
   final UserDao userDao;
   final ValueChanged<User?> onLoginSuccess;
+  final User? user;
 
   const LoginModule({
     required this.formKey,
@@ -16,7 +18,7 @@ class LoginModule extends StatefulWidget {
     required this.passwordController,
     required this.userDao,
     required this.onLoginSuccess,
-    super.key,
+    super.key, this.user,
   });
 
   @override
@@ -29,32 +31,42 @@ class _LoginModuleState extends State<LoginModule> {
   final _confirmPasswordController = TextEditingController();
 
   Future<void> _login() async {
+  try {
+    final result = await widget.userDao.loginWithEmailAndPassword(
+      widget.emailController.text.trim(),
+      widget.passwordController.text.trim(),
+    );
+    if (result['user'] != null) {
+      widget.onLoginSuccess(result['user']);
+    } else {
+      setState(() {
+        _errorMessage = result['error'];
+      });
+    }
+  } catch (e) {
+    setState(() {
+      _errorMessage = 'Login failed: $e';
+    });
+  }
+}
+
+  Future<void> _register() async {
     try {
-      final result = await widget.userDao.loginWithEmailAndPassword(
-        widget.emailController.text.trim(),
-        widget.passwordController.text.trim(),
+      final result = await widget.userDao.createUserWithEmailAndPassword(
+        widget.emailController.text,
+        widget.passwordController.text,
       );
       if (result['user'] != null) {
         widget.onLoginSuccess(result['user']);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AccountSetupPage(user: result['user'])),
+        );
       } else {
         setState(() {
           _errorMessage = result['error'];
         });
       }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Login failed: $e';
-      });
-    }
-  }
-
-  Future<void> _register() async {
-    try {
-      await widget.userDao.createUserWithEmailAndPassword(
-        widget.emailController.text,
-        widget.passwordController.text,
-      );
-      _login(); // Automatically log in the user after successful registration
     } catch (e) {
       print('Registration failed: $e');
     }
@@ -69,7 +81,7 @@ class _LoginModuleState extends State<LoginModule> {
           Text(
             _isRegistering ? 'Register' : 'Log in',
             style: const TextStyle(
-              color: Color(0xFF48CC6D),
+              color: Color(0xFFFFFFFF),
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),

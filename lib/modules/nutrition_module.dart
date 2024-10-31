@@ -18,8 +18,8 @@ class NutritionModule extends StatelessWidget {
           // Define the action when the button is pressed
         },
         child: Container(
-          width: 190,
-          height: 190,
+          width: 180,
+          height: 180,
           decoration: BoxDecoration(
             color: Color(0xFF1A1B1C),
             borderRadius: BorderRadius.circular(30),

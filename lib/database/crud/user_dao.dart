@@ -68,25 +68,30 @@ class UserDao {
   //////////////////////// Firebase Authentication /////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  Future<void> createUserWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password.trim(),
-      );
-      User? user = userCredential.user;
-      print("User created: ${user?.uid}");
-      createUserData(user?.uid, email);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
+  Future<Map<String, dynamic>> createUserWithEmailAndPassword(String email, String password) async {
+  try {
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: password.trim(),
+    );
+    User? user = userCredential.user;
+    print("User created: ${user?.uid}");
+    createUserData(user?.uid, email);
+    return {'user': user, 'error': null};
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'weak-password') {
+      print('The password provided is too weak.');
+      return {'user': null, 'error': 'The password provided is too weak.'};
+    } else if (e.code == 'email-already-in-use') {
+      print('The account already exists for that email.');
+      return {'user': null, 'error': 'The account already exists for that email.'};
     }
+  } catch (e) {
+    print(e);
+    return {'user': null, 'error': e.toString()};
   }
+  return {'user': null, 'error': 'Unknown error occurred.'};
+}
 
  void createUserData(String? uid, String email) {
   FirebaseFirestore.instance.collection('users').doc(uid).set({
@@ -101,6 +106,47 @@ class UserDao {
       email: email,
       weight: 0.0,
       height: 0.0));
+}
+
+void updateUserData(String uid, String name, double height, double weight) async {
+  if (uid == null) return;
+
+  // Fetch existing user data
+  DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  Map<String, dynamic>? existingData = documentSnapshot.data() as Map<String, dynamic>?;
+
+  if (existingData == null) return;
+
+  // Replace empty values with existing values
+  String updatedName = name.isNotEmpty ? name : existingData['name'];
+  double updatedHeight = height != 0.0 ? height : existingData['height'];
+  double updatedWeight = weight != 0.0 ? weight : existingData['weight'];
+
+  // Update Firestore
+  FirebaseFirestore.instance.collection('users').doc(uid).update({
+    'name': updatedName,
+    'height': updatedHeight,
+    'weight': updatedWeight,
+  });
+
+  // Update local database
+  update(LocalUser(
+    id: uid,
+    name: updatedName,
+    email: existingData['email'],
+    weight: updatedWeight,
+    height: updatedHeight,
+  ));
+}
+
+Future<Map<String, dynamic>?> getUserData(String uid) async {
+  try {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return documentSnapshot.data() as Map<String, dynamic>?;
+  } catch (e) {
+    print(e);
+    return null;
+  }
 }
 
   Future<Map<String, dynamic>> loginWithEmailAndPassword(String email, String password) async {
