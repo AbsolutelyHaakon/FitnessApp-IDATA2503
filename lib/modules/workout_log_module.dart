@@ -4,6 +4,11 @@ import 'package:fitnessapp_idata2503/pages/workout_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// Module for displaying the nutrition module
+// Used to display the user's nutrition information
+
+// Last edited: 31/10/2024
+// Last edited by: Håkon Svensen Karlsen
 class WorkoutLogModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

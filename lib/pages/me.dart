@@ -5,9 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/modules/authentication/login_module.dart';
 
+// Me / profile page for the app
+// Contains the user profile module and login module
+// If the user is logged in, the user profile module is shown
+// If the user is not logged in, the login module is shown
+
+// Last edited: 31/10/2024
+// Last edited by: Håkon Svensen Karlsen
 class Me extends StatefulWidget {
   final User? user;
-
   const Me({super.key, this.user});
 
   @override

@@ -3,6 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:flutter/material.dart';
 
+// Page for setting up the user account
+// Shown right after they register
+// User can set their name, weight, weight goal, and height
+
+// Last edited: 31/10/2024
+// Last edited by: Håkon Svensen Karlsen
 class AccountSetupPage extends StatefulWidget {
   final User? user;
   const AccountSetupPage({super.key, this.user});
@@ -10,8 +16,6 @@ class AccountSetupPage extends StatefulWidget {
   @override
   _AccountSetupPageState createState() => _AccountSetupPageState();
 }
-
-
 
 class _AccountSetupPageState extends State<AccountSetupPage> {
   final _formKey = GlobalKey<FormState>();

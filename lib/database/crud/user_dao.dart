@@ -4,6 +4,11 @@ import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/user.dart';
 
+/**
+ * Data Access Object for the User table
+ * All CRUD operations are defined here
+ */
+
 class UserDao {
   final tableName = 'users';
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,6 +16,10 @@ class UserDao {
   set auth(FirebaseAuth auth) {
     _auth = auth;
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /////////////////////////// Local Database CRUD //////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   Future<int> create(LocalUser user) async {
     final database = await DatabaseService().database;
@@ -75,19 +84,15 @@ class UserDao {
       password: password.trim(),
     );
     User? user = userCredential.user;
-    print("User created: ${user?.uid}");
     createUserData(user?.uid, email);
     return {'user': user, 'error': null};
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
-      print('The password provided is too weak.');
       return {'user': null, 'error': 'The password provided is too weak.'};
     } else if (e.code == 'email-already-in-use') {
-      print('The account already exists for that email.');
       return {'user': null, 'error': 'The account already exists for that email.'};
     }
   } catch (e) {
-    print(e);
     return {'user': null, 'error': e.toString()};
   }
   return {'user': null, 'error': 'Unknown error occurred.'};

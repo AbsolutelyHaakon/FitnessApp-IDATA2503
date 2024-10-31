@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 
+// Login module for the authentication page
+// Contains a form for logging in or registering a new user
+
+// Last edited: 31/10/2024
+// Last edited by: Håkon Svensen Karlsen
+
 class LoginModule extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
