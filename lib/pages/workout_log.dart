@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -95,17 +96,17 @@ class _WorkoutLogState extends State<WorkoutLog> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF292929),
+        backgroundColor: AppColors.fitnessBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? Colors.red : const Color(0xFF48CC6D)),
+            icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessMainColor),
             onPressed: () {
               setState(() {
                 isAscending = !isAscending; // Toggle sorting order
@@ -131,7 +132,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
             ),
             // Workout Log Section
             Container(
-              color: const Color(0xFF292929),
+              color: AppColors.fitnessModuleColor,
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +142,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
           ],
         ),
       ),
-      backgroundColor: const Color(0xFF292929),
+      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 
@@ -217,13 +218,13 @@ class _WorkoutLogState extends State<WorkoutLog> {
         child: Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: const Color(0xFF3A3A3A),
+            color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
             children: [
               // Workout Icon
-              Icon(icon, color: const Color(0xFF48CC6D), size: 30),
+              Icon(icon, color: AppColors.fitnessMainColor, size: 30),
               const SizedBox(width: 16),
               // Workout info
               Expanded(

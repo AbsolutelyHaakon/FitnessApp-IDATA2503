@@ -1,5 +1,6 @@
 // lib/pages/me.dart
 import 'package:fitnessapp_idata2503/modules/user_profile_module.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -50,7 +51,7 @@ class _MeState extends State<Me> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        color: const Color(0xFF000000),
+        color: AppColors.fitnessBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
