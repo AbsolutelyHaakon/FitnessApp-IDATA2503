@@ -1,26 +1,26 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:fitnessapp_idata2503/database/database_service.dart';
-import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
+import '../../components/upcoming_workouts_box.dart';
+import '../../pages/workout_page.dart';
+import '../crud/user_workouts_dao.dart';
+import '../crud/workout_dao.dart';
+import '../tables/user_workouts.dart';
+import '../tables/workout.dart';
 
-Future<List<UpcomingWorkoutsBox>> initializeUpcomingWorkoutData() async {
-  final db = await DatabaseService().database;
-  final today = DateTime.now();
-  final List<Map<String, dynamic>> maps = await db.rawQuery('''
-    SELECT workouts.name, workouts.category, workoutDates.date
-    FROM workouts
-    INNER JOIN workoutDates ON workouts.id = workoutDates.workoutId
-    WHERE workoutDates.date >= ?
-    ORDER BY workoutDates.date ASC
-  ''', [today.toIso8601String()]);
+Future<List<UpcomingWorkoutsBox>> initializeWorkoutData(String userId) async {
+  UserWorkoutsDao userWorkoutsDao = UserWorkoutsDao();
+  WorkoutDao workoutDao = WorkoutDao();
 
-  List<UpcomingWorkoutsBox> workouts = List.generate(maps.length, (i) {
-    return UpcomingWorkoutsBox(
-      title: maps[i]['name'],
-      category: Type.values[maps[i]['category'] as int],
-      date: DateTime.parse(maps[i]['date']),
-      workouts: [], // Assuming workouts are stored elsewhere and need to be fetched separately
-    );
-  });
+  List<UserWorkouts> userWorkouts = await userWorkoutsDao.fetchByUserId(userId);
+
+  List<UpcomingWorkoutsBox> workouts = [];
+  for (var userWorkout in userWorkouts) {
+    Workouts workout = await workoutDao.fetchById(userWorkout.workoutId);
+
+    workouts.add(UpcomingWorkoutsBox(
+      title: workout.name,
+      category: workout.category ?? 'No category',
+      date: userWorkout.date,
+    ));
+  }
 
   return workouts;
 }

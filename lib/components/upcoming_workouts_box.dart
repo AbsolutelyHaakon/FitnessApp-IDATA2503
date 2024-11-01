@@ -36,13 +36,11 @@ class UpcomingWorkoutsBox extends StatefulWidget {
       {super.key,
       required this.title,
       required this.category,
-      required this.date,
-      required this.workouts});
+      required this.date});
 
   String title;
-  Type category;
+  String category;
   DateTime date;
-  List<Workout> workouts;
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);

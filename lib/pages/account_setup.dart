@@ -1,6 +1,7 @@
 // lib/pages/account_setup.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -41,18 +42,18 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: AppColors.fitnessBackgroundColor,
       appBar: AppBar(
         centerTitle: false,
         titleSpacing: 40,
-        backgroundColor: Color(0xFF000000),
+        backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-      ),// Set background color here
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 100.0),
@@ -66,7 +67,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppColors.fitnessPrimaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -75,7 +76,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppColors.fitnessPrimaryTextColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -84,15 +85,15 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   controller: _nameController,
                   decoration: const InputDecoration(
                     labelText: 'Name',
-                    labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+                    labelStyle: TextStyle(color: AppColors.fitnessMainColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                   ),
-                  style: const TextStyle(color: Color(0xFF48CC6D)),
+                  style: const TextStyle(color: AppColors.fitnessMainColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your name';
@@ -105,15 +106,15 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   controller: _weightController,
                   decoration: const InputDecoration(
                     labelText: 'Weight (kg)',
-                    labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+                    labelStyle: TextStyle(color: AppColors.fitnessMainColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                   ),
-                  style: const TextStyle(color: Color(0xFF48CC6D)),
+                  style: const TextStyle(color: AppColors.fitnessMainColor),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -127,15 +128,15 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   controller: _weightGoalController,
                   decoration: const InputDecoration(
                     labelText: 'Weight Goal (kg)',
-                    labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+                    labelStyle: TextStyle(color: AppColors.fitnessMainColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                   ),
-                  style: const TextStyle(color: Color(0xFF48CC6D)),
+                  style: const TextStyle(color: AppColors.fitnessMainColor),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -149,15 +150,15 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   controller: _heightController,
                   decoration: const InputDecoration(
                     labelText: 'Height (cm)',
-                    labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+                    labelStyle: TextStyle(color: AppColors.fitnessMainColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
                     ),
                   ),
-                  style: const TextStyle(color: Color(0xFF48CC6D)),
+                  style: const TextStyle(color: AppColors.fitnessMainColor),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -172,7 +173,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFFFFF),
+                    color: AppColors.fitnessPrimaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -181,10 +182,10 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                     _updateUserData();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF48CC6D),
+                    backgroundColor: AppColors.fitnessMainColor,
                   ),
                   child: const Text('Create a Workout',
-                    style: TextStyle(color: Colors.white),),
+                    style: TextStyle(color: AppColors.fitnessPrimaryTextColor),),
 
                 ),
                 const SizedBox(height: 10),
@@ -195,10 +196,10 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF48CC6D),
+                    backgroundColor: AppColors.fitnessMainColor,
                   ),
                   child: const Text('Browse Social Feed',
-                    style: TextStyle(color: Colors.white),),
+                    style: TextStyle(color: AppColors.fitnessPrimaryTextColor),),
                 ),
               ],
             ),

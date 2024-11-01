@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/initialize_upcoming_workouts.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
 UpcomingWorkoutsList workoutsList = UpcomingWorkoutsList();
 
 class WorkoutPage extends StatefulWidget {
+  final User? user;
+  const WorkoutPage({super.key, this.user});
+
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
 }
@@ -15,11 +20,11 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void initState() {
     super.initState();
 
-    initializeWorkoutData();
+    getWorkoutData();
   }
 
-  void initializeWorkoutData() async {
-    List<UpcomingWorkoutsBox> workouts = await initializeUpcomingWorkoutData();
+  void getWorkoutData() async {
+    List<UpcomingWorkoutsBox> workouts = await initializeWorkoutData(widget.user!.uid);
     workoutsList.insertList(workouts);
   }
 
@@ -51,12 +56,11 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   title: workout.title,
                   category: workout.category,
                   date: workout.date,
-                  workouts: workout.workouts,
                 );
               }),
         ),
       ]),
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: AppColors.fitnessBackgroundColor,
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: const Icon(Icons.add),

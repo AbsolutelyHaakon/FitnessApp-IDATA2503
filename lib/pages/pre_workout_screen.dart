@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,9 +19,9 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       appBar: AppBar(
         centerTitle: false,
         titleSpacing: 40,
-        backgroundColor: Color(0xFF000000),
+        backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -58,7 +59,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           ],
         ),
       ),
-      backgroundColor: Color(0xFF000000),
+      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 }
