@@ -1,9 +1,9 @@
-class WorkoutDate {
-  final int userId;
-  final int workoutId;
+class UserWorkouts {
+  final String userId;
+  final String workoutId;
   final DateTime date;
 
-  const WorkoutDate({
+  const UserWorkouts({
     required this.userId,
     required this.workoutId,
     required this.date,
@@ -13,12 +13,12 @@ class WorkoutDate {
     return {
       'userId': userId,
       'workoutId': workoutId,
-      'date': date.toIso8601String(),
+      'date': date,
     };
   }
 
-  factory WorkoutDate.fromMap(Map<String, dynamic> map) {
-    return WorkoutDate(
+  factory UserWorkouts.fromMap(Map<String, dynamic> map) {
+    return UserWorkouts(
       userId: map['userId'],
       workoutId: map['workoutId'],
       date: DateTime.parse(map['date']),

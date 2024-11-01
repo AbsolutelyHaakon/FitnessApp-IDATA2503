@@ -1,53 +1,68 @@
-enum WorkoutCategory {
-  general,
-  strength,
-  cardio,
-  flexibility,
-  balance,
-}
-
-// TODO: Add time, cal and sets to the workout do be displayed
-
-class Workout {
-  final int? id;
+class Workouts {
+  final String workoutId;
   final String name;
   final String? description;
-  final WorkoutCategory? category;
+  final String? category;
+  final int? duration;
+  final int? intensity;
+  final String? videoUrl;
+  final bool isPrivate;
+  final String userId;
 
-  const Workout({
-    this.id,
+  const Workouts({
+    required this.workoutId,
     required this.name,
     this.description,
     this.category,
+    this.duration,
+    this.intensity,
+    this.videoUrl,
+    required this.isPrivate,
+    required this.userId,
   });
 
   // Convert a Workout object into a Map object
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'workoutId': workoutId,
       'name': name,
       'description': description,
-      'category': category?.index, // Store enum as int
+      'category': category,
+      'duration': duration,
+      'intensity': intensity,
+      'videoUrl': videoUrl,
+      'isPrivate': isPrivate ? 1 : 0,
+      'userId': userId,
     };
   }
 
   // Extract a Workout object from a Map object
-  factory Workout.fromMap(Map<String, dynamic> map) {
-    return Workout(
-      id: map['id']?.toInt(),
-      name: map['name'] ?? '',
+  factory Workouts.fromMap(Map<String, dynamic> map) {
+    return Workouts(
+      workoutId: map['workoutId'],
+      name: map['name'],
       description: map['description'],
-      category: map['category'] != null ? WorkoutCategory.values[map['category']] : null,
+      category: map['category'],
+      duration: map['duration'],
+      intensity: map['intensity'],
+      videoUrl: map['videoUrl'],
+      isPrivate: map['isPrivate'] == 1,
+      userId: map['userId'],
     );
   }
 
   // Extract a Workout object from a Map object (for Sqflite)
-  factory Workout.fromSqfliteDatabase(Map<String, dynamic> map) {
-    return Workout(
-      id: map['id']?.toInt(),
-      name: map['name'] ?? '',
+  factory Workouts.fromSqfliteDatabase(Map<String, dynamic> map) {
+    return Workouts(
+      workoutId: map['workoutId'],
+      name: map['name'],
       description: map['description'],
-      category: map['category'] != null ? WorkoutCategory.values[map['category']] : null,
+      category: map['category'],
+      duration: map['duration'],
+      intensity: map['intensity'],
+      videoUrl: map['videoUrl'],
+      isPrivate: map['isPrivate'] == 1,
+      userId: map['userId'],
     );
   }
 }

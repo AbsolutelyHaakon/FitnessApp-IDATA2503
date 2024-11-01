@@ -1,6 +1,6 @@
 class UserFollows {
-  final int userId;
-  final int followsId;
+  final String userId;
+  final String followsId;
 
   const UserFollows({
     required this.userId,

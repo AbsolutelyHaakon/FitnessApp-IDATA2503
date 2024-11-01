@@ -1,5 +1,5 @@
 class UserHealthData {
-  final int userId;
+  final String userId;
   final DateTime date;
   final int weight;
   final int height;
