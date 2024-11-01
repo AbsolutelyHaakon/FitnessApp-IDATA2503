@@ -124,7 +124,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedFilter = newValue!;
-                    //_filterWorkouts(); //TODO: Implement a function that displays the workout within the selected date range.
                   });
                 },
               ),
