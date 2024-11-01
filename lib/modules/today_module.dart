@@ -1,4 +1,4 @@
-// lib/modules/nutrition_module.dart
+// lib/modules/community_module.dart
 import 'package:fitnessapp_idata2503/pages/pre_workout_screen.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';

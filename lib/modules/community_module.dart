@@ -1,4 +1,4 @@
-// lib/modules/nutrition_module.dart
+// lib/modules/community_module.dart
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 // Last edited: 27/09/2024
 // Last edited by: Matti Kjellstadli
 
-class NutritionModule extends StatelessWidget {
+class CommunityModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -33,15 +33,15 @@ class NutritionModule extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.dining_rounded,
+                Icons.people_rounded,
                 color: AppColors.fitnessMainColor,
                 size: 100,
               ),
               Text(
-                'Nutrition',
+                'Community',
                 style: TextStyle(
                   color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
               ),

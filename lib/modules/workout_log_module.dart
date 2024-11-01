@@ -1,4 +1,4 @@
-// lib/modules/nutrition_module.dart
+// lib/modules/community_module.dart
 import 'package:fitnessapp_idata2503/pages/pre_workout_screen.dart';
 import 'package:fitnessapp_idata2503/pages/workout_log.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -40,7 +40,7 @@ class WorkoutLogModule extends StatelessWidget {
             children: [
               //Add icon here later
             Icon(
-                Icons.history,
+                Icons.history_rounded,
                 color: AppColors.fitnessMainColor,
                 size: 100,
               ),
@@ -48,7 +48,7 @@ class WorkoutLogModule extends StatelessWidget {
                 'Workout log',
                 style: TextStyle(
                   color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
               ),

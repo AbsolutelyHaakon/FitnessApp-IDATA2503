@@ -53,7 +53,7 @@ class WipModule extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                CupertinoIcons.hammer,
+                CupertinoIcons.hammer_fill,
                 color: AppColors.fitnessMainColor,
                 size: 100,
               ),
@@ -61,7 +61,7 @@ class WipModule extends StatelessWidget {
                 'WIP',
                 style: TextStyle(
                   color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
               ),
