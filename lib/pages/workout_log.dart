@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/pages/account_setup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -204,65 +205,73 @@ class _WorkoutLogState extends State<WorkoutLog> {
         required String duration,
         required String date,
         required IconData icon}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: const Color(0xFF3A3A3A),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          children: [
-            // Workout Icon
-            Icon(icon, color: const Color(0xFF48CC6D), size: 30),
-            const SizedBox(width: 16),
-            // Workout info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: () {
+        //Temporary using AccountSetupPage
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const AccountSetupPage(), // Replace this with the new detailed workout log page later.
+        ));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: const Color(0xFF3A3A3A),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Row(
+            children: [
+              // Workout Icon
+              Icon(icon, color: const Color(0xFF48CC6D), size: 30),
+              const SizedBox(width: 16),
+              // Workout info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Workout Duration & Date
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    title,
+                    duration,
                     style: const TextStyle(
                       color: Colors.white,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
                     ),
                   ),
                   Text(
-                    subtitle,
+                    date,
                     style: const TextStyle(
                       color: Colors.grey,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ],
               ),
-            ),
-            // Workout Duration & Date
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  duration,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  date,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
