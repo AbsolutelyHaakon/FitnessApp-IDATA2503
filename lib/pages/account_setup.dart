@@ -1,6 +1,7 @@
 // lib/pages/account_setup.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 // Page for setting up the user account
@@ -40,7 +41,18 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000000), // Set background color here
+      backgroundColor: const Color(0xFF000000),
+      appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 40,
+        backgroundColor: Color(0xFF000000),
+        leading: IconButton(
+          icon: Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),// Set background color here
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 100.0),
