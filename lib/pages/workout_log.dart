@@ -16,29 +16,30 @@ class WorkoutLog extends StatefulWidget {
 class _WorkoutLogState extends State<WorkoutLog> {
 
   bool isAscending = false; //isDescending = true :D
-  String _selectedFilter = '7d'; // Set default filter to 7days
+  String _selectedFilter = 'All'; // Set default filter to 'All'
   final List<String> _filterOptions = ['24hrs','7d', '30d', '365d', 'All',];
 
+  // Dummy data for workouts
   final List<Map<String, dynamic>> _workouts = [
     {
       'title': 'Legs',
       'subtitle': 'Try to move challenge',
       'duration': '01:01:27',
-      'date': '18.09.2024',
+      'date': '01.11.2024',
       'icon': Icons.assist_walker,
     },
     {
       'title': 'Hike',
       'subtitle': '0.10 km',
       'duration': '00:30:20',
-      'date': '17.09.2024',
+      'date': '01.11.2024',
       'icon': Icons.hiking,
     },
     {
       'title': 'Arms & Chest',
       'subtitle': 'Push',
       'duration': '01:39:41',
-      'date': '30.08.2024',
+      'date': '31.10.2024',
       'icon': Icons.fitness_center,
     },
     {
@@ -98,6 +99,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //Here is the back button, filter and sort button
       appBar: AppBar(
         backgroundColor: AppColors.fitnessBackgroundColor,
         elevation: 0,
@@ -169,11 +171,44 @@ class _WorkoutLogState extends State<WorkoutLog> {
     );
   }
 
+
+  // Filters the workout based on the selected filter
+  List<Map<String, dynamic>> _filterWorkouts() {
+    final DateTime now = DateTime.now();
+    DateTime startDate;
+
+    // Case switch to determine the start date based on the selected filter
+    switch (_selectedFilter) {
+      case '24hrs':
+        startDate = now.subtract(const Duration(days: 1));
+        break;
+      case '7d':
+        startDate = now.subtract(const Duration(days: 7));
+        break;
+      case '30d':
+        startDate = now.subtract(const Duration(days: 30));
+        break;
+      case '365d':
+        startDate = now.subtract(const Duration(days: 365));
+        break;
+      case 'All':
+      default:
+        return _workouts; // Return all
+    }
+    // Filter the workouts based on the selected date range
+    return _workouts.where((workout) {
+      final DateTime workoutDate = DateFormat('dd.MM.yyyy').parse(workout['date']);
+      return workoutDate.isAfter(startDate) && workoutDate.isBefore(now.add(const Duration(days: 1)));
+    }).toList();
+  }
+
   List<Widget> _buildWorkoutSections() {
+    final filteredWorkouts = _filterWorkouts();
+
     // Group workouts by month and year
     Map<String, List<Map<String, dynamic>>> workoutsByMonth = {};
 
-    for (var workout in _workouts) {
+    for (var workout in filteredWorkouts) {
       String date = workout['date'];
       String month = date.substring(3, 5);
       String year = date.substring(6, 10);
@@ -223,6 +258,15 @@ class _WorkoutLogState extends State<WorkoutLog> {
     return sections;
   }
 
+  // Function to check if the date is today
+  bool _isToday(String date) {
+    final DateTime today = DateTime.now();
+    final DateTime workoutDate = DateFormat('dd.MM.yyyy').parse(date);
+    return today.year == workoutDate.year &&
+        today.month == workoutDate.month &&
+        today.day == workoutDate.day;
+  }
+
   Widget _buildWorkoutLogEntry(BuildContext context,
       {required String title,
         required String subtitle,
@@ -231,7 +275,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         required IconData icon}) {
     return InkWell(
       onTap: () {
-        //Temporary using AccountSetupPage
+        // Temporary using AccountSetupPage
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const AccountSetupPage(), // Replace this with the new detailed workout log page later.
         ));
@@ -249,7 +293,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
               // Workout Icon
               Icon(icon, color: AppColors.fitnessMainColor, size: 30),
               const SizedBox(width: 16),
-              // Workout info
+              // Workout Title & Subtitle
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +330,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                     ),
                   ),
                   Text(
-                    date,
+                    _isToday(date) ? 'Today' : date,
                     style: const TextStyle(
                       color: AppColors.fitnessSecondaryTextColor,
                       fontSize: 10,
