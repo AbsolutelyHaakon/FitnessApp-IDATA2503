@@ -2,6 +2,7 @@ import 'package:fitnessapp_idata2503/pages/account_setup.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class WorkoutLog extends StatefulWidget {
   const WorkoutLog({super.key});
@@ -15,11 +16,13 @@ class WorkoutLog extends StatefulWidget {
 class _WorkoutLogState extends State<WorkoutLog> {
 
   bool isAscending = false; //isDescending = true :D
+  String _selectedFilter = '7d'; // Set default filter to 7days
+  final List<String> _filterOptions = ['7d', '30d', 'All',];
 
   final List<Map<String, dynamic>> _workouts = [
     {
       'title': 'Legs',
-      'subtitle': 'Legday pls help',
+      'subtitle': 'Try to move challenge',
       'duration': '01:01:27',
       'date': '18.09.2024',
       'icon': Icons.assist_walker,
@@ -113,6 +116,22 @@ class _WorkoutLogState extends State<WorkoutLog> {
               });
             },
           ),
+          DropdownButton<String>(
+            dropdownColor: AppColors.fitnessBackgroundColor,
+            value: _selectedFilter,
+            items: _filterOptions.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedFilter = newValue!;
+                //_filterWorkouts(); //TODO: Implement a function that displays the workout within the selected date range.
+              });
+            },
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -126,7 +145,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                 style: TextStyle(
                   color: AppColors.fitnessPrimaryTextColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 36,
+                  fontSize: 20,
                 ),
               ),
             ),
@@ -266,7 +285,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                     date,
                     style: const TextStyle(
                       color: AppColors.fitnessSecondaryTextColor,
-                      fontSize: 14,
+                      fontSize: 10,
                     ),
                   ),
                 ],

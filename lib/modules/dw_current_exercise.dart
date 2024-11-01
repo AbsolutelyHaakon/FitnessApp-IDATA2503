@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../styles.dart';
+
 // Shows the selected workout plan details before deciding to start it
 // Displays workout info and potentially a map of the workout route
 
@@ -32,8 +34,12 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
             child: Container(
               width: 400,
               decoration: BoxDecoration(
-                color: const Color(0xFF1A1B1C),
-                borderRadius: BorderRadius.circular(20),
+                color: AppColors.fitnessModuleColor,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: Color(0xFF262626), // Almost the same color
+                  width: 1.0, // Very thin
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -25,8 +25,12 @@ class RingsModule extends StatelessWidget {
           width: 180,
           height: 180,
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1B1C),
+            color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Color(0xFF262626), // Almost the same color
+              width: 1.0, // Very thin
+            ),
           ),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,

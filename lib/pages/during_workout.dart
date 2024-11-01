@@ -57,6 +57,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
               const BreakTimerModule(),
               const SizedBox(height: 20),
               const DwEndWorkout(),
+              const SizedBox(height: 30),
             ],
           ),
         ),

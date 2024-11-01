@@ -33,8 +33,12 @@ class TodayModule extends StatelessWidget {
           width: 400,
           height: 200,
           decoration: BoxDecoration(
-            color: AppColors.fitnessBackgroundColor,
+            color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Color(0xFF262626), // Almost the same color
+              width: 1.0, // Very thin
+            ),
           ),
           child: const Icon(
             CupertinoIcons.calendar_today,
