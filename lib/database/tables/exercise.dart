@@ -1,4 +1,4 @@
-class Exercise {
+class Exercises {
   final int? exerciseId;
   final String name;
   final String? description;
@@ -6,7 +6,7 @@ class Exercise {
   final String? videoUrl;
   final int? lastWeight;
 
-  const Exercise({
+  const Exercises({
     this.exerciseId,
     required this.name,
     this.description,
@@ -27,8 +27,8 @@ class Exercise {
   }
 
   // Extract an Exercise object from a Map object
-  factory Exercise.fromMap(Map<String, dynamic> map) {
-    return Exercise(
+  factory Exercises.fromMap(Map<String, dynamic> map) {
+    return Exercises(
       exerciseId: map['exerciseId']?.toInt(),
       name: map['name'] ?? '',
       description: map['description'],
@@ -39,8 +39,8 @@ class Exercise {
   }
 
   // Extract an Exercise object from a Map object (for Sqflite)
-  factory Exercise.fromSqfliteDatabase(Map<String, dynamic> map) {
-    return Exercise(
+  factory Exercises.fromSqfliteDatabase(Map<String, dynamic> map) {
+    return Exercises(
       exerciseId: map['exerciseID']?.toInt(),
       name: map['name'] ?? '',
       description: map['description'],

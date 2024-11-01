@@ -3,9 +3,9 @@ import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ExerciseDao {
-  final tableName = 'exercise';
+  final tableName = 'exercises';
 
-  Future<int> create(Exercise exercise) async {
+  Future<int> create(Exercises exercise) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -14,7 +14,7 @@ class ExerciseDao {
     );
   }
 
-  Future<int> update(Exercise exercise) async {
+  Future<int> update(Exercises exercise) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -25,20 +25,20 @@ class ExerciseDao {
     );
   }
 
-  Future<List<Exercise>> fetchAll() async {
+  Future<List<Exercises>> fetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
-    return data.map((entry) => Exercise.fromMap(entry)).toList();
+    return data.map((entry) => Exercises.fromMap(entry)).toList();
   }
 
-  Future<Exercise> fetchById(int exerciseId) async {
+  Future<Exercises> fetchById(int exerciseId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
       where: 'exerciseId = ?',
       whereArgs: [exerciseId],
     );
-    return Exercise.fromMap(data.first);
+    return Exercises.fromMap(data.first);
   }
 
   Future<void> delete(int exerciseId) async {

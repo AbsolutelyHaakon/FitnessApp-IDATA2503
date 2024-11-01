@@ -4,7 +4,7 @@ import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 void main() {
   group('Exercise Tests', () {
     test('Exercise toMap test', () {
-      const exercise = Exercise(
+      const exercise = Exercises(
         name: 'Push Up',
         description: 'A basic push up exercise',
         category: 'Strength',
@@ -33,7 +33,7 @@ void main() {
         'lastWeight': 50,
       };
 
-      final exercise = Exercise.fromMap(exerciseMap);
+      final exercise = Exercises.fromMap(exerciseMap);
 
       expect(exercise.exerciseId, 1);
       expect(exercise.name, 'Push Up');
@@ -53,7 +53,7 @@ void main() {
         'lastWeight': 50,
       };
 
-      final exercise = Exercise.fromSqfliteDatabase(exerciseMap);
+      final exercise = Exercises.fromSqfliteDatabase(exerciseMap);
 
       expect(exercise.exerciseId, 1);
       expect(exercise.name, 'Push Up');
