@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
 
+import '../styles.dart';
+
 // Module for displaying a WIP widget
 // Used internally only for quick access to unfinished modules
 // TO BE REMOVED BEFORE RELEASE
