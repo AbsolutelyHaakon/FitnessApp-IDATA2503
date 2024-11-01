@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
