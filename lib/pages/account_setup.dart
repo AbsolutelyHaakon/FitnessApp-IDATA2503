@@ -1,6 +1,7 @@
 // lib/pages/account_setup.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -41,13 +42,13 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: AppColors.fitnessBackgroundColor,
       appBar: AppBar(
         centerTitle: false,
         titleSpacing: 40,
-        backgroundColor: Color(0xFF000000),
+        backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
