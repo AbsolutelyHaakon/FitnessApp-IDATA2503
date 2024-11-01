@@ -1,6 +1,6 @@
-import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 
 class CreateExercisePage extends StatefulWidget {
   @override
@@ -8,9 +8,13 @@ class CreateExercisePage extends StatefulWidget {
 }
 
 class _CreateExercisePageState extends State<CreateExercisePage> {
-  final TextEditingController _searchController = TextEditingController();
-  List<String> _selectedExercises = [];
-  List<String> _allExercises = ['Push Up', 'Squat', 'Pull Up', 'Bench Press', 'Leg Extensions', 'Hammercurls'];
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _videoUrlController = TextEditingController();
+  bool _isPublic = false;
+  String _selectedCategory = 'Strength';
+
+  final List<String> _categories = ['Strength', 'Cardio', 'Flexibility', 'Balance'];
 
   @override
   Widget build(BuildContext context) {
@@ -28,110 +32,101 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
-            top: 40.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
-          ),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               TextField(
-                controller: _searchController,
+                controller: _nameController,
                 cursorColor: AppColors.fitnessMainColor,
                 style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
                 decoration: const InputDecoration(
-                  labelText: 'Search for exercises',
+                  labelText: 'Exercise Name',
                   labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: AppColors.fitnessMainColor),
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() {});
-                },
               ),
-              const SizedBox(height: 8),
-              Column(
-                children: [
-                  if (_selectedExercises.isEmpty)
-                    const SizedBox(height: 48.0), // Display this SizedBox if _selectedExercises is empty
-                  Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 4.0,
-                    children: _selectedExercises
-                        .map((exercise) => Chip(
-                              label: Text(
-                                exercise,
-                                style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                              ),
-                              backgroundColor: AppColors.fitnessMainColor,
-                            ))
-                        .toList(),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _descriptionController,
+                cursorColor: AppColors.fitnessMainColor,
+                style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
                   ),
-                ],
+                ),
+                maxLines: 3,
               ),
-              const SizedBox(height: 0),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // Add new exercise functionality
-                  },
-                  child: const Text('+ Add New Exercise',
-                      style: TextStyle(color: AppColors.fitnessMainColor)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _videoUrlController,
+                cursorColor: AppColors.fitnessMainColor,
+                style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                decoration: const InputDecoration(
+                  labelText: 'Video URL',
+                  labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                height: 400.0, // Set a fixed height for the ListView
-                child: ListView.builder(
-                  itemCount: _allExercises.length,
-                  itemBuilder: (context, index) {
-                    String exercise = _allExercises[index];
-                    if (_searchController.text.isEmpty ||
-                        exercise.toLowerCase().contains(_searchController.text.toLowerCase())) {
-                      return ListTile(
-                        title: Text(exercise,
-                            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-                        trailing: IconButton(
-                          icon: Icon(
-                            _selectedExercises.contains(exercise) ? Icons.remove : Icons.add,
-                            color: AppColors.fitnessMainColor,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              if (_selectedExercises.contains(exercise)) {
-                                _selectedExercises.remove(exercise);
-                              } else {
-                                _selectedExercises.add(exercise);
-                              }
-                            });
-                          },
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Add to workout functionality
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Public', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                  Switch(
+                    value: _isPublic,
+                    onChanged: (value) {
+                      setState(() {
+                        _isPublic = value;
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.fitnessMainColor,
-                    ),
-                    child: const Text('Add to Workout',
-                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                    activeColor: AppColors.fitnessMainColor,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                items: _categories.map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category, style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedCategory = newValue!;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
                   ),
                 ),
+                dropdownColor: AppColors.fitnessBackgroundColor, // Set the backdrop color to black
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  // Save exercise functionality
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.fitnessMainColor,
+                ),
+                child: const Text('Save Exercise',
+                    style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
               ),
             ],
           ),

@@ -16,10 +16,10 @@ class CreateWorkoutPage extends StatelessWidget {
           children: [
             Container(
               height: 60,
-              margin: EdgeInsets.symmetric(horizontal: 15),
+              margin: const EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
                 cursorColor: AppColors.fitnessMainColor,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
                   color: AppColors.fitnessPrimaryTextColor,
@@ -32,7 +32,7 @@ class CreateWorkoutPage extends StatelessWidget {
                     borderSide: BorderSide.none,
                   ),
                   hintText: 'Workout Title..',
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                     color: AppColors.fitnessSecondaryTextColor,
                   ),
                 ),
@@ -40,10 +40,10 @@ class CreateWorkoutPage extends StatelessWidget {
             ),
             Container(
               height: 40,
-              margin: EdgeInsets.symmetric(horizontal: 15),
+              margin: const EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
                 cursorColor: AppColors.fitnessMainColor,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: AppColors.fitnessPrimaryTextColor,
@@ -56,13 +56,13 @@ class CreateWorkoutPage extends StatelessWidget {
                     borderSide: BorderSide.none,
                   ),
                   hintText: 'Workout Type..',
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                     color: AppColors.fitnessSecondaryTextColor,
                   ),
                 ),
               ),
             ),
-            SingleChildScrollView(
+            const SingleChildScrollView(
               child: Column(
                 children: [],
               ),
@@ -74,7 +74,7 @@ class CreateWorkoutPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 30),
+            margin: const EdgeInsets.only(left: 30),
             child: FloatingActionButton(
               backgroundColor: AppColors.fitnessMainColor,
               onPressed: () {},
@@ -83,7 +83,7 @@ class CreateWorkoutPage extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 10),
               child: FloatingActionButton(
                 backgroundColor: AppColors.fitnessMainColor,
                 onPressed: () {},
