@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ffi';
+
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/initialize_upcoming_workouts.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
@@ -15,16 +17,33 @@ class WorkoutPage extends StatefulWidget {
   _WorkoutPageState createState() => _WorkoutPageState();
 }
 
-class _WorkoutPageState extends State<WorkoutPage> {
+class _WorkoutPageState extends State<WorkoutPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _addIconController;
+  late Animation<double> _addIconAnimation;
+
   @override
   void initState() {
     super.initState();
 
     getWorkoutData();
+    _addIconController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _addIconAnimation =
+        Tween<double>(begin: 0, end: 0.25).animate(_addIconController);
+  }
+
+  @override
+  void dispose() {
+    _addIconController.dispose();
+    super.dispose();
   }
 
   void getWorkoutData() async {
-    List<UpcomingWorkoutsBox> workouts = await initializeWorkoutData(widget.user!.uid);
+    List<UpcomingWorkoutsBox> workouts =
+        await initializeWorkoutData(widget.user!.uid);
     workoutsList.insertList(workouts);
   }
 
@@ -62,8 +81,22 @@ class _WorkoutPageState extends State<WorkoutPage> {
       ]),
       backgroundColor: AppColors.fitnessBackgroundColor,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
+        onPressed: () {
+          if (_addIconController.isCompleted) {
+            _addIconController.reverse();
+          } else {
+            _addIconController.forward();
+          }
+        },
+        child: AnimatedBuilder(
+            animation: _addIconAnimation,
+            child: Icon(Icons.add),
+            builder: (context, child) {
+              return Transform.rotate(
+                angle: _addIconAnimation.value * 3.14159,
+                child: child,
+              );
+            }),
       ),
     );
   }
