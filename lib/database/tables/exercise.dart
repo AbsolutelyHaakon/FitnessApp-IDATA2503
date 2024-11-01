@@ -1,10 +1,11 @@
 class Exercises {
-  final int? exerciseId;
+  final String? exerciseId;
   final String name;
   final String? description;
   final String? category;
   final String? videoUrl;
-  final int? lastWeight;
+  final bool isPrivate;
+  final String? userId;
 
   const Exercises({
     this.exerciseId,
@@ -12,17 +13,20 @@ class Exercises {
     this.description,
     this.category,
     this.videoUrl,
-    this.lastWeight,
+    required this.isPrivate,
+    this.userId,
   });
 
   // Convert an Exercise object into a Map object
   Map<String, dynamic> toMap() {
     return {
+      'exerciseId': exerciseId,
       'name': name,
       'description': description,
       'category': category,
       'videoUrl': videoUrl,
-      'lastWeight': lastWeight,
+      'isPrivate': isPrivate ? 1 : 0,
+      'userId': userId,
     };
   }
 
@@ -34,7 +38,8 @@ class Exercises {
       description: map['description'],
       category: map['category'],
       videoUrl: map['videoUrl'],
-      lastWeight: map['lastWeight']?.toInt(),
+      isPrivate: map['isPrivate'] == 1,
+      userId: map['userId'],
     );
   }
 
@@ -46,7 +51,8 @@ class Exercises {
       description: map['description'],
       category: map['category'],
       videoUrl: map['videoUrl'],
-      lastWeight: map['lastWeight']?.toInt(),
+      isPrivate: map['isPrivate'] == 1,
+      userId: map['userId'],
     );
   }
 }

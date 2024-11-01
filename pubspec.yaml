@@ -33,8 +33,6 @@ dependencies:
   flutter_svg: ^1.0.3
   get: ^4.3.5
   intl: ^0.19.0
-  audio_service: ^0.18.0
-  just_audio: ^0.9.18
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,6 +43,7 @@ dependencies:
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
+  connectivity_plus: ^2.3.0
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:fitnessapp_idata2503/modules/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/upcoming_workouts_box.dart';
@@ -36,7 +37,7 @@ class _HomeState extends State<Home> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15.0,
-                      color: Color(0xFF434343),
+                      color: AppColors.fitnessSecondaryTextColor,
                     ),
                   ),
                 ),
@@ -50,7 +51,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 35.0,
-                      color: Colors.white,
+                      color: AppColors.fitnessPrimaryTextColor,
                     ),
                   ),
                 ),
@@ -97,7 +98,7 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      backgroundColor: Color(0xFF000000),
+      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 }

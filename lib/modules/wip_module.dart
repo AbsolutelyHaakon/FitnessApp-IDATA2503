@@ -1,8 +1,9 @@
-import 'package:fitnessapp_idata2503/pages/during_workout.dart';
-import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
+
+import '../styles.dart';
 
 // Module for displaying a WIP widget
 // Used internally only for quick access to unfinished modules
@@ -21,13 +22,16 @@ class WipModule extends StatelessWidget {
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const DuringWorkoutScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const CreateWorkoutPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0);
                 const end = Offset.zero;
                 const curve = Curves.ease;
 
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
 
                 return SlideTransition(
