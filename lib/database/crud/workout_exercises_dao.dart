@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/workout_exercises.dart';
@@ -58,5 +59,25 @@ class WorkoutExercisesDao {
       where: 'workoutId = ? AND exerciseId = ?',
       whereArgs: [workoutId, exerciseId],
     );
+  }
+
+  ////////////////////////////////////////////////////////////
+  /////////////////// FIREBASE FUNCTIONS /////////////////////
+  ////////////////////////////////////////////////////////////
+
+
+  void createWorkoutExercise(String workoutId, String exerciseId, int reps, int sets) async {
+    FirebaseFirestore.instance.collection('users').doc(workoutId).set({
+      'exerciseId': exerciseId,
+      'reps': reps,
+      'sets': sets,
+    });
+
+    create(WorkoutExercises(
+      workoutId: workoutId,
+      exerciseId: exerciseId,
+      reps: reps,
+      sets: sets,
+    ));
   }
 }

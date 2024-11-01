@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/exercise.dart';
@@ -61,4 +62,41 @@ class WorkoutDao {
     ''', [workoutId]);
     return data.map((entry) => Exercises.fromMap(entry)).toList();
   }
+
+  ////////////////////////////////////////////////////////////
+  ////////////////// FIREBASE FUNCTIONS //////////////////////
+  ////////////////////////////////////////////////////////////
+
+
+ Future<String?> createWorkout(String? category, String? description, int? duration, int? intensity,
+     bool isPrivate, String? userId, String? video_url, String name, bool wantId) async {
+
+    DocumentReference docRef = await FirebaseFirestore.instance.collection('workouts').add({
+      'category': category ?? '',
+      'description': description ?? '',
+      'duration': duration ?? 0,
+      'intensity': intensity ?? 0,
+      'isPrivate': isPrivate,
+      'userId': userId ?? '',
+      'video_url': video_url ?? '',
+      'name': name,
+    });
+
+    String newDocId = docRef.id;
+
+    create(Workouts(
+      workoutId: newDocId,
+      category: category,
+      description: description,
+      duration: duration,
+      intensity: intensity,
+      isPrivate: isPrivate,
+      userId: userId ?? '',
+      videoUrl: video_url,
+      name: name,
+    ));
+
+    return wantId ? newDocId : null;
+}
+
 }

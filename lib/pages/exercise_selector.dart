@@ -19,8 +19,8 @@ class ExerciseSelectorPage extends StatefulWidget {
 class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   final TextEditingController _searchController = TextEditingController();
   final ExerciseDao exerciseDao = ExerciseDao();
-  List<String> _selectedExercises = [];
-  List<String> _allExercises = [];
+  List<Exercises> _selectedExercises = [];
+  List<Exercises> _allExercises = [];
 
   @override
   void initState() {
@@ -31,9 +31,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   Future<void> _fetchExercises() async {
     final result = await exerciseDao.fetchAllExercises(widget.user!.uid);
     setState(() {
-      _allExercises = result['exercises']
-          .map<String>((exercise) => (exercise as Exercises).name)
-          .toList();
+      _allExercises = result['exercises'].cast<Exercises>();
     });
   }
 
@@ -84,7 +82,6 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
               Column(
                 children: [
                   if (_selectedExercises.isEmpty) const SizedBox(height: 48.0),
-                  // Display this SizedBox if _selectedExercises is empty
                   Wrap(
                     alignment: WrapAlignment.start,
                     spacing: 4.0,
@@ -97,7 +94,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                               },
                               child: Chip(
                                 label: Text(
-                                  exercise,
+                                  exercise.name,
                                   style: const TextStyle(
                                       color: AppColors.fitnessPrimaryTextColor),
                                 ),
@@ -109,8 +106,6 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                 ],
               ),
               const SizedBox(height: 0),
-              // lib/pages/exercise_selector.dart
-
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -136,13 +131,13 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                 child: ListView.builder(
                   itemCount: _allExercises.length,
                   itemBuilder: (context, index) {
-                    String exercise = _allExercises[index];
+                    Exercises exercise = _allExercises[index];
                     if (_searchController.text.isEmpty ||
-                        exercise
+                        exercise.name
                             .toLowerCase()
                             .contains(_searchController.text.toLowerCase())) {
                       return ListTile(
-                        title: Text(exercise,
+                        title: Text(exercise.name,
                             style: const TextStyle(
                                 color: AppColors.fitnessPrimaryTextColor)),
                         trailing: IconButton(
@@ -175,7 +170,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Add to workout functionality
+                      Navigator.pop(context, _selectedExercises);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.fitnessMainColor,

@@ -4,8 +4,10 @@ import 'dart:ffi';
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/initialize_upcoming_workouts.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
+import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 UpcomingWorkoutsList workoutsList = UpcomingWorkoutsList();
 
@@ -81,7 +83,17 @@ class _WorkoutPageState extends State<WorkoutPage>
       ]),
       backgroundColor: AppColors.fitnessBackgroundColor,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  CreateWorkoutPage(user: widget.user),
+            ),
+          );
+          if (result == true) {
+            print("success adrian"); // Reload exercises if a new exercise was created
+          }
           if (_addIconController.isCompleted) {
             _addIconController.reverse();
           } else {
