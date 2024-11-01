@@ -79,13 +79,13 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   Widget _getSelectedPage(int index) {
     switch (index) {
       case 0:
-        return const Home();
+        return Home(user: widget.user);
       case 1:
         return WorkoutPage(user: widget.user); // Pass the user to the workout page
       case 2:
         return Me(user: widget.user); // Pass the user to the Me page
       default:
-        return const Home();
+        return Home(user: widget.user);
     }
   }
 }

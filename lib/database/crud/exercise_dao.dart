@@ -51,15 +51,57 @@ class ExerciseDao {
     );
   }
 
+  Future<void> truncate() async {
+    final database = await DatabaseService().database;
+    await database.delete(tableName);
+  }
+
   Future<List<Map<String, dynamic>>> fetchAllAsMap() async {
     final database = await DatabaseService().database;
     return await database.query(tableName);
   }
 
+  Future<Map<String, dynamic>> fetchAllExercises(String userId) async {
+  final database = await DatabaseService().database;
+
+  // Fetch private exercises for the user
+  final privateData = await database.query(tableName, where: 'userId = ?', whereArgs: [userId]);
+  List<Exercises> privateExercises = privateData.map((entry) => Exercises.fromMap(entry)).toList();
+
+  // Fetch public exercises
+  final publicData = await database.query(tableName, where: 'isPrivate = ?', whereArgs: [0]);
+  List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(entry)).toList();
+
+  // Combine both lists
+  List<Exercises> allExercises = [...privateExercises, ...publicExercises];
+
+  return {'exercises': allExercises};
+}
+
 
   /////////////////////////////////////////////
   /////////// FIREBASE FUNCTIONS //////////////
   /////////////////////////////////////////////
+
+
+  Future<Map<String, dynamic>> fetchAllExercisesFromFireBase(String userId) async {
+  QuerySnapshot privateExercisesQuery = await FirebaseFirestore.instance
+      .collection('exercises')
+      .where('isPrivate', isEqualTo: true)
+      .where('userId', isEqualTo: userId)
+      .get();
+
+  QuerySnapshot publicExercisesQuery = await FirebaseFirestore.instance
+      .collection('exercises')
+      .where('isPrivate', isEqualTo: false)
+      .get();
+
+  List<Exercises> privateExercises = privateExercisesQuery.docs.map((doc) => Exercises.fromMap(doc.data() as Map<String, dynamic>)).toList();
+  List<Exercises> publicExercises = publicExercisesQuery.docs.map((doc) => Exercises.fromMap(doc.data() as Map<String, dynamic>)).toList();
+
+  List<Exercises> allExercises = [...privateExercises, ...publicExercises];
+  return {'exercises': allExercises};
+}
 
   Future<Map<String, dynamic>> updateExercise(String exerciseId, String? name, String? description, String? category,
     String? videoUrl, bool? isPrivate, String? userId) async {

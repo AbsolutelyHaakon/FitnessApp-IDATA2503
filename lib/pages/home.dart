@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/modules/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
@@ -6,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/upcoming_workouts_box.dart';
 import '../modules/community_module.dart';
+import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final User? user;
+  const Home({super.key, this.user});
 
   @override
   State<Home> createState() {
@@ -17,6 +20,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final GetDataFromServer _getDataFromServer = GetDataFromServer();
+
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
@@ -89,7 +94,24 @@ class _HomeState extends State<Home> {
                     ),
                     SizedBox(width: 8),
                     Expanded(
-                      child: WipModule(),
+                      child: WipModule(user: widget.user),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        await _getDataFromServer.syncExercises(widget.user?.uid ?? '');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Sync completed')),
+                        );
+                      },
+                      child: Text('Sync Data From Firebase'),
                     ),
                   ],
                 ),

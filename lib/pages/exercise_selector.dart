@@ -1,18 +1,41 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../database/crud/exercise_dao.dart';
+import '../database/tables/exercise.dart';
 import 'create_exercise_page.dart';
 
 class ExerciseSelectorPage extends StatefulWidget {
+  final User? user;
+
+  const ExerciseSelectorPage({super.key, this.user});
+
   @override
   _ExerciseSelectorPageState createState() => _ExerciseSelectorPageState();
 }
 
 class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   final TextEditingController _searchController = TextEditingController();
+  final ExerciseDao exerciseDao = ExerciseDao();
   List<String> _selectedExercises = [];
-  List<String> _allExercises = ['Push Up', 'Squat', 'Pull Up', 'Bench Press', 'Leg Extensions', 'Hammercurls'];
+  List<String> _allExercises = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchExercises();
+  }
+
+  Future<void> _fetchExercises() async {
+    final result = await exerciseDao.fetchAllExercises(widget.user!.uid);
+    setState(() {
+      _allExercises = result['exercises']
+          .map<String>((exercise) => (exercise as Exercises).name)
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +45,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
         title: const Text('Select Exercises',
             style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -41,10 +65,12 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
               TextField(
                 controller: _searchController,
                 cursorColor: AppColors.fitnessMainColor,
-                style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                style:
+                    const TextStyle(color: AppColors.fitnessPrimaryTextColor),
                 decoration: const InputDecoration(
                   labelText: 'Search for exercises',
-                  labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                  labelStyle:
+                      TextStyle(color: AppColors.fitnessPrimaryTextColor),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: AppColors.fitnessMainColor),
@@ -57,32 +83,48 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
               const SizedBox(height: 8),
               Column(
                 children: [
-                  if (_selectedExercises.isEmpty)
-                    const SizedBox(height: 48.0), // Display this SizedBox if _selectedExercises is empty
+                  if (_selectedExercises.isEmpty) const SizedBox(height: 48.0),
+                  // Display this SizedBox if _selectedExercises is empty
                   Wrap(
                     alignment: WrapAlignment.start,
                     spacing: 4.0,
                     children: _selectedExercises
-                        .map((exercise) => Chip(
-                              label: Text(
-                                exercise,
-                                style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                        .map((exercise) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedExercises.remove(exercise);
+                                });
+                              },
+                              child: Chip(
+                                label: Text(
+                                  exercise,
+                                  style: const TextStyle(
+                                      color: AppColors.fitnessPrimaryTextColor),
+                                ),
+                                backgroundColor: AppColors.fitnessMainColor,
                               ),
-                              backgroundColor: AppColors.fitnessMainColor,
                             ))
                         .toList(),
                   ),
                 ],
               ),
               const SizedBox(height: 0),
+              // lib/pages/exercise_selector.dart
+
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateExercisePage()),
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CreateExercisePage(user: widget.user),
+                      ),
                     );
+                    if (result == true) {
+                      _fetchExercises(); // Reload exercises if a new exercise was created
+                    }
                   },
                   child: const Text('+ Add New Exercise',
                       style: TextStyle(color: AppColors.fitnessMainColor)),
@@ -96,13 +138,18 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   itemBuilder: (context, index) {
                     String exercise = _allExercises[index];
                     if (_searchController.text.isEmpty ||
-                        exercise.toLowerCase().contains(_searchController.text.toLowerCase())) {
+                        exercise
+                            .toLowerCase()
+                            .contains(_searchController.text.toLowerCase())) {
                       return ListTile(
                         title: Text(exercise,
-                            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                            style: const TextStyle(
+                                color: AppColors.fitnessPrimaryTextColor)),
                         trailing: IconButton(
                           icon: Icon(
-                            _selectedExercises.contains(exercise) ? Icons.remove : Icons.add,
+                            _selectedExercises.contains(exercise)
+                                ? Icons.remove
+                                : Icons.add,
                             color: AppColors.fitnessMainColor,
                           ),
                           onPressed: () {
@@ -134,7 +181,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                       backgroundColor: AppColors.fitnessMainColor,
                     ),
                     child: const Text('Add to Workout',
-                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                        style: TextStyle(
+                            color: AppColors.fitnessPrimaryTextColor)),
                   ),
                 ),
               ),

@@ -24,9 +24,9 @@ class FitnessAppDB {
       name STRING NOT NULL,
       description STRING,
       category STRING,
-      video_url STRING,
-      is_private BOOLEAN NOT NULL DEFAULT FALSE,
-      userId INTEGER,
+      videoURL STRING,
+      isPrivate BOOLEAN NOT NULL DEFAULT FALSE,
+      userId STRING,
       FOREIGN KEY (userId) REFERENCES users (id)
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS workouts (
