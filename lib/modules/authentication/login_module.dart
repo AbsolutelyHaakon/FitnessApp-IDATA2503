@@ -1,5 +1,6 @@
 // lib/modules/authentication/login_module.dart
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -87,7 +88,7 @@ class _LoginModuleState extends State<LoginModule> {
           Text(
             _isRegistering ? 'Register' : 'Log in',
             style: const TextStyle(
-              color: Color(0xFFFFFFFF),
+              color: AppColors.fitnessPrimaryTextColor,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -99,15 +100,15 @@ class _LoginModuleState extends State<LoginModule> {
             controller: widget.emailController,
             decoration: const InputDecoration(
               labelText: 'Email',
-              labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+              labelStyle: TextStyle(color: AppColors.fitnessMainColor),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                borderSide: BorderSide(color: AppColors.fitnessMainColor),
               ),
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                borderSide: BorderSide(color: AppColors.fitnessMainColor),
               ),
             ),
-            style: const TextStyle(color: Color(0xFF48CC6D)),
+            style: const TextStyle(color: AppColors.fitnessMainColor),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your email';
@@ -120,15 +121,15 @@ class _LoginModuleState extends State<LoginModule> {
             controller: widget.passwordController,
             decoration: const InputDecoration(
               labelText: 'Password',
-              labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+              labelStyle: TextStyle(color: AppColors.fitnessMainColor),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                borderSide: BorderSide(color: AppColors.fitnessMainColor),
               ),
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                borderSide: BorderSide(color: AppColors.fitnessMainColor),
               ),
             ),
-            style: const TextStyle(color: Color(0xFF48CC6D)),
+            style: const TextStyle(color: AppColors.fitnessMainColor),
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -150,15 +151,15 @@ class _LoginModuleState extends State<LoginModule> {
               controller: _confirmPasswordController,
               decoration: const InputDecoration(
                 labelText: 'Confirm Password',
-                labelStyle: TextStyle(color: Color(0xFF48CC6D)),
+                labelStyle: TextStyle(color: AppColors.fitnessMainColor),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                  borderSide: BorderSide(color: AppColors.fitnessMainColor),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF48CC6D)),
+                  borderSide: BorderSide(color: AppColors.fitnessMainColor),
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF48CC6D)),
+              style: const TextStyle(color: AppColors.fitnessMainColor),
               obscureText: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -182,11 +183,11 @@ class _LoginModuleState extends State<LoginModule> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF48CC6D),
+              backgroundColor: AppColors.fitnessMainColor,
             ),
             child: Text(
               _isRegistering ? 'Register' : 'Login',
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
             ),
           ),
           TextButton(
@@ -200,11 +201,11 @@ class _LoginModuleState extends State<LoginModule> {
               children: [
                 TextSpan(
                   text: _isRegistering ? 'Already have an account? ' : 'Don\'t have an account? ',
-                  style: const TextStyle(color: Color(0xFF48CC6D)),
+                  style: const TextStyle(color: AppColors.fitnessMainColor),
                 ),
                 TextSpan(
                   text: _isRegistering ? 'Login' : 'Register',
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
                 ),
               ],
             ),

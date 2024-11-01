@@ -124,7 +124,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
               child: Text(
                 'Workout log',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.fitnessPrimaryTextColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 36,
                 ),
@@ -132,7 +132,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
             ),
             // Workout Log Section
             Container(
-              color: AppColors.fitnessModuleColor,
+              color: AppColors.fitnessBackgroundColor,
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +179,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         child: Text(
           "$monthName $year",
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.fitnessPrimaryTextColor,
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
@@ -234,7 +234,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.fitnessPrimaryTextColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -242,7 +242,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color: Colors.grey,
+                        color: AppColors.fitnessSecondaryTextColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
@@ -257,7 +257,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                   Text(
                     duration,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.fitnessPrimaryTextColor,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -265,7 +265,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                   Text(
                     date,
                     style: const TextStyle(
-                      color: Colors.grey,
+                      color: AppColors.fitnessSecondaryTextColor,
                       fontSize: 14,
                     ),
                   ),
