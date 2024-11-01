@@ -11,6 +11,9 @@ class WorkoutLog extends StatefulWidget {
 }
 
 class _WorkoutLogState extends State<WorkoutLog> {
+
+  bool isAscending = false; //isDescending = true :D
+
   final List<Map<String, dynamic>> _workouts = [
     {
       'title': 'Legs',
@@ -99,6 +102,16 @@ class _WorkoutLogState extends State<WorkoutLog> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? Colors.red : const Color(0xFF48CC6D)),
+            onPressed: () {
+              setState(() {
+                isAscending = !isAscending; // Toggle sorting order
+              });
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -140,7 +153,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
       String month = date.substring(3, 5);
       String year = date.substring(6, 10);
 
-      String monthYearKey = "$month $year";
+      String monthYearKey = "$year-$month";
 
       if (workoutsByMonth[monthYearKey] == null) {
         workoutsByMonth[monthYearKey] = [];
@@ -148,12 +161,16 @@ class _WorkoutLogState extends State<WorkoutLog> {
       workoutsByMonth[monthYearKey]!.add(workout);
     }
 
+    // Sort the "keys" (month-year) based on isAscending = true/false
+    final sortedKeys = workoutsByMonth.keys.toList()
+      ..sort((a, b) => isAscending ? a.compareTo(b) : b.compareTo(a));
+
     List<Widget> sections = [];
-    workoutsByMonth.forEach((monthYearKey, workouts) {
+    for (var monthYearKey in sortedKeys) {
       // Split month and year
-      String monthNumber = monthYearKey.split(' ')[0];
+      String year = monthYearKey.split('-')[0];
+      String monthNumber = monthYearKey.split('-')[1];
       String monthName = _getMonthName(monthNumber);
-      String year = monthYearKey.split(' ')[1];
 
       sections.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -166,7 +183,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
           ),
         ),
       ));
-      for (var workout in workouts) {
+      for (var workout in workoutsByMonth[monthYearKey]!) {
         sections.add(_buildWorkoutLogEntry(
           context,
           title: workout['title'],
@@ -176,7 +193,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
           icon: workout['icon'],
         ));
       }
-    });
+    }
 
     return sections;
   }
@@ -198,7 +215,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         child: Row(
           children: [
             // Workout Icon
-            Icon(icon, color: const Color(0xFF48CC6D), size: 100),
+            Icon(icon, color: const Color(0xFF48CC6D), size: 30),
             const SizedBox(width: 16),
             // Workout info
             Expanded(
@@ -210,7 +227,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                   Text(
@@ -218,7 +235,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                     style: const TextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                   ),
                 ],
