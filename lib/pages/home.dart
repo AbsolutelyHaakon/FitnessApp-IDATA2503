@@ -1,6 +1,7 @@
 import 'package:fitnessapp_idata2503/modules/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
+import 'package:fitnessapp_idata2503/pages/during_workout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/upcoming_workouts_box.dart';

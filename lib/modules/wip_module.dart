@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/pages/during_workout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
@@ -19,7 +20,7 @@ class WipModule extends StatelessWidget {
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const AccountSetupPage(),
+              pageBuilder: (context, animation, secondaryAnimation) => const DuringWorkoutScreen(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0);
                 const end = Offset.zero;
