@@ -11,6 +11,9 @@ class WorkoutLog extends StatefulWidget {
 }
 
 class _WorkoutLogState extends State<WorkoutLog> {
+
+  bool isAscending = false; //isDescending = true :D
+
   final List<Map<String, dynamic>> _workouts = [
     {
       'title': 'Legs',
@@ -99,6 +102,16 @@ class _WorkoutLogState extends State<WorkoutLog> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? Colors.red : const Color(0xFF48CC6D)),
+            onPressed: () {
+              setState(() {
+                isAscending = !isAscending; // Toggle sorting order
+              });
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -148,8 +161,9 @@ class _WorkoutLogState extends State<WorkoutLog> {
       workoutsByMonth[monthYearKey]!.add(workout);
     }
 
-    // Sort the "keys" (month-year) in descending order
-    final sortedKeys = workoutsByMonth.keys.toList()..sort((a, b) => b.compareTo(a));
+    // Sort the "keys" (month-year) based on isAscending = true/false
+    final sortedKeys = workoutsByMonth.keys.toList()
+      ..sort((a, b) => isAscending ? a.compareTo(b) : b.compareTo(a));
 
     List<Widget> sections = [];
     for (var monthYearKey in sortedKeys) {
