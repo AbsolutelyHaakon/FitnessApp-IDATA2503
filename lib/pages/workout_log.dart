@@ -17,7 +17,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
   bool isAscending = false; //isDescending = true :D
   String _selectedFilter = '7d'; // Set default filter to 7days
-  final List<String> _filterOptions = ['7d', '30d', 'All',];
+  final List<String> _filterOptions = ['24hrs','7d', '30d', '365d', 'All',];
 
   final List<Map<String, dynamic>> _workouts = [
     {
@@ -108,30 +108,34 @@ class _WorkoutLogState extends State<WorkoutLog> {
           },
         ),
         actions: [
-          IconButton(
-            icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessMainColor),
-            onPressed: () {
-              setState(() {
-                isAscending = !isAscending; // Toggle sorting order
-              });
-            },
+          Row(
+            children: [
+              DropdownButton<String>(
+                dropdownColor: AppColors.fitnessSecondaryModuleColor,
+                value: _selectedFilter,
+                items: _filterOptions.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value, style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedFilter = newValue!;
+                    //_filterWorkouts(); //TODO: Implement a function that displays the workout within the selected date range.
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessMainColor),
+                onPressed: () {
+                  setState(() {
+                    isAscending = !isAscending; // Toggle sorting order
+                  });
+                },
+              ),
+            ],
           ),
-          DropdownButton<String>(
-            dropdownColor: AppColors.fitnessBackgroundColor,
-            value: _selectedFilter,
-            items: _filterOptions.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value, style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedFilter = newValue!;
-                //_filterWorkouts(); //TODO: Implement a function that displays the workout within the selected date range.
-              });
-            },
-          )
         ],
       ),
       body: SingleChildScrollView(
