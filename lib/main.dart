@@ -11,7 +11,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await DatabaseService().initDatabase();
+
   // await DummyData().insertAllDummyData();
   runApp(MyApp());
 }

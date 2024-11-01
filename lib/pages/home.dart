@@ -55,35 +55,47 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              UpcomingWorkoutsBox(
-                title: 'First Workout!',
-                category: Type.fullBody,
-                date: DateTime.now(),
-                workouts: [
-                  // Add workouts here..
-                ],
-              ),
               Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    NutritionModule(),
-                    RingsModule(),
+                padding: const EdgeInsets.all(8.0),
+                child: UpcomingWorkoutsBox(
+                  title: 'First Workout!',
+                  category: Type.fullBody,
+                  date: DateTime.now(),
+                  workouts: [
+                    // Add workouts here..
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 14.0),
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0, bottom: 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    WorkoutLogModule(),
-                    WipModule()
+                    Expanded(
+                      child: NutritionModule(),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: RingsModule(),
+                    ),
                   ],
                 ),
               ),
-
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 32.0, bottom: 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: WorkoutLogModule(),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: WipModule(),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
