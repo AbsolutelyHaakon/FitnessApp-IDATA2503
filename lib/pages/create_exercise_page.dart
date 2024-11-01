@@ -123,24 +123,6 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Public',
-                        style: TextStyle(
-                            color: AppColors.fitnessPrimaryTextColor)),
-                    Switch(
-                      value: _isPublic,
-                      onChanged: (value) {
-                        setState(() {
-                          _isPublic = value;
-                        });
-                      },
-                      activeColor: AppColors.fitnessMainColor,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
                   items: _categories.map((String category) {
@@ -166,6 +148,24 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                     ),
                   ),
                   dropdownColor: AppColors.fitnessBackgroundColor,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Public',
+                        style: TextStyle(
+                            color: AppColors.fitnessPrimaryTextColor)),
+                    Switch(
+                      value: _isPublic,
+                      onChanged: (value) {
+                        setState(() {
+                          _isPublic = value;
+                        });
+                      },
+                      activeColor: AppColors.fitnessMainColor,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
