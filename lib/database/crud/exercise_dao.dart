@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:sqflite/sqflite.dart';
@@ -64,12 +63,6 @@ class ExerciseDao {
 
   Future<Map<String, dynamic>> updateExercise(String exerciseId, String? name, String? description, String? category,
     String? videoUrl, bool? isPrivate, String? userId) async {
-
-  // Check for internet connection
-  var connectivityResult = await (Connectivity().checkConnectivity());
-  bool isConnected = connectivityResult != ConnectivityResult.none;
-
-  if (isConnected) {
     // See if the person editing the exercise is the owner
     bool isOwner = false;
     bool isPrivateBefore = false;
@@ -118,29 +111,11 @@ class ExerciseDao {
     } else {
       return {'error': 'Exercise does not exist'};
     }
-  } else {
-    // Perform local update
-    Exercises exercise = await fetchById(int.parse(exerciseId));
-    await update(Exercises(
-      exerciseId: exerciseId,
-      name: name ?? exercise.name,
-      description: description ?? exercise.description,
-      category: category ?? exercise.category,
-      videoUrl: videoUrl ?? exercise.videoUrl,
-      isPrivate: isPrivate ?? exercise.isPrivate,
-      userId: userId ?? exercise.userId,
-    ));
-    return {'exerciseId': exerciseId};
-  }
+
 }
 
 Future<Map<String, dynamic>> createExercise(String name, String description, String category,
                                             String videoUrl, bool isPrivate, String userId) async {
-  // Check for internet connection
-  var connectivityResult = await (Connectivity().checkConnectivity());
-  bool isConnected = connectivityResult != ConnectivityResult.none;
-
-  if (isConnected) {
     // If it is private then get the userID so it can be tied to the user
     bool userExists = false;
     if (isPrivate) {
@@ -173,20 +148,5 @@ Future<Map<String, dynamic>> createExercise(String name, String description, Str
     ));
 
     return {'exerciseId': exerciseId};
-  } else {
-    // Perform local creation
-    String exerciseId = DateTime.now().millisecondsSinceEpoch.toString(); // Generate a unique ID based on timestamp
-    await create(Exercises(
-      exerciseId: exerciseId,
-      name: name,
-      description: description,
-      category: category,
-      videoUrl: videoUrl,
-      isPrivate: isPrivate,
-      userId: userId,
-    ));
-    return {'exerciseId': exerciseId};
   }
-}
-
 }
