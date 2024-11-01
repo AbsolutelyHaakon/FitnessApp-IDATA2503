@@ -164,7 +164,7 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                       ElevatedButton(
                         onPressed: () => _setPresetTime(15, 2),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedButton == 2 ? AppColors.fitnessPrimaryTextColor: AppColors.fitnessSecondaryTextColor,
+                          backgroundColor: _selectedButton == 2 ? AppColors.fitnessPrimaryTextColor: AppColors.fitnessBackgroundColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
