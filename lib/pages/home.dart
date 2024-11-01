@@ -55,15 +55,13 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: UpcomingWorkoutsBox(
                   title: 'First Workout!',
-                  category: Type.fullBody,
+                  category: 'Full Body',
                   date: DateTime.now(),
-                  workouts: [
-                    // Add workouts here..
-                  ],
                 ),
               ),
               Padding(

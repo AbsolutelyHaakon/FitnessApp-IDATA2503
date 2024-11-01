@@ -33,7 +33,7 @@ class WorkoutDao {
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
 
-  Future<Workouts> fetchById(int id) async {
+  Future<Workouts> fetchById(String id) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
