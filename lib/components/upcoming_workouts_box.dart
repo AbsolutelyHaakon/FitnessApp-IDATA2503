@@ -82,9 +82,13 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
         child: Container(
           constraints: const BoxConstraints(minHeight: 100),
           width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            color: Color(0xFF1A1B1C),
-            borderRadius: BorderRadius.all(Radius.circular(30)),
+          decoration: BoxDecoration(
+            color: AppColors.fitnessModuleColor,
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Color(0xFF262626), // Almost the same color
+              width: 1.0, // Very thin
+            ),
           ),
           padding: const EdgeInsets.fromLTRB(20, 10, 50, 10),
           child: Column(

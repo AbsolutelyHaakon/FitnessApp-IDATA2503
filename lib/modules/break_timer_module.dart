@@ -91,7 +91,11 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
           margin: const EdgeInsets.symmetric(horizontal: 10.0),
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Color(0xFF262626), // Almost the same color
+              width: 1.0, // Very thin
+            ),
           ),
           child: SizedBox(
             width: 400,

@@ -25,8 +25,12 @@ class WorkoutPlanModule extends StatelessWidget {
             width: 400,
             height: 400,
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1B1C),
-              borderRadius: BorderRadius.circular(20),
+              color: AppColors.fitnessModuleColor,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: Color(0xFF262626), // Almost the same color
+                width: 1.0, // Very thin
+              ),
             ),
           ),
           const SizedBox(height: 90),
