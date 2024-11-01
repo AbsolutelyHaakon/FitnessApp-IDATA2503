@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +36,7 @@ class WorkoutPlanModule extends StatelessWidget {
               width: 410,
               height: 60,
               decoration: BoxDecoration(
-                color: Color(0xFF48CC6D),
+                color: AppColors.fitnessMainColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               alignment: Alignment.center,

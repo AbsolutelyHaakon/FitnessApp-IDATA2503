@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
 import 'package:fitnessapp_idata2503/logic/workout.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +102,7 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF787878),
+                            color: AppColors.fitnessSecondaryTextColor,
                             height: 1.1,
                           ),
                         ),
@@ -114,21 +115,21 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
                         ),
                         const IconText(
                             text: 'Icon Data',
-                            color: Color(0xFF848484),
+                            color: AppColors.fitnessSecondaryTextColor,
                             asset: 'placeholder_icon.svg'),
                         const SizedBox(
                           height: 7,
                         ),
                         const IconText(
                             text: 'Icon Data',
-                            color: Color(0xFF848484),
+                            color: AppColors.fitnessSecondaryTextColor,
                             asset: 'placeholder_icon.svg'),
                         const SizedBox(
                           height: 7,
                         ),
                         const IconText(
                             text: 'Icon Data',
-                            color: Color(0xFF848484),
+                            color: AppColors.fitnessSecondaryTextColor,
                             asset: 'placeholder_icon.svg'),
                         const SizedBox(
                           height: 7,

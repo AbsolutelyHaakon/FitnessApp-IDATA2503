@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/pages/during_workout.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
@@ -41,7 +42,7 @@ class WipModule extends StatelessWidget {
           width: 180,
           height: 180,
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1B1C),
+            color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
           ),
           child: const Column(
@@ -49,13 +50,13 @@ class WipModule extends StatelessWidget {
             children: [
               Icon(
                 CupertinoIcons.hammer,
-                color: Color(0xFF48CC6D),
+                color: AppColors.fitnessMainColor,
                 size: 100,
               ),
               Text(
                 'WIP',
                 style: TextStyle(
-                  color: CupertinoColors.white,
+                  color: AppColors.fitnessPrimaryTextColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),

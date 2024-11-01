@@ -143,7 +143,7 @@ class _LoginModuleState extends State<LoginModule> {
               alignment: Alignment.centerLeft,
               child: Text(
                 _errorMessage!,
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(color: AppColors.fitnessWarningColor),
               ),
             ),
           if (_isRegistering)

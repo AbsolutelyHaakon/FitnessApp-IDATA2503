@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -46,14 +47,14 @@ class RingsModule extends StatelessWidget {
                             value: 0.75, // Example progress value
                             strokeWidth: 8.0,
                             strokeCap: StrokeCap.round,
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF48CC6D)),
-                            backgroundColor: Color(0xFF2B2B2B),
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.fitnessMainColor),
+                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
                           ),
                         ),
                         Text(
                           'KG',
                           style: TextStyle(
-                            color: Color(0xFF48CC6D),
+                            color: AppColors.fitnessMainColor,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -76,7 +77,7 @@ class RingsModule extends StatelessWidget {
                             strokeWidth: 8.0,
                             strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF)),
-                            backgroundColor: Color(0xFF2B2B2B),
+                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
                           ),
                         ),
                         Text(
@@ -110,7 +111,7 @@ class RingsModule extends StatelessWidget {
                             strokeWidth: 8.0,
                             strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCC9748)),
-                            backgroundColor: Color(0xFF2B2B2B),
+                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
                           ),
                         ),
                         Text(
@@ -140,7 +141,7 @@ class RingsModule extends StatelessWidget {
                             strokeWidth: 8.0,
                             strokeCap: StrokeCap.round,
                             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCC4848)),
-                            backgroundColor: Color(0xFF2B2B2B),
+                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
                           ),
                         ),
                         Text(

@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -87,7 +88,7 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF3A3A3A),
+        color: AppColors.fitnessModuleColor,
         borderRadius: BorderRadius.circular(25.0),
       ),
       child: SizedBox(
@@ -105,14 +106,14 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                       child: Text(
                         'Break Timer',
                         style: TextStyle(
-                          color: CupertinoColors.white,
+                          color: AppColors.fitnessPrimaryTextColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
                         ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.white),
+                      icon: const Icon(Icons.edit, color: AppColors.fitnessPrimaryTextColor),
                       onPressed: () {
                         // Implement the edit action here
                       },
@@ -129,14 +130,14 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                       ElevatedButton(
                         onPressed: () => _setPresetTime(5, 0),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedButton == 0 ? CupertinoColors.white : CupertinoColors.black,
+                          backgroundColor: _selectedButton == 0 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
                             '5:00',
                             style: TextStyle(
-                              color: _selectedButton == 0 ? Colors.black : Color(0xFF8B8B8B),
+                              color: _selectedButton == 0 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
@@ -146,14 +147,14 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                       ElevatedButton(
                         onPressed: () => _setPresetTime(10, 1),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedButton == 1 ? CupertinoColors.white : CupertinoColors.black,
+                          backgroundColor: _selectedButton == 1 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
                             '10:00',
                             style: TextStyle(
-                              color: _selectedButton == 1 ? Colors.black : Color(0xFF8B8B8B),
+                              color: _selectedButton == 1 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
@@ -163,14 +164,14 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                       ElevatedButton(
                         onPressed: () => _setPresetTime(15, 2),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _selectedButton == 2 ? CupertinoColors.white : CupertinoColors.black,
+                          backgroundColor: _selectedButton == 2 ? AppColors.fitnessPrimaryTextColor: AppColors.fitnessSecondaryTextColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
                             '15:00',
                             style: TextStyle(
-                              color: _selectedButton == 2 ? Colors.black : Color(0xFF8B8B8B),
+                              color: _selectedButton == 2 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
@@ -183,7 +184,7 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                   Obx(() => Text(
                     time.value,
                     style: const TextStyle(
-                      color: CupertinoColors.white,
+                      color: AppColors.fitnessPrimaryTextColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 64,
                     ),
@@ -196,7 +197,7 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                         width: 400,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Color(0xFF000000),
+                          color: AppColors.fitnessBackgroundColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         alignment: Alignment.center,
@@ -204,7 +205,7 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                         child: const Text("Start Timer",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: CupertinoColors.white,
+                            color: AppColors.fitnessPrimaryTextColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                           ),

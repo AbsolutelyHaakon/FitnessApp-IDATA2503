@@ -1,5 +1,6 @@
 // lib/modules/nutrition_module.dart
 import 'package:fitnessapp_idata2503/pages/pre_workout_screen.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -32,12 +33,12 @@ class TodayModule extends StatelessWidget {
           width: 400,
           height: 200,
           decoration: BoxDecoration(
-            color: Color(0xFF1A1B1C),
+            color: AppColors.fitnessBackgroundColor,
             borderRadius: BorderRadius.circular(30),
           ),
           child: const Icon(
             CupertinoIcons.calendar_today,
-            color: Color(0xFF48CC6D),
+            color: AppColors.fitnessMainColor,
             size: 100,
           ),
         ),

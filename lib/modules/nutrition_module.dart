@@ -1,4 +1,5 @@
 // lib/modules/nutrition_module.dart
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class NutritionModule extends StatelessWidget {
           width: 180,
           height: 180,
           decoration: BoxDecoration(
-            color: Color(0xFF1A1B1C),
+            color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
           ),
           child: const Column(
@@ -29,13 +30,13 @@ class NutritionModule extends StatelessWidget {
             children: [
               Icon(
                 Icons.dining_rounded,
-                color: Color(0xFF48CC6D),
+                color: AppColors.fitnessMainColor,
                 size: 100,
               ),
               Text(
                 'Nutrition',
                 style: TextStyle(
-                  color: CupertinoColors.white,
+                  color: AppColors.fitnessPrimaryTextColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),

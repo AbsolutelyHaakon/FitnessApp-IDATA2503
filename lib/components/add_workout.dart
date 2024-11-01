@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
@@ -22,18 +23,18 @@ class _AddWorkoutState extends State<AddWorkout> {
       child: Column(
         children: [
           TextField(
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
             controller: _titleController,
             decoration: const InputDecoration(
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF48CC6D),
+                  color: AppColors.fitnessMainColor,
                 ),
               ),
               label: Text(
                 'Workout Title',
                 style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.fitnessPrimaryTextColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 18),
               ),
@@ -43,7 +44,7 @@ class _AddWorkoutState extends State<AddWorkout> {
           Row(
             children: [
               DropdownButton(
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
                   dropdownColor: const Color.fromARGB(255, 36, 36, 36),
                   value: _selectedCategory,
                   items: Type.values

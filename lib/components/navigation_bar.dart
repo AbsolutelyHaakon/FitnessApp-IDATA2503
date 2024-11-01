@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fitnessapp_idata2503/pages/home.dart';
@@ -41,7 +42,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               'assets/icons/home.svg',
               width: 20.0,
               height: 20.0,
-              color: _selectedIndex == 0 ? const Color(0xFF48CC6D) : const Color(0xFF747474),
+              color: _selectedIndex == 0 ? AppColors.fitnessMainColor : AppColors.fitnessSecondaryTextColor,
             ),
             label: 'Home',
           ),
@@ -50,7 +51,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               'assets/icons/workout.svg',
               width: 30.0,
               height: 30.0,
-              color: _selectedIndex == 1 ? const Color(0xFF48CC6D) : const Color(0xFF747474),
+              color: _selectedIndex == 1 ? AppColors.fitnessMainColor : AppColors.fitnessSecondaryTextColor,
             ),
             label: 'Workout',
           ),
@@ -59,15 +60,15 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               'assets/icons/me.svg',
               width: 25.0,
               height: 25.0,
-              color: _selectedIndex == 2 ? const Color(0xFF48CC6D) : const Color(0xFF747474),
+              color: _selectedIndex == 2 ? AppColors.fitnessMainColor : AppColors.fitnessSecondaryTextColor,
             ),
             label: 'Me',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFF48CC6D),
-        unselectedItemColor: const Color(0xFF747474),
-        backgroundColor: const Color(0xFF000000),
+        selectedItemColor: AppColors.fitnessMainColor,
+        unselectedItemColor: AppColors.fitnessSecondaryTextColor,
+        backgroundColor: AppColors.fitnessBackgroundColor,
         onTap: _onItemTapped,
         iconSize: 30.0,
         unselectedFontSize: 14.0,
