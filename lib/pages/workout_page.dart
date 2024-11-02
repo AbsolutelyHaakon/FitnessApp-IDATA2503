@@ -83,12 +83,13 @@ class _WorkoutPageState extends State<WorkoutPage>
       ]),
       backgroundColor: AppColors.fitnessBackgroundColor,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.fitnessMainColor,
+        shape: CircleBorder(),
         onPressed: () async {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  CreateWorkoutPage(user: widget.user),
+              builder: (context) => CreateWorkoutPage(user: widget.user),
             ),
           );
           if (result == true) {
@@ -101,14 +102,15 @@ class _WorkoutPageState extends State<WorkoutPage>
           }
         },
         child: AnimatedBuilder(
-            animation: _addIconAnimation,
-            child: Icon(Icons.add),
-            builder: (context, child) {
-              return Transform.rotate(
-                angle: _addIconAnimation.value * 3.14159,
-                child: child,
-              );
-            }),
+          animation: _addIconAnimation,
+          child: Icon(Icons.add),
+          builder: (context, child) {
+            return Transform.rotate(
+              angle: _addIconAnimation.value * 3.14159,
+              child: child,
+            );
+          },
+        ),
       ),
     );
   }
