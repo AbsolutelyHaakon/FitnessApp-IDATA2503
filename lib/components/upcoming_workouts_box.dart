@@ -110,6 +110,7 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
                             height: 1.1,
                           ),
                         ),
+                        SizedBox(height: 5),
                         Heading1(text: widget.title),
                         Heading2(
                             text: typeNames[widget.category] ??
