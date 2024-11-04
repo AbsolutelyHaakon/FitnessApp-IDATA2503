@@ -78,15 +78,14 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         final result = await workoutDao.createWorkout(
             _selectedCategory,
             _descriptionController.text,
-            0,
-            //TODO: IMPLEMENT WORKOUT DURATION
+            0, // TODO: Implement workout duration
             _intensity,
             !_isPublic,
             widget.user!.uid,
-            '',
-            //TODO: IMPLEMENT WORKOUT URL
+            '', // TODO: Implement workout URL
             _titleController.text,
             true);
+
         for (var exercise in exercises) {
           final reps = int.tryParse(exercise.repsController.text) ?? 0;
           final sets = int.tryParse(exercise.setsController.text) ?? 0;
@@ -98,11 +97,16 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
             exercises.indexOf(exercise),
           );
         }
+
+        // Only pop after workout creation succeeds
+        Navigator.pop(context, true);
       } catch (e) {
         print(e);
+        // Optionally, show an error dialog or message here
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -335,8 +339,10 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         child: FloatingActionButton(
           onPressed: _createWorkout,
           backgroundColor: AppColors.fitnessMainColor,
-          child: const Text("Create Workout",
-              style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+          child: const Text(
+            "Create Workout",
+            style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+          ),
         ),
       ),
     );

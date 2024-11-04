@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
-import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
-import 'package:fitnessapp_idata2503/logic/workout.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -11,37 +10,15 @@ import 'package:intl/intl.dart';
 
 import '../pages/pre_workout_screen.dart';
 
-// Last edited 27/09/2024
-// Last edited by Adrian Johansen
-
-enum Type {
-  legs,
-  chest,
-  back,
-  arms,
-  fullBody,
-  other,
-}
-
-final Map<Type, String> typeNames = {
-  Type.legs: 'Legs',
-  Type.chest: 'Chest',
-  Type.back: 'Back',
-  Type.arms: 'Arms',
-  Type.fullBody: 'Full-Body',
-};
+// Last edited 04/11/2024
+// Last edited by Håkon Svensen Karlsen
 
 class UpcomingWorkoutsBox extends StatefulWidget {
   UpcomingWorkoutsBox(
       {super.key,
-      required this.title,
-      required this.category,
-      required this.date});
+      required this.workout});
 
-  String title;
-  //TODO: Type category;
-  String category;
-  DateTime date;
+  final Map<Workouts,DateTime> workout;
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);
@@ -86,7 +63,7 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text( // Date above workout box
-                widget.getFormattedDate(widget.date),
+                widget.getFormattedDate(widget.workout.values.first),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -126,10 +103,9 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10), // Top padding above H1
-                        Heading1(text: widget.title),
+                        Heading1(text: widget.workout.keys.first.name),
                         Heading2(
-                            text: typeNames[widget.category] ??
-                                'Unknown Category'),
+                            text: widget.workout.keys.first.category ?? 'No category'),
                         const SizedBox(
                           height: 20,
                         ),

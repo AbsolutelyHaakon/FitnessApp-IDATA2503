@@ -1,22 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:ffi';
-
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
-import 'package:fitnessapp_idata2503/database/Initialization/initialize_upcoming_workouts.dart';
-import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
-//TODO: SOME STATE MANAGEMENT THINGS GO WRONG WHEN REPRESSED ON NAVIGATION BAR
-UpcomingWorkoutsList workoutsList = UpcomingWorkoutsList();
+import '../database/crud/user_workouts_dao.dart';
+import '../database/tables/workout.dart';
 
 class WorkoutPage extends StatefulWidget {
   final User? user;
   const WorkoutPage({super.key, this.user});
-
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
@@ -26,35 +21,15 @@ class _WorkoutPageState extends State<WorkoutPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _addIconController;
   late Animation<double> _addIconAnimation;
+  Map<Workouts, DateTime> workoutsList = {};
 
   @override
   void initState() {
     super.initState();
+    fetchWorkouts();
 
-    // Dummy data
-    List<UpcomingWorkoutsBox> dummyWorkouts = [
-      UpcomingWorkoutsBox(
-          title: 'Morning Yoga',
-          category: 'fullBody',
-          date: DateTime.now(),
-      ),
-      UpcomingWorkoutsBox(
-        title: 'Morning Yoga',
-        category: 'fullBody',
-        date: DateTime.now(),
-      ),
-      UpcomingWorkoutsBox(
-        title: 'Morning Yoga',
-        category: 'fullBody',
-        date: DateTime.now(),
-      ),
-    ];
+    print(workoutsList);
 
-
-    // Insert dummy data
-    workoutsList.insertList(dummyWorkouts);
-
-    getWorkoutData();
     _addIconController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -63,16 +38,17 @@ class _WorkoutPageState extends State<WorkoutPage>
         Tween<double>(begin: 0, end: 0.25).animate(_addIconController);
   }
 
+  void fetchWorkouts() async {
+    final upcomingWorkouts = await UserWorkoutsDao().fetchUpcomingWorkouts(widget.user!.uid);
+    setState(() {
+      workoutsList = upcomingWorkouts;
+    });
+  }
+
   @override
   void dispose() {
     _addIconController.dispose();
     super.dispose();
-  }
-
-  void getWorkoutData() async {
-    List<UpcomingWorkoutsBox> workouts =
-        await initializeWorkoutData(widget.user!.uid);
-    workoutsList.insertList(workouts);
   }
 
   @override
@@ -96,15 +72,13 @@ class _WorkoutPageState extends State<WorkoutPage>
         ),
         Expanded(
           child: ListView.builder(
-              itemCount: workoutsList.listOfWorkouts.length,
+              itemCount: workoutsList.length,
               itemBuilder: (context, index) {
-                final workout = workoutsList.listOfWorkouts[index];
+                final workout = workoutsList.keys.elementAt(index);
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0), // Add vertical padding
                   child: UpcomingWorkoutsBox(
-                    title: workout.title,
-                    category: workout.category,
-                    date: workout.date,
+                    workout: workoutsList,
                   ),
                 );
               }),
@@ -122,7 +96,7 @@ class _WorkoutPageState extends State<WorkoutPage>
             ),
           );
           if (result == true) {
-            print("success adrian"); // Reload exercises if a new exercise was created
+            fetchWorkouts(); // Reload workouts if a new workout was created
           }
           if (_addIconController.isCompleted) {
             _addIconController.reverse();

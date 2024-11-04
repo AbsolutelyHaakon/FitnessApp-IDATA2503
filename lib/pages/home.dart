@@ -112,14 +112,6 @@ class _HomeState extends State<Home> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: UpcomingWorkoutsBox(
-                  title: 'First Workout!',
-                  category: 'Full Body',
-                  date: DateTime.now(),
-                ),
-              ),
-              Padding(
                 padding: const EdgeInsets.only(
                     left: 8.0, right: 8.0, top: 16.0, bottom: 0),
                 child: Row(

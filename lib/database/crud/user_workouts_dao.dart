@@ -2,6 +2,8 @@ import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../tables/workout.dart';
+
 class UserWorkoutsDao {
   final tableName = 'userWorkouts';
 
@@ -61,5 +63,52 @@ class UserWorkoutsDao {
       where: 'userId = ? AND workoutId = ?',
       whereArgs: [userId, workoutId],
     );
+  }
+
+  Future <List<UserWorkouts>> fetchUpcomingUserWorkouts(String id) async {
+    final database = await DatabaseService().database;
+
+    // fetch all workouts for the user
+    final data = await database.query(
+      tableName,
+      where: 'userId = ? AND date >= ?',
+      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
+    );
+
+    return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
+
+  }
+
+ Future<Map<Workouts, DateTime>> fetchUpcomingWorkouts(String uid) async {
+    print("Fetching upcoming workouts for user with id: $uid");
+  final database = await DatabaseService().database;
+
+  Map<Workouts, DateTime> upcomingWorkouts = {};
+  final data = await fetchUpcomingUserWorkouts(uid);
+
+  print("Raw data from fetchUpcomingUserWorkouts: $data");
+  for (UserWorkouts userWorkout in data) {
+    final upcomingWorkoutData = await database.query(
+      'workouts',
+      where: 'workoutId = ?',
+      whereArgs: [userWorkout.workoutId],
+    );
+
+    upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] = userWorkout.date;
+  }
+
+  print("Upcoming workouts: $upcomingWorkouts");
+
+  return upcomingWorkouts;
+}
+
+  /////////////////////////////////////////////////////////
+  ////////////// FIREBASE FUNCTIONS ///////////////////////
+  /////////////////////////////////////////////////////////
+
+
+  fetchUpcomingWorkoutsFromFireBase(String uid) {
+
+    // TODO: IMPLEMENT THIS
   }
 }
