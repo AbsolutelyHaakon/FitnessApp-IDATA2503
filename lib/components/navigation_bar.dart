@@ -26,6 +26,11 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
+    // If selected is the same, do nothing
+    if (_selectedIndex == index) {
+      //Do nothing
+      return;
+    }
     setState(() {
       _selectedIndex = index;
     });
