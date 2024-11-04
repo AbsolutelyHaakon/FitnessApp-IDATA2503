@@ -1,12 +1,12 @@
-import 'package:fitnessapp_idata2503/modules/break_timer_module.dart';
-import 'package:fitnessapp_idata2503/modules/dw_current_exercise.dart';
-import 'package:fitnessapp_idata2503/modules/dw_end_workout.dart';
-import 'package:fitnessapp_idata2503/modules/dw_next_exercise.dart';
+import 'package:fitnessapp_idata2503/modules/during%20workout/break_timer_module.dart';
+import 'package:fitnessapp_idata2503/modules/during%20workout/dw_current_exercise.dart';
+import 'package:fitnessapp_idata2503/modules/during%20workout/dw_end_workout.dart';
+import 'package:fitnessapp_idata2503/modules/during%20workout/dw_next_exercise.dart';
 import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../modules/dw_progress-bar.dart';
+import '../modules/during workout/dw_progress-bar.dart';
 
 class DuringWorkoutScreen extends StatefulWidget {
   const DuringWorkoutScreen({super.key});

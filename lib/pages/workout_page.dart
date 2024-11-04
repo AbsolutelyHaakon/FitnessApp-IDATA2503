@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
+import 'package:fitnessapp_idata2503/modules/upcoming_workouts_box.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';

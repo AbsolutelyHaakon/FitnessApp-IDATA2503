@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../styles.dart';
+import '../../styles.dart';
 
 // Shows the selected workout plan details before deciding to start it
 // Displays workout info and potentially a map of the workout route
