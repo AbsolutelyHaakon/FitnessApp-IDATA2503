@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../database/crud/exercise_dao.dart';
 import '../database/tables/exercise.dart';
 import 'create_exercise_page.dart';
+import 'exercise_overview_detailed.dart'; // Import the detailed overview page
 
 class ExerciseSelectorPage extends StatefulWidget {
   final User? user;
@@ -21,7 +22,7 @@ class ExerciseSelectorPage extends StatefulWidget {
 class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   final TextEditingController _searchController = TextEditingController();
   final ExerciseDao exerciseDao = ExerciseDao();
-  Map<String,Exercises> _selectedExercisesMap = {};
+  Map<String, Exercises> _selectedExercisesMap = {};
   List<Exercises> _allExercises = [];
 
   @override
@@ -161,9 +162,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                             ),
                             onPressed: () {
                               setState(() {
-                                if ( _selectedExercisesMap.containsKey(exercise.exerciseId!)) {
+                                if (_selectedExercisesMap.containsKey(exercise.exerciseId!)) {
                                   print("removing exercise");
-                                  _selectedExercisesMap.remove(exercise.exerciseId!);;
+                                  _selectedExercisesMap.remove(exercise.exerciseId!);
                                 } else {
                                   print("adding exercise");
                                   _selectedExercisesMap[exercise.exerciseId!] = exercise;
@@ -171,6 +172,14 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                               });
                             },
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ExerciseOverviewPage(exercise: exercise, user: widget.user),
+                              ),
+                            );
+                          },
                         );
                       } else {
                         return Container();
