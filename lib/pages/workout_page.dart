@@ -9,11 +9,14 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+
+//TODO: SOME STATE MANAGEMENT THINGS GO WRONG WHEN REPRESSED ON NAVIGATION BAR
 UpcomingWorkoutsList workoutsList = UpcomingWorkoutsList();
 
 class WorkoutPage extends StatefulWidget {
   final User? user;
   const WorkoutPage({super.key, this.user});
+
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
@@ -94,10 +97,13 @@ class _WorkoutPageState extends State<WorkoutPage>
               itemCount: workoutsList.listOfWorkouts.length,
               itemBuilder: (context, index) {
                 final workout = workoutsList.listOfWorkouts[index];
-                return UpcomingWorkoutsBox(
-                  title: workout.title,
-                  category: workout.category,
-                  date: workout.date,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0), // Add vertical padding
+                  child: UpcomingWorkoutsBox(
+                    title: workout.title,
+                    category: workout.category,
+                    date: workout.date,
+                  ),
                 );
               }),
         ),

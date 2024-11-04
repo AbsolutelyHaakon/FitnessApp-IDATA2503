@@ -11,7 +11,7 @@ class Heading1 extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: 28,
+        fontSize: 20,
         fontWeight: FontWeight.w900,
         color: Color(0xFFFFFFFF),
         height: 1.1,
@@ -30,7 +30,7 @@ class Heading2 extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-          fontSize: 20,
+          fontSize: 14,
           fontWeight: FontWeight.w800,
           color: Color(0xFF848484),
           height: 1.1),
