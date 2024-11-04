@@ -22,12 +22,7 @@ class TodayModule extends StatelessWidget {
         padding: EdgeInsets.zero,
         onPressed: () {
           // Open pre workout page
-          Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) => const PreWorkoutScreen(),
-            ),
-          );
+
         },
         child: Container(
           width: 400,

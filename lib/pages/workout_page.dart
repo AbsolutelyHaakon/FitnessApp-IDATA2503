@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/modules/upcoming_workouts_box.dart';
+import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -97,8 +97,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                       final workout = workoutsList.keys.elementAt(index);
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: UpcomingWorkoutsBox(
-                          workout: workoutsList,
+                        child: WorkoutsBox(
+                          wourkoutMap: workoutsList,
                         ),
                       );
                     }),

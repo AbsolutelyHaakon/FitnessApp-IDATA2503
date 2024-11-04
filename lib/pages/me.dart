@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/modules/authentication/login_module.dart';
 
+import '../database/Initialization/get_data_from_server.dart';
+
 // Me / profile page for the app
 // Contains the user profile module and login module
 // If the user is logged in, the user profile module is shown
@@ -22,6 +24,7 @@ class Me extends StatefulWidget {
 }
 
 class _MeState extends State<Me> {
+  final GetDataFromServer _getDataFromServer = GetDataFromServer();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -46,9 +49,32 @@ class _MeState extends State<Me> {
     });
   }
 
+  void _onSync() {
+    // Implement your sync logic here
+    print("Sync button pressed");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.fitnessBackgroundColor,
+        actions: [
+          IconButton(
+            style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(AppColors.fitnessPrimaryTextColor),
+            ),
+            icon: const Icon(Icons.sync),
+              onPressed: () async {
+                await _getDataFromServer
+                    .syncData(widget.user?.uid ?? '');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Sync completed')),
+                );
+              }
+          ),
+        ],
+      ),
       body: Container(
         width: double.infinity,
         color: AppColors.fitnessBackgroundColor,
@@ -81,6 +107,7 @@ class _MeState extends State<Me> {
           ),
         ),
       ),
+      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 }

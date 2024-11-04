@@ -52,19 +52,55 @@ class WorkoutDao {
     );
   }
 
-  Future<List<Exercises>> fetchExercisesForWorkout(int workoutId) async {
+  Future<List<Exercises>> fetchExercisesForWorkout(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.rawQuery('''
-      SELECT exercise.* FROM exercise
-      INNER JOIN workoutExercises ON exercise.id = workoutExercises.exerciseId
+      SELECT exercises.* FROM exercises
+      INNER JOIN workoutExercises ON exercises.exerciseId = workoutExercises.exerciseId
       WHERE workoutExercises.workoutId = ?
     ''', [workoutId]);
     return data.map((entry) => Exercises.fromMap(entry)).toList();
   }
 
+  Future<void> truncate() async {
+    final database = await DatabaseService().database;
+    await database.delete(tableName);
+  }
+
   ////////////////////////////////////////////////////////////
   ////////////////// FIREBASE FUNCTIONS //////////////////////
   ////////////////////////////////////////////////////////////
+
+  Future<Map<String, dynamic>> fetchAllWorkoutsFromFireBase(String userId) async {
+
+    // Get all workouts for the user (public and private)
+    QuerySnapshot personalWorkoutsQuery = await FirebaseFirestore.instance
+        .collection('workouts')
+        .where('userId', isEqualTo: userId).get();
+
+    // Get all the workouts that are public for all users and has no userId
+    QuerySnapshot publicWorkoutsQuery = await FirebaseFirestore.instance
+        .collection('workouts')
+        .where('isPrivate', isEqualTo: false)
+        .where('userId', isEqualTo: '')
+        .get();
+
+    List<Workouts> personalWorkouts = personalWorkoutsQuery.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['workoutId'] = doc.id;
+      return Workouts.fromMap(data);
+    }).toList();
+
+    List<Workouts> publicWorkouts = publicWorkoutsQuery.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['workoutId'] = doc.id;
+      return Workouts.fromMap(data);
+    }).toList();
+
+    List<Workouts> allWorkouts = [...personalWorkouts, ...publicWorkouts];
+
+    return {'workouts': allWorkouts};
+  }
 
 
  Future<String?> createWorkout(String? category, String? description, int? duration, int? intensity,
@@ -97,5 +133,7 @@ class WorkoutDao {
 
     return wantId ? newDocId : null;
 }
+
+
 
 }

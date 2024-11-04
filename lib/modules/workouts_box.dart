@@ -13,12 +13,10 @@ import '../pages/pre_workout_screen.dart';
 // Last edited 04/11/2024
 // Last edited by Håkon Svensen Karlsen
 
-class UpcomingWorkoutsBox extends StatefulWidget {
-  UpcomingWorkoutsBox(
-      {super.key,
-      required this.workout});
+class WorkoutsBox extends StatefulWidget {
+  const WorkoutsBox({super.key, required this.wourkoutMap});
 
-  final Map<Workouts,DateTime> workout;
+  final Map<Workouts, DateTime> wourkoutMap;
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);
@@ -47,11 +45,11 @@ class UpcomingWorkoutsBox extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _UpcomingWorkoutsBoxState();
+    return _WorkoutsBoxState();
   }
 }
 
-class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
+class _WorkoutsBoxState extends State<WorkoutsBox> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -62,8 +60,9 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text( // Date above workout box
-                widget.getFormattedDate(widget.workout.values.first),
+              Text(
+                // Date above workout box
+                widget.getFormattedDate(widget.wourkoutMap.values.first),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -81,10 +80,7 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
             child: Container(
               constraints: const BoxConstraints(minHeight: 80),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: AppColors.fitnessModuleColor,
                 borderRadius: BorderRadius.circular(20),
@@ -103,9 +99,10 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10), // Top padding above H1
-                        Heading1(text: widget.workout.keys.first.name),
+                        Heading1(text: widget.wourkoutMap.keys.first.name),
                         Heading2(
-                            text: widget.workout.keys.first.category ?? 'No category'),
+                            text: widget.wourkoutMap.keys.first.category ??
+                                'No category'),
                         const SizedBox(
                           height: 20,
                         ),
@@ -151,7 +148,8 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => const PreWorkoutScreen(),
+                  builder: (context) =>
+                      PreWorkoutScreen(workout: widget.wourkoutMap.keys.first),
                 ),
               );
             },

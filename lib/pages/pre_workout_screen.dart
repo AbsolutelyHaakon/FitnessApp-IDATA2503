@@ -1,10 +1,12 @@
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PreWorkoutScreen extends StatefulWidget {
-  const PreWorkoutScreen({super.key});
+  final Workouts workout;
+  const PreWorkoutScreen({super.key, required this.workout});
 
   @override
   State<PreWorkoutScreen> createState() {
@@ -27,35 +29,35 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           },
         ),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 20.0),
+              padding: const EdgeInsets.only(left: 20.0),
               child: Text(
-                'My Workout Plan',
-                style: TextStyle(
-                  color: Colors.white,
+                widget.workout.name.toUpperCase(),
+                style: const TextStyle(
+                  color: AppColors.fitnessPrimaryTextColor,
                   fontWeight: FontWeight.w900,
                   fontSize: 30,
                 ),
               ),
             ),
-            Padding(
+             Padding(
               padding: EdgeInsets.only(left: 20.0),
               child: Text(
-                'Hike',
-                style: TextStyle(
-                  color: Colors.grey,
+                widget.workout.category ?? '',
+                style: const TextStyle(
+                  color: AppColors.fitnessSecondaryTextColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
               ),
             ),
-            WorkoutPlanModule(),
-            SizedBox(height: 20),
+            WorkoutPlanModule(workout: widget.workout),
+            const SizedBox(height: 20),
           ],
         ),
       ),

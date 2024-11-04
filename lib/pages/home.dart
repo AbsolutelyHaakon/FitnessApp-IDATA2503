@@ -2,11 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
-import 'package:fitnessapp_idata2503/pages/top_settings.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../modules/upcoming_workouts_box.dart';
+import '../modules/workouts_box.dart';
 import '../modules/homepage widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
 
