@@ -33,6 +33,16 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   List<Exercises> selectedExercises = [];
   List<IndExerciseBox> exercises = [];
 
+  final List<String> _categories = [
+    'Cardio',
+    'Strength',
+    'Flexibility',
+    'High Intensity',
+  ];
+
+  int _intensity = 1;
+  String _selectedCategory = 'Cardio';
+
   createIndExerciseBox(Exercises exercise) {
     return IndExerciseBox(
       key: ValueKey(exercise),
@@ -65,16 +75,18 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     if (_formKey.currentState!.validate()) {
       try {
         final result = await workoutDao.createWorkout(
-          '', //TODO: IMPLEMENT WORKOUT CATEGORY
-          _descriptionController.text,
-          0, //TODO: IMPLEMENT WORKOUT DURATION
-          0, //TODO: IMPLEMENT WORKOUT INTENSITY
-          true, //TODO: IMPLEMENT WORKOUT PRIVATE
-          widget.user!.uid,
-          '', //TODO: IMPLEMENT WORKOUT URL
-          _titleController.text,
-          true
-        );
+            _selectedCategory,
+            _descriptionController.text,
+            0,
+            //TODO: IMPLEMENT WORKOUT DURATION
+            _intensity,
+            true,
+            //TODO: IMPLEMENT WORKOUT PRIVATE
+            widget.user!.uid,
+            '',
+            //TODO: IMPLEMENT WORKOUT URL
+            _titleController.text,
+            true);
         for (var exercise in exercises) {
           final reps = int.tryParse(exercise.repsController.text) ?? 0;
           final sets = int.tryParse(exercise.setsController.text) ?? 0;
@@ -177,6 +189,47 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                   ),
                 ),
                 SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: List.generate(3, (index) {
+                          return IconButton(
+                            icon: Icon(
+                              Icons.whatshot,
+                              color:
+                                  index < _intensity ? Colors.red : Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _intensity = index + 1;
+                              });
+                            },
+                          );
+                        }),
+                      ),
+                      DropdownButton<String>(
+                        value: _selectedCategory,
+                        items: _categories.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value,
+                                style: const TextStyle(
+                                    color: AppColors.fitnessPrimaryTextColor)),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedCategory = newValue!;
+                          });
+                        },
+                        dropdownColor: AppColors.fitnessBackgroundColor,
+                      ),
+                    ],
+                  ),
+                ),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -184,19 +237,22 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ExerciseSelectorPage(user: widget.user, selectedExercises: selectedExercises),
+                          builder: (context) => ExerciseSelectorPage(
+                              user: widget.user,
+                              selectedExercises: selectedExercises),
                         ),
                       );
+                      setState(() {
+                        selectedExercises.clear();
+                        exercises.clear();
+                      });
                       if (result != null && result is List<Exercises>) {
-                        selectedExercises.length = 0;
-                        exercises.length = 0;
-                        for (var exercise in result) {
-                          setState(() {
+                        setState(() {
+                          for (var exercise in result) {
                             selectedExercises.add(exercise);
                             exercises.add(createIndExerciseBox(exercise));
-                          });
-                        }
+                          }
+                        });
                       }
                     },
                     child: const Text('+ Add Exercise to Workout',
