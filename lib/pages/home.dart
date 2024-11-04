@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../modules/homepage widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
-import 'me.dart';
+import 'social and account/me.dart';
 
 class Home extends StatefulWidget {
   final User? user;

@@ -1,5 +1,5 @@
 // lib/modules/authentication/login_module.dart
-import 'package:fitnessapp_idata2503/pages/account_setup.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/account_setup.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

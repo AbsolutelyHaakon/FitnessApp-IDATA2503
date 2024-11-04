@@ -1,4 +1,4 @@
-import 'package:fitnessapp_idata2503/pages/detailed_workout_log.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/detailed_workout_log.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -2,8 +2,8 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fitnessapp_idata2503/pages/home.dart';
-import 'package:fitnessapp_idata2503/pages/workout_page.dart';
-import 'package:fitnessapp_idata2503/pages/me.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_page.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/me.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Navigation bar for the whole app

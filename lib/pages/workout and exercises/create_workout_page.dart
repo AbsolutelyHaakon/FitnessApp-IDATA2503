@@ -2,15 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
-import 'package:fitnessapp_idata2503/pages/exercise_selector.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/exercise_selector.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 
-import '../database/crud/workout_dao.dart';
-import '../database/tables/exercise.dart';
+import '../../database/crud/workout_dao.dart';
+import '../../database/tables/exercise.dart';
 
 class CreateWorkoutPage extends StatefulWidget {
   final User? user;

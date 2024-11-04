@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
-import '../pages/pre_workout_screen.dart';
+import '../pages/workout and exercises/pre_workout_screen.dart';
 
 // Last edited 04/11/2024
 // Last edited by Håkon Svensen Karlsen

@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/modules/authentication/login_module.dart';
 
-import '../database/Initialization/get_data_from_server.dart';
+import '../../database/Initialization/get_data_from_server.dart';
 
 // Me / profile page for the app
 // Contains the user profile module and login module
@@ -82,7 +82,7 @@ class _MeState extends State<Me> {
           padding: const EdgeInsets.all(20.0),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 if (_currentUser != null) ...[
                   UserProfileModule(

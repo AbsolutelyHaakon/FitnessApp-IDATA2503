@@ -6,7 +6,7 @@ import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../modules/during workout/dw_progress-bar.dart';
+import '../../modules/during workout/dw_progress-bar.dart';
 
 class DuringWorkoutScreen extends StatefulWidget {
   const DuringWorkoutScreen({super.key});

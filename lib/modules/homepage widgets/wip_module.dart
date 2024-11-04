@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/pages/create_workout_page.dart';
-import 'package:fitnessapp_idata2503/pages/during_workout.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/pages/account_setup.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/account_setup.dart';
 
-import '../../pages/exercise_selector.dart';
+import '../../pages/workout and exercises/exercise_selector.dart';
 import '../../styles.dart';
 
 // Module for displaying a WIP widget

@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../database/tables/exercise.dart';
-import '../styles.dart';
+import '../../database/tables/exercise.dart';
+import '../../styles.dart';
 
 class ExerciseOverviewPage extends StatefulWidget {
   final User? user;

@@ -1,6 +1,6 @@
 import 'package:fitnessapp_idata2503/database/tables/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/pages/me.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/me.dart';
 
 class CreateAddUserWidget extends StatefulWidget {
   final LocalUser? user;

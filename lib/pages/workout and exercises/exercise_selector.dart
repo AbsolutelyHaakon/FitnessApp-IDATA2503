@@ -3,8 +3,8 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../database/crud/exercise_dao.dart';
-import '../database/tables/exercise.dart';
+import '../../database/crud/exercise_dao.dart';
+import '../../database/tables/exercise.dart';
 import 'create_exercise_page.dart';
 import 'exercise_overview_detailed.dart'; // Import the detailed overview page
 
