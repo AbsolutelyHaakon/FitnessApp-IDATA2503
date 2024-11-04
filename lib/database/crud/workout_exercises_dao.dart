@@ -66,12 +66,13 @@ class WorkoutExercisesDao {
   ////////////////////////////////////////////////////////////
 
 
-  void createWorkoutExercise(String workoutId, String exerciseId, int reps, int sets) async {
+  void createWorkoutExercise(String workoutId, String exerciseId, int reps, int sets, int exerciseOrder) async {
     DocumentReference docRef = await FirebaseFirestore.instance.collection('workoutExercises').add({
       'workoutId': workoutId,
       'exerciseId': exerciseId,
       'reps': reps,
       'sets': sets,
+      'exerciseOrder': exerciseOrder,
     });
 
     String newDocId = docRef.id;
@@ -82,6 +83,7 @@ class WorkoutExercisesDao {
       exerciseId: exerciseId,
       reps: reps,
       sets: sets,
+      exerciseOrder: exerciseOrder,
     ));
   }
 }

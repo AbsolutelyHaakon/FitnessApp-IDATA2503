@@ -4,6 +4,7 @@ class WorkoutExercises {
   final String exerciseId;
   final int reps;
   final int sets;
+  final int exerciseOrder;
 
   const WorkoutExercises({
     required this.workoutExercisesId,
@@ -11,6 +12,7 @@ class WorkoutExercises {
     required this.exerciseId,
     required this.reps,
     required this.sets,
+    required this.exerciseOrder,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class WorkoutExercises {
       'exerciseId': exerciseId,
       'reps': reps,
       'sets': sets,
+      'exerciseOrder': exerciseOrder,
     };
   }
 
@@ -30,6 +33,7 @@ class WorkoutExercises {
       exerciseId: map['exerciseId'],
       reps: map['reps'],
       sets: map['sets'],
+      exerciseOrder: map['exerciseOrder'],
     );
   }
 }

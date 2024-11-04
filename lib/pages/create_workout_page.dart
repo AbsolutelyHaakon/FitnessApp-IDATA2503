@@ -29,6 +29,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final WorkoutDao workoutDao = WorkoutDao();
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
+  bool _isPublic = false;
 
   List<Exercises> selectedExercises = [];
   List<IndExerciseBox> exercises = [];
@@ -80,8 +81,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
             0,
             //TODO: IMPLEMENT WORKOUT DURATION
             _intensity,
-            true,
-            //TODO: IMPLEMENT WORKOUT PRIVATE
+            !_isPublic,
             widget.user!.uid,
             '',
             //TODO: IMPLEMENT WORKOUT URL
@@ -92,9 +92,10 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           final sets = int.tryParse(exercise.setsController.text) ?? 0;
           workoutExercisesDao.createWorkoutExercise(
             result!,
-            exercise.exerciseName,
+            exercise.exerciseId,
             reps,
             sets,
+            exercises.indexOf(exercise),
           );
         }
       } catch (e) {
@@ -199,8 +200,9 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                           return IconButton(
                             icon: Icon(
                               Icons.whatshot,
-                              color:
-                                  index < _intensity ? AppColors.fitnessMainColor : AppColors.fitnessSecondaryTextColor,
+                              color: index < _intensity
+                                  ? AppColors.fitnessMainColor
+                                  : AppColors.fitnessSecondaryTextColor,
                             ),
                             onPressed: () {
                               setState(() {
@@ -230,69 +232,98 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ExerciseSelectorPage(
-                              user: widget.user,
-                              selectedExercises: selectedExercises),
-                        ),
-                      );
-                      setState(() {
-                        selectedExercises.clear();
-                        exercises.clear();
-                      });
-                      if (result != null && result is List<Exercises>) {
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15, right: 15),
+                      child: Row(
+                        children: [
+                          Switch(
+                            value: _isPublic,
+                            onChanged: (value) {
+                              setState(() {
+                                _isPublic = value;
+                              });
+                            },
+                            activeColor: AppColors.fitnessMainColor,
+                          ),
+                          const SizedBox(width: 10),
+                          const Text('Public',
+                              style: TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor,
+                                  fontSize: 16)),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExerciseSelectorPage(
+                                user: widget.user,
+                                selectedExercises: selectedExercises),
+                          ),
+                        );
                         setState(() {
-                          for (var exercise in result) {
-                            selectedExercises.add(exercise);
-                            exercises.add(createIndExerciseBox(exercise));
-                          }
+                          selectedExercises.clear();
+                          exercises.clear();
                         });
-                      }
-                    },
-                    child: const Text('+ Add Exercise to Workout',
-                        style: TextStyle(color: AppColors.fitnessMainColor)),
-                  ),
+                        if (result != null && result is List<Exercises>) {
+                          setState(() {
+                            for (var exercise in result) {
+                              selectedExercises.add(exercise);
+                              exercises.add(createIndExerciseBox(exercise));
+                            }
+                          });
+                        }
+                      },
+                      child: const Text('+ Add Exercise to Workout',
+                          style: TextStyle(color: AppColors.fitnessMainColor)),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 16),
                 Container(
                   height: MediaQuery.of(context).size.height - 300,
                   child: exercises.isEmpty
                       ? const Center(
-                    child: Text(
-                      'No exercises selected..',
-                      style: TextStyle(color: AppColors.fitnessSecondaryModuleColor, fontSize: 16),
-                    ),
-                  )
+                          child: Text(
+                            'No exercises selected..',
+                            style: TextStyle(
+                                color: AppColors.fitnessSecondaryModuleColor,
+                                fontSize: 16),
+                          ),
+                        )
                       : ReorderableListView(
-                    proxyDecorator: (Widget child, int index, Animation<double> animation) {
-                      return Transform.scale(
-                        scale: 1.05,
-                        child: Material(
-                          child: child,
-                          color: Colors.transparent,
-                          shadowColor: AppColors.fitnessBackgroundColor.withOpacity(0.3),
-                          elevation: 6,
+                          proxyDecorator: (Widget child, int index,
+                              Animation<double> animation) {
+                            return Transform.scale(
+                              scale: 1.05,
+                              child: Material(
+                                child: child,
+                                color: Colors.transparent,
+                                shadowColor: AppColors.fitnessBackgroundColor
+                                    .withOpacity(0.3),
+                                elevation: 6,
+                              ),
+                            );
+                          },
+                          scrollDirection: Axis.vertical,
+                          onReorder: (int oldIndex, int newIndex) {
+                            setState(() {
+                              if (newIndex > oldIndex) {
+                                newIndex -= 1;
+                              }
+                              final item = exercises.removeAt(oldIndex);
+                              exercises.insert(newIndex, item);
+                            });
+                          },
+                          children: exercises,
                         ),
-                      );
-                    },
-                    scrollDirection: Axis.vertical,
-                    onReorder: (int oldIndex, int newIndex) {
-                      setState(() {
-                        if (newIndex > oldIndex) {
-                          newIndex -= 1;
-                        }
-                        final item = exercises.removeAt(oldIndex);
-                        exercises.insert(newIndex, item);
-                      });
-                    },
-                    children: exercises,
-                  ),
                 ),
+                const SizedBox(height: 100),
               ],
             ),
           ),

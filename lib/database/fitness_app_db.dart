@@ -45,8 +45,9 @@ class FitnessAppDB {
       exerciseId STRING,
       reps INTEGER,
       sets INTEGER,
+      exerciseOrder INTEGER,
       FOREIGN KEY (workoutId) REFERENCES workouts (id),
-      FOREIGN KEY (exerciseId) REFERENCES exercise (id)
+      FOREIGN KEY (exerciseId) REFERENCES exercises (id)
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS userWorkouts (
       userWorkoutId STRING PRIMARY KEY,
