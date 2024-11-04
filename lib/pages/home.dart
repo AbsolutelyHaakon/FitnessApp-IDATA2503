@@ -142,27 +142,6 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.fitnessMainColor,
-                      ),
-                      onPressed: () async {
-                        await _getDataFromServer
-                            .syncExercises(widget.user?.uid ?? '');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Sync completed')),
-                        );
-                      },
-                      child: Text('Sync Data From Firebase'),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
