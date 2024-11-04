@@ -11,6 +11,7 @@ import '../database/tables/workout.dart';
 
 class WorkoutPage extends StatefulWidget {
   final User? user;
+
   const WorkoutPage({super.key, this.user});
 
   @override
@@ -43,7 +44,8 @@ class _WorkoutPageState extends State<WorkoutPage>
   }
 
   void fetchWorkouts() async {
-    final upcomingWorkouts = await UserWorkoutsDao().fetchUpcomingWorkouts(widget.user!.uid);
+    final upcomingWorkouts =
+        await UserWorkoutsDao().fetchUpcomingWorkouts(widget.user!.uid);
     setState(() {
       workoutsList = upcomingWorkouts;
     });
@@ -116,7 +118,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CreateWorkoutPage(user: widget.user),
+                        builder: (context) =>
+                            CreateWorkoutPage(user: widget.user),
                       ),
                     );
                     if (result == true) {
@@ -124,7 +127,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                     }
                     _toggleOptions();
                   },
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                 ),
               ),
             ),
@@ -140,26 +143,55 @@ class _WorkoutPageState extends State<WorkoutPage>
                     // Redirect to another page (not created yet)
                     _toggleOptions();
                   },
-                  child: Icon(Icons.list),
+                  child: const Icon(Icons.list),
                 ),
               ),
             ),
             Positioned(
-              bottom: 80,
-              right: 16,
-              child: ScaleTransition(
-                scale: _buttonAnimation,
-                child: FloatingActionButton(
-                  backgroundColor: AppColors.fitnessMainColor,
-                  shape: const CircleBorder(),
-                  onPressed: () {
-                    // Open a popup menu to select a date
-                    _toggleOptions();
-                  },
-                  child: Icon(Icons.calendar_today),
+  bottom: 80,
+  right: 16,
+  child: ScaleTransition(
+    scale: _buttonAnimation,
+    child: FloatingActionButton(
+      backgroundColor: AppColors.fitnessMainColor,
+      shape: const CircleBorder(),
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent, // Make the background transparent
+          isDismissible: true, // Allow dismissing by tapping outside
+          enableDrag: true, // Allow dismissing by dragging down
+          builder: (context) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: AppColors.fitnessBackgroundColor, // Black semi-transparent background
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
               ),
-            ),
+              child: FractionallySizedBox(
+                heightFactor: 0.6,
+                widthFactor: 1,
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    // Your content here
+                    Text('Select a date', style: TextStyle(color: Colors.white)),
+                    // Add more widgets as needed
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        _toggleOptions();
+      },
+      child: const Icon(Icons.calendar_today),
+    ),
+  ),
+),
           ],
         ],
       ),
