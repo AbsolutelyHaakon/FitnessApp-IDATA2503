@@ -1,4 +1,5 @@
 import 'package:fitnessapp_idata2503/pages/account_setup.dart';
+import 'package:fitnessapp_idata2503/pages/detailed_workout_log.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -272,11 +273,15 @@ class _WorkoutLogState extends State<WorkoutLog> {
         required String duration,
         required String date,
         required IconData icon}) {
-    return InkWell(
+    return InkWell( // Box that likes touching.
       onTap: () {
-        // Temporary using AccountSetupPage
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const AccountSetupPage(), // Replace this with the new detailed workout log page later.
+          builder: (context) => DetailedWorkoutLog(
+            title: title,
+            category: subtitle, // Subtitle? Category? :D
+            date: DateFormat('dd.MM.yyyy').parse(date),
+            duration: duration,
+          ),
         ));
       },
       child: Padding(
