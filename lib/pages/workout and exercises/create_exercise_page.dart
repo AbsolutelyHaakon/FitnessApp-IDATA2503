@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateExercisePage extends StatefulWidget {
   final User? user;
@@ -14,37 +15,54 @@ class CreateExercisePage extends StatefulWidget {
 }
 
 class _CreateExercisePageState extends State<CreateExercisePage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _videoUrlController = TextEditingController();
-  final ExerciseDao exerciseDao = ExerciseDao();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _videoUrlController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final exerciseDao = ExerciseDao();
   bool _isPublic = false;
   String _selectedCategory = 'Strength';
-
-  final List<String> _categories = [
-    'Strength',
-    'Cardio',
-    'Flexibility',
-    'Balance'
-  ];
+  final List<String> _categories = ['Strength', 'Cardio', 'Flexibility', 'Balance'];
+  final ImagePicker _picker = ImagePicker();
+  XFile? _selectedImage;
 
   Future<void> _createExercise() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       try {
-        final result = await exerciseDao.createExercise(
+        await exerciseDao.createExercise(
           _nameController.text,
           _descriptionController.text,
           _selectedCategory,
           _videoUrlController.text,
           !_isPublic,
-          widget.user!.uid,
+          widget.user?.uid ?? '',
         );
+        Navigator.of(context).pop(true); // Return true to indicate a new exercise was created
       } catch (e) {
-        print(e);
+        print('Error creating exercise: $e');
       }
     }
   }
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _selectedImage = image;
+    });
+  }
+
+  InputDecoration _inputDecoration(String label) => InputDecoration(
+      filled: true,
+      fillColor: AppColors.fitnessBackgroundColor,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      hintText: label,
+      hintStyle: const TextStyle(
+          color: AppColors.fitnessSecondaryTextColor,
+      ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -54,137 +72,104 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
         title: const Text('Create Exercise',
             style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back,
-              color: AppColors.fitnessMainColor),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.image, color: AppColors.fitnessMainColor),
+            onPressed: _pickImage,
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  cursorColor: AppColors.fitnessMainColor,
-                  style:
-                      const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                  decoration: const InputDecoration(
-                    labelText: 'Exercise Name',
-                    labelStyle:
-                        TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                    ),
+      backgroundColor: AppColors.fitnessBackgroundColor,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        cursorColor: AppColors.fitnessMainColor,
+                        style: const TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        decoration: _inputDecoration('Exercise Name..'),
+                        validator: (value) =>
+                            (value?.isEmpty ?? true) ? 'Please enter an exercise name' : null,
+                      ),
+                      const SizedBox(height: 4),
+                      TextFormField(
+                        controller: _descriptionController,
+                        cursorColor: AppColors.fitnessMainColor,
+                        style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                        decoration: _inputDecoration('Description'),
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _videoUrlController,
+                        cursorColor: AppColors.fitnessMainColor,
+                        style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                        decoration: _inputDecoration('Video URL'),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: _selectedCategory,
+                        items: _categories.map((category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category,
+                              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                        )).toList(),
+                        onChanged: (newValue) => setState(() => _selectedCategory = newValue!),
+                        decoration: _inputDecoration('Category'),
+                        dropdownColor: AppColors.fitnessBackgroundColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Public', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                            Switch(
+                              value: _isPublic,
+                              onChanged: (value) => setState(() => _isPublic = value),
+                              activeColor: AppColors.fitnessMainColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an exercise name';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  cursorColor: AppColors.fitnessMainColor,
-                  style:
-                      const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    labelStyle:
-                        TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                    ),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _videoUrlController,
-                  cursorColor: AppColors.fitnessMainColor,
-                  style:
-                      const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                  decoration: const InputDecoration(
-                    labelText: 'Video URL',
-                    labelStyle:
-                        TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  items: _categories.map((String category) {
-                    return DropdownMenuItem<String>(
-                      value: category,
-                      child: Text(category,
-                          style: const TextStyle(
-                              color: AppColors.fitnessPrimaryTextColor)),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedCategory = newValue!;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Category',
-                    labelStyle:
-                        TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                    ),
-                  ),
-                  dropdownColor: AppColors.fitnessBackgroundColor,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Public',
-                        style: TextStyle(
-                            color: AppColors.fitnessPrimaryTextColor)),
-                    Switch(
-                      value: _isPublic,
-                      onChanged: (value) {
-                        setState(() {
-                          _isPublic = value;
-                        });
-                      },
-                      activeColor: AppColors.fitnessMainColor,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _createExercise();
-                    Navigator.of(context).pop(true); // Return true to indicate a new exercise was created
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.fitnessMainColor,
-                  ),
-                  child: const Text('Save Exercise',
-                      style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-                ),
-              ],
+              ),
             ),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: SizedBox(
+        width: 300,
+        child: FloatingActionButton(
+          onPressed: _createExercise,
+          backgroundColor: AppColors.fitnessMainColor,
+          child: const Text(
+            "Create Exercise",
+            style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
           ),
         ),
       ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 }
