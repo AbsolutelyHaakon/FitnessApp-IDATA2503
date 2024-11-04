@@ -43,20 +43,19 @@ class IconText extends StatelessWidget {
       {super.key,
       required this.text,
       required this.color,
-      required this.asset});
+      required this.icon});
 
   final String text;
   final Color color;
-  final String asset;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SvgPicture.asset(
-          'assets/icons/$asset',
-          width: 15,
-          height: 15,
+        Icon(
+          icon,
+          size: 15,
           color: color,
         ),
         const SizedBox(

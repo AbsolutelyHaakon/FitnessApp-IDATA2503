@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/logic/upcoming_workouts_list.dart';
 import 'package:fitnessapp_idata2503/logic/workout.dart';
@@ -119,23 +118,23 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
                           height: 20,
                         ),
                         const IconText(
-                            text: 'Icon Data',
+                            text: '500Cal',
                             color: AppColors.fitnessSecondaryTextColor,
-                            asset: 'placeholder_icon.svg'),
+                            icon: Icons.fireplace),
                         const SizedBox(
                           height: 7,
                         ),
                         const IconText(
-                            text: 'Icon Data',
+                            text: '45min',
                             color: AppColors.fitnessSecondaryTextColor,
-                            asset: 'placeholder_icon.svg'),
+                            icon: Icons.access_time),
                         const SizedBox(
                           height: 7,
                         ),
                         const IconText(
-                            text: 'Icon Data',
+                            text: '7 sets',
                             color: AppColors.fitnessSecondaryTextColor,
-                            asset: 'placeholder_icon.svg'),
+                            icon: Icons.help_outline),
                         const SizedBox(
                           height: 7,
                         ),

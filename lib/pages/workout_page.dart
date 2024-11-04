@@ -28,6 +28,27 @@ class _WorkoutPageState extends State<WorkoutPage>
   void initState() {
     super.initState();
 
+    // Dummy data
+    List<UpcomingWorkoutsBox> dummyWorkouts = [
+      UpcomingWorkoutsBox(
+          title: 'Morning Yoga',
+          category: 'fullBody',
+          date: DateTime.now(),
+      ),
+      UpcomingWorkoutsBox(
+        title: 'Morning Yoga',
+        category: 'fullBody',
+        date: DateTime.now(),
+      ),
+      UpcomingWorkoutsBox(
+        title: 'Morning Yoga',
+        category: 'fullBody',
+        date: DateTime.now(),
+      ),
+    ];
+    // Insert dummy data
+    workoutsList.insertList(dummyWorkouts);
+
     getWorkoutData();
     _addIconController = AnimationController(
       duration: const Duration(milliseconds: 300),
