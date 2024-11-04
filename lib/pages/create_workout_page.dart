@@ -335,7 +335,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         child: FloatingActionButton(
           onPressed: _createWorkout,
           backgroundColor: AppColors.fitnessMainColor,
-          child: const Text("Create Workout"),
+          child: const Text("Create Workout",
+              style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
         ),
       ),
     );
