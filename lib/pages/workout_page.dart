@@ -49,6 +49,8 @@ class _WorkoutPageState extends State<WorkoutPage>
         date: DateTime.now(),
       ),
     ];
+
+
     // Insert dummy data
     workoutsList.insertList(dummyWorkouts);
 

@@ -39,6 +39,7 @@ class UpcomingWorkoutsBox extends StatefulWidget {
       required this.date});
 
   String title;
+  //TODO: Type category;
   String category;
   DateTime date;
 
@@ -97,81 +98,88 @@ class _UpcomingWorkoutsBoxState extends State<UpcomingWorkoutsBox> {
           ),
         ),
         const SizedBox(height: 5),
-        CupertinoButton(
-          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 80),
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: AppColors.fitnessModuleColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Color(0xFF262626), // Almost the same color, what color this?
-                width: 1.0, // Very thin
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0), // Add top margin
+          child: CupertinoButton(
+            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 80),
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              decoration: BoxDecoration(
+                color: AppColors.fitnessModuleColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Color(0xFF262626), // Almost the same color
+                  width: 1.0, // Very thin
+                ),
               ),
-            ),
-            padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Heading1(text: widget.title),
-                      Heading2(
-                          text: typeNames[widget.category] ??
-                              'Unknown Category'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const IconText(
-                          text: '500Cal',
-                          color: AppColors.fitnessSecondaryTextColor,
-                          icon: Icons.fireplace),
-                      const SizedBox(
-                        height: 7,
-                      ),
-                      const IconText(
-                          text: '45min',
-                          color: AppColors.fitnessSecondaryTextColor,
-                          icon: Icons.access_time),
-                      const SizedBox(
-                        height: 7,
-                      ),
-                      const IconText(
-                          text: '7 sets',
-                          color: AppColors.fitnessSecondaryTextColor,
-                          icon: Icons.help_outline),
-                      const SizedBox(
-                        height: 7,
-                      ),
-                    ],
+              padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10), // Top padding above H1
+                        Heading1(text: widget.title),
+                        Heading2(
+                            text: typeNames[widget.category] ??
+                                'Unknown Category'),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const IconText(
+                            text: '500Cal',
+                            color: AppColors.fitnessSecondaryTextColor,
+                            icon: Icons.fireplace),
+                        const SizedBox(
+                          height: 7,
+                        ),
+                        const IconText(
+                            text: '45min',
+                            color: AppColors.fitnessSecondaryTextColor,
+                            icon: Icons.access_time),
+                        const SizedBox(
+                          height: 7,
+                        ),
+                        const IconText(
+                            text: '7 sets',
+                            color: AppColors.fitnessSecondaryTextColor,
+                            icon: Icons.help_outline),
+                        const SizedBox(
+                          height: 7,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 5),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    double size = 90;
-                    return SvgPicture.asset(
-                      'assets/icons/stick_figure.svg',
-                      height: size,
-                      width: size,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              CupertinoPageRoute(
-                builder: (context) => const PreWorkoutScreen(),
+                  const SizedBox(width: 5),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      double size = 90;
+                      return SvgPicture.asset(
+                        'assets/icons/stick_figure.svg',
+                        height: size,
+                        width: size,
+                      );
+                    },
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => const PreWorkoutScreen(),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
