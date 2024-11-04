@@ -21,6 +21,8 @@ class _WorkoutPageState extends State<WorkoutPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _addIconController;
   late Animation<double> _addIconAnimation;
+  late Animation<double> _buttonAnimation;
+  bool _showOptions = false;
   Map<Workouts, DateTime> workoutsList = {};
 
   @override
@@ -28,14 +30,16 @@ class _WorkoutPageState extends State<WorkoutPage>
     super.initState();
     fetchWorkouts();
 
-    print(workoutsList);
-
     _addIconController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _addIconAnimation =
         Tween<double>(begin: 0, end: 0.25).animate(_addIconController);
+    _buttonAnimation = CurvedAnimation(
+      parent: _addIconController,
+      curve: Curves.easeInOut,
+    );
   }
 
   void fetchWorkouts() async {
@@ -51,59 +55,119 @@ class _WorkoutPageState extends State<WorkoutPage>
     super.dispose();
   }
 
+  void _toggleOptions() {
+    setState(() {
+      _showOptions = !_showOptions;
+    });
+    if (_addIconController.isCompleted) {
+      _addIconController.reverse();
+    } else {
+      _addIconController.forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [
-        const SizedBox(height: 90),
-        const Padding(
-          padding: EdgeInsets.only(left: 20.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Workout',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 35.0,
-                color: Colors.white,
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              const SizedBox(height: 90),
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Workout',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 35.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: workoutsList.length,
+                    itemBuilder: (context, index) {
+                      final workout = workoutsList.keys.elementAt(index);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: UpcomingWorkoutsBox(
+                          workout: workoutsList,
+                        ),
+                      );
+                    }),
+              ),
+            ],
+          ),
+          if (_showOptions) ...[
+            Positioned(
+              bottom: 200,
+              right: 16,
+              child: ScaleTransition(
+                scale: _buttonAnimation,
+                child: FloatingActionButton(
+                  backgroundColor: AppColors.fitnessMainColor,
+                  shape: const CircleBorder(),
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateWorkoutPage(user: widget.user),
+                      ),
+                    );
+                    if (result == true) {
+                      fetchWorkouts();
+                    }
+                    _toggleOptions();
+                  },
+                  child: Icon(Icons.add),
+                ),
               ),
             ),
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-              itemCount: workoutsList.length,
-              itemBuilder: (context, index) {
-                final workout = workoutsList.keys.elementAt(index);
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0), // Add vertical padding
-                  child: UpcomingWorkoutsBox(
-                    workout: workoutsList,
-                  ),
-                );
-              }),
-        ),
-      ]),
+            Positioned(
+              bottom: 140,
+              right: 16,
+              child: ScaleTransition(
+                scale: _buttonAnimation,
+                child: FloatingActionButton(
+                  backgroundColor: AppColors.fitnessMainColor,
+                  shape: const CircleBorder(),
+                  onPressed: () {
+                    // Redirect to another page (not created yet)
+                    _toggleOptions();
+                  },
+                  child: Icon(Icons.list),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 80,
+              right: 16,
+              child: ScaleTransition(
+                scale: _buttonAnimation,
+                child: FloatingActionButton(
+                  backgroundColor: AppColors.fitnessMainColor,
+                  shape: const CircleBorder(),
+                  onPressed: () {
+                    // Open a popup menu to select a date
+                    _toggleOptions();
+                  },
+                  child: Icon(Icons.calendar_today),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
       backgroundColor: AppColors.fitnessBackgroundColor,
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.fitnessMainColor,
-        shape: CircleBorder(),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreateWorkoutPage(user: widget.user),
-            ),
-          );
-          if (result == true) {
-            fetchWorkouts(); // Reload workouts if a new workout was created
-          }
-          if (_addIconController.isCompleted) {
-            _addIconController.reverse();
-          } else {
-            _addIconController.forward();
-          }
-        },
+        shape: const CircleBorder(),
+        onPressed: _toggleOptions,
         child: AnimatedBuilder(
           animation: _addIconAnimation,
           child: Icon(Icons.add),
