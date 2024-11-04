@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 
 import 'workout_log.dart';
 
+// Last edited: 04.11.2024
+// Last edited by: Di Xie
+
 class DetailedWorkoutLog extends StatelessWidget {
   final String title;
   final String category;
