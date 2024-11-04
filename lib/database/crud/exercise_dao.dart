@@ -69,8 +69,13 @@ class ExerciseDao {
   List<Exercises> privateExercises = privateData.map((entry) => Exercises.fromMap(entry)).toList();
 
   // Fetch public exercises
-  final publicData = await database.query(tableName, where: 'isPrivate = ?', whereArgs: [0]);
-  List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(entry)).toList();
+final publicData = await database.query(
+  tableName,
+  where: 'isPrivate = ? AND (userId IS NULL OR userId = ?)',
+  whereArgs: [0, '']
+);
+
+List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(entry)).toList();
 
   // Combine both lists
   List<Exercises> allExercises = [...privateExercises, ...publicExercises];
@@ -82,6 +87,12 @@ class ExerciseDao {
   /////////////////////////////////////////////
   /////////// FIREBASE FUNCTIONS //////////////
   /////////////////////////////////////////////
+
+  Future<Map<String, dynamic>> deleteExercise() async {
+
+    return {'error': 'Not implemented'};
+  }
+
 
 
   Future<Map<String, dynamic>> fetchAllExercisesFromFireBase(String userId) async {
@@ -96,8 +107,17 @@ class ExerciseDao {
       .where('isPrivate', isEqualTo: false)
       .get();
 
-  List<Exercises> privateExercises = privateExercisesQuery.docs.map((doc) => Exercises.fromMap(doc.data() as Map<String, dynamic>)).toList();
-  List<Exercises> publicExercises = publicExercisesQuery.docs.map((doc) => Exercises.fromMap(doc.data() as Map<String, dynamic>)).toList();
+  List<Exercises> privateExercises = privateExercisesQuery.docs.map((doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    data['exerciseId'] = doc.id;
+    return Exercises.fromMap(data);
+  }).toList();
+
+  List<Exercises> publicExercises = publicExercisesQuery.docs.map((doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    data['exerciseId'] = doc.id;
+    return Exercises.fromMap(data);
+  }).toList();
 
   List<Exercises> allExercises = [...privateExercises, ...publicExercises];
   return {'exercises': allExercises};

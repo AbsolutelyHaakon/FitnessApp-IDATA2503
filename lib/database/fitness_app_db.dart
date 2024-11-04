@@ -13,6 +13,7 @@ class FitnessAppDB {
     );''');
     // TODO: Connect the lastWeight to the log history of the users last time on that specific exercise (FRONTEND)
     await database.execute('''CREATE TABLE IF NOT EXISTS userHealthData (
+      userHealthDataId STRING PRIMARY KEY,
       userId STRING,
       weight INTEGER,
       height INTEGER,
@@ -41,15 +42,16 @@ class FitnessAppDB {
       userId INTEGER
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS workoutExercises (
+      workoutExercisesId STRING PRIMARY KEY,
       workoutId STRING,
       exerciseId STRING,
       reps INTEGER,
       sets INTEGER,
       FOREIGN KEY (workoutId) REFERENCES workouts (id),
-      FOREIGN KEY (exerciseId) REFERENCES exercise (id),
-      PRIMARY KEY (workoutId, exerciseId)
+      FOREIGN KEY (exerciseId) REFERENCES exercise (id)
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS userWorkouts (
+      userWorkoutId STRING PRIMARY KEY,
       userId STRING,
       workoutId STRING,
       date DATE NOT NULL,

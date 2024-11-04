@@ -67,13 +67,17 @@ class WorkoutExercisesDao {
 
 
   void createWorkoutExercise(String workoutId, String exerciseId, int reps, int sets) async {
-    FirebaseFirestore.instance.collection('workoutExercises').doc(workoutId).set({
+    DocumentReference docRef = await FirebaseFirestore.instance.collection('workoutExercises').add({
+      'workoutId': workoutId,
       'exerciseId': exerciseId,
       'reps': reps,
       'sets': sets,
     });
 
+    String newDocId = docRef.id;
+
     create(WorkoutExercises(
+      workoutExercisesId: newDocId,
       workoutId: workoutId,
       exerciseId: exerciseId,
       reps: reps,

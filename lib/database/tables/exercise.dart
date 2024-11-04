@@ -1,5 +1,5 @@
 class Exercises {
-  final String? exerciseId;
+  final String exerciseId;
   final String name;
   final String? description;
   final String? category;
@@ -8,7 +8,7 @@ class Exercises {
   final String? userId;
 
   const Exercises({
-    this.exerciseId,
+    required this.exerciseId,
     required this.name,
     this.description,
     this.category,
@@ -33,7 +33,7 @@ class Exercises {
   // Extract an Exercise object from a Map object
   factory Exercises.fromMap(Map<String, dynamic> map) {
     return Exercises(
-      exerciseId: map['exerciseId']?.toInt(),
+      exerciseId: map['exerciseId'] as String,
       name: map['name'] ?? '',
       description: map['description'],
       category: map['category'],

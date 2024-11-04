@@ -30,12 +30,16 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   final WorkoutDao workoutDao = WorkoutDao();
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
 
+  List<Exercises> selectedExercises = [];
   List<IndExerciseBox> exercises = [];
 
-  createIndExerciseBox(String exerciseName) {
+  createIndExerciseBox(Exercises exercise) {
     return IndExerciseBox(
-      key: ValueKey(exerciseName),
-      exerciseName: exerciseName,
+      key: ValueKey(exercise),
+      exerciseId: exercise.exerciseId ?? '',
+      exerciseName: exercise.name,
+      repsController: TextEditingController(),
+      setsController: TextEditingController(),
     );
   }
 
@@ -72,11 +76,13 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           true
         );
         for (var exercise in exercises) {
-           workoutExercisesDao.createWorkoutExercise(
+          final reps = int.tryParse(exercise.repsController.text) ?? 0;
+          final sets = int.tryParse(exercise.setsController.text) ?? 0;
+          workoutExercisesDao.createWorkoutExercise(
             result!,
             exercise.exerciseName,
-            0, //TODO: IMPLEMENT REPS
-            0, //TODO: IMPLEMENT SETS
+            reps,
+            sets,
           );
         }
       } catch (e) {
@@ -179,13 +185,16 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ExerciseSelectorPage(user: widget.user),
+                              ExerciseSelectorPage(user: widget.user, selectedExercises: selectedExercises),
                         ),
                       );
                       if (result != null && result is List<Exercises>) {
+                        selectedExercises.length = 0;
+                        exercises.length = 0;
                         for (var exercise in result) {
                           setState(() {
-                            exercises.add(createIndExerciseBox(exercise.name));
+                            selectedExercises.add(exercise);
+                            exercises.add(createIndExerciseBox(exercise));
                           });
                         }
                       }

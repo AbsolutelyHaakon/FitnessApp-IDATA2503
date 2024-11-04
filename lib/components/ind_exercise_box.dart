@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 
 class IndExerciseBox extends StatefulWidget {
   IndExerciseBox({
-    super.key,
+    Key? key,
+    required this.exerciseId,
     required this.exerciseName,
-  });
+    required this.repsController,
+    required this.setsController,
+  }) : super(key: key);
 
+  final String exerciseId;
   final String exerciseName;
+  final TextEditingController repsController;
+  final TextEditingController setsController;
 
   @override
   _IndExerciseBoxState createState() => _IndExerciseBoxState();
@@ -16,7 +22,7 @@ class IndExerciseBox extends StatefulWidget {
 
 class _IndExerciseBoxState extends State<IndExerciseBox> {
   int _selectedReps = 12; // Default value for reps
-  int _selectedSets = 3;  // Default value for sets
+  int _selectedSets = 3;// Default value for sets
   bool _isRepsFocused = false;
   bool _isSetsFocused = false;
   final FocusNode _repsFocusNode = FocusNode();
@@ -89,6 +95,7 @@ class _IndExerciseBoxState extends State<IndExerciseBox> {
                     onSelectedItemChanged: (int index) {
                       setState(() {
                         _selectedReps = index + 1;
+                        widget.repsController.text = _selectedReps.toString();
                       });
                     },
                     children: List<Widget>.generate(20, (int index) {
@@ -124,6 +131,7 @@ class _IndExerciseBoxState extends State<IndExerciseBox> {
                     onSelectedItemChanged: (int index) {
                       setState(() {
                         _selectedSets = index + 1;
+                        widget.setsController.text = _selectedSets.toString();
                       });
                     },
                     children: List<Widget>.generate(20, (int index) {
