@@ -1,7 +1,6 @@
 import 'package:fitnessapp_idata2503/components/upcoming_workouts_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 
 class AddWorkout extends StatefulWidget {
   const AddWorkout({super.key});

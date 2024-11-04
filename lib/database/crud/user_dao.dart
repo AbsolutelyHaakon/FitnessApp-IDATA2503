@@ -114,7 +114,7 @@ class UserDao {
 }
 
 void updateUserData(String uid, String name, double height, double weight) async {
-  if (uid == null) return;
+  if (uid == "") return;
 
   // Fetch existing user data
   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();

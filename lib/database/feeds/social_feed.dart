@@ -1,6 +1,4 @@
 import 'package:fitnessapp_idata2503/database/database_service.dart';
-import 'package:fitnessapp_idata2503/database/tables/posts.dart';
-import 'package:sqflite/sqflite.dart';
 
 class SocialFeed {
   Future<List<Map<String, dynamic>>> fetchSocialFeed(int userId) async {

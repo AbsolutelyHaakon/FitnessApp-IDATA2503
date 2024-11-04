@@ -1,6 +1,4 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:fitnessapp_idata2503/database/database_service.dart';
-import 'package:fitnessapp_idata2503/database/tables/user.dart';
 
 class FitnessAppDB {
   Future<void> createDB(Database database) async {

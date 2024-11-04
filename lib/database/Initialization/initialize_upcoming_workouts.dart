@@ -1,5 +1,4 @@
 import '../../components/upcoming_workouts_box.dart';
-import '../../pages/workout_page.dart';
 import '../crud/user_workouts_dao.dart';
 import '../crud/workout_dao.dart';
 import '../tables/user_workouts.dart';

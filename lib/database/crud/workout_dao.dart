@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/exercise.dart';
 import '../tables/workout.dart';
-import '../tables/workout_exercises.dart';
 
 class WorkoutDao {
   final tableName = 'workouts';

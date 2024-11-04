@@ -200,7 +200,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                             icon: Icon(
                               Icons.whatshot,
                               color:
-                                  index < _intensity ? Colors.red : Colors.grey,
+                                  index < _intensity ? AppColors.fitnessMainColor : AppColors.fitnessSecondaryTextColor,
                             ),
                             onPressed: () {
                               setState(() {
@@ -261,16 +261,21 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                 ),
                 Container(
                   height: MediaQuery.of(context).size.height - 300,
-                  child: ReorderableListView(
-                    proxyDecorator:
-                        (Widget child, int index, Animation<double> animation) {
+                  child: exercises.isEmpty
+                      ? const Center(
+                    child: Text(
+                      'No exercises selected..',
+                      style: TextStyle(color: AppColors.fitnessSecondaryModuleColor, fontSize: 16),
+                    ),
+                  )
+                      : ReorderableListView(
+                    proxyDecorator: (Widget child, int index, Animation<double> animation) {
                       return Transform.scale(
                         scale: 1.05,
                         child: Material(
                           child: child,
                           color: Colors.transparent,
-                          shadowColor:
-                              AppColors.fitnessBackgroundColor.withOpacity(0.3),
+                          shadowColor: AppColors.fitnessBackgroundColor.withOpacity(0.3),
                           elevation: 6,
                         ),
                       );
