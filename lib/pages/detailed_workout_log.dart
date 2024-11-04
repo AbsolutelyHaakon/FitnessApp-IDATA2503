@@ -1,6 +1,8 @@
-// lib/pages/detailed_workout_log.dart
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'workout_log.dart';
 
 class DetailedWorkoutLog extends StatelessWidget {
   final String title;
@@ -18,13 +20,26 @@ class DetailedWorkoutLog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String appBarTitle = DateFormat('dd MMMM yyyy').format(date);
     // Format the date to exclude the time part
     String formattedDate = DateFormat('dd.MM.yyyy').format(date);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detailed Workout Log'),
+        title: Text(appBarTitle, style: const TextStyle(
+            color: AppColors.fitnessPrimaryTextColor)
+        ),
+        backgroundColor: AppColors.fitnessBackgroundColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.fitnessMainColor),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => const WorkoutLog(), // Ensure WorkoutLog is the correct widget
+            ));
+          },
+        ),
       ),
+      backgroundColor: AppColors.fitnessBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -32,22 +47,36 @@ class DetailedWorkoutLog extends StatelessWidget {
           children: [
             Text(
               'Title: $title',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.fitnessPrimaryTextColor),
             ),
-            SizedBox(height: 10),
+            const SizedBox(
+                height: 10
+            ),
             Text(
-              'Category: $category',
-              style: TextStyle(fontSize: 18),
+              'Category/Type/IDFK XD: $category',
+              style: const TextStyle(
+                  fontSize: 18,
+                  color: AppColors.fitnessSecondaryTextColor),
             ),
-            SizedBox(height: 10),
+            const SizedBox(
+                height: 10
+            ),
             Text(
               'Date: $formattedDate',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(
+                  fontSize: 18,
+                  color: AppColors.fitnessSecondaryTextColor),
             ),
-            SizedBox(height: 10),
+            const SizedBox(
+                height: 10
+            ),
             Text(
               'Duration: $duration',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(
+                  fontSize: 18,
+                  color: AppColors.fitnessPrimaryTextColor),
             ),
             // Add more detailed information here
           ],
