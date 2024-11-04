@@ -20,6 +20,7 @@ class DetailedWorkoutLog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Format the date to be displayed in the app bar
     String appBarTitle = DateFormat('dd MMMM yyyy').format(date);
     // Format the date to exclude the time part
     String formattedDate = DateFormat('dd.MM.yyyy').format(date);
