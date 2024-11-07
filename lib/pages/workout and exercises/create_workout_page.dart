@@ -75,7 +75,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   void _createWorkout() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final result = await workoutDao.createWorkout(
+        final result = await workoutDao.fireBaseCreateWorkout(
             _selectedCategory,
             _descriptionController.text,
             0, // TODO: Implement workout duration
@@ -89,7 +89,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         for (var exercise in exercises) {
           final reps = int.tryParse(exercise.repsController.text) ?? 0;
           final sets = int.tryParse(exercise.setsController.text) ?? 0;
-          workoutExercisesDao.createWorkoutExercise(
+          workoutExercisesDao.fireBaseCreateWorkoutExercise(
             result!,
             exercise.exerciseId,
             reps,

@@ -17,14 +17,14 @@ class GetDataFromServer {
       return;
     }
     // Fetch all exercises from Firebase
-    Map<String, dynamic> firebaseData = await exerciseDao.fetchAllExercisesFromFireBase(userId);
+    Map<String, dynamic> firebaseData = await exerciseDao.fireBaseFetchAllExercisesFromFireBase(userId);
     List<Exercises> allExercises = firebaseData['exercises'];
     // Truncate the local database
-    await exerciseDao.truncate();
+    await exerciseDao.localTruncate();
 
     // Add all fetched exercises to the local database
     for (Exercises exercise in allExercises) {
-      await exerciseDao.create(exercise);
+      await exerciseDao.localCreate(exercise);
     }
   }
 
@@ -33,15 +33,15 @@ class GetDataFromServer {
     return;
   }
   // Fetch all workouts from Firebase
-  Map<String, dynamic> firebaseData = await workoutsDao.fetchAllWorkoutsFromFireBase(userId);
+  Map<String, dynamic> firebaseData = await workoutsDao.fireBaseFetchAllWorkouts(userId);
   List<Workouts> allWorkouts = firebaseData['workouts'];
 
   // Truncate the local database
-  await workoutsDao.truncate();
+  await workoutsDao.localTruncate();
 
   // Add all fetched exercises to the local database
   for (Workouts workout in allWorkouts) {
-    await workoutsDao.create(workout);
+    await workoutsDao.localCreate(workout);
   }
 }
 }

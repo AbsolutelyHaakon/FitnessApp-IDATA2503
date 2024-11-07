@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 class UserHealthDataDao {
   final tableName = 'userHealthData';
 
-  Future<int> create(UserHealthData userHealthData) async {
+  Future<int> localCreate(UserHealthData userHealthData) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -14,7 +14,7 @@ class UserHealthDataDao {
     );
   }
 
-  Future<int> update(UserHealthData userHealthData) async {
+  Future<int> localUpdate(UserHealthData userHealthData) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -25,13 +25,13 @@ class UserHealthDataDao {
     );
   }
 
-  Future<List<UserHealthData>> fetchAll() async {
+  Future<List<UserHealthData>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => UserHealthData.fromMap(entry)).toList();
   }
 
-  Future<UserHealthData> fetchById(int userId, DateTime date) async {
+  Future<UserHealthData> localFetchById(int userId, DateTime date) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -41,7 +41,7 @@ class UserHealthDataDao {
     return UserHealthData.fromMap(data.first);
   }
 
-  Future<void> delete(int userId, DateTime date) async {
+  Future<void> localDelete(int userId, DateTime date) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,

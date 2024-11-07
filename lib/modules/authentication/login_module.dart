@@ -39,7 +39,7 @@ class _LoginModuleState extends State<LoginModule> {
 
   Future<void> _login() async {
   try {
-    final result = await widget.userDao.loginWithEmailAndPassword(
+    final result = await widget.userDao.fireBaseLoginWithEmailAndPassword(
       widget.emailController.text.trim(),
       widget.passwordController.text.trim(),
     );
@@ -59,7 +59,7 @@ class _LoginModuleState extends State<LoginModule> {
 
   Future<void> _register() async {
     try {
-      final result = await widget.userDao.createUserWithEmailAndPassword(
+      final result = await widget.userDao.fireBaseCreateUserWithEmailAndPassword(
         widget.emailController.text,
         widget.passwordController.text,
       );

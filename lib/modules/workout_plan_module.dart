@@ -36,7 +36,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
   }
 
   void fetchExercises() async {
-    exercises = await WorkoutDao().fetchExercisesForWorkout(widget.workout.workoutId);
+    exercises = await WorkoutDao().localFetchExercisesForWorkout(widget.workout.workoutId);
   }
 
   @override

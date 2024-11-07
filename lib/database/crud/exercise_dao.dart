@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 class ExerciseDao {
   final tableName = 'exercises';
 
-  Future<int> create(Exercises exercise) async {
+  Future<int> localCreate(Exercises exercise) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -15,7 +15,7 @@ class ExerciseDao {
     );
   }
 
-  Future<int> update(Exercises exercise) async {
+  Future<int> localUpdate(Exercises exercise) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -26,13 +26,13 @@ class ExerciseDao {
     );
   }
 
-  Future<List<Exercises>> fetchAll() async {
+  Future<List<Exercises>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => Exercises.fromMap(entry)).toList();
   }
 
-  Future<Exercises> fetchById(int exerciseId) async {
+  Future<Exercises> localFetchById(int exerciseId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -42,7 +42,7 @@ class ExerciseDao {
     return Exercises.fromMap(data.first);
   }
 
-  Future<void> delete(int exerciseId) async {
+  Future<void> localDelete(int exerciseId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -51,17 +51,17 @@ class ExerciseDao {
     );
   }
 
-  Future<void> truncate() async {
+  Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
 
-  Future<List<Map<String, dynamic>>> fetchAllAsMap() async {
+  Future<List<Map<String, dynamic>>> localFetchAllAsMap() async {
     final database = await DatabaseService().database;
     return await database.query(tableName);
   }
 
-  Future<Map<String, dynamic>> fetchAllExercises(String userId) async {
+  Future<Map<String, dynamic>> localFetchAllExercises(String userId) async {
   final database = await DatabaseService().database;
 
   // Fetch private exercises for the user
@@ -88,14 +88,14 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
   /////////// FIREBASE FUNCTIONS //////////////
   /////////////////////////////////////////////
 
-  Future<Map<String, dynamic>> deleteExercise() async {
+  Future<Map<String, dynamic>> fireBaseDeleteExercise() async {
 
     return {'error': 'Not implemented'};
   }
 
 
 
-  Future<Map<String, dynamic>> fetchAllExercisesFromFireBase(String userId) async {
+  Future<Map<String, dynamic>> fireBaseFetchAllExercisesFromFireBase(String userId) async {
   QuerySnapshot privateExercisesQuery = await FirebaseFirestore.instance
       .collection('exercises')
       .where('isPrivate', isEqualTo: true)
@@ -124,7 +124,7 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
   return {'exercises': allExercises};
 }
 
-  Future<Map<String, dynamic>> updateExercise(String exerciseId, String? name, String? description, String? category,
+  Future<Map<String, dynamic>> fireBaseUpdateExercise(String exerciseId, String? name, String? description, String? category,
     String? videoUrl, bool? isPrivate, String? userId) async {
     // See if the person editing the exercise is the owner
     bool isOwner = false;
@@ -141,7 +141,7 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
       }
       if (!isOwner && !isPrivateBefore) {
         // If you are editing a public exercise and it will make a new one which you are the owner of
-        return createExercise(
+        return fireBaseCreateExercise(
           name ?? data['name'],
           description ?? data['description'],
           category ?? data['category'],
@@ -160,7 +160,7 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
         'userId': userId ?? data['userId'],
       });
 
-      await update(Exercises(
+      await localUpdate(Exercises(
         exerciseId: exerciseId,
         name: name ?? data['name'],
         description: description ?? data['description'],
@@ -177,7 +177,7 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
 
 }
 
-Future<Map<String, dynamic>> createExercise(String name, String description, String category,
+Future<Map<String, dynamic>> fireBaseCreateExercise(String name, String description, String category,
                                             String videoUrl, bool isPrivate, String userId) async {
     // If it is private then get the userID so it can be tied to the user
     bool userExists = false;
@@ -200,7 +200,7 @@ Future<Map<String, dynamic>> createExercise(String name, String description, Str
 
     String exerciseId = docRef.id;
 
-    await create(Exercises(
+    await localCreate(Exercises(
       exerciseId: exerciseId,
       name: name,
       description: description,

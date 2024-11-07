@@ -37,7 +37,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   }
 
   Future<void> _fetchExercises() async {
-    final result = await exerciseDao.fetchAllExercises(widget.user!.uid);
+    final result = await exerciseDao.localFetchAllExercises(widget.user!.uid);
     setState(() {
       // Populate the list of exercises with users private exercises
       _allUserExercises = result['exercises']

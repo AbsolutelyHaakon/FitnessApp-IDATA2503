@@ -29,7 +29,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
   Future<void> _createExercise() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        await exerciseDao.createExercise(
+        await exerciseDao.fireBaseCreateExercise(
           _nameController.text,
           _descriptionController.text,
           _selectedCategory,

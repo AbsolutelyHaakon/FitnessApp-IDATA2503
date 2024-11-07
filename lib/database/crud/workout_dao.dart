@@ -7,7 +7,7 @@ import '../tables/workout.dart';
 class WorkoutDao {
   final tableName = 'workouts';
 
-  Future<int> create(Workouts workout) async {
+  Future<int> localCreate(Workouts workout) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -16,7 +16,7 @@ class WorkoutDao {
     );
   }
 
-  Future<int> update(Workouts workout) async {
+  Future<int> localUpdate(Workouts workout) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -27,13 +27,13 @@ class WorkoutDao {
     );
   }
 
-  Future<List<Workouts>> fetchAll() async {
+  Future<List<Workouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName, orderBy: 'name');
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
 
-  Future<Workouts> fetchById(String id) async {
+  Future<Workouts> localFetchById(String id) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -43,7 +43,7 @@ class WorkoutDao {
     return Workouts.fromMap(data.first);
   }
 
-  Future<void> delete(int id) async {
+  Future<void> localDelete(int id) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -52,7 +52,7 @@ class WorkoutDao {
     );
   }
 
-  Future<List<Exercises>> fetchExercisesForWorkout(String workoutId) async {
+  Future<List<Exercises>> localFetchExercisesForWorkout(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.rawQuery('''
       SELECT exercises.* FROM exercises
@@ -62,7 +62,7 @@ class WorkoutDao {
     return data.map((entry) => Exercises.fromMap(entry)).toList();
   }
 
-  Future<void> truncate() async {
+  Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
@@ -71,7 +71,7 @@ class WorkoutDao {
   ////////////////// FIREBASE FUNCTIONS //////////////////////
   ////////////////////////////////////////////////////////////
 
-  Future<Map<String, dynamic>> fetchAllWorkoutsFromFireBase(String userId) async {
+  Future<Map<String, dynamic>> fireBaseFetchAllWorkouts(String userId) async {
 
     // Get all workouts for the user (public and private)
     QuerySnapshot personalWorkoutsQuery = await FirebaseFirestore.instance
@@ -103,7 +103,7 @@ class WorkoutDao {
   }
 
 
- Future<String?> createWorkout(String? category, String? description, int? duration, int? intensity,
+ Future<String?> fireBaseCreateWorkout(String? category, String? description, int? duration, int? intensity,
      bool isPrivate, String? userId, String? video_url, String name, bool wantId) async {
 
     DocumentReference docRef = await FirebaseFirestore.instance.collection('workouts').add({
@@ -119,7 +119,7 @@ class WorkoutDao {
 
     String newDocId = docRef.id;
 
-    create(Workouts(
+    localCreate(Workouts(
       workoutId: newDocId,
       category: category,
       description: description,

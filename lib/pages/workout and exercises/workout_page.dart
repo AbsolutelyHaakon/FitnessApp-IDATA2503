@@ -45,7 +45,7 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   void fetchWorkouts() async {
     final upcomingWorkouts =
-        await UserWorkoutsDao().fetchUpcomingWorkouts(widget.user!.uid);
+        await UserWorkoutsDao().FetchUpcomingWorkouts(widget.user!.uid);
     setState(() {
       workoutsList = upcomingWorkouts;
     });

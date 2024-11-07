@@ -30,7 +30,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   void _updateUserData() {
     print("adrian sin key: ${widget.user?.uid}");
     if (_formKey.currentState!.validate()) {
-      UserDao().updateUserData(
+      UserDao().fireBaseUpdateUserData(
         widget.user?.uid ?? '',
         _nameController.text,
         double.tryParse(_heightController.text) ?? 0.0,

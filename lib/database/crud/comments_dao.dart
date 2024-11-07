@@ -6,7 +6,7 @@ import '../database_service.dart';
 class CommentsDao {
   final tableName = 'comments';
 
-  Future<int> create(Comments comment) async {
+  Future<int> localCreate(Comments comment) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -15,7 +15,7 @@ class CommentsDao {
     );
   }
 
-  Future<int> update(Comments comment) async {
+  Future<int> localUpdate(Comments comment) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -26,13 +26,13 @@ class CommentsDao {
     );
   }
 
-  Future<List<Comments>> fetchAll() async {
+  Future<List<Comments>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => Comments.fromMap(entry)).toList();
   }
 
-  Future<Comments> fetchById(int commentId) async {
+  Future<Comments> localFetchById(int commentId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -42,7 +42,7 @@ class CommentsDao {
     return Comments.fromMap(data.first);
   }
 
-  Future<void> delete(int commentId) async {
+  Future<void> localDelete(int commentId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,

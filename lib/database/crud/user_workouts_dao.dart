@@ -7,7 +7,7 @@ import '../tables/workout.dart';
 class UserWorkoutsDao {
   final tableName = 'userWorkouts';
 
-  Future<int> create(UserWorkouts userWorkout) async {
+  Future<int> localCreate(UserWorkouts userWorkout) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -16,7 +16,7 @@ class UserWorkoutsDao {
     );
   }
 
-  Future<int> update(UserWorkouts userWorkout) async {
+  Future<int> localUpdate(UserWorkouts userWorkout) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -27,14 +27,14 @@ class UserWorkoutsDao {
     );
   }
 
-  Future<List<UserWorkouts>> fetchAll() async {
+  Future<List<UserWorkouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
-  // Fetch all workouts for a specific user
-  Future<List<UserWorkouts>> fetchByUserId(String userId) async {
+
+  Future<List<UserWorkouts>> localFetchByUserId(String userId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -46,7 +46,7 @@ class UserWorkoutsDao {
 
 
 
-  Future<UserWorkouts> fetchById(String userId, String workoutId) async {
+  Future<UserWorkouts> localFetchById(String userId, String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -56,7 +56,7 @@ class UserWorkoutsDao {
     return UserWorkouts.fromMap(data.first);
   }
 
-  Future<void> delete(String userId, String workoutId) async {
+  Future<void> localDelete(String userId, String workoutId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -65,7 +65,7 @@ class UserWorkoutsDao {
     );
   }
 
-  Future <List<UserWorkouts>> fetchUpcomingUserWorkouts(String id) async {
+  Future <List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 
     // fetch all workouts for the user
@@ -79,14 +79,13 @@ class UserWorkoutsDao {
 
   }
 
- Future<Map<Workouts, DateTime>> fetchUpcomingWorkouts(String uid) async {
+ Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
     print("Fetching upcoming workouts for user with id: $uid");
   final database = await DatabaseService().database;
 
   Map<Workouts, DateTime> upcomingWorkouts = {};
-  final data = await fetchUpcomingUserWorkouts(uid);
+  final data = await localFetchUpcomingUserWorkouts(uid);
 
-  print("Raw data from fetchUpcomingUserWorkouts: $data");
   for (UserWorkouts userWorkout in data) {
     final upcomingWorkoutData = await database.query(
       'workouts',
@@ -97,8 +96,6 @@ class UserWorkoutsDao {
     upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] = userWorkout.date;
   }
 
-  print("Upcoming workouts: $upcomingWorkouts");
-
   return upcomingWorkouts;
 }
 
@@ -107,7 +104,7 @@ class UserWorkoutsDao {
   /////////////////////////////////////////////////////////
 
 
-  fetchUpcomingWorkoutsFromFireBase(String uid) {
+  fireBaseFetchUpcomingWorkouts(String uid) {
 
     // TODO: IMPLEMENT THIS
   }

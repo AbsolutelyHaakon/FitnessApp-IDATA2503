@@ -21,7 +21,7 @@ class UserDao {
   /////////////////////////// Local Database CRUD //////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  Future<int> create(LocalUser user) async {
+  Future<int> localCreate(LocalUser user) async {
     final database = await DatabaseService().database;
     print('User created: ${user.id}');
     return await database.insert(
@@ -32,7 +32,7 @@ class UserDao {
 
   }
 
-  Future<int> update(LocalUser user) async {
+  Future<int> localUpdate(LocalUser user) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -43,13 +43,13 @@ class UserDao {
     );
   }
 
-  Future<List<LocalUser>> fetchAll() async {
+  Future<List<LocalUser>> localFetchAll() async {
     final database = await DatabaseService().database;
     final users = await database.query(tableName, orderBy: 'name');
     return users.map((user) => LocalUser.fromMap(user)).toList();
   }
 
-  Future<LocalUser> fetchById(int id) async {
+  Future<LocalUser> localFetchById(int id) async {
     final database = await DatabaseService().database;
     final user = await database.query(
       tableName,
@@ -59,7 +59,7 @@ class UserDao {
     return LocalUser.fromMap(user.first);
   }
 
-  Future<void> delete(int id) async {
+  Future<void> localDelete(int id) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -68,7 +68,7 @@ class UserDao {
     );
   }
 
-  Future<List<Map<String, dynamic>>> fetchAllAsMap() async {
+  Future<List<Map<String, dynamic>>> localFetchAllAsMap() async {
     final database = await DatabaseService().database;
     return await database.query(tableName);
   }
@@ -77,14 +77,14 @@ class UserDao {
   //////////////////////// Firebase Authentication /////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  Future<Map<String, dynamic>> createUserWithEmailAndPassword(String email, String password) async {
+  Future<Map<String, dynamic>> fireBaseCreateUserWithEmailAndPassword(String email, String password) async {
   try {
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
       email: email.trim(),
       password: password.trim(),
     );
     User? user = userCredential.user;
-    createUserData(user?.uid, email);
+    fireBaseCreateUserData(user?.uid, email);
     return {'user': user, 'error': null};
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
@@ -98,14 +98,14 @@ class UserDao {
   return {'user': null, 'error': 'Unknown error occurred.'};
 }
 
- void createUserData(String? uid, String email) {
+ void fireBaseCreateUserData(String? uid, String email) {
   FirebaseFirestore.instance.collection('users').doc(uid).set({
     'email': email,
     'name': 'Not Set',
     'height': 0.0,
     'weight': 0.0,
   });
-  create(LocalUser(
+  localCreate(LocalUser(
       id: uid!,
       name: 'John Doe',
       email: email,
@@ -113,7 +113,7 @@ class UserDao {
       height: 0.0));
 }
 
-void updateUserData(String uid, String name, double height, double weight) async {
+void fireBaseUpdateUserData(String uid, String name, double height, double weight) async {
   if (uid == "") return;
 
   // Fetch existing user data
@@ -135,7 +135,7 @@ void updateUserData(String uid, String name, double height, double weight) async
   });
 
   // Update local database
-  update(LocalUser(
+  localUpdate(LocalUser(
     id: uid,
     name: updatedName,
     email: existingData['email'],
@@ -144,7 +144,7 @@ void updateUserData(String uid, String name, double height, double weight) async
   ));
 }
 
-Future<Map<String, dynamic>?> getUserData(String uid) async {
+Future<Map<String, dynamic>?> fireBaseGetUserData(String uid) async {
   try {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     return documentSnapshot.data() as Map<String, dynamic>?;
@@ -154,7 +154,7 @@ Future<Map<String, dynamic>?> getUserData(String uid) async {
   }
 }
 
-  Future<Map<String, dynamic>> loginWithEmailAndPassword(String email, String password) async {
+  Future<Map<String, dynamic>> fireBaseLoginWithEmailAndPassword(String email, String password) async {
   try {
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
       email: email,

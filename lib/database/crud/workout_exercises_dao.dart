@@ -6,7 +6,7 @@ import '../tables/workout_exercises.dart';
 class WorkoutExercisesDao {
   final tableName = 'workoutExercises';
 
-  Future<int> create(WorkoutExercises workoutExercises) async {
+  Future<int> localCreate(WorkoutExercises workoutExercises) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -15,7 +15,7 @@ class WorkoutExercisesDao {
     );
   }
 
-  Future<int> update(WorkoutExercises workoutExercises) async {
+  Future<int> localUpdate(WorkoutExercises workoutExercises) async {
     final database = await DatabaseService().database;
     return await database.update(
       tableName,
@@ -26,13 +26,13 @@ class WorkoutExercisesDao {
     );
   }
 
-  Future<List<WorkoutExercises>> fetchAll() async {
+  Future<List<WorkoutExercises>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => WorkoutExercises.fromMap(entry)).toList();
   }
 
-  Future<List<WorkoutExercises>> fetchByWorkoutId(int workoutId) async {
+  Future<List<WorkoutExercises>> localFetchByWorkoutId(int workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -42,7 +42,7 @@ class WorkoutExercisesDao {
     return data.map((entry) => WorkoutExercises.fromMap(entry)).toList();
   }
 
-  Future<WorkoutExercises> fetchById(int workoutId, int exerciseId) async {
+  Future<WorkoutExercises> localFetchById(int workoutId, int exerciseId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -52,7 +52,7 @@ class WorkoutExercisesDao {
     return WorkoutExercises.fromMap(data.first);
   }
 
-  Future<void> delete(int workoutId, int exerciseId) async {
+  Future<void> localDelete(int workoutId, int exerciseId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -67,7 +67,7 @@ class WorkoutExercisesDao {
   ////////////////////////////////////////////////////////////
 
 
-  void createWorkoutExercise(String workoutId, String exerciseId, int reps, int sets, int exerciseOrder) async {
+  void fireBaseCreateWorkoutExercise(String workoutId, String exerciseId, int reps, int sets, int exerciseOrder) async {
     DocumentReference docRef = await FirebaseFirestore.instance.collection('workoutExercises').add({
       'workoutId': workoutId,
       'exerciseId': exerciseId,
@@ -78,7 +78,7 @@ class WorkoutExercisesDao {
 
     String newDocId = docRef.id;
 
-    create(WorkoutExercises(
+    localCreate(WorkoutExercises(
       workoutExercisesId: newDocId,
       workoutId: workoutId,
       exerciseId: exerciseId,
