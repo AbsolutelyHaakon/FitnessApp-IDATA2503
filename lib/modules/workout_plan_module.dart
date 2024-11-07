@@ -31,8 +31,6 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
     super.initState();
     fetchExercises();
 
-    print("Exercises: $exercises");
-
   }
 
   void fetchExercises() async {

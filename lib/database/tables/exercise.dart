@@ -40,4 +40,16 @@ class Exercises {
       userId: map['userId'],
     );
   }
+
+  factory Exercises.fromSqfl(Map<String, dynamic> map) {
+    return Exercises(
+      exerciseId: map['exerciseId'] as String,
+      name: map['name'] ?? '',
+      description: map['description'],
+      category: map['category'],
+      videoUrl: map['videoUrl'],
+      isPrivate: map['isPrivate'] == 1,
+      userId: map['userId'],
+    );
+  }
 }

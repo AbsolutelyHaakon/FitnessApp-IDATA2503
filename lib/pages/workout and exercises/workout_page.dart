@@ -51,7 +51,7 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   void fetchScheduledWorkouts() async {
     final upcomingWorkouts =
-        await UserWorkoutsDao().FetchUpcomingWorkouts(widget.user!.uid);
+    await UserWorkoutsDao().FetchUpcomingWorkouts(widget.user!.uid);
     setState(() {
       scheduledWorkoutsMap = upcomingWorkouts;
     });
@@ -71,49 +71,67 @@ class _WorkoutPageState extends State<WorkoutPage>
   }
 
   void _toggleOptions() {
-    setState(() {
-      _showOptions = !_showOptions;
-    });
-    if (_addIconController.isCompleted) {
-      _addIconController.reverse();
-    } else {
-      _addIconController.forward();
-    }
+  if (!mounted) return;
+  setState(() {
+    _showOptions = !_showOptions;
+  });
+  if (_addIconController.isCompleted) {
+    _addIconController.reverse();
+  } else {
+    _addIconController.forward();
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 90),
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Workout',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 35.0,
-                        color: Colors.white,
+          Column(
+            children: [
+              const SizedBox(height: 90),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        scheduledWorkoutsMap.isNotEmpty
+                            ? 'Scheduled Workouts'
+                            : 'Workout',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 35.0,
+                          color: Colors.white,
+                        ),
                       ),
+                      if (scheduledWorkoutsMap.isEmpty)
+                        const Text(
+                          'Select a workout to schedule',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: WorkoutsBox(
+                      workoutMap: scheduledWorkoutsMap.isNotEmpty
+                          ? scheduledWorkoutsMap
+                          : workoutsMap,
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: WorkoutsBox(
-                    workoutMap: scheduledWorkoutsMap.isNotEmpty
-                        ? scheduledWorkoutsMap
-                        : workoutsMap,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
           if (_showOptions) ...[
             Positioned(
@@ -122,6 +140,7 @@ class _WorkoutPageState extends State<WorkoutPage>
               child: ScaleTransition(
                 scale: _buttonAnimation,
                 child: FloatingActionButton(
+                  heroTag: 'AddButton',
                   backgroundColor: AppColors.fitnessMainColor,
                   shape: const CircleBorder(),
                   onPressed: () async {
@@ -147,6 +166,7 @@ class _WorkoutPageState extends State<WorkoutPage>
               child: ScaleTransition(
                 scale: _buttonAnimation,
                 child: FloatingActionButton(
+                  heroTag: 'PresetButton',
                   backgroundColor: AppColors.fitnessMainColor,
                   shape: const CircleBorder(),
                   onPressed: () {
@@ -163,6 +183,7 @@ class _WorkoutPageState extends State<WorkoutPage>
               child: ScaleTransition(
                 scale: _buttonAnimation,
                 child: FloatingActionButton(
+                  heroTag: 'datePicker',
                   backgroundColor: AppColors.fitnessMainColor,
                   shape: const CircleBorder(),
                   onPressed: () {
@@ -212,6 +233,7 @@ class _WorkoutPageState extends State<WorkoutPage>
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
       floatingActionButton: FloatingActionButton(
+        heroTag: 'toggleOptions',
         backgroundColor: AppColors.fitnessMainColor,
         shape: const CircleBorder(),
         onPressed: _toggleOptions,

@@ -38,7 +38,7 @@ class WorkoutDao {
   final data = await database.query(
     tableName,
     where: 'userId = ? OR (isPrivate = ? AND userId = ?)',
-    whereArgs: [id, false, ''],
+    whereArgs: [id, 0, ''],
   );
   return data.map((entry) => Workouts.fromMap(entry)).toList();
 }

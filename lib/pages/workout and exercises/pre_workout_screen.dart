@@ -1,12 +1,16 @@
+import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../database/crud/workout_dao.dart';
+
 class PreWorkoutScreen extends StatefulWidget {
   final Workouts workout;
   const PreWorkoutScreen({super.key, required this.workout});
+
 
   @override
   State<PreWorkoutScreen> createState() {
@@ -15,6 +19,7 @@ class PreWorkoutScreen extends StatefulWidget {
 }
 
 class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,4 +69,6 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
+
+
 }

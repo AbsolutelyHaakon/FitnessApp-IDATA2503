@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 
 import '../pages/workout and exercises/pre_workout_screen.dart';
 
-// Last edited 04/11/2024
+// Last edited 07/11/2024
 // Last edited by Håkon Svensen Karlsen
 
 class WorkoutsBox extends StatefulWidget {
