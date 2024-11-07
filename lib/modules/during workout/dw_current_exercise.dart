@@ -1,19 +1,24 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../database/tables/exercise.dart';
+import '../../database/tables/workout_exercises.dart';
 import '../../styles.dart';
 
-// Shows the selected workout plan details before deciding to start it
-// Displays workout info and potentially a map of the workout route
+class SetStats {
+  int set;
+  int reps;
+  int weight;
 
-// Last edited: 27/09/2024
-// Last edited by: Matti Kjellstadli
-
-//TODO: Implement map fucntionality
-//TODO: Connect it to the persistent storage
+  SetStats({required this.set, required this.reps, required this.weight});
+}
 
 class DwCurrentExercise extends StatefulWidget {
-  const DwCurrentExercise({super.key});
+  final Map<Exercises, WorkoutExercises> exerciseMap;
+
+  const DwCurrentExercise({super.key, required this.exerciseMap});
 
   @override
   _DwCurrentExerciseState createState() => _DwCurrentExerciseState();
@@ -21,15 +26,89 @@ class DwCurrentExercise extends StatefulWidget {
 
 class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   bool _isAddingSet = false;
-  int _reps = 0;
-  int _weight = 0;
+
+  List<Exercises> exercises = [];
+  List<WorkoutExercises> workoutExercises = [];
+
+  int currentExerciseIndex = 0;
+  int currentSetIndex = 0;
+
+  Map<Exercises, List<SetStats>> exerciseStats = {};
+
+  late FixedExtentScrollController repsController;
+  late FixedExtentScrollController weightController;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchExercises();
+    populateExerciseStats();
+    initializeScrollControllers();
+  }
+
+  void fetchExercises() {
+    widget.exerciseMap.forEach((key, value) {
+      exercises.add(key);
+      workoutExercises.add(value);
+    });
+  }
+
+  void populateExerciseStats() {
+    widget.exerciseMap.forEach((key, value) {
+      List<SetStats> stats = [];
+      for (int i = 0; i < value.sets; i++) {
+        stats.add(SetStats(set: i + 1, reps: value.reps, weight: 0));
+      }
+      exerciseStats[key] = stats;
+    });
+  }
+
+  void initializeScrollControllers() {
+    final currentStats = exerciseStats[exercises[currentExerciseIndex]]!;
+    repsController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].reps);
+    weightController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].weight ~/ 5);
+  }
+
+  void updateScrollControllers() {
+    repsController.dispose();
+    weightController.dispose();
+
+    final currentStats = exerciseStats[exercises[currentExerciseIndex]]!;
+    repsController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].reps);
+    weightController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].weight ~/ 5);
+  }
+
+  void _incrementSet() {
+    setState(() {
+      if (currentSetIndex < workoutExercises[currentExerciseIndex].sets - 1) {
+        currentSetIndex++;
+        updateScrollControllers();
+      }
+    });
+  }
+
+  void _decrementSet() {
+    setState(() {
+      if (currentSetIndex > 0) {
+        currentSetIndex--;
+        updateScrollControllers();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    repsController.dispose();
+    weightController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 10),
           IntrinsicHeight(
             child: Container(
               width: 400,
@@ -45,53 +124,67 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  Row(
+                  Stack(
                     children: [
-                      const SizedBox(width: 20),
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF48CC6D),
-                          shape: BoxShape.circle,
-                        ),
+                      Row(
+                        children: [
+                          const SizedBox(width: 20),
+                          Container(
+                            width: 18,
+                            height: 18,
+                            decoration: const BoxDecoration(
+                              color: AppColors.fitnessMainColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            exercises[currentExerciseIndex].name,
+                            style: const TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Pushups',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
+                      Positioned(
+                        top: 0,
+                        right: 10,
+                        child: CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            setState(() {
+                              _isAddingSet = !_isAddingSet;
+                            });
+                          },
+                          child: const Icon(
+                            CupertinoIcons.pencil,
+                            color: AppColors.fitnessPrimaryTextColor,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 50.0),
-                    child: Column(
+                  Padding(
+                    padding: const EdgeInsets.only(left: 50.0),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Sets   4',
-                          style: TextStyle(
-                            color: Colors.grey,
+                          'Sets: ${workoutExercises[currentExerciseIndex].sets}',
+                          style: const TextStyle(
+                            color: AppColors.fitnessSecondaryTextColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
                           ),
                         ),
+                        const SizedBox(width: 10),
                         Text(
-                          'Reps  10',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          'Weight  0',
-                          style: TextStyle(
-                            color: Colors.grey,
+                          'Reps: ${workoutExercises[currentExerciseIndex].reps}',
+                          style: const TextStyle(
+                            color: AppColors.fitnessSecondaryTextColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
                           ),
@@ -99,104 +192,111 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       ],
                     ),
                   ),
-                  Visibility(
-                    visible: _isAddingSet,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'Reps:',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                const SizedBox(height: 10),
-                                SizedBox(
-                                  height: 100,
-                                  child: CupertinoPicker(
-                                    itemExtent: 40.0,
-                                    onSelectedItemChanged: (int index) {
-                                      setState(() {
-                                        _reps = index;
-                                      });
-                                    },
-                                    children: List<Widget>.generate(50, (int index) {
-                                      return Center(
-                                        child: Text(
-                                          index.toString(),
-                                          style: const TextStyle(color: Colors.white),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                              ],
-                            ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Set ${currentSetIndex + 1}:',
+                          style: const TextStyle(
+                            color: AppColors.fitnessSecondaryTextColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'Weight:',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                const SizedBox(height: 10),
-                                SizedBox(
-                                  height: 100,
-                                  child: CupertinoPicker(
-                                    itemExtent: 40.0,
-                                    onSelectedItemChanged: (int index) {
-                                      setState(() {
-                                        _weight = index * 5;
-                                      });
-                                    },
-                                    children: List<Widget>.generate(50, (int index) {
-                                      return Center(
-                                        child: Text(
-                                          (index * 5).toString(),
-                                          style: const TextStyle(color: Colors.white),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        ),
+                        const Spacer(),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: _decrementSet,
+                          child: Icon(
+                            CupertinoIcons.left_chevron,
+                            color: currentSetIndex == 0
+                                ? AppColors.fitnessSecondaryTextColor
+                                : AppColors.fitnessPrimaryTextColor,
+                            size: 20,
                           ),
-                        ],
-                      ),
+                        ),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: _incrementSet,
+                          child: Icon(
+                            CupertinoIcons.right_chevron,
+                            color: (currentSetIndex + 1) == workoutExercises[currentExerciseIndex].sets
+                                ? AppColors.fitnessSecondaryTextColor
+                                : AppColors.fitnessPrimaryTextColor,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Reps:',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CupertinoPicker(
+                            itemExtent: 40.0,
+                            scrollController: repsController,
+                            onSelectedItemChanged: (int index) {
+                              setState(() {
+                                exerciseStats[exercises[currentExerciseIndex]]![currentSetIndex].reps = index;
+                              });
+                            },
+                            children: List<Widget>.generate(50, (int index) {
+                              return Center(
+                                child: Text(
+                                  index.toString(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Weight:',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CupertinoPicker(
+                            itemExtent: 40.0,
+                            scrollController: weightController,
+                            onSelectedItemChanged: (int index) {
+                              setState(() {
+                                exerciseStats[exercises[currentExerciseIndex]]![currentSetIndex].weight = index * 5;
+                              });
+                            },
+                            children: List<Widget>.generate(50, (int index) {
+                              return Center(
+                                child: Text(
+                                  (index * 5).toString(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   CupertinoButton(
                     onPressed: () {
                       setState(() {
-                        _isAddingSet = !_isAddingSet;
+                        if (currentExerciseIndex < exercises.length - 1) {
+                          currentExerciseIndex++;
+                          currentSetIndex = 0;
+                          updateScrollControllers();
+                        }
                       });
                     },
-                    child: Container(
-                      width: 410,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF000000),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        "Add Set",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: CupertinoColors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  CupertinoButton(
-                    onPressed: () {},
                     child: Container(
                       width: 410,
                       height: 60,
@@ -220,6 +320,95 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
               ),
             ),
           ),
+          const SizedBox(height: 10),
+          if (currentExerciseIndex < exercises.length - 1)
+            IntrinsicHeight(
+              child: Container(
+                width: 400,
+                decoration: BoxDecoration(
+                  color: AppColors.fitnessModuleColor,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Color(0xFF262626), // Almost the same color
+                    width: 1.0, // Very thin
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        const SizedBox(width: 20),
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: const BoxDecoration(
+                            color: Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Next Exercise',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(width: 50),
+                        Text(
+                          exercises[currentExerciseIndex + 1].name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 50.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Sets   ${workoutExercises[currentExerciseIndex + 1].sets}',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                'Reps  ${workoutExercises[currentExerciseIndex + 1].reps}',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                'Weight: 0',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

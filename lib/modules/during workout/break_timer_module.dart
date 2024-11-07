@@ -88,140 +88,123 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
     return Center(
       child: SingleChildScrollView(
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: Color(0xFF262626), // Almost the same color
-              width: 1.0, // Very thin
+              color: AppColors.fitnessModuleColor,
+              width: 1.0,
             ),
           ),
-          child: SizedBox(
-            width: 400,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          'Break Timer',
-                          style: TextStyle(
-                            color: AppColors.fitnessPrimaryTextColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: AppColors.fitnessPrimaryTextColor),
-                        onPressed: () {
-                          // Implement the edit action here
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => _setPresetTime(5, 0),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _selectedButton == 0 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              '5:00',
-                              style: TextStyle(
-                                color: _selectedButton == 0 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
+                    const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                        'Break Timer',
+                        style: TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
                         ),
-                        ElevatedButton(
-                          onPressed: () => _setPresetTime(10, 1),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _selectedButton == 1 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              '10:00',
-                              style: TextStyle(
-                                color: _selectedButton == 1 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _setPresetTime(15, 2),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _selectedButton == 2 ? AppColors.fitnessPrimaryTextColor: AppColors.fitnessBackgroundColor,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              '15:00',
-                              style: TextStyle(
-                                color: _selectedButton == 2 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Obx(() => Text(
-                      time.value,
-                      style: const TextStyle(
-                        color: AppColors.fitnessPrimaryTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 64,
                       ),
-                    )),
-                    Container(
-                      width: double.infinity,
-                      child: CupertinoButton(
-                        onPressed: () { _startTimer(); },
-                        child: Container(
-                          width: 400,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: AppColors.fitnessBackgroundColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          alignment: Alignment.center,
-
-                          child: const Text("Start Timer",
-                            textAlign: TextAlign.center,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: AppColors.fitnessPrimaryTextColor),
+                      onPressed: () {
+                        // Implement the edit action here
+                      },
+                    ),
+                  ],
+                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _setPresetTime(5, 0),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedButton == 0 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
+                        ),
+                          child: Text(
+                            '5:00',
                             style: TextStyle(
-                              color: AppColors.fitnessPrimaryTextColor,
+                              color: _selectedButton == 0 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _setPresetTime(10, 1),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedButton == 1 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
+                        ),
+                          child: Text(
+                            '10:00',
+                            style: TextStyle(
+                              color: _selectedButton == 1 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _setPresetTime(15, 2),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedButton == 2 ? AppColors.fitnessPrimaryTextColor: AppColors.fitnessBackgroundColor,
+                        ),
+                          child: Text(
+                            '15:00',
+                            style: TextStyle(
+                              color: _selectedButton == 2 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
                           ),
                         ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Obx(() => Text(
+                    time.value,
+                    style: const TextStyle(
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 64,
+                    ),
+                  )),
+                  Container(
+                    width: double.infinity,
+                    child: CupertinoButton(
+                      onPressed: () { _startTimer(); },
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.fitnessBackgroundColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text("Start Timer",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.fitnessPrimaryTextColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
 class DwProgressBar extends StatelessWidget {
@@ -11,7 +12,7 @@ class DwProgressBar extends StatelessWidget {
           const Text(
             'Workout Progress',
             style: TextStyle(
-              color: Colors.grey,
+              color: AppColors.fitnessSecondaryTextColor,
               fontSize: 12,
             ),
           ),
@@ -19,9 +20,9 @@ class DwProgressBar extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(20), // Rounded corners
             child: const LinearProgressIndicator(
-              value: 0.3, // 30% progress
-              backgroundColor: Color(0xFF1A1B1C), // Dark grey background
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF48CC6D)), // Green color
+              value: 0.3,
+              backgroundColor: AppColors.fitnessBackgroundColor, // Dark grey background
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.fitnessMainColor), // Green color
               minHeight: 30, // Thicker progress bar
             ),
           ),

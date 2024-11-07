@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../database/crud/workout_dao.dart';
+import '../pages/workout and exercises/during_workout.dart';
 
 // Shows the selected workout plan details before deciding to start it
 // Displays workout info and potentially a map of the workout route
@@ -89,17 +90,25 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
                       fontSize: 16.0,
                     ),
                   ),
-                  trailing:
-                      exercise.videoUrl != null && exercise.videoUrl!.isNotEmpty
-                          ? const Icon(Icons.tv, color: AppColors.fitnessMainColor)
-                          : null,
+                  trailing: exercise.videoUrl != null &&
+                          exercise.videoUrl!.isNotEmpty
+                      ? const Icon(Icons.tv, color: AppColors.fitnessMainColor)
+                      : null,
                 );
               },
             ),
           ),
           const SizedBox(height: 90),
           CupertinoButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DuringWorkoutScreen(workout: widget.workout, exerciseMap: exerciseMap), // Replace with your actual widget
+                ),
+              );
+            },
             child: Container(
               width: 410,
               height: 60,
