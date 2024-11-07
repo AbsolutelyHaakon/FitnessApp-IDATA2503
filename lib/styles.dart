@@ -7,5 +7,5 @@ class AppColors {
   static const Color fitnessBackgroundColor = Color(0xFF000000);
   static const Color fitnessPrimaryTextColor = Colors.white;
   static const Color fitnessSecondaryTextColor = Color(0xFF787878);
-  static const Color fitnessWarningColor = Color(0xFFFF0000);
+  static const Color fitnessWarningColor = Color(0xFF591C1C);
 }

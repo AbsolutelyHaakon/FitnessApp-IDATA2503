@@ -42,7 +42,6 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
     for (final exercise in exercises) {
       exerciseMap[exercise] = await WorkoutExercisesDao()
           .localFetchById(widget.workout.workoutId, exercise.exerciseId);
-      print(exerciseMap[exercise]);
     }
     setState(() {});
   }

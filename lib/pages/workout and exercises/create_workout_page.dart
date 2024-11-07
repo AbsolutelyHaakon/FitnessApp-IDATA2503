@@ -73,39 +73,50 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   }
 
   void _createWorkout() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final result = await workoutDao.fireBaseCreateWorkout(
-            _selectedCategory,
-            _descriptionController.text,
-            0, // TODO: Implement workout duration
-            _intensity,
-            !_isPublic,
-            widget.user!.uid,
-            '', // TODO: Implement workout URL
-            _titleController.text,
-            true);
+  if (exercises.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Please add at least one exercise to the workout.'),
+        backgroundColor: AppColors.fitnessWarningColor,
+      ),
+    );
+    return;
+  }
 
-        for (var exercise in exercises) {
-          final reps = int.tryParse(exercise.repsController.text) ?? 0;
-          final sets = int.tryParse(exercise.setsController.text) ?? 0;
-          workoutExercisesDao.fireBaseCreateWorkoutExercise(
-            result!,
-            exercise.exerciseId,
-            reps,
-            sets,
-            exercises.indexOf(exercise),
-          );
-        }
+  if (_formKey.currentState!.validate()) {
+    try {
+      final result = await workoutDao.fireBaseCreateWorkout(
+          _selectedCategory,
+          _descriptionController.text,
+          0, // TODO: Implement workout duration
+          _intensity,
+          !_isPublic,
+          widget.user!.uid,
+          '', // TODO: Implement workout URL
+          _titleController.text,
+          true);
 
-        // Only pop after workout creation succeeds
-        Navigator.pop(context, true);
-      } catch (e) {
-        print(e);
-        // Optionally, show an error dialog or message here
+      for (var exercise in exercises) {
+        final reps = int.tryParse(exercise.repsController.text) ?? 0;
+        final sets = int.tryParse(exercise.setsController.text) ?? 0;
+        workoutExercisesDao.fireBaseCreateWorkoutExercise(
+          result!,
+          exercise.exerciseId,
+          reps,
+          sets,
+          exercises.indexOf(exercise),
+        );
       }
+
+      // Only pop after workout creation succeeds
+      Navigator.pop(context, true);
+    } catch (e) {
+      print(e);
+      // Optionally, show an error dialog or message here
     }
   }
+}
 
 
   @override
