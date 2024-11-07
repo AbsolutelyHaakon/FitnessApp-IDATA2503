@@ -61,6 +61,17 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                 ),
               ),
             ),
+            Padding(
+              padding: EdgeInsets.only(left: 22.0),
+              child: Text(
+                widget.workout.description ?? '',
+                style: const TextStyle(
+                  color: AppColors.fitnessPrimaryTextColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
             WorkoutPlanModule(workout: widget.workout),
             const SizedBox(height: 20),
           ],

@@ -52,6 +52,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   void fetchScheduledWorkouts() async {
     final upcomingWorkouts =
     await UserWorkoutsDao().FetchUpcomingWorkouts(widget.user!.uid);
+    if (!mounted) return;
     setState(() {
       scheduledWorkoutsMap = upcomingWorkouts;
     });
@@ -59,9 +60,12 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   void fetchAllWorkouts() async {
     workouts = await WorkoutDao().localFetchAllById(widget.user!.uid);
-    for (var workout in workouts) {
-      workoutsMap[workout] = DateTime(1970, 1, 1);
-    }
+    if (!mounted) return;
+    setState(() {
+      for (var workout in workouts) {
+        workoutsMap[workout] = DateTime(1970, 1, 1);
+      }
+    });
   }
 
   @override
@@ -71,16 +75,16 @@ class _WorkoutPageState extends State<WorkoutPage>
   }
 
   void _toggleOptions() {
-  if (!mounted) return;
-  setState(() {
-    _showOptions = !_showOptions;
-  });
-  if (_addIconController.isCompleted) {
-    _addIconController.reverse();
-  } else {
-    _addIconController.forward();
+    if (!mounted) return;
+    setState(() {
+      _showOptions = !_showOptions;
+    });
+    if (_addIconController.isCompleted) {
+      _addIconController.reverse();
+    } else {
+      _addIconController.forward();
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

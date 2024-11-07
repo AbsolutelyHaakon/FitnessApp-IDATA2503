@@ -69,7 +69,7 @@ class WorkoutDao {
       INNER JOIN workoutExercises ON exercises.exerciseId = workoutExercises.exerciseId
       WHERE workoutExercises.workoutId = ?
     ''', [workoutId]);
-    return data.map((entry) => Exercises.fromMap(entry)).toList();
+    return data.map((entry) => Exercises.fromSqfl(entry)).toList();
   }
 
   Future<void> localTruncate() async {

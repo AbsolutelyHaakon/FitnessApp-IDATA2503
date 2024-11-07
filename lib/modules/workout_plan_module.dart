@@ -1,5 +1,7 @@
+import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ import '../database/crud/workout_dao.dart';
 
 class WorkoutPlanModule extends StatefulWidget {
   final Workouts workout;
+
   WorkoutPlanModule({super.key, required this.workout});
 
   @override
@@ -25,16 +28,23 @@ class WorkoutPlanModule extends StatefulWidget {
 
 class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
   List<Exercises> exercises = [];
+  Map<Exercises, WorkoutExercises> exerciseMap = {};
 
   @override
   void initState() {
     super.initState();
     fetchExercises();
-
   }
 
   void fetchExercises() async {
-    exercises = await WorkoutDao().localFetchExercisesForWorkout(widget.workout.workoutId);
+    exercises = await WorkoutDao()
+        .localFetchExercisesForWorkout(widget.workout.workoutId);
+    for (final exercise in exercises) {
+      exerciseMap[exercise] = await WorkoutExercisesDao()
+          .localFetchById(widget.workout.workoutId, exercise.exerciseId);
+      print(exerciseMap[exercise]);
+    }
+    setState(() {});
   }
 
   @override
@@ -53,6 +63,39 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
                 color: Color(0xFF262626), // Almost the same color
                 width: 1.0, // Very thin
               ),
+            ),
+            child: ListView.builder(
+              itemCount: exercises.length,
+              itemBuilder: (context, index) {
+                final exercise = exercises[index];
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  tileColor: Colors.white.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  title: Text(
+                    exercise.name,
+                    style: const TextStyle(
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Reps: ${exerciseMap[exercise]?.reps}, Sets: ${exerciseMap[exercise]?.sets}',
+                    style: const TextStyle(
+                      color: AppColors.fitnessSecondaryTextColor,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  trailing:
+                      exercise.videoUrl != null && exercise.videoUrl!.isNotEmpty
+                          ? const Icon(Icons.tv, color: AppColors.fitnessMainColor)
+                          : null,
+                );
+              },
             ),
           ),
           const SizedBox(height: 90),
