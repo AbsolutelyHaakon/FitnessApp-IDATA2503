@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:sqflite/sqflite.dart';
@@ -80,7 +81,6 @@ class UserWorkoutsDao {
   }
 
  Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
-    print("Fetching upcoming workouts for user with id: $uid");
   final database = await DatabaseService().database;
 
   Map<Workouts, DateTime> upcomingWorkouts = {};
@@ -103,9 +103,42 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
+  Future<String?> fireBaseCreateUserWorkout(String userId, String workoutId, DateTime date) async {
 
-  fireBaseFetchUpcomingWorkouts(String uid) {
+    DocumentReference docRef = await FirebaseFirestore.instance.collection('userWorkouts').add({
+      'userId': userId,
+      'workoutId': workoutId,
+      'date': date.millisecondsSinceEpoch,
+    });
 
-    // TODO: IMPLEMENT THIS
+    String newDocId = docRef.id;
+
+    localCreate(UserWorkouts(
+      userWorkoutId: newDocId,
+      userId: userId,
+      workoutId: workoutId,
+      date: date,
+    ));
+
+    return newDocId;
+
+  }
+
+
+  Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {
+
+    QuerySnapshot upcomingWorkoutsQuery = await FirebaseFirestore.instance
+        .collection('userWorkouts')
+        .where('userId', isEqualTo: uid)
+        .where('date', isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch)
+        .get();
+
+    List<UserWorkouts> upcomingWorkouts = upcomingWorkoutsQuery.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['userWorkoutId'] = doc.id;
+      return UserWorkouts.fromMap(data);
+    }).toList();
+
+    return {'upcomingWorkouts': upcomingWorkouts};
   }
 }
