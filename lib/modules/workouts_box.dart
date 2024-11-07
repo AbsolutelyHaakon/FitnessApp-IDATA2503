@@ -14,9 +14,9 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 // Last edited by Håkon Svensen Karlsen
 
 class WorkoutsBox extends StatefulWidget {
-  const WorkoutsBox({super.key, required this.wourkoutMap});
+  const WorkoutsBox({super.key, required this.workoutMap});
 
-  final Map<Workouts, DateTime> wourkoutMap;
+  final Map<Workouts, DateTime> workoutMap;
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);
@@ -54,108 +54,105 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
+      children: widget.workoutMap.entries.map((entry) {
+        final workout = entry.key;
+        final date = entry.value;
+
+        return Padding(
           padding: const EdgeInsets.only(right: 15.0), // Add right padding
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                // Date above workout box
-                widget.getFormattedDate(widget.wourkoutMap.values.first),
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.fitnessPrimaryTextColor,
-                  height: 1.1,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 5),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0), // Add top margin
-          child: CupertinoButton(
-            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 80),
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: AppColors.fitnessModuleColor,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Color(0xFF262626), // Almost the same color
-                  width: 1.0, // Very thin
-                ),
-              ),
-              padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  Text(
+                    // Date above workout box
+                    date == DateTime(1970, 1, 1) ? '' : widget.getFormattedDate(date),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.fitnessPrimaryTextColor,
+                      height: 1.1,
+                    ),
+                  ),
+                ],
+              ),
+              date == DateTime(1970, 1, 1) ? const SizedBox.shrink() : const SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0), // Add top margin
+                child: CupertinoButton(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                  child: Container(
+                    constraints: const BoxConstraints(minHeight: 80),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessModuleColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Color(0xFF262626), // Almost the same color
+                        width: 1.0, // Very thin
+                      ),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        const SizedBox(height: 10), // Top padding above H1
-                        Heading1(text: widget.wourkoutMap.keys.first.name),
-                        Heading2(
-                            text: widget.wourkoutMap.keys.first.category ??
-                                'No category'),
-                        const SizedBox(
-                          height: 20,
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 10), // Top padding above H1
+                              Heading1(text: workout.name),
+                              Heading2(text: workout.category ?? 'No category'),
+                              const SizedBox(height: 20),
+                              const IconText(
+                                  text: '500Cal',
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  icon: Icons.fireplace),
+                              const SizedBox(height: 7),
+                              const IconText(
+                                  text: '45min',
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  icon: Icons.access_time),
+                              const SizedBox(height: 7),
+                              const IconText(
+                                  text: '7 sets',
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  icon: Icons.help_outline),
+                              const SizedBox(height: 7),
+                            ],
+                          ),
                         ),
-                        const IconText(
-                            text: '500Cal',
-                            color: AppColors.fitnessSecondaryTextColor,
-                            icon: Icons.fireplace),
-                        const SizedBox(
-                          height: 7,
-                        ),
-                        const IconText(
-                            text: '45min',
-                            color: AppColors.fitnessSecondaryTextColor,
-                            icon: Icons.access_time),
-                        const SizedBox(
-                          height: 7,
-                        ),
-                        const IconText(
-                            text: '7 sets',
-                            color: AppColors.fitnessSecondaryTextColor,
-                            icon: Icons.help_outline),
-                        const SizedBox(
-                          height: 7,
+                        const SizedBox(width: 5),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            double size = 90;
+                            return SvgPicture.asset(
+                              'assets/icons/stick_figure.svg',
+                              height: size,
+                              width: size,
+                            );
+                          },
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 5),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      double size = 90;
-                      return SvgPicture.asset(
-                        'assets/icons/stick_figure.svg',
-                        height: size,
-                        width: size,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) =>
-                      PreWorkoutScreen(workout: widget.wourkoutMap.keys.first),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => PreWorkoutScreen(workout: workout),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 }

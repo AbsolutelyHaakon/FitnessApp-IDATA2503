@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../database/crud/user_workouts_dao.dart';
+import '../../database/crud/workout_dao.dart';
 import '../../database/tables/workout.dart';
 
 class WorkoutPage extends StatefulWidget {
@@ -24,12 +25,17 @@ class _WorkoutPageState extends State<WorkoutPage>
   late Animation<double> _addIconAnimation;
   late Animation<double> _buttonAnimation;
   bool _showOptions = false;
-  Map<Workouts, DateTime> workoutsList = {};
+  Map<Workouts, DateTime> scheduledWorkoutsMap = {};
+  List<Workouts> workouts = [];
+  Map<Workouts, DateTime> workoutsMap = {};
 
   @override
   void initState() {
     super.initState();
-    fetchWorkouts();
+    fetchScheduledWorkouts();
+    if (scheduledWorkoutsMap.isEmpty) {
+      fetchAllWorkouts();
+    }
 
     _addIconController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -43,12 +49,19 @@ class _WorkoutPageState extends State<WorkoutPage>
     );
   }
 
-  void fetchWorkouts() async {
+  void fetchScheduledWorkouts() async {
     final upcomingWorkouts =
         await UserWorkoutsDao().FetchUpcomingWorkouts(widget.user!.uid);
     setState(() {
-      workoutsList = upcomingWorkouts;
+      scheduledWorkoutsMap = upcomingWorkouts;
     });
+  }
+
+  void fetchAllWorkouts() async {
+    workouts = await WorkoutDao().localFetchAllById(widget.user!.uid);
+    for (var workout in workouts) {
+      workoutsMap[workout] = DateTime(1970, 1, 1);
+    }
   }
 
   @override
@@ -73,37 +86,34 @@ class _WorkoutPageState extends State<WorkoutPage>
     return Scaffold(
       body: Stack(
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 90),
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Workout',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 35.0,
-                      color: Colors.white,
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 90),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Workout',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 35.0,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                    itemCount: workoutsList.length,
-                    itemBuilder: (context, index) {
-                      final workout = workoutsList.keys.elementAt(index);
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: WorkoutsBox(
-                          wourkoutMap: workoutsList,
-                        ),
-                      );
-                    }),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: WorkoutsBox(
+                    workoutMap: scheduledWorkoutsMap.isNotEmpty
+                        ? scheduledWorkoutsMap
+                        : workoutsMap,
+                  ),
+                ),
+              ],
+            ),
           ),
           if (_showOptions) ...[
             Positioned(
@@ -123,7 +133,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       ),
                     );
                     if (result == true) {
-                      fetchWorkouts();
+                      fetchScheduledWorkouts();
                     }
                     _toggleOptions();
                   },
@@ -148,50 +158,55 @@ class _WorkoutPageState extends State<WorkoutPage>
               ),
             ),
             Positioned(
-  bottom: 80,
-  right: 16,
-  child: ScaleTransition(
-    scale: _buttonAnimation,
-    child: FloatingActionButton(
-      backgroundColor: AppColors.fitnessMainColor,
-      shape: const CircleBorder(),
-      onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent, // Make the background transparent
-          isDismissible: true, // Allow dismissing by tapping outside
-          enableDrag: true, // Allow dismissing by dragging down
-          builder: (context) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: AppColors.fitnessBackgroundColor, // Black semi-transparent background
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+              bottom: 80,
+              right: 16,
+              child: ScaleTransition(
+                scale: _buttonAnimation,
+                child: FloatingActionButton(
+                  backgroundColor: AppColors.fitnessMainColor,
+                  shape: const CircleBorder(),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      // Make the background transparent
+                      isDismissible: true,
+                      // Allow dismissing by tapping outside
+                      enableDrag: true,
+                      // Allow dismissing by dragging down
+                      builder: (context) {
+                        return Container(
+                          decoration: const BoxDecoration(
+                            color: AppColors.fitnessBackgroundColor,
+                            // Black semi-transparent background
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          child: FractionallySizedBox(
+                            heightFactor: 0.6,
+                            widthFactor: 1,
+                            child: Column(
+                              children: [
+                                SizedBox(height: 20),
+                                // Your content here
+                                Text('Select a date',
+                                    style: TextStyle(color: Colors.white)),
+                                // Add more widgets as needed
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    _toggleOptions();
+                  },
+                  child: const Icon(Icons.calendar_today),
                 ),
               ),
-              child: FractionallySizedBox(
-                heightFactor: 0.6,
-                widthFactor: 1,
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    // Your content here
-                    Text('Select a date', style: TextStyle(color: Colors.white)),
-                    // Add more widgets as needed
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-        _toggleOptions();
-      },
-      child: const Icon(Icons.calendar_today),
-    ),
-  ),
-),
+            ),
           ],
         ],
       ),

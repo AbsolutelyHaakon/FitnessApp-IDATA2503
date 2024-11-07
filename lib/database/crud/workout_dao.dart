@@ -33,6 +33,16 @@ class WorkoutDao {
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
 
+  Future<List<Workouts>> localFetchAllById(String id) async {
+  final database = await DatabaseService().database;
+  final data = await database.query(
+    tableName,
+    where: 'userId = ? OR (isPrivate = ? AND userId = ?)',
+    whereArgs: [id, false, ''],
+  );
+  return data.map((entry) => Workouts.fromMap(entry)).toList();
+}
+
   Future<Workouts> localFetchById(String id) async {
     final database = await DatabaseService().database;
     final data = await database.query(
