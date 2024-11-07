@@ -32,13 +32,14 @@ class Exercises {
 
   // Extract an Exercise object from a Map object
   factory Exercises.fromMap(Map<String, dynamic> map) {
+    print(map);
     return Exercises(
       exerciseId: map['exerciseId'] as String,
       name: map['name'] ?? '',
       description: map['description'],
       category: map['category'],
       videoUrl: map['videoUrl'],
-      isPrivate: map['isPrivate'] == 1,
+      isPrivate: map['isPrivate'] as bool,
       userId: map['userId'],
     );
   }

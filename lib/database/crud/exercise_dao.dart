@@ -105,6 +105,7 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
   QuerySnapshot publicExercisesQuery = await FirebaseFirestore.instance
       .collection('exercises')
       .where('isPrivate', isEqualTo: false)
+      .where('userId', isEqualTo: '')
       .get();
 
   List<Exercises> privateExercises = privateExercisesQuery.docs.map((doc) {

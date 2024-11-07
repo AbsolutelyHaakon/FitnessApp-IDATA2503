@@ -23,7 +23,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   final TextEditingController _searchController = TextEditingController();
   final ExerciseDao exerciseDao = ExerciseDao();
   Map<String, Exercises> _selectedExercisesMap = {};
-  List<Exercises> _allExercises = [];
+  List<Exercises> _allUserExercises = [];
+  List<Exercises> _allPublicExercises = [];
 
   @override
   void initState() {
@@ -38,7 +39,17 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   Future<void> _fetchExercises() async {
     final result = await exerciseDao.fetchAllExercises(widget.user!.uid);
     setState(() {
-      _allExercises = result['exercises'].cast<Exercises>();
+      // Populate the list of exercises with users private exercises
+      _allUserExercises = result['exercises']
+          .where((exercise) => exercise.userId == widget.user!.uid)
+          .cast<Exercises>()
+          .toList();
+
+      // Populate the list of exercises with public exercises
+      _allPublicExercises = result['exercises']
+          .where((exercise) => exercise.userId != widget.user!.uid)
+          .cast<Exercises>()
+          .toList();
     });
   }
 
@@ -78,10 +89,12 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                 TextField(
                   controller: _searchController,
                   cursorColor: AppColors.fitnessMainColor,
-                  style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                  style:
+                      const TextStyle(color: AppColors.fitnessPrimaryTextColor),
                   decoration: const InputDecoration(
                     labelText: 'Search for exercises',
-                    labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                    labelStyle:
+                        TextStyle(color: AppColors.fitnessPrimaryTextColor),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: AppColors.fitnessMainColor),
@@ -103,14 +116,16 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                           .map((exercise) => GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _selectedExercisesMap.remove(exercise.exerciseId!);
+                                    _selectedExercisesMap
+                                        .remove(exercise.exerciseId!);
                                   });
                                 },
                                 child: Chip(
                                   label: Text(
                                     exercise.name,
                                     style: const TextStyle(
-                                        color: AppColors.fitnessPrimaryTextColor),
+                                        color:
+                                            AppColors.fitnessPrimaryTextColor),
                                   ),
                                   backgroundColor: AppColors.fitnessMainColor,
                                 ),
@@ -140,7 +155,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CreateExercisePage(user: widget.user),
+                              builder: (context) =>
+                                  CreateExercisePage(user: widget.user),
                             ),
                           );
                           if (result == true) {
@@ -148,7 +164,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                           }
                         },
                         child: const Text('+ Add New Exercise',
-                            style: TextStyle(color: AppColors.fitnessMainColor)),
+                            style:
+                                TextStyle(color: AppColors.fitnessMainColor)),
                       ),
                     ),
                   ],
@@ -160,29 +177,36 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                     // Makes the ListView use only as much height as its children
                     physics: const NeverScrollableScrollPhysics(),
                     // Disables scrolling to avoid conflicting with parent's scrolling
-                    itemCount: _allExercises.length,
+                    itemCount: _allUserExercises.length,
                     itemBuilder: (context, index) {
-                      Exercises exercise = _allExercises[index];
+                      Exercises exercise = _allUserExercises[index];
                       if (_searchController.text.isEmpty ||
-                          exercise.name.toLowerCase().contains(_searchController.text.toLowerCase())) {
+                          exercise.name
+                              .toLowerCase()
+                              .contains(_searchController.text.toLowerCase())) {
                         return ListTile(
                           title: Text(
                             exercise.name,
-                            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                            style: const TextStyle(
+                                color: AppColors.fitnessPrimaryTextColor),
                           ),
                           trailing: IconButton(
                             icon: Icon(
-                              _selectedExercisesMap.containsKey(exercise.exerciseId!)
+                              _selectedExercisesMap
+                                      .containsKey(exercise.exerciseId!)
                                   ? Icons.remove
                                   : Icons.add,
                               color: AppColors.fitnessMainColor,
                             ),
                             onPressed: () {
                               setState(() {
-                                if (_selectedExercisesMap.containsKey(exercise.exerciseId!)) {
-                                  _selectedExercisesMap.remove(exercise.exerciseId!);
+                                if (_selectedExercisesMap
+                                    .containsKey(exercise.exerciseId!)) {
+                                  _selectedExercisesMap
+                                      .remove(exercise.exerciseId!);
                                 } else {
-                                  _selectedExercisesMap[exercise.exerciseId!] = exercise;
+                                  _selectedExercisesMap[exercise.exerciseId!] =
+                                      exercise;
                                 }
                               });
                             },
@@ -191,7 +215,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ExerciseOverviewPage(exercise: exercise, user: widget.user),
+                                builder: (context) => ExerciseOverviewPage(
+                                    exercise: exercise, user: widget.user),
                               ),
                             );
                           },
@@ -211,6 +236,62 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                       color: AppColors.fitnessPrimaryTextColor,
                       fontSize: 16,
                     ),
+                  ),
+                ),
+                Container(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    // Makes the ListView use only as much height as its children
+                    physics: const NeverScrollableScrollPhysics(),
+                    // Disables scrolling to avoid conflicting with parent's scrolling
+                    itemCount: _allPublicExercises.length,
+                    itemBuilder: (context, index) {
+                      Exercises exercise = _allPublicExercises[index];
+                      if (_searchController.text.isEmpty ||
+                          exercise.name
+                              .toLowerCase()
+                              .contains(_searchController.text.toLowerCase())) {
+                        return ListTile(
+                          title: Text(
+                            exercise.name,
+                            style: const TextStyle(
+                                color: AppColors.fitnessPrimaryTextColor),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              _selectedExercisesMap
+                                  .containsKey(exercise.exerciseId!)
+                                  ? Icons.remove
+                                  : Icons.add,
+                              color: AppColors.fitnessMainColor,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                if (_selectedExercisesMap
+                                    .containsKey(exercise.exerciseId!)) {
+                                  _selectedExercisesMap
+                                      .remove(exercise.exerciseId!);
+                                } else {
+                                  _selectedExercisesMap[exercise.exerciseId!] =
+                                      exercise;
+                                }
+                              });
+                            },
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ExerciseOverviewPage(
+                                    exercise: exercise, user: widget.user),
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
                   ),
                 ),
               ],
