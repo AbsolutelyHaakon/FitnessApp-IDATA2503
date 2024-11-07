@@ -114,6 +114,8 @@ List<Exercises> publicExercises = publicData.map((entry) => Exercises.fromMap(en
     return Exercises.fromMap(data);
   }).toList();
 
+  print(privateExercises[0].name);
+  print(privateExercises[0].isPrivate);
   List<Exercises> publicExercises = publicExercisesQuery.docs.map((doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     data['exerciseId'] = doc.id;

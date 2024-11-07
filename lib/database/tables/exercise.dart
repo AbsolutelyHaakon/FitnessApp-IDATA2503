@@ -7,7 +7,7 @@ class Exercises {
   final bool isPrivate;
   final String? userId;
 
-  const Exercises({
+  Exercises({
     required this.exerciseId,
     required this.name,
     this.description,
@@ -17,7 +17,6 @@ class Exercises {
     this.userId,
   });
 
-  // Convert an Exercise object into a Map object
   Map<String, dynamic> toMap() {
     return {
       'exerciseId': exerciseId,
@@ -25,34 +24,19 @@ class Exercises {
       'description': description,
       'category': category,
       'videoUrl': videoUrl,
-      'isPrivate': isPrivate ? 1 : 0,
+      'isPrivate': isPrivate ? 1 : 0, // Store as int
       'userId': userId,
     };
   }
 
-  // Extract an Exercise object from a Map object
   factory Exercises.fromMap(Map<String, dynamic> map) {
-    print(map);
     return Exercises(
       exerciseId: map['exerciseId'] as String,
       name: map['name'] ?? '',
       description: map['description'],
       category: map['category'],
       videoUrl: map['videoUrl'],
-      isPrivate: map['isPrivate'] as bool,
-      userId: map['userId'],
-    );
-  }
-
-  // Extract an Exercise object from a Map object (for Sqflite)
-  factory Exercises.fromSqfliteDatabase(Map<String, dynamic> map) {
-    return Exercises(
-      exerciseId: map['exerciseID']?.toInt(),
-      name: map['name'] ?? '',
-      description: map['description'],
-      category: map['category'],
-      videoUrl: map['videoUrl'],
-      isPrivate: map['isPrivate'] == 1,
+      isPrivate: map['isPrivate'],
       userId: map['userId'],
     );
   }
