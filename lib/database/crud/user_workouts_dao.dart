@@ -80,6 +80,20 @@ class UserWorkoutsDao {
 
   }
 
+  Future <List<UserWorkouts>> localFetchPreviousUserWorkouts(String id) async {
+    final database = await DatabaseService().database;
+
+    // fetch all workouts for the user
+    final data = await database.query(
+      tableName,
+      where: 'userId = ? AND date <= ?',
+      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
+    );
+
+    return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
+
+  }
+
  Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
   final database = await DatabaseService().database;
 
@@ -98,6 +112,25 @@ class UserWorkoutsDao {
 
   return upcomingWorkouts;
 }
+
+  Future<Map<Workouts, DateTime>> FetchPreviousWorkouts(String uid) async {
+    final database = await DatabaseService().database;
+
+    Map<Workouts, DateTime> upcomingWorkouts = {};
+    final data = await localFetchPreviousUserWorkouts(uid);
+
+    for (UserWorkouts userWorkout in data) {
+      final upcomingWorkoutData = await database.query(
+        'workouts',
+        where: 'workoutId = ?',
+        whereArgs: [userWorkout.workoutId],
+      );
+
+      upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] = userWorkout.date;
+    }
+
+    return upcomingWorkouts;
+  }
 
   /////////////////////////////////////////////////////////
   ////////////// FIREBASE FUNCTIONS ///////////////////////
