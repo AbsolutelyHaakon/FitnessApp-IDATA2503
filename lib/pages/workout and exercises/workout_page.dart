@@ -155,8 +155,11 @@ class _WorkoutPageState extends State<WorkoutPage>
                             CreateWorkoutPage(user: widget.user),
                       ),
                     );
+                    print("Resultatet er: ");
+                    print(result);
                     if (result == true) {
-                      fetchScheduledWorkouts();
+                      workoutsMap.clear();
+                      fetchAllWorkouts();
                     }
                     _toggleOptions();
                   },
