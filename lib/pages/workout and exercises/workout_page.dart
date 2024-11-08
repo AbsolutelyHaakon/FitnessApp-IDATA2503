@@ -20,7 +20,7 @@ class WorkoutPage extends StatefulWidget {
 }
 
 class _WorkoutPageState extends State<WorkoutPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin{
   late AnimationController _addIconController;
   late Animation<double> _addIconAnimation;
   late Animation<double> _buttonAnimation;
@@ -28,6 +28,9 @@ class _WorkoutPageState extends State<WorkoutPage>
   Map<Workouts, DateTime> scheduledWorkoutsMap = {};
   List<Workouts> workouts = [];
   Map<Workouts, DateTime> workoutsMap = {};
+
+
+
 
   @override
   void initState() {
@@ -93,7 +96,6 @@ class _WorkoutPageState extends State<WorkoutPage>
         children: [
           Column(
             children: [
-              const SizedBox(height: 90),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Align(
@@ -113,7 +115,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       ),
                       if (scheduledWorkoutsMap.isEmpty)
                         const Text(
-                          'Select a workout to schedule',
+                          'Select a workout to begin',
                           style: TextStyle(
                             fontSize: 16.0,
                             color: Colors.white,

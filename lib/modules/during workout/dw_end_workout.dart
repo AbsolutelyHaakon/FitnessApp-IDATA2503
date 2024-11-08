@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fitnessapp_idata2503/modules/globals.dart';
 
+import '../../database/crud/workout_dao.dart';
+import '../../database/tables/workout.dart';
 import '../../styles.dart';
 
 // Shows the selected workout plan details before deciding to start it
@@ -13,13 +16,22 @@ import '../../styles.dart';
 //TODO: Connect it to the persistent storage
 
 class DwEndWorkout extends StatefulWidget {
-  const DwEndWorkout({super.key});
+  Workouts workout;
+
+  DwEndWorkout({super.key, required this.workout});
 
   @override
   _DwEndWorkoutState createState() => _DwEndWorkoutState();
 }
 
 class _DwEndWorkoutState extends State<DwEndWorkout> {
+  final WorkoutDao _workoutDao = WorkoutDao();
+
+
+  void _endWorkout() {
+    _workoutDao.localSetAllInactive();
+    hasActiveWorkout = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +53,10 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CupertinoButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _endWorkout();
+                      Navigator.pop(context);
+                    },
                     child: Container(
                       width: 410,
                       height: 60,

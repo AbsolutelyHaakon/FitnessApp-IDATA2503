@@ -42,7 +42,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(
-                widget.workout.name.toUpperCase(),
+                widget.workout.name ?? '',
                 style: const TextStyle(
                   color: AppColors.fitnessPrimaryTextColor,
                   fontWeight: FontWeight.w900,

@@ -39,6 +39,29 @@ class WorkoutDao {
   );
 }
 
+Future<void> localSetAllInactive() async {
+  final database = await DatabaseService().database;
+
+  await database.update(
+    tableName,
+    {'isActive': 0},
+  );
+}
+
+  Future<void> localUpdateWorkoutExercises(String workoutId, List<Exercises> exercises) async {
+    final database = await DatabaseService().database;
+    await database.transaction((txn) async {
+      await txn.delete('workoutExercises', where: 'workoutId = ?', whereArgs: [workoutId]);
+      for (var exercise in exercises) {
+        await txn.insert('workoutExercises', {
+          'workoutId': workoutId,
+          'exerciseId': exercise.exerciseId,
+        });
+      }
+    });
+}
+
+
   Future<List<Workouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName, orderBy: 'name');
@@ -87,6 +110,26 @@ class WorkoutDao {
   Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
+  }
+
+  Future<bool> hasActiveWorkouts() async {
+    final database = await DatabaseService().database;
+    final List<Map<String, dynamic>> maps = await database.query(
+      'workouts',
+      where: 'isActive = ?',
+      whereArgs: [1],
+    );
+    return maps.isNotEmpty;
+  }
+
+  Future<Workouts> fetchActiveWorkout() async {
+    final database = await DatabaseService().database;
+    final List<Map<String, dynamic>> maps = await database.query(
+      'workouts',
+      where: 'isActive = ?',
+      whereArgs: [1],
+    );
+    return Workouts.fromMap(maps.first);
   }
 
   ////////////////////////////////////////////////////////////

@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
 
   Widget _buildHeader(String date) {
     return Padding(
-      padding: const EdgeInsets.only(top: 70, left: 20, right: 20),
+      padding: const EdgeInsets.only(left: 20, right: 20),
       child: Row(
         children: [
           Expanded(

@@ -6,6 +6,7 @@ import 'package:fitnessapp_idata2503/modules/during%20workout/dw_current_exercis
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_end_workout.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_next_exercise.dart';
 import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
+import 'package:fitnessapp_idata2503/modules/globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +37,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
   void initState() {
     super.initState();
     _workoutDao.localUpdateActive(widget.workout, true);
+    hasActiveWorkout = true;
   }
 
 
@@ -126,7 +128,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
                 const SizedBox(height: 20),
                 const BreakTimerModule(),
                 const SizedBox(height: 20),
-                const DwEndWorkout(),
+                DwEndWorkout(workout: widget.workout),
                 const SizedBox(height: 30),
               ],
             ),
