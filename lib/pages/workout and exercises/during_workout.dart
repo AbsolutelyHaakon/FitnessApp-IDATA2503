@@ -36,6 +36,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
   @override
   void initState() {
     super.initState();
+    _workoutDao.localSetAllInactive();
     _workoutDao.localUpdateActive(widget.workout, true);
     hasActiveWorkout = true;
   }

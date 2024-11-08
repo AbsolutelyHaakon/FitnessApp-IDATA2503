@@ -5,6 +5,7 @@ import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fitnessapp_idata2503/modules/globals.dart';
 
 import '../database/crud/workout_dao.dart';
 import '../pages/workout and exercises/during_workout.dart';
@@ -38,19 +39,21 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
   }
 
   void fetchExercises() async {
-  try {
-    exercises = await WorkoutDao().localFetchExercisesForWorkout(widget.workout.workoutId);
-    for (final exercise in exercises) {
-      final workoutExercise = await WorkoutExercisesDao().localFetchById(widget.workout.workoutId, exercise.exerciseId);
-      if (workoutExercise != null) {
-        exerciseMap[exercise] = workoutExercise;
+    try {
+      exercises = await WorkoutDao()
+          .localFetchExercisesForWorkout(widget.workout.workoutId);
+      for (final exercise in exercises) {
+        final workoutExercise = await WorkoutExercisesDao()
+            .localFetchById(widget.workout.workoutId, exercise.exerciseId);
+        if (workoutExercise != null) {
+          exerciseMap[exercise] = workoutExercise;
+        }
       }
+      setState(() {});
+    } catch (e) {
+      print('Error fetching exercises: $e');
     }
-    setState(() {});
-  } catch (e) {
-    print('Error fetching exercises: $e');
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +108,40 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
           ),
           const SizedBox(height: 90),
           CupertinoButton(
-            onPressed: () {
+            onPressed: () async {
+              if (hasActiveWorkout) {
+                bool shouldStartNewWorkout = await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Active Workout',
+                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                    content: const Text(
+                        'Starting a new workout will end the one currently active. Are you sure?',
+                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('No',
+                            style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('Yes',
+                            style: TextStyle(color: AppColors.fitnessMainColor)),
+                      ),
+                    ],
+                    backgroundColor: AppColors.fitnessModuleColor,
+                  ),
+                );
+                if (!shouldStartNewWorkout) {
+                  return;
+                }
+              }
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      DuringWorkoutScreen(workout: widget.workout, exerciseMap: exerciseMap),
+                  builder: (context) => DuringWorkoutScreen(
+                      workout: widget.workout, exerciseMap: exerciseMap),
                 ),
               );
             },
