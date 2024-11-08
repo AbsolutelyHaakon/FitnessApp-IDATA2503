@@ -46,6 +46,7 @@ class GetDataFromServer {
 
     // Truncate the local database
     await workoutsDao.localTruncate();
+    await workoutExercisesDao.localTruncate();
 
     // Add all fetched exercises to the local database
     for (Workouts workout in allWorkouts) {
@@ -64,9 +65,6 @@ class GetDataFromServer {
     Map<String, dynamic> firebaseData =
         await workoutExercisesDao.fireBaseFetchAllWorkoutExercises(workoutId);
     List<WorkoutExercises> allWorkoutExercises = firebaseData['workoutExercises'];
-
-    // Truncate the local database
-    await workoutExercisesDao.localTruncate();
 
     // Add all fetched exercises to the local database
     for (WorkoutExercises workoutExercise in allWorkoutExercises) {

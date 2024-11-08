@@ -37,7 +37,8 @@ class FitnessAppDB {
       intensity INTEGER,
       videoURL STRING,
       isPrivate BOOLEAN NOT NULL DEFAULT FALSE,
-      userId INTEGER
+      userId INTEGER,
+      isActive BOOLEAN NOT NULL DEFAULT FALSE
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS workoutExercises (
       workoutExercisesId STRING PRIMARY KEY,

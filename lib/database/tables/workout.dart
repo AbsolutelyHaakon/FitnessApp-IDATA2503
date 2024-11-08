@@ -8,6 +8,7 @@ class Workouts {
   final String? videoUrl;
   final bool isPrivate;
   final String userId;
+  final bool isActive = false;
 
   const Workouts({
     required this.workoutId,

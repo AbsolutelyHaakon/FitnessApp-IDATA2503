@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/break_timer_module.dart';
@@ -28,6 +29,14 @@ class DuringWorkoutScreen extends StatefulWidget {
 class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
   double totalExercises = 0;
   double currentExercise = 0;
+
+  final WorkoutDao _workoutDao = WorkoutDao();
+
+  @override
+  void initState() {
+    super.initState();
+    _workoutDao.localUpdateActive(widget.workout, true);
+  }
 
   @override
   Widget build(BuildContext context) {

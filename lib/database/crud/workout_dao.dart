@@ -27,6 +27,18 @@ class WorkoutDao {
     );
   }
 
+  Future<void> localUpdateActive(Workouts workout, bool isActive) async {
+  final database = await DatabaseService().database;
+
+  // Update the isActive value based on the input
+  await database.update(
+    tableName,
+    {'isActive': isActive ? 1 : 0},
+    where: 'id = ?',
+    whereArgs: [workout.workoutId],
+  );
+}
+
   Future<List<Workouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName, orderBy: 'name');

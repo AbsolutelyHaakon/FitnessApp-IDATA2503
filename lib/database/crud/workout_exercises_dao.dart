@@ -7,13 +7,15 @@ class WorkoutExercisesDao {
   final tableName = 'workoutExercises';
 
   Future<int> localCreate(WorkoutExercises workoutExercises) async {
-    final database = await DatabaseService().database;
-    return await database.insert(
-      tableName,
-      workoutExercises.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
+  final database = await DatabaseService().database;
+  int result = await database.insert(
+    tableName,
+    workoutExercises.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+  print('Inserted workout exercise: ${workoutExercises.exerciseId} with result: $result');
+  return result;
+}
 
   Future<int> localUpdate(WorkoutExercises workoutExercises) async {
     final database = await DatabaseService().database;
@@ -62,10 +64,10 @@ class WorkoutExercisesDao {
   }
 
   Future<void> localTruncate() async {
-    final database = await DatabaseService().database;
-    await database.delete(tableName);
-
-  }
+  final database = await DatabaseService().database;
+  await database.delete(tableName);
+  print('Truncated table: $tableName');
+}
 
 
   ////////////////////////////////////////////////////////////
