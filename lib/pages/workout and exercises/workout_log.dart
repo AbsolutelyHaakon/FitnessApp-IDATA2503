@@ -15,9 +15,9 @@ class WorkoutLog extends StatefulWidget {
 
 class _WorkoutLogState extends State<WorkoutLog> {
 
-  bool isAscending = false; //isDescending = true :D
-  String _selectedFilter = 'All'; // Set default filter to 'All'
-  final List<String> _filterOptions = ['24hrs','7d', '30d', '365d', 'All',];
+  bool isAscending = false;
+  String _selectedFilter = 'All';
+  final List<String> _filterOptions = ['Day','Week', 'Month', 'Year', 'All',];
 
   // Dummy data for workouts
   final List<Map<String, dynamic>> _workouts = [
@@ -118,7 +118,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                 items: _filterOptions.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value, style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                    child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -143,15 +143,11 @@ class _WorkoutLogState extends State<WorkoutLog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Workout log',
-                style: TextStyle(
-                  color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             // Workout Log Section
@@ -178,16 +174,16 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
     // Case switch to determine the start date based on the selected filter
     switch (_selectedFilter) {
-      case '24hrs':
+      case 'Day':
         startDate = now.subtract(const Duration(days: 1));
         break;
-      case '7d':
+      case 'Week':
         startDate = now.subtract(const Duration(days: 7));
         break;
-      case '30d':
+      case 'Month':
         startDate = now.subtract(const Duration(days: 30));
         break;
-      case '365d':
+      case 'Year':
         startDate = now.subtract(const Duration(days: 365));
         break;
       case 'All':
@@ -235,11 +231,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: Text(
           "$monthName $year",
-          style: const TextStyle(
-            color: AppColors.fitnessPrimaryTextColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ));
       for (var workout in workoutsByMonth[monthYearKey]!) {
@@ -303,19 +295,11 @@ class _WorkoutLogState extends State<WorkoutLog> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: AppColors.fitnessPrimaryTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        color: AppColors.fitnessSecondaryTextColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
@@ -326,18 +310,11 @@ class _WorkoutLogState extends State<WorkoutLog> {
                 children: [
                   Text(
                     duration,
-                    style: const TextStyle(
-                      color: AppColors.fitnessPrimaryTextColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                   Text(
                     _isToday(date) ? 'Today' : date,
-                    style: const TextStyle(
-                      color: AppColors.fitnessSecondaryTextColor,
-                      fontSize: 10,
-                    ),
+                      style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),

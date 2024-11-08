@@ -1,14 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
-import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../database/crud/user_workouts_dao.dart';
 import '../../database/crud/workout_dao.dart';
 import '../../database/tables/workout.dart';
+
+/// The WorkoutPage is the main page for the workout section of the app.
+/// Shows all workouts the user has
+/// Let's the user create a new workout
+/// Let's the user select a workout to start
+/// Let's the user select a date to workout
+///
+/// @Last Edited: 08.11.2024
+/// @Last Edited By: Håkon Svensen Karlsen
 
 class WorkoutPage extends StatefulWidget {
   final User? user;
@@ -107,19 +114,12 @@ class _WorkoutPageState extends State<WorkoutPage>
                         scheduledWorkoutsMap.isNotEmpty
                             ? 'Scheduled Workouts'
                             : 'Workout',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 35.0,
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       if (scheduledWorkoutsMap.isEmpty)
-                        const Text(
+                         Text(
                           'Select a workout to begin',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.white,
-                          ),
+                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                     ],
                   ),
@@ -157,8 +157,6 @@ class _WorkoutPageState extends State<WorkoutPage>
                             CreateWorkoutPage(user: widget.user),
                       ),
                     );
-                    print("Resultatet er: ");
-                    print(result);
                     if (result == true) {
                       workoutsMap.clear();
                       fetchAllWorkouts();
@@ -220,10 +218,10 @@ class _WorkoutPageState extends State<WorkoutPage>
                             widthFactor: 1,
                             child: Column(
                               children: [
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                                 // Your content here
                                 Text('Select a date',
-                                    style: TextStyle(color: Colors.white)),
+                                  style: Theme.of(context).textTheme.bodyMedium),
                                 // Add more widgets as needed
                               ],
                             ),
@@ -248,7 +246,7 @@ class _WorkoutPageState extends State<WorkoutPage>
         onPressed: _toggleOptions,
         child: AnimatedBuilder(
           animation: _addIconAnimation,
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           builder: (context, child) {
             return Transform.rotate(
               angle: _addIconAnimation.value * 3.14159,

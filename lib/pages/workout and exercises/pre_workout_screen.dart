@@ -11,7 +11,6 @@ class PreWorkoutScreen extends StatefulWidget {
   final Workouts workout;
   const PreWorkoutScreen({super.key, required this.workout});
 
-
   @override
   State<PreWorkoutScreen> createState() {
     return _PreWorkoutScreenState();
@@ -19,7 +18,6 @@ class PreWorkoutScreen extends StatefulWidget {
 }
 
 class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,52 +32,42 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           },
         ),
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                widget.workout.name ?? '',
-                style: const TextStyle(
-                  color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 30,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    widget.workout.name ?? '',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                 ),
-              ),
-            ),
-             Padding(
-              padding: EdgeInsets.only(left: 20.0),
-              child: Text(
-                widget.workout.category ?? '',
-                style: const TextStyle(
-                  color: AppColors.fitnessSecondaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    widget.workout.category ?? '',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 22.0),
-              child: Text(
-                widget.workout.description ?? '',
-                style: const TextStyle(
-                  color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                Padding(
+                  padding: const EdgeInsets.only(left: 22.0),
+                  child: Text(
+                    widget.workout.description ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
-              ),
+                WorkoutPlanModule(workout: widget.workout),
+                const SizedBox(height: 20),
+              ],
             ),
-            WorkoutPlanModule(workout: widget.workout),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
-
-
 }

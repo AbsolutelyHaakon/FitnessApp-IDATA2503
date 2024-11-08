@@ -46,10 +46,10 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
   Widget build(BuildContext context) {
 
     if (widget.exerciseMap.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No exercises found for this workout.',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       );
     }
@@ -77,11 +77,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
               children: [
                 Text(
                   widget.workout.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 30,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

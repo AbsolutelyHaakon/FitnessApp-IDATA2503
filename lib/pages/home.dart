@@ -59,19 +59,11 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15.0,
-                    color: AppColors.fitnessSecondaryTextColor,
-                  ),
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                const Text(
+                Text(
                   'Home',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 35.0,
-                    color: AppColors.fitnessPrimaryTextColor,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
             ),

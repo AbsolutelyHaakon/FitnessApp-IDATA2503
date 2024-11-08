@@ -77,7 +77,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         duration: Duration(seconds: 1),
-        content: Text('Please add at least one exercise to the workout.'),
+        content: Text('Please add at least one exercise to the workout.',textAlign: TextAlign.center, ),
         backgroundColor: AppColors.fitnessWarningColor,
       ),
     );
@@ -148,11 +148,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                   child: TextFormField(
                     controller: _titleController,
                     cursorColor: AppColors.fitnessMainColor,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.fitnessPrimaryTextColor,
-                    ),
+                    style: Theme.of(context).textTheme.displayLarge,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: AppColors.fitnessBackgroundColor,
@@ -185,11 +181,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     cursorColor: AppColors.fitnessMainColor,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.fitnessPrimaryTextColor,
-                    ),
+                    style: Theme.of(context).textTheme.displayMedium,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: AppColors.fitnessBackgroundColor,

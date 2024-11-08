@@ -66,8 +66,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.fitnessBackgroundColor,
-          title: const Text('Select Exercises',
-              style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+          title:
+          Text('Select Exercises',
+              style:Theme.of(context).textTheme.headlineMedium,),
           leading: IconButton(
             icon: const Icon(CupertinoIcons.back,
                 color: AppColors.fitnessMainColor),
@@ -90,11 +91,10 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   controller: _searchController,
                   cursorColor: AppColors.fitnessMainColor,
                   style:
-                      const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                      const TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
                   decoration: const InputDecoration(
                     labelText: 'Search for exercises',
-                    labelStyle:
-                        TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                    labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: AppColors.fitnessMainColor),
@@ -123,9 +123,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                 child: Chip(
                                   label: Text(
                                     exercise.name,
-                                    style: const TextStyle(
-                                        color:
-                                            AppColors.fitnessPrimaryTextColor),
+                                    style: Theme.of(context).textTheme.labelSmall,
                                   ),
                                   backgroundColor: AppColors.fitnessMainColor,
                                 ),
@@ -138,14 +136,11 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Align(
+                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Your Exercises',
-                        style: TextStyle(
-                          color: AppColors.fitnessPrimaryTextColor,
-                          fontSize: 16,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                     Align(
@@ -187,8 +182,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                         return ListTile(
                           title: Text(
                             exercise.name,
-                            style: const TextStyle(
-                                color: AppColors.fitnessPrimaryTextColor),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           trailing: IconButton(
                             icon: Icon(
@@ -228,14 +222,11 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Align(
+                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Premade Exercises',
-                    style: TextStyle(
-                      color: AppColors.fitnessPrimaryTextColor,
-                      fontSize: 16,
-                    ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 Container(
@@ -254,8 +245,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                         return ListTile(
                           title: Text(
                             exercise.name,
-                            style: const TextStyle(
-                                color: AppColors.fitnessPrimaryTextColor),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           trailing: IconButton(
                             icon: Icon(
@@ -306,9 +296,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
               Navigator.pop(context, _selectedExercisesMap.values.toList());
             },
             backgroundColor: AppColors.fitnessMainColor,
-            child: const Text(
+            child: Text(
               'Add to Workout',
-              style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ),
         ),
