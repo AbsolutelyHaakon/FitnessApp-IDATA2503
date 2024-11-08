@@ -64,10 +64,22 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   }
 
   void initializeScrollControllers() {
-    final currentStats = exerciseStats[exercises[currentExerciseIndex]]!;
-    repsController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].reps);
-    weightController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].weight ~/ 5);
+    if (exercises.isNotEmpty && exerciseStats[exercises[currentExerciseIndex]] != null) {
+      print ("Current exercise index: $currentExerciseIndex");
+      final currentStats = exerciseStats[exercises[currentExerciseIndex]]!;
+      print ("Current stats: $currentStats");
+      repsController = FixedExtentScrollController(
+        initialItem: currentSetIndex < currentStats.length ? currentStats[currentSetIndex].reps : 0,
+      );
+      weightController = FixedExtentScrollController(
+        initialItem: currentSetIndex < currentStats.length ? currentStats[currentSetIndex].weight ~/ 5 : 0,
+      );
+    } else {
+      repsController = FixedExtentScrollController(initialItem: 0);
+      weightController = FixedExtentScrollController(initialItem: 0);
+    }
   }
+
 
   void updateScrollControllers() {
     repsController.dispose();

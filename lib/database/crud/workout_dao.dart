@@ -21,7 +21,7 @@ class WorkoutDao {
     return await database.update(
       tableName,
       workout.toMap(),
-      where: 'id = ?',
+      where: 'workoutId = ?',
       whereArgs: [workout.workoutId],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -34,7 +34,7 @@ class WorkoutDao {
   await database.update(
     tableName,
     {'isActive': isActive ? 1 : 0},
-    where: 'id = ?',
+    where: 'workoutId = ?',
     whereArgs: [workout.workoutId],
   );
 }
@@ -55,12 +55,12 @@ class WorkoutDao {
   return data.map((entry) => Workouts.fromMap(entry)).toList();
 }
 
-  Future<Workouts> localFetchById(String id) async {
+  Future<Workouts> localFetchByWorkoutId(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'workoutId = ?',
+      whereArgs: [workoutId],
     );
     return Workouts.fromMap(data.first);
   }

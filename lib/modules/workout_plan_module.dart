@@ -38,14 +38,19 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
   }
 
   void fetchExercises() async {
-    exercises = await WorkoutDao()
-        .localFetchExercisesForWorkout(widget.workout.workoutId);
+  try {
+    exercises = await WorkoutDao().localFetchExercisesForWorkout(widget.workout.workoutId);
     for (final exercise in exercises) {
-      exerciseMap[exercise] = await WorkoutExercisesDao()
-          .localFetchById(widget.workout.workoutId, exercise.exerciseId);
+      final workoutExercise = await WorkoutExercisesDao().localFetchById(widget.workout.workoutId, exercise.exerciseId);
+      if (workoutExercise != null) {
+        exerciseMap[exercise] = workoutExercise;
+      }
     }
     setState(() {});
+  } catch (e) {
+    print('Error fetching exercises: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +110,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      DuringWorkoutScreen(workout: widget.workout, exerciseMap: exerciseMap), // Replace with your actual widget
+                      DuringWorkoutScreen(workout: widget.workout, exerciseMap: exerciseMap),
                 ),
               );
             },

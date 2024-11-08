@@ -38,15 +38,27 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
     _workoutDao.localUpdateActive(widget.workout, true);
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+    if (widget.exerciseMap.isEmpty) {
+      return const Center(
+        child: Text(
+          'No exercises found for this workout.',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      );
+    }
+
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         titleSpacing: 40,
-        backgroundColor: const Color(0xFF000000),
+        backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Color(0xFF48CC6D)),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -83,31 +95,28 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
-                          // Rounded corners
                           child: LinearProgressIndicator(
                             value: totalExercises == 0
                                 ? 0
                                 : currentExercise / totalExercises,
                             backgroundColor:
                                 AppColors.fitnessSecondaryModuleColor,
-                            // Dark grey background
                             valueColor: const AlwaysStoppedAnimation<Color>(
                                 AppColors.fitnessMainColor),
-                            // Green color
-                            minHeight: 30, // Thicker progress bar
+                            minHeight: 30,
                           ),
                         ),
                         Positioned.fill(
-                            left: 10,
-                            top: 5,
-                            child: Text(
-                              textAlign: TextAlign.left,
-                              '${(totalExercises == 0 ? 0 : (currentExercise / totalExercises * 100)).toStringAsFixed(1)}%',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          left: 10,
+                          top: 5,
+                          child: Text(
+                            textAlign: TextAlign.left,
+                            '${(totalExercises == 0 ? 0 : (currentExercise / totalExercises * 100)).toStringAsFixed(1)}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
                         ),
                       ],
                     ),
