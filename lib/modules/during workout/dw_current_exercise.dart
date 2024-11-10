@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../database/tables/exercise.dart';
 import '../../database/tables/workout_exercises.dart';
+import '../../globals.dart';
 import '../../styles.dart';
 
 class SetStats {
@@ -32,7 +33,6 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   List<Exercises> exercises = [];
   List<WorkoutExercises> workoutExercises = [];
 
-  int currentExerciseIndex = 0;
   int currentSetIndex = 0;
 
   Map<Exercises, List<SetStats>> exerciseStats = {};
@@ -66,9 +66,9 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   }
 
   void initializeScrollControllers() {
-    if (exercises.isNotEmpty && exerciseStats[exercises[currentExerciseIndex]] != null) {
-      print ("Current exercise index: $currentExerciseIndex");
-      final currentStats = exerciseStats[exercises[currentExerciseIndex]]!;
+    if (exercises.isNotEmpty && exerciseStats[exercises[activeWorkoutIndex]] != null) {
+      print ("Current exercise index: $activeWorkoutIndex");
+      final currentStats = exerciseStats[exercises[activeWorkoutIndex]]!;
       print ("Current stats: $currentStats");
       repsController = FixedExtentScrollController(
         initialItem: currentSetIndex < currentStats.length ? currentStats[currentSetIndex].reps : 0,
@@ -87,14 +87,14 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     repsController.dispose();
     weightController.dispose();
 
-    final currentStats = exerciseStats[exercises[currentExerciseIndex]]!;
+    final currentStats = exerciseStats[exercises[activeWorkoutIndex]]!;
     repsController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].reps);
     weightController = FixedExtentScrollController(initialItem: currentStats[currentSetIndex].weight ~/ 5);
   }
 
   void _incrementSet() {
     setState(() {
-      if (currentSetIndex < workoutExercises[currentExerciseIndex].sets - 1) {
+      if (currentSetIndex < workoutExercises[activeWorkoutIndex].sets - 1) {
         currentSetIndex++;
         updateScrollControllers();
       }
@@ -122,7 +122,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     return Center(
       child: Column(
         children: [
-          DwProgressBar(value: (currentExerciseIndex) / exercises.length),
+          DwProgressBar(value: (activeWorkoutIndex) / exercises.length),
           const SizedBox(height: 10),
           IntrinsicHeight(
             child: Container(
@@ -147,7 +147,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                           BeepingCircle(),
                           const SizedBox(width: 10),
                           Text(
-                            exercises[currentExerciseIndex].name,
+                            exercises[activeWorkoutIndex].name,
                             style: const TextStyle(
                               color: AppColors.fitnessPrimaryTextColor,
                               fontSize: 24,
@@ -181,7 +181,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Sets: ${workoutExercises[currentExerciseIndex].sets}',
+                          'Sets: ${workoutExercises[activeWorkoutIndex].sets}',
                           style: const TextStyle(
                             color: AppColors.fitnessSecondaryTextColor,
                             fontWeight: FontWeight.bold,
@@ -190,7 +190,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Reps: ${workoutExercises[currentExerciseIndex].reps}',
+                          'Reps: ${workoutExercises[activeWorkoutIndex].reps}',
                           style: const TextStyle(
                             color: AppColors.fitnessSecondaryTextColor,
                             fontWeight: FontWeight.bold,
@@ -230,7 +230,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                           onPressed: _incrementSet,
                           child: Icon(
                             CupertinoIcons.right_chevron,
-                            color: (currentSetIndex + 1) == workoutExercises[currentExerciseIndex].sets
+                            color: (currentSetIndex + 1) == workoutExercises[activeWorkoutIndex].sets
                                 ? AppColors.fitnessSecondaryTextColor
                                 : AppColors.fitnessPrimaryTextColor,
                             size: 20,
@@ -254,7 +254,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                             scrollController: repsController,
                             onSelectedItemChanged: (int index) {
                               setState(() {
-                                exerciseStats[exercises[currentExerciseIndex]]![currentSetIndex].reps = index;
+                                exerciseStats[exercises[activeWorkoutIndex]]![currentSetIndex].reps = index;
                               });
                             },
                             children: List<Widget>.generate(50, (int index) {
@@ -279,7 +279,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                             scrollController: weightController,
                             onSelectedItemChanged: (int index) {
                               setState(() {
-                                exerciseStats[exercises[currentExerciseIndex]]![currentSetIndex].weight = index * 5;
+                                exerciseStats[exercises[activeWorkoutIndex]]![currentSetIndex].weight = index * 5;
                               });
                             },
                             children: List<Widget>.generate(50, (int index) {
@@ -295,12 +295,12 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       ],
                     ),
                   ),
-                  if (currentExerciseIndex != exercises.length - 1)
+                  if (activeWorkoutIndex != exercises.length - 1)
                   CupertinoButton(
                     onPressed: () {
                       setState(() {
-                        if (currentExerciseIndex < exercises.length - 1) {
-                          currentExerciseIndex++;
+                        if (activeWorkoutIndex < exercises.length - 1) {
+                          activeWorkoutIndex++;
                           currentSetIndex = 0;
                           updateScrollControllers();
                         }
@@ -325,13 +325,13 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       ),
                     ),
                   ),
-                  SizedBox(height: (currentExerciseIndex != exercises.length - 1) ? 0 : 20),
+                  SizedBox(height: (activeWorkoutIndex != exercises.length - 1) ? 0 : 20),
                 ],
               ),
             ),
           ),
-          SizedBox(height: (currentExerciseIndex != exercises.length - 1) ? 20 : 0),
-          if (currentExerciseIndex < exercises.length - 1)
+          SizedBox(height: (activeWorkoutIndex != exercises.length - 1) ? 20 : 0),
+          if (activeWorkoutIndex < exercises.length - 1)
             IntrinsicHeight(
               child: Container(
                 width: 400,
@@ -373,7 +373,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       children: [
                         const SizedBox(width: 50),
                         Text(
-                          exercises[currentExerciseIndex + 1].name,
+                          exercises[activeWorkoutIndex + 1].name,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -386,7 +386,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Sets: ${workoutExercises[currentExerciseIndex + 1].sets}',
+                                'Sets: ${workoutExercises[activeWorkoutIndex + 1].sets}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,
@@ -395,7 +395,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'Reps: ${workoutExercises[currentExerciseIndex + 1].reps}',
+                                'Reps: ${workoutExercises[activeWorkoutIndex + 1].reps}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,

@@ -5,7 +5,7 @@ import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/modules/globals.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 
 import '../database/crud/workout_dao.dart';
 import '../pages/workout and exercises/during_workout.dart';

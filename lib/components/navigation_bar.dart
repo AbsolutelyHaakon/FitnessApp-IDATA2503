@@ -8,7 +8,7 @@ import 'package:fitnessapp_idata2503/pages/home.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/me.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/modules/globals.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 
 
 import '../database/crud/workout_dao.dart';

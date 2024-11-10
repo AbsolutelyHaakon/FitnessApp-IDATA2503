@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/modules/globals.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 
 import '../../database/crud/workout_dao.dart';
 import '../../database/tables/workout.dart';
@@ -31,6 +31,7 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
   void _endWorkout() {
     _workoutDao.localSetAllInactive();
     hasActiveWorkout = false;
+    activeWorkoutIndex = 0;
   }
 
   @override
