@@ -50,6 +50,37 @@ class WorkoutsBox extends StatefulWidget {
 }
 
 class _WorkoutsBoxState extends State<WorkoutsBox> {
+  Future<bool?> _confirmDelete(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion",
+              style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+          content: const Text("Are you sure you want to delete this workout?"),
+          backgroundColor: AppColors.fitnessModuleColor,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false
+              },
+              child: const Text("Cancel",
+                  style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true
+              },
+              child: const Text("Delete",
+                  style: TextStyle(color: AppColors.fitnessMainColor),
+            ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -59,97 +90,118 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         final date = entry.value;
 
         return Padding(
-          padding: const EdgeInsets.only(right: 15.0), // Add right padding
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    // Date above workout box
-                    date == DateTime(1970, 1, 1) ? '' : widget.getFormattedDate(date),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.fitnessPrimaryTextColor,
-                      height: 1.1,
-                    ),
-                  ),
-                ],
+          padding: const EdgeInsets.only(right: 15.0),
+          child: Dismissible(
+            key: Key(workout.workoutId.toString()),
+            direction: DismissDirection.endToStart,
+            confirmDismiss: (direction) => _confirmDelete(context),
+            onDismissed: (direction) {
+              setState(() {
+                widget.workoutMap.remove(workout);
+
+              });
+            },
+            background: Container(
+              color: AppColors.fitnessWarningColor,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.only(top: 40, bottom: 20),
+              child: const Icon(
+                Icons.delete,
+                color: AppColors.fitnessPrimaryTextColor,
               ),
-              date == DateTime(1970, 1, 1) ? const SizedBox.shrink() : const SizedBox(height: 5),
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0), // Add top margin
-                child: CupertinoButton(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                  child: Container(
-                    constraints: const BoxConstraints(minHeight: 80),
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: AppColors.fitnessModuleColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Color(0xFF262626), // Almost the same color
-                        width: 1.0, // Very thin
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      // Date above workout box
+                      date == DateTime(1970, 1, 1) ? '' : widget.getFormattedDate(date),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.fitnessPrimaryTextColor,
+                        height: 1.1,
                       ),
                     ),
-                    padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 10), // Top padding above H1
-                              Heading1(text: workout.name),
-                              Heading2(text: workout.category ?? 'No category'),
-                              const SizedBox(height: 20),
-                              const IconText(
-                                  text: '500Cal',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.fireplace),
-                              const SizedBox(height: 7),
-                              const IconText(
-                                  text: '45min',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.access_time),
-                              const SizedBox(height: 7),
-                               IconText(
-                                  text: '${widget.workoutMap.keys.first.sets} sets',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.help_outline),
-                              const SizedBox(height: 7),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            double size = 90;
-                            return SvgPicture.asset(
-                              'assets/icons/stick_figure.svg',
-                              height: size,
-                              width: size,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => PreWorkoutScreen(workout: workout),
-                      ),
-                    );
-                  },
+                  ],
                 ),
-              ),
-            ],
+                date == DateTime(1970, 1, 1) ? const SizedBox.shrink() : const SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0), // Add top margin
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 80),
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: AppColors.fitnessModuleColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Color(0xFF262626), // Almost the same color
+                          width: 1.0, // Very thin
+                        ),
+                      ),
+                      padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10), // Top padding above H1
+                                Heading1(text: workout.name),
+                                Heading2(text: workout.category ?? 'No category'),
+                                const SizedBox(height: 20),
+                                const IconText(
+                                    text: '500Cal',
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    icon: Icons.fireplace),
+                                const SizedBox(height: 7),
+                                const IconText(
+                                    text: '45min',
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    icon: Icons.access_time),
+                                const SizedBox(height: 7),
+                                 IconText(
+                                    text: '${widget.workoutMap.keys.first.sets} sets',
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    icon: Icons.help_outline),
+                                const SizedBox(height: 7),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              double size = 90;
+                              return SvgPicture.asset(
+                                'assets/icons/stick_figure.svg',
+                                height: size,
+                                width: size,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => PreWorkoutScreen(workout: workout),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       }).toList(),
