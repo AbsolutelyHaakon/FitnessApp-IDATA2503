@@ -25,9 +25,9 @@ class _DatePickerModuleState extends State<DatePickerModule> {
 
   //Update the value accordingly
   void _updateDisplayedDate() {
-    displayedDate.value = "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
+    displayedDate.value =
+        "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
   }
-
 
   void _setPresetDate(DateTime newDate) {
     setState(() {
@@ -52,66 +52,53 @@ class _DatePickerModuleState extends State<DatePickerModule> {
           ),
           child: Column(
             children: [
-              const Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Text( //Date picker TITLE
-                  'Date Picker',
-                  style: TextStyle(
-                    color: AppColors.fitnessPrimaryTextColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
+              Container(
+                width: double.infinity,
+                height: 80,
+                child: CupertinoTheme(
+                  data: const CupertinoThemeData(
+                    primaryColor: AppColors.fitnessPrimaryTextColor,
+                  ),
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: selectedDate,
+                    onDateTimeChanged: (DateTime value) {
+                      _setPresetDate(value);
+                    },
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              Obx(() => Text( // Date picker text
-                displayedDate.value,
-                style: const TextStyle(
-                  color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
-                ),
-              )),
-              Container(
-                width: double.infinity,
-                height: 150, // Set the height to make the ScrollDatePicker smaller
-                color: AppColors.fitnessMainColor, //Background color fo the picker, but everything looks bad
-                child: ScrollDatePicker(
-                  selectedDate: selectedDate,
-                  locale: Locale('en'),
-                  onDateTimeChanged: (DateTime value) {
-                    _setPresetDate(value);
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () { //TODO: Logic here to retrieve the selected date
+                onPressed: () {
+                  //TODO: Logic here to retrieve the selected date
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text("Title"),
-                        content: DefaultTextStyle(
-                          style: TextStyle(color: AppColors.fitnessSecondaryTextColor),
-                          child: Text("${selectedDate.day}-${selectedDate.month}-${selectedDate.year}"),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("OKOKOKOKOK"),
-                          )
-                        ]
-                      );
+                          title: Text("Title"),
+                          content: DefaultTextStyle(
+                            style: TextStyle(
+                                color: AppColors.fitnessSecondaryTextColor),
+                            child: Text(
+                                "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}"),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("OKOKOKOKOK"),
+                            )
+                          ]);
                     },
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.fitnessPrimaryTextColor,
                 ),
-                child: const Text(//OK button
+                child: const Text(
+                  //OK button
                   'OK',
                   style: TextStyle(
                     color: AppColors.fitnessBackgroundColor,

@@ -5,7 +5,7 @@ import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../modules/during workout/date_picker.dart';
+import '../modules/date_picker.dart';
 import '../modules/homepage widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
 import 'social and account/me.dart';
@@ -42,10 +42,6 @@ class _HomeState extends State<Home> {
                 rightChild: WipModule(user: widget.user),
                 topPadding: 12.0,
               ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: DatePickerModule(),
-              )
             ],
           ),
         ),
