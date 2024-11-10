@@ -9,6 +9,8 @@ android {
     namespace = "ntnu.group03.fitnessapp_idata2503"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    ndkVersion = "25.1.8937393"
+
 
 
     compileOptions {
