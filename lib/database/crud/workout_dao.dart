@@ -169,12 +169,14 @@ Future<void> localSetAllInactive() async {
 
 
  Future<String?> fireBaseCreateWorkout(String? category, String? description, int? duration, int? intensity,
-     bool isPrivate, String? userId, String? video_url, String name, bool wantId) async {
+     bool isPrivate, String? userId, String? video_url, String name, bool wantId, int? calories, int? sets) async {
 
     DocumentReference docRef = await FirebaseFirestore.instance.collection('workouts').add({
       'category': category ?? '',
       'description': description ?? '',
       'duration': duration ?? 0,
+      'calories': calories ?? 0,
+      'sets': sets ?? 0,
       'intensity': intensity ?? 0,
       'isPrivate': isPrivate,
       'userId': userId ?? '',
@@ -189,6 +191,8 @@ Future<void> localSetAllInactive() async {
       category: category,
       description: description,
       duration: duration,
+      calories: calories,
+      sets: sets,
       intensity: intensity,
       isPrivate: isPrivate,
       userId: userId ?? '',

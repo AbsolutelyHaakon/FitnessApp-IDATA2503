@@ -198,11 +198,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      // Make the background transparent
                       isDismissible: true,
-                      // Allow dismissing by tapping outside
                       enableDrag: true,
-                      // Allow dismissing by dragging down
                       builder: (context) {
                         return Container(
                           decoration: const BoxDecoration(

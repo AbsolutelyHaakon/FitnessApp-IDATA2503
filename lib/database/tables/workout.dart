@@ -4,6 +4,8 @@ class Workouts {
   final String? description;
   final String? category;
   final int? duration;
+  final int? calories;
+  final int? sets;
   final int? intensity;
   final String? videoUrl;
   final bool isPrivate;
@@ -16,6 +18,8 @@ class Workouts {
     this.description,
     this.category,
     this.duration,
+    this.calories,
+    this.sets,
     this.intensity,
     this.videoUrl,
     required this.isPrivate,
@@ -30,6 +34,8 @@ class Workouts {
       'description': description,
       'category': category,
       'duration': duration,
+      'calories': calories,
+      'sets': sets,
       'intensity': intensity,
       'videoUrl': videoUrl,
       'isPrivate': isPrivate ? 1 : 0,
@@ -45,6 +51,8 @@ class Workouts {
       description: map['description'],
       category: map['category'],
       duration: map['duration'],
+      calories: map['calories'],
+      sets: map['sets'],
       intensity: map['intensity'],
       videoUrl: map['videoUrl'],
       isPrivate: map['isPrivate'] == 1,
@@ -60,6 +68,8 @@ class Workouts {
       description: map['description'],
       category: map['category'],
       duration: map['duration'],
+      calories: map['calories'],
+      sets: map['sets'],
       intensity: map['intensity'],
       videoUrl: map['videoUrl'],
       isPrivate: map['isPrivate'] == 1,

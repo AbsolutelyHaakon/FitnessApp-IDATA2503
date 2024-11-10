@@ -117,8 +117,8 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                                   color: AppColors.fitnessSecondaryTextColor,
                                   icon: Icons.access_time),
                               const SizedBox(height: 7),
-                              const IconText(
-                                  text: '7 sets',
+                               IconText(
+                                  text: '${widget.workoutMap.keys.first.sets} sets',
                                   color: AppColors.fitnessSecondaryTextColor,
                                   icon: Icons.help_outline),
                               const SizedBox(height: 7),

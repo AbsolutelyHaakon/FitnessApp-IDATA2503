@@ -95,7 +95,10 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           widget.user!.uid,
           '', // TODO: Implement workout URL
           _titleController.text,
-          true);
+          true,
+          0, // TODO: Implement workout calories
+          exercises.length, // Number of exercises / sets
+          );
 
       for (var exercise in exercises) {
         final reps = int.tryParse(exercise.repsController.text) ?? 0;

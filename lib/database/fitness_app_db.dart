@@ -35,6 +35,8 @@ class FitnessAppDB {
       category STRING,
       duration INTEGER,
       intensity INTEGER,
+      calories INTEGER,
+      sets INTEGER,
       videoURL STRING,
       isPrivate BOOLEAN NOT NULL DEFAULT FALSE,
       userId INTEGER,
