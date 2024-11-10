@@ -44,9 +44,11 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
   Future<void> _checkForActiveWorkouts() async {
     hasActiveWorkout = await _workoutDao.hasActiveWorkouts();
     if (hasActiveWorkout) {
-      activeWorkout = await _workoutDao.fetchActiveWorkout();
+      Workouts temp = await _workoutDao.fetchActiveWorkout();
+      setState(() {
+        activeWorkout = temp;
+      });
     }
-    setState(() {});
   }
 
 
