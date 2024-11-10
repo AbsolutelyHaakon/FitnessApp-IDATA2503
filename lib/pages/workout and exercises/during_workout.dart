@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../database/tables/workout.dart';
-import '../../modules/during workout/dw_progress-bar.dart';
 import '../../styles.dart';
 
 class DuringWorkoutScreen extends StatefulWidget {
@@ -78,48 +77,6 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
                 Text(
                   widget.workout.name,
                   style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Workout Progress',
-                      style: TextStyle(
-                        color: AppColors.fitnessSecondaryTextColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: LinearProgressIndicator(
-                            value: totalExercises == 0
-                                ? 0
-                                : currentExercise / totalExercises,
-                            backgroundColor:
-                                AppColors.fitnessSecondaryModuleColor,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppColors.fitnessMainColor),
-                            minHeight: 30,
-                          ),
-                        ),
-                        Positioned.fill(
-                          left: 10,
-                          top: 5,
-                          child: Text(
-                            textAlign: TextAlign.left,
-                            '${(totalExercises == 0 ? 0 : (currentExercise / totalExercises * 100)).toStringAsFixed(1)}%',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
                 DwCurrentExercise(exerciseMap: widget.exerciseMap),
                 const SizedBox(height: 20),

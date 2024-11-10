@@ -39,11 +39,15 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
     }
     if (isRunning) {
       _timer?.cancel();
-      isRunning = false;
+      setState(() {
+        isRunning = false;
+      });
       return;
     }
     if (remainingSeconds > 0 && _selectedTime == _previousSelectedTime) {
-      isRunning = true;
+      setState(() {
+        isRunning = true;
+      });
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
           if (remainingSeconds > 0) {
@@ -88,7 +92,7 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
     return Center(
       child: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 20),
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
@@ -128,12 +132,12 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: () => _setPresetTime(5, 0),
+                        onPressed: () => _setPresetTime(3, 0),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _selectedButton == 0 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
                         ),
                           child: Text(
-                            '5:00',
+                            '3:00',
                             style: TextStyle(
                               color: _selectedButton == 0 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
@@ -142,12 +146,12 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                           ),
                       ),
                       ElevatedButton(
-                        onPressed: () => _setPresetTime(10, 1),
+                        onPressed: () => _setPresetTime(5, 1),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _selectedButton == 1 ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessBackgroundColor,
                         ),
                           child: Text(
-                            '10:00',
+                            '5:00',
                             style: TextStyle(
                               color: _selectedButton == 1 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
@@ -156,12 +160,12 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                           ),
                       ),
                       ElevatedButton(
-                        onPressed: () => _setPresetTime(15, 2),
+                        onPressed: () => _setPresetTime(8, 2),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _selectedButton == 2 ? AppColors.fitnessPrimaryTextColor: AppColors.fitnessBackgroundColor,
                         ),
                           child: Text(
-                            '15:00',
+                            '8:00',
                             style: TextStyle(
                               color: _selectedButton == 2 ? AppColors.fitnessBackgroundColor : AppColors.fitnessSecondaryTextColor,
                               fontWeight: FontWeight.bold,
@@ -191,9 +195,9 @@ class _BreakTimerModuleState extends State<BreakTimerModule> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         alignment: Alignment.center,
-                        child: const Text("Start Timer",
+                        child:  Text(isRunning ? "Stop Timer" : "Start Timer" ,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.fitnessPrimaryTextColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 20,

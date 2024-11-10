@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dart';
+import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -120,6 +122,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     return Center(
       child: Column(
         children: [
+          DwProgressBar(value: (currentExerciseIndex) / exercises.length),
           const SizedBox(height: 10),
           IntrinsicHeight(
             child: Container(
@@ -141,14 +144,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       Row(
                         children: [
                           const SizedBox(width: 20),
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: const BoxDecoration(
-                              color: AppColors.fitnessMainColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
+                          BeepingCircle(),
                           const SizedBox(width: 10),
                           Text(
                             exercises[currentExerciseIndex].name,
@@ -299,6 +295,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       ],
                     ),
                   ),
+                  if (currentExerciseIndex != exercises.length - 1)
                   CupertinoButton(
                     onPressed: () {
                       setState(() {
@@ -313,7 +310,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       width: 410,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: Color(0xFF48CC6D),
+                        color: AppColors.fitnessMainColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       alignment: Alignment.center,
@@ -321,18 +318,19 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                         "Finish Exercise",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: CupertinoColors.black,
+                          color: AppColors.fitnessBackgroundColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
                     ),
                   ),
+                  SizedBox(height: (currentExerciseIndex != exercises.length - 1) ? 0 : 20),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: (currentExerciseIndex != exercises.length - 1) ? 20 : 0),
           if (currentExerciseIndex < exercises.length - 1)
             IntrinsicHeight(
               child: Container(
@@ -341,7 +339,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                   color: AppColors.fitnessModuleColor,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: Color(0xFF262626), // Almost the same color
+                    color: Color(0xFF262626),
                     width: 1.0, // Very thin
                   ),
                 ),
@@ -361,9 +359,9 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text(
+                        const Text(
                           'Next Exercise',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.grey,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -378,33 +376,26 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                           exercises[currentExerciseIndex + 1].name,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 30,
+                            fontSize: 24,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 50.0),
-                          child: Column(
+                          padding: const EdgeInsets.only(left: 40.0),
+                          child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Sets   ${workoutExercises[currentExerciseIndex + 1].sets}',
+                                'Sets: ${workoutExercises[currentExerciseIndex + 1].sets}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
                                 ),
                               ),
+                              const SizedBox(width: 10),
                               Text(
-                                'Reps  ${workoutExercises[currentExerciseIndex + 1].reps}',
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              Text(
-                                'Weight: 0',
+                                'Reps: ${workoutExercises[currentExerciseIndex + 1].reps}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,
@@ -417,6 +408,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
