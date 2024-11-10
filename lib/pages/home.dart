@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/modules/calendar_home_module.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
@@ -33,6 +34,10 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               _buildHeader(formattedDate),
+              Align(
+                alignment: Alignment.topCenter,
+                child: CalendarHomeModule(),
+              ),
               _buildModuleRow(
                 leftChild: CommunityModule(),
                 rightChild: RingsModule(),
