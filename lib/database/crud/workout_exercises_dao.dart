@@ -32,7 +32,7 @@ class WorkoutExercisesDao {
     return data.map((entry) => WorkoutExercises.fromMap(entry)).toList();
   }
 
-  Future<List<WorkoutExercises>> localFetchByWorkoutId(int workoutId) async {
+  Future<List<WorkoutExercises>> localFetchByWorkoutId(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -52,7 +52,7 @@ class WorkoutExercisesDao {
     return WorkoutExercises.fromMap(data.first);
   }
 
-  Future<void> localDelete(int workoutId, int exerciseId) async {
+  Future<void> localDelete(String workoutId, String exerciseId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -71,6 +71,22 @@ class WorkoutExercisesDao {
   ////////////////////////////////////////////////////////////
   /////////////////// FIREBASE FUNCTIONS /////////////////////
   ////////////////////////////////////////////////////////////
+
+  Future<void> deleteAllWorkoutExercisesWithWorkoutId(String workoutId) async {
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection('workoutExercises')
+      .where('workoutId', isEqualTo: workoutId)
+      .get();
+
+  for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+    await doc.reference.delete();
+  }
+
+  List<WorkoutExercises> deleteList = await localFetchByWorkoutId(workoutId);
+    for (WorkoutExercises workoutExercises in deleteList) {
+      localDelete(workoutExercises.workoutId, workoutExercises.exerciseId);
+    }
+}
 
 
   Future<Map<String, dynamic>> fireBaseFetchAllWorkoutExercises(String workoutId) async {

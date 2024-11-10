@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,9 +15,10 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 // Last edited by Håkon Svensen Karlsen
 
 class WorkoutsBox extends StatefulWidget {
-  const WorkoutsBox({super.key, required this.workoutMap});
+   const WorkoutsBox({super.key, required this.workoutMap});
 
   final Map<Workouts, DateTime> workoutMap;
+
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);
@@ -50,6 +52,8 @@ class WorkoutsBox extends StatefulWidget {
 }
 
 class _WorkoutsBoxState extends State<WorkoutsBox> {
+  final WorkoutDao _workoutDao = WorkoutDao();
+
   Future<bool?> _confirmDelete(BuildContext context) {
     return showDialog<bool>(
       context: context,
@@ -98,7 +102,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
             onDismissed: (direction) {
               setState(() {
                 widget.workoutMap.remove(workout);
-
+                _workoutDao.fireBaseDeleteWorkout(workout.workoutId);
               });
             },
             background: Container(

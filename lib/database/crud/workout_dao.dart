@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/exercise.dart';
@@ -6,6 +7,7 @@ import '../tables/workout.dart';
 
 class WorkoutDao {
   final tableName = 'workouts';
+  final WorkoutExercisesDao _workoutDao = WorkoutExercisesDao();
 
   Future<int> localCreate(Workouts workout) async {
     final database = await DatabaseService().database;
@@ -88,11 +90,11 @@ Future<void> localSetAllInactive() async {
     return Workouts.fromMap(data.first);
   }
 
-  Future<void> localDelete(int id) async {
+  Future<void> localDelete(String id) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
-      where: 'id = ?',
+      where: 'workoutId = ?',
       whereArgs: [id],
     );
   }
@@ -135,6 +137,13 @@ Future<void> localSetAllInactive() async {
   ////////////////////////////////////////////////////////////
   ////////////////// FIREBASE FUNCTIONS //////////////////////
   ////////////////////////////////////////////////////////////
+
+
+  Future<void> fireBaseDeleteWorkout(String WorkoutId) async {
+    await FirebaseFirestore.instance.collection('workouts').doc(WorkoutId).delete();
+    localDelete(WorkoutId);
+    _workoutDao.deleteAllWorkoutExercisesWithWorkoutId(WorkoutId);
+  }
 
   Future<Map<String, dynamic>> fireBaseFetchAllWorkouts(String userId) async {
 
