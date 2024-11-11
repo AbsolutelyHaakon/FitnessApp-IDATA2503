@@ -89,6 +89,23 @@ class ExerciseDao {
   /////////// FIREBASE FUNCTIONS //////////////
   /////////////////////////////////////////////
 
+ Future<void> fireBaseFirstTimeStartup() async {
+  final database = await DatabaseService().database;
+
+  // Check for public exercises in the local database
+  final publicData = await database.query(
+    'exercises',
+    where: 'isPrivate = ? AND userId = ?',
+    whereArgs: [0, ''],
+  );
+
+  // If no public exercises exist, fetch from Firestore
+  if (publicData.isEmpty) {
+    await fireBaseFetchAllExercisesFromFireBase(null);
+  }
+}
+
+
   Future<Map<String, dynamic>> fireBaseDeleteExercise() async {
     return {'error': 'Not implemented'};
   }
