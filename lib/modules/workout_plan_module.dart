@@ -109,7 +109,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
           const SizedBox(height: 90),
           CupertinoButton(
             onPressed: () async {
-              if (hasActiveWorkout) {
+              if (hasActiveWorkout.value) {
                 bool shouldStartNewWorkout = await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(

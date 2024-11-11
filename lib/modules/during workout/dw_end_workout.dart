@@ -6,17 +6,8 @@ import '../../database/crud/workout_dao.dart';
 import '../../database/tables/workout.dart';
 import '../../styles.dart';
 
-// Shows the selected workout plan details before deciding to start it
-// Displays workout info and potentially a map of the workout route
-
-// Last edited: 27/09/2024
-// Last edited by: Matti Kjellstadli
-
-//TODO: Implement map fucntionality
-//TODO: Connect it to the persistent storage
-
 class DwEndWorkout extends StatefulWidget {
-  Workouts workout;
+  final Workouts workout;
 
   DwEndWorkout({super.key, required this.workout});
 
@@ -27,10 +18,9 @@ class DwEndWorkout extends StatefulWidget {
 class _DwEndWorkoutState extends State<DwEndWorkout> {
   final WorkoutDao _workoutDao = WorkoutDao();
 
-
-  void _endWorkout() {
-    _workoutDao.localSetAllInactive();
-    hasActiveWorkout = false;
+  Future<void> _endWorkout() async {
+    await _workoutDao.localSetAllInactive();
+    hasActiveWorkout.value = false;
     activeWorkoutIndex = 0;
   }
 
@@ -54,8 +44,8 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CupertinoButton(
-                    onPressed: () {
-                      _endWorkout();
+                    onPressed: () async {
+                      await _endWorkout();
                       Navigator.pop(context);
                     },
                     child: Container(

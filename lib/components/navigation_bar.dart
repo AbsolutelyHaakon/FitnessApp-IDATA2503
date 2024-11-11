@@ -42,8 +42,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
   }
 
   Future<void> _checkForActiveWorkouts() async {
-    hasActiveWorkout = await _workoutDao.hasActiveWorkouts();
-    if (hasActiveWorkout) {
+    hasActiveWorkout.value = await _workoutDao.hasActiveWorkouts();
+    if (hasActiveWorkout.value) {
       Workouts temp = await _workoutDao.fetchActiveWorkout();
       setState(() {
         activeWorkout = temp;
@@ -76,8 +76,11 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
   @override
   void initState() {
     super.initState();
-
-    _checkForActiveWorkouts();
+    hasActiveWorkout.addListener(() {
+      if (hasActiveWorkout.value) {
+        _checkForActiveWorkouts();
+      }
+    });
   }
 
 
@@ -99,9 +102,9 @@ Widget build(BuildContext context) {
             ],
           ),
         ),
-        if (hasActiveWorkout)
+        if (hasActiveWorkout.value)
           Positioned(
-            bottom: 0, // Adjusted to account for the height of the active workout bar
+            bottom: 0,
             left: 0,
             right: 0,
             child: GestureDetector(
@@ -117,7 +120,7 @@ Widget build(BuildContext context) {
               },
               child: Container(
                 width: double.infinity,
-                height: 60,
+                height: 30,
                 color: AppColors.fitnessMainColor,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.only(bottom: 5.0),
@@ -126,7 +129,7 @@ Widget build(BuildContext context) {
                   style: const TextStyle(
                     color: AppColors.fitnessPrimaryTextColor,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
+                    fontSize: 12.0,
                   ),
                   textAlign: TextAlign.center,
                 ),
