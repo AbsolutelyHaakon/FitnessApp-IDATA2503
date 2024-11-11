@@ -24,6 +24,7 @@ class FitnessAppDB {
       description STRING,
       category STRING,
       videoURL STRING,
+      imageURL STRING,
       isPrivate BOOLEAN NOT NULL DEFAULT FALSE,
       userId STRING,
       FOREIGN KEY (userId) REFERENCES users (id)

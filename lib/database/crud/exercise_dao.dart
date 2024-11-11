@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
+
+import '../imgur_service.dart';
 
 class ExerciseDao {
   final tableName = 'exercises';
@@ -155,6 +160,7 @@ class ExerciseDao {
       String? description,
       String? category,
       String? videoUrl,
+      String? imageURL,
       bool? isPrivate,
       String? userId) async {
     // See if the person editing the exercise is the owner
@@ -180,6 +186,7 @@ class ExerciseDao {
             description ?? data['description'],
             category ?? data['category'],
             videoUrl ?? data['video_url'],
+            imageURL ?? data['imageURL'],
             isPrivate ?? data['isPrivate'],
             userId ?? data['userId']);
       }
@@ -202,6 +209,7 @@ class ExerciseDao {
         description: description ?? data['description'],
         category: category ?? data['category'],
         videoUrl: videoUrl ?? data['video_url'],
+        imageURL: imageURL ?? data['imageURL'],
         isPrivate: isPrivate ?? data['isPrivate'],
         userId: userId ?? data['userId'],
       ));
@@ -214,11 +222,19 @@ class ExerciseDao {
 
   Future<Map<String, dynamic>> fireBaseCreateExercise(
       String name,
-      String description,
+      String? description,
       String category,
-      String videoUrl,
+      String? videoUrl,
+      XFile? image,
       bool isPrivate,
-      String userId) async {
+      String? userId) async {
+
+    // Handle ImageURL storing if it exits
+    String imageURL = '';
+    if (image != null) {
+      imageURL = await uploadImage(image);
+    }
+
     // If it is private then get the userID so it can be tied to the user
     bool userExists = false;
     if (isPrivate) {
@@ -235,11 +251,12 @@ class ExerciseDao {
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('exercises').add({
       'name': name,
-      'description': description,
+      'description': description ?? '',
       'category': category,
-      'video_url': videoUrl,
+      'video_url': videoUrl ?? '',
+      'imageURL': imageURL ?? '',
       'isPrivate': isPrivate,
-      'userId': userId,
+      'userId': userId ?? '',
     });
 
     String exerciseId = docRef.id;
@@ -247,13 +264,28 @@ class ExerciseDao {
     await localCreate(Exercises(
       exerciseId: exerciseId,
       name: name,
-      description: description,
+      description: description ?? '',
       category: category,
-      videoUrl: videoUrl,
+      videoUrl: videoUrl ?? '',
+      imageURL: imageURL ?? '',
       isPrivate: isPrivate,
-      userId: userId,
+      userId: userId ?? '',
     ));
 
     return {'exerciseId': exerciseId};
   }
+
+  ImgurService imgurService = ImgurService();
+
+  Future<String> uploadImage(XFile image) async {
+    String? imgurUrl = await imgurService.saveImageToImgur(image);
+    if (imgurUrl != null) {
+      print('Image uploaded to Imgur: $imgurUrl');
+      return imgurUrl;
+    } else {
+      print('Failed to upload to Imgur.');
+      return "";
+    }
+  }
+
 }
