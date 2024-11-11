@@ -100,7 +100,8 @@ class _LoginModuleState extends State<LoginModule> {
             controller: widget.emailController,
             decoration: const InputDecoration(
               labelText: 'Email',
-              labelStyle: TextStyle(color: AppColors.fitnessMainColor),
+              labelStyle: TextStyle(color: AppColors.fitnessMainColor,
+              fontSize: 16),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: AppColors.fitnessMainColor),
               ),
@@ -121,7 +122,8 @@ class _LoginModuleState extends State<LoginModule> {
             controller: widget.passwordController,
             decoration: const InputDecoration(
               labelText: 'Password',
-              labelStyle: TextStyle(color: AppColors.fitnessMainColor),
+              labelStyle: TextStyle(color: AppColors.fitnessMainColor,
+              fontSize: 16),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: AppColors.fitnessMainColor),
               ),
@@ -151,7 +153,8 @@ class _LoginModuleState extends State<LoginModule> {
               controller: _confirmPasswordController,
               decoration: const InputDecoration(
                 labelText: 'Confirm Password',
-                labelStyle: TextStyle(color: AppColors.fitnessMainColor),
+                labelStyle: TextStyle(color: AppColors.fitnessMainColor,
+                fontSize: 16),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.fitnessMainColor),
                 ),
