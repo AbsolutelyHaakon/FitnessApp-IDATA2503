@@ -19,6 +19,8 @@ class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
 }
+const double commonPadding = 16.0;
+const double rowSpacing = 28.0;
 
 class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
@@ -45,7 +47,6 @@ class _HomeState extends State<Home> {
               _buildModuleRow(
                 leftChild: WorkoutLogModule(),
                 rightChild: WipModule(user: widget.user),
-                topPadding: 12.0,
               ),
             ],
           ),
@@ -109,18 +110,20 @@ class _HomeState extends State<Home> {
     );
   }
 
+
+
   Widget _buildModuleRow({
     required Widget leftChild,
     required Widget rightChild,
-    double topPadding = 16.0,
+    double topPadding = rowSpacing,
   }) {
     return Padding(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0, top: topPadding),
+      padding: EdgeInsets.only(left: commonPadding, right: commonPadding, top: topPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Expanded(child: leftChild),
-          const SizedBox(width: 8),
+          const SizedBox(width: commonPadding),
           Expanded(child: rightChild),
         ],
       ),
