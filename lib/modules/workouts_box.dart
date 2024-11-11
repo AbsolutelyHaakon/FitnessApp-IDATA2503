@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
@@ -15,10 +16,10 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 // Last edited by Håkon Svensen Karlsen
 
 class WorkoutsBox extends StatefulWidget {
-   const WorkoutsBox({super.key, required this.workoutMap});
+  const WorkoutsBox({super.key, required this.workoutMap, this.user});
 
   final Map<Workouts, DateTime> workoutMap;
-
+  final User? user;
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);
@@ -77,7 +78,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
               },
               child: const Text("Delete",
                   style: TextStyle(color: AppColors.fitnessMainColor),
-            ),
+              ),
             ),
           ],
         );
@@ -97,7 +98,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
           padding: const EdgeInsets.only(right: 0.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
-            direction: DismissDirection.endToStart,
+            direction: workout.userId == widget.user?.uid
+                ? DismissDirection.endToStart
+                : DismissDirection.none,
             confirmDismiss: (direction) => _confirmDelete(context),
             onDismissed: (direction) {
               setState(() {
@@ -144,7 +147,6 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                       decoration: BoxDecoration(
                         color: AppColors.fitnessModuleColor,
                         borderRadius: BorderRadius.circular(30),
-
                       ),
                       padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                       child: Row(
@@ -169,7 +171,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                                     color: AppColors.fitnessSecondaryTextColor,
                                     icon: Icons.access_time),
                                 const SizedBox(height: 7),
-                                 IconText(
+                                IconText(
                                     text: '${widget.workoutMap.keys.first.sets} sets',
                                     color: AppColors.fitnessSecondaryTextColor,
                                     icon: Icons.help_outline),
