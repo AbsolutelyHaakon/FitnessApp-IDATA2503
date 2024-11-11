@@ -4,8 +4,14 @@ import 'package:intl/intl.dart';
 
 import '../styles.dart';
 
-class CalendarHomeModule extends StatelessWidget {
+class CalendarHomeModule extends StatefulWidget {
   const CalendarHomeModule({super.key});
+
+  @override
+  _CalendarHomeModuleState createState() => _CalendarHomeModuleState();
+}
+
+class _CalendarHomeModuleState extends State<CalendarHomeModule> {
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +29,12 @@ class CalendarHomeModule extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildWorkoutSlot('Workout 1', 'Monday, 10:00 AM'),
-                _buildWorkoutSlot('Workout 2', 'Wednesday, 2:00 PM'),
-                _buildWorkoutSlot('Workout 3', 'Friday, 6:00 PM'),
+
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:
+                    _buildWorkoutSlots(),
+                ),
               ],
             ),
           ),
@@ -34,10 +43,22 @@ class CalendarHomeModule extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildWorkoutSlots() {
+    List<Map<String, String>> workouts = [
+      {'title': 'Leg day', 'time': '12:00 - 13:00'},
+      {'title': 'Hike', 'time': '15:00 - 16:00'},
+    ];
+
+
+    return workouts.map((workout) {
+      return _buildWorkoutSlot(workout['title']!, workout['time']!);
+    }).toList();
+  }
+
   Widget _buildWorkoutSlot(String title, String time) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.fitnessSecondaryModuleColor,
@@ -50,7 +71,7 @@ class CalendarHomeModule extends StatelessWidget {
             title,
             style: const TextStyle(
               color: AppColors.fitnessPrimaryTextColor,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
             ),
           ),

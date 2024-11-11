@@ -94,7 +94,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         final date = entry.value;
 
         return Padding(
-          padding: const EdgeInsets.only(right: 15.0),
+          padding: const EdgeInsets.only(right: 0.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
             direction: DismissDirection.endToStart,
@@ -135,21 +135,18 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                 ),
                 date == DateTime(1970, 1, 1) ? const SizedBox.shrink() : const SizedBox(height: 5),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10.0), // Add top margin
+                  padding: const EdgeInsets.only(top: 0.0), // Add top margin
                   child: CupertinoButton(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 80),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                         color: AppColors.fitnessModuleColor,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Color(0xFF262626), // Almost the same color
-                          width: 1.0, // Very thin
-                        ),
+                        borderRadius: BorderRadius.circular(30),
+
                       ),
-                      padding: const EdgeInsets.fromLTRB(15, 5, 30, 5),
+                      padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -165,7 +162,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                                 const IconText(
                                     text: '500Cal',
                                     color: AppColors.fitnessSecondaryTextColor,
-                                    icon: Icons.fireplace),
+                                    icon: Icons.local_fire_department),
                                 const SizedBox(height: 7),
                                 const IconText(
                                     text: '45min',
