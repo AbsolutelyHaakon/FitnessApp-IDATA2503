@@ -30,10 +30,7 @@ class WorkoutLogModule extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: Color(0xFF262626), // Almost the same color
-              width: 1.0, // Very thin
-            ),
+
           ),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,

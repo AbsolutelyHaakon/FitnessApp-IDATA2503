@@ -36,14 +36,15 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               _buildHeader(formattedDate),
-              Align(
-                alignment: Alignment.topCenter,
-                child: CalendarHomeModule(),
-              ),
               _buildModuleRow(
                 leftChild: CommunityModule(),
                 rightChild: RingsModule(),
               ),
+              Padding(
+                  padding: const EdgeInsets.only(top: 28),
+                  child: CalendarHomeModule()
+              ),
+
               _buildModuleRow(
                 leftChild: WorkoutLogModule(),
                 rightChild: WipModule(user: widget.user),
