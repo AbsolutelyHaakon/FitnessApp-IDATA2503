@@ -12,21 +12,53 @@ class CalendarHomeModule extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.fitnessModuleColor,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildWorkoutSlot('Workout 1', 'Monday, 10:00 AM'),
-                _buildWorkoutSlot('Workout 2', 'Wednesday, 2:00 PM'),
-                _buildWorkoutSlot('Workout 3', 'Friday, 6:00 PM'),
-              ],
+        child: CupertinoButton(
+          onPressed: () {
+            // Define the action to be performed when the button is pressed
+          },
+          padding: EdgeInsets.zero,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.fitnessModuleColor,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5, bottom: 5),
+              child: Row (
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          CupertinoIcons.calendar_today,
+                          color: AppColors.fitnessMainColor,
+                          size: 80,
+                        ),
+                        Text(
+                          DateFormat('EEEE, MMM d').format(DateTime.now()),
+                          style: const TextStyle(
+                            color: AppColors.fitnessPrimaryTextColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+
+                        _buildWorkoutSlot('Leg day', '12:00 - 13:00'),
+                        _buildWorkoutSlot('Hike', '15:00 - 16:00'),
+                      ],
+                    ),
+                  ),
+                ],
+              )
             ),
           ),
         ),
@@ -37,10 +69,10 @@ class CalendarHomeModule extends StatelessWidget {
   Widget _buildWorkoutSlot(String title, String time) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.fitnessSecondaryModuleColor,
+        color: AppColors.fitnessMainColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -50,7 +82,7 @@ class CalendarHomeModule extends StatelessWidget {
             title,
             style: const TextStyle(
               color: AppColors.fitnessPrimaryTextColor,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
             ),
           ),
