@@ -101,8 +101,11 @@ class ExerciseDao {
 
   // If no public exercises exist, fetch from Firestore
   if (publicData.isEmpty) {
-    await fireBaseFetchAllExercisesFromFireBase(null);
+  final exercises = await fireBaseFetchAllExercisesFromFireBase(null);
+  for (var exercise in exercises['exercises']) {
+    await localCreate(exercise);
   }
+}
 }
 
 
