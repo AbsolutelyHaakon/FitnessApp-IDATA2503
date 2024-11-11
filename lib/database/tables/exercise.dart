@@ -4,6 +4,7 @@ class Exercises {
   final String? description;
   final String? category;
   final String? videoUrl;
+  final String? imageURL;
   final bool isPrivate;
   final String? userId;
 
@@ -13,6 +14,7 @@ class Exercises {
     this.description,
     this.category,
     this.videoUrl,
+    this.imageURL,
     required this.isPrivate,
     this.userId,
   });
@@ -24,6 +26,7 @@ class Exercises {
       'description': description,
       'category': category,
       'videoUrl': videoUrl,
+      'imageURL': imageURL,
       'isPrivate': isPrivate ? 1 : 0, // Store as int
       'userId': userId,
     };
@@ -36,6 +39,7 @@ class Exercises {
       description: map['description'],
       category: map['category'],
       videoUrl: map['videoUrl'],
+      imageURL: map['imageURL'],
       isPrivate: map['isPrivate'],
       userId: map['userId'],
     );
@@ -48,6 +52,7 @@ class Exercises {
       description: map['description'],
       category: map['category'],
       videoUrl: map['videoUrl'],
+      imageURL: map['imageURL'],
       isPrivate: map['isPrivate'] == 1,
       userId: map['userId'],
     );

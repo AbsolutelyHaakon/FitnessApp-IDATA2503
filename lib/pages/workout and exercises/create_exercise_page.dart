@@ -36,6 +36,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
           _descriptionController.text,
           _selectedCategory,
           _videoUrlController.text,
+          _selectedImage,
           !_isPublic,
           widget.user?.uid ?? '',
         );
