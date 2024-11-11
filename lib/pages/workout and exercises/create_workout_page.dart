@@ -73,54 +73,59 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   }
 
   void _createWorkout() async {
-  if (exercises.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text('Please add at least one exercise to the workout.',textAlign: TextAlign.center, ),
-        backgroundColor: AppColors.fitnessWarningColor,
-      ),
-    );
-    return;
-  }
+    if (exercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text(
+            'Please add at least one exercise to the workout.',
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: AppColors.fitnessWarningColor,
+        ),
+      );
+      return;
+    }
 
-  if (_formKey.currentState!.validate()) {
-    try {
-      final result = await workoutDao.fireBaseCreateWorkout(
+    if (_formKey.currentState!.validate()) {
+      try {
+        final result = await workoutDao.fireBaseCreateWorkout(
           _selectedCategory,
           _descriptionController.text,
-          0, // TODO: Implement workout duration
+          0,
+          // TODO: Implement workout duration
           _intensity,
           !_isPublic,
           widget.user?.uid,
-          '', // TODO: Implement workout URL
+          '',
+          // TODO: Implement workout URL
           _titleController.text,
           true,
-          0, // TODO: Implement workout calories
+          0,
+          // TODO: Implement workout calories
           exercises.length, // Number of exercises / sets
-          );
-
-      for (var exercise in exercises) {
-        final reps = int.tryParse(exercise.repsController.text) ?? 0;
-        final sets = int.tryParse(exercise.setsController.text) ?? 0;
-        workoutExercisesDao.fireBaseCreateWorkoutExercise(
-          result!,
-          exercise.exerciseId,
-          reps,
-          sets,
-          exercises.indexOf(exercise),
         );
-      }
 
-      // Only pop after workout creation succeeds
-      Navigator.pop(context, true);
-    } catch (e) {
-      print(e);
-      // Optionally, show an error dialog or message here
+        for (var exercise in exercises) {
+          final reps = int.tryParse(exercise.repsController.text) ?? 0;
+          final sets = int.tryParse(exercise.setsController.text) ?? 0;
+          workoutExercisesDao.fireBaseCreateWorkoutExercise(
+            result!,
+            exercise.exerciseId,
+            reps,
+            sets,
+            exercises.indexOf(exercise),
+          );
+        }
+
+        // Only pop after workout creation succeeds
+        Navigator.pop(context, true);
+      } catch (e) {
+        print(e);
+        // Optionally, show an error dialog or message here
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -145,22 +150,47 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(height: 16),
                 Container(
                   height: 80,
-                  margin: const EdgeInsets.symmetric(horizontal: 15),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextFormField(
                     controller: _titleController,
                     cursorColor: AppColors.fitnessMainColor,
-                    style: Theme.of(context).textTheme.displayLarge,
-                    decoration: InputDecoration(
+                    style: const TextStyle(
+                        color: AppColors.fitnessMainColor, fontSize: 25),
+                    decoration: const InputDecoration(
+                      labelText: 'Workout Title',
+                      labelStyle: TextStyle(
+                          color: AppColors.fitnessMainColor, fontSize: 25),
                       filled: true,
                       fillColor: AppColors.fitnessBackgroundColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: AppColors.fitnessModuleColor),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: AppColors.fitnessMainColor),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 12.0),
+                      errorStyle: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
                       ),
                       hintText: 'Workout Title..',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         color: AppColors.fitnessSecondaryTextColor,
                       ),
                     ),
@@ -172,28 +202,53 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     },
                   ),
                 ),
+                const SizedBox(height: 16),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: _isDescriptionFocused
                       ? MediaQuery.of(context).size.height * 0.2
                       : 60,
-                  margin: const EdgeInsets.symmetric(horizontal: 15),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextFormField(
                     controller: _descriptionController,
                     focusNode: _descriptionFocusNode,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     cursorColor: AppColors.fitnessMainColor,
-                    style: Theme.of(context).textTheme.displayMedium,
-                    decoration: InputDecoration(
+                    style: const TextStyle(
+                        color: AppColors.fitnessMainColor, fontSize: 16),
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      labelStyle: TextStyle(
+                          color: AppColors.fitnessMainColor, fontSize: 14),
                       filled: true,
                       fillColor: AppColors.fitnessBackgroundColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: AppColors.fitnessModuleColor),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: AppColors.fitnessMainColor),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 12.0),
+                      errorStyle: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
                       ),
                       hintText: 'Description..',
-                      hintStyle: const TextStyle(
+                      hintStyle: TextStyle(
                         color: AppColors.fitnessSecondaryTextColor,
                       ),
                     ),
