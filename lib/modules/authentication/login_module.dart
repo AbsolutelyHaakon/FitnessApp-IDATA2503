@@ -1,4 +1,3 @@
-// lib/modules/authentication/login_module.dart
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/account_setup.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
@@ -83,12 +82,11 @@ class _LoginModuleState extends State<LoginModule> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Form(
-    key: widget.formKey,
-    child: Center(
-      child: SingleChildScrollView(
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: widget.formKey,
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -107,172 +105,182 @@ Widget build(BuildContext context) {
               ),
             ),
             const SizedBox(height: 10),
-            TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              controller: widget.emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 14),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.fitnessModuleColor),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
-                errorStyle: TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                ),
-              ),
-              style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16), // Add spacing between the fields
-            TextFormField(
-              autocorrect: false,
-              controller: widget.passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 14),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.fitnessModuleColor),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                ),
-                contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
-                errorStyle: TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                ),
-              ),
-              style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
-              obscureText: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                return null;
-              },
-            ),
-            if (_errorMessage != null)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: AppColors.fitnessWarningColor),
-                ),
-              ),
-            const SizedBox(height: 16),
-            if (_isRegistering)
-              TextFormField(
-                controller: _confirmPasswordController,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
-                  labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.fitnessModuleColor),
-                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
-                  errorStyle: TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                  ),
-                ),
-                style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != widget.passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 56.0, // Adjust height to match input fields
-              child: ElevatedButton(
-                onPressed: () {
-                  if (widget.formKey.currentState!.validate()) {
-                    if (_isRegistering) {
-                      _register();
-                    } else {
-                      _login();
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.fitnessMainColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0), // Same border radius as input fields
-                  ),
-                ),
-                child: Text(
-                  _isRegistering ? 'Register' : 'Login',
-                  style: const TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _isRegistering = !_isRegistering;
-                });
-              },
-              child: RichText(
-                text: TextSpan(
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextSpan(
-                      text: _isRegistering ? 'Already have an account? ' : 'Don\'t have an account? ',
-                      style: const TextStyle(color: AppColors.fitnessMainColor),
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      controller: widget.emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 14),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.fitnessModuleColor),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+                        errorStyle: TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                        ),
+                      ),
+                      style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
                     ),
-                    TextSpan(
-                      text: _isRegistering ? 'Login' : 'Register',
-                      style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                    const SizedBox(height: 16), // Add spacing between the fields
+                    TextFormField(
+                      autocorrect: false,
+                      controller: widget.passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 14),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.fitnessModuleColor),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+                        errorStyle: TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                        ),
+                      ),
+                      style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    if (_errorMessage != null)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: AppColors.fitnessWarningColor),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    if (_isRegistering)
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        decoration: const InputDecoration(
+                          labelText: 'Confirm Password',
+                          labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.fitnessModuleColor),
+                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+                          errorStyle: TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                          ),
+                        ),
+                        style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != widget.passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56.0, // Adjust height to match input fields
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (widget.formKey.currentState!.validate()) {
+                            if (_isRegistering) {
+                              _register();
+                            } else {
+                              _login();
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.fitnessMainColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0), // Same border radius as input fields
+                          ),
+                        ),
+                        child: Text(
+                          _isRegistering ? 'Register' : 'Login',
+                          style: const TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isRegistering = !_isRegistering;
+                        });
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: _isRegistering ? 'Already have an account? ' : 'Don\'t have an account? ',
+                              style: const TextStyle(color: AppColors.fitnessMainColor),
+                            ),
+                            TextSpan(
+                              text: _isRegistering ? 'Login' : 'Register',
+                              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -281,7 +289,6 @@ Widget build(BuildContext context) {
           ],
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
