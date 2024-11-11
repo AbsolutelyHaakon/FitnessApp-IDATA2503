@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,9 +48,13 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _selectedImage = image;
-    });
+    if (image != null) {
+      setState(() {
+        _selectedImage = image;
+      });
+    } else {
+      print("No image selected.");
+    }
   }
 
   InputDecoration _inputDecoration(String label) => InputDecoration(
@@ -109,12 +115,31 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                             (value?.isEmpty ?? true) ? 'Please enter an exercise name' : null,
                       ),
                       const SizedBox(height: 4),
-                      TextFormField(
-                        controller: _descriptionController,
-                        cursorColor: AppColors.fitnessMainColor,
-                        style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                        decoration: _inputDecoration('Description'),
-                        maxLines: 3,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_selectedImage != null)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Image.file(
+                                File(_selectedImage!.path),
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          Flexible(
+                            child: TextFormField(
+                              controller: _descriptionController,
+                              cursorColor: AppColors.fitnessMainColor,
+                              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500),
+                              decoration: _inputDecoration('Description'),
+                              maxLines: 4,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
