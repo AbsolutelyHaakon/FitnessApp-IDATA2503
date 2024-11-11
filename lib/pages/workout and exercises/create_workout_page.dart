@@ -92,7 +92,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           0, // TODO: Implement workout duration
           _intensity,
           !_isPublic,
-          widget.user!.uid,
+          widget.user?.uid,
           '', // TODO: Implement workout URL
           _titleController.text,
           true,

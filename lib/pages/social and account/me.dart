@@ -52,6 +52,7 @@ class _MeState extends State<Me> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if(widget.user != null)
                 IconButton(
                   icon: const Icon(Icons.sync),
                   color: AppColors.fitnessPrimaryTextColor,

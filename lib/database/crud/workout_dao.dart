@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:sqflite/sqflite.dart';
@@ -70,14 +72,26 @@ Future<void> localSetAllInactive() async {
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
 
-  Future<List<Workouts>> localFetchAllById(String id) async {
+  // TODO CREATE A PUBLIC WORKOUT FETCH
+  Future<List<Workouts>> localFetchAllById(String? id) async {
   final database = await DatabaseService().database;
-  final data = await database.query(
-    tableName,
-    where: 'userId = ? OR (isPrivate = ? AND userId = ?)',
-    whereArgs: [id, 0, ''],
-  );
-  return data.map((entry) => Workouts.fromMap(entry)).toList();
+  if (id != null && id.isNotEmpty){
+    final data = await database.query(
+      tableName,
+      where: 'userId = ? OR (isPrivate = ? AND userId = ?)',
+      whereArgs: [id, 0, ''],
+    );
+    return data.map((entry) => Workouts.fromMap(entry)).toList();
+  } else {
+    final data = await database.query(
+      tableName,
+      where: 'isPrivate = ? OR (isPrivate = ? AND userId = ?)',
+      whereArgs: [0, 1, ''],
+    );
+    return data.map((entry) => Workouts.fromMap(entry)).toList();
+  }
+
+
 }
 
   Future<Workouts> localFetchByWorkoutId(String workoutId) async {
@@ -134,6 +148,29 @@ Future<void> localSetAllInactive() async {
     return Workouts.fromMap(maps.first);
   }
 
+
+  Future<String> generateUniqueWorkoutId() async {
+    final database = await DatabaseService().database;
+    final existingIds = await database.query(tableName, columns: ['workoutId']);
+    final existingIdSet = existingIds.map((e) => e['workoutId'] as String).toSet();
+
+    String newId;
+    do {
+      newId = _generateRandomId();
+    } while (existingIdSet.contains(newId));
+
+    return newId;
+  }
+
+  String _generateRandomId() {
+    const length = 10;
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final rand = Random();
+    return List.generate(length, (index) => chars[rand.nextInt(chars.length)]).join();
+  }
+
+
+
   ////////////////////////////////////////////////////////////
   ////////////////// FIREBASE FUNCTIONS //////////////////////
   ////////////////////////////////////////////////////////////
@@ -180,36 +217,55 @@ Future<void> localSetAllInactive() async {
  Future<String?> fireBaseCreateWorkout(String? category, String? description, int? duration, int? intensity,
      bool isPrivate, String? userId, String? video_url, String name, bool wantId, int? calories, int? sets) async {
 
-    DocumentReference docRef = await FirebaseFirestore.instance.collection('workouts').add({
-      'category': category ?? '',
-      'description': description ?? '',
-      'duration': duration ?? 0,
-      'calories': calories ?? 0,
-      'sets': sets ?? 0,
-      'intensity': intensity ?? 0,
-      'isPrivate': isPrivate,
-      'userId': userId ?? '',
-      'video_url': video_url ?? '',
-      'name': name,
-    });
+    if (userId != null && userId.isNotEmpty) {
+      DocumentReference docRef = await FirebaseFirestore.instance.collection('workouts').add({
+        'category': category ?? '',
+        'description': description ?? '',
+        'duration': duration ?? 0,
+        'calories': calories ?? 0,
+        'sets': sets ?? 0,
+        'intensity': intensity ?? 0,
+        'isPrivate': isPrivate,
+        'userId': userId ?? '',
+        'video_url': video_url ?? '',
+        'name': name,
+      });
 
-    String newDocId = docRef.id;
+      String newDocId = docRef.id;
 
-    localCreate(Workouts(
-      workoutId: newDocId,
-      category: category,
-      description: description,
-      duration: duration,
-      calories: calories,
-      sets: sets,
-      intensity: intensity,
-      isPrivate: isPrivate,
-      userId: userId ?? '',
-      videoUrl: video_url,
-      name: name,
-    ));
+      localCreate(Workouts(
+        workoutId: newDocId,
+        category: category,
+        description: description,
+        duration: duration,
+        calories: calories,
+        sets: sets,
+        intensity: intensity,
+        isPrivate: isPrivate,
+        userId: userId ?? '',
+        videoUrl: video_url,
+        name: name,
+      ));
+      return wantId ? newDocId : null;
+    } else {
+      String newDocId = await _generateRandomId();
 
-    return wantId ? newDocId : null;
+      localCreate(Workouts(
+        workoutId: newDocId,
+        category: category,
+        description: description,
+        duration: duration,
+        calories: calories,
+        sets: sets,
+        intensity: intensity,
+        isPrivate: isPrivate,
+        userId: userId ?? '',
+        videoUrl: video_url,
+        name: name,
+      ));
+
+      return wantId ? newDocId : null;
+    }
 }
 
 

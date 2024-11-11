@@ -32,7 +32,6 @@ class _WorkoutPageState extends State<WorkoutPage>
   late Animation<double> _addIconAnimation;
   late Animation<double> _buttonAnimation;
   bool _showOptions = false;
-  Map<Workouts, DateTime> scheduledWorkoutsMap = {};
   List<Workouts> workouts = [];
   Map<Workouts, DateTime> workoutsMap = {};
 
@@ -42,11 +41,11 @@ class _WorkoutPageState extends State<WorkoutPage>
   @override
   void initState() {
     super.initState();
-    fetchScheduledWorkouts();
-    if (scheduledWorkoutsMap.isEmpty) {
-      fetchAllWorkouts();
-    }
 
+    // These actions are only done if a user is logged in
+    fetchAllWorkouts();
+
+    // Animation controllers for floating button widget
     _addIconController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -57,19 +56,12 @@ class _WorkoutPageState extends State<WorkoutPage>
       parent: _addIconController,
       curve: Curves.easeInOut,
     );
-  }
 
-  void fetchScheduledWorkouts() async {
-    final upcomingWorkouts =
-    await UserWorkoutsDao().FetchUpcomingWorkouts(widget.user!.uid);
-    if (!mounted) return;
-    setState(() {
-      scheduledWorkoutsMap = upcomingWorkouts;
-    });
+
   }
 
   void fetchAllWorkouts() async {
-    workouts = await WorkoutDao().localFetchAllById(widget.user!.uid);
+    workouts = await WorkoutDao().localFetchAllById(widget.user?.uid);
     if (!mounted) return;
     setState(() {
       for (var workout in workouts) {
@@ -110,13 +102,9 @@ class _WorkoutPageState extends State<WorkoutPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        scheduledWorkoutsMap.isNotEmpty
-                            ? 'Scheduled Workouts'
-                            : 'Workout',
+                      Text( 'Workout',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                      if (scheduledWorkoutsMap.isEmpty)
                          Text(
                           'Select a workout to begin',
                            style: Theme.of(context).textTheme.bodyMedium,
@@ -130,9 +118,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: WorkoutsBox(
-                      workoutMap: scheduledWorkoutsMap.isNotEmpty
-                          ? scheduledWorkoutsMap
-                          : workoutsMap,
+                      workoutMap: workoutsMap,
                     ),
                   ),
                 ),

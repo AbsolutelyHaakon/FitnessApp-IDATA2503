@@ -33,21 +33,23 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
       _selectedExercisesMap[exercise.exerciseId!] = exercise;
     }
     print("selected exercises: ${_selectedExercisesMap.values.toList()}");
+
     _fetchExercises();
   }
 
   Future<void> _fetchExercises() async {
-    final result = await exerciseDao.localFetchAllExercises(widget.user!.uid);
+    final result = await exerciseDao.localFetchAllExercises(widget.user?.uid);
     setState(() {
       // Populate the list of exercises with users private exercises
-      _allUserExercises = result['exercises']
-          .where((exercise) => exercise.userId == widget.user!.uid)
-          .cast<Exercises>()
-          .toList();
-
+      if (widget.user != null) {
+        _allUserExercises = result['exercises']
+            .where((exercise) => exercise.userId == widget.user!.uid)
+            .cast<Exercises>()
+            .toList();
+      }
       // Populate the list of exercises with public exercises
       _allPublicExercises = result['exercises']
-          .where((exercise) => exercise.userId != widget.user!.uid)
+          .where((exercise) => exercise.isPrivate == false)
           .cast<Exercises>()
           .toList();
     });
@@ -136,6 +138,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    if (widget.user != null)
                      Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -143,6 +146,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
+                    if (widget.user != null)
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -165,7 +169,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                     ),
                   ],
                 ),
+                if (widget.user != null)
                 const SizedBox(height: 16),
+                if (widget.user != null)
                 Container(
                   child: ListView.builder(
                     shrinkWrap: true,

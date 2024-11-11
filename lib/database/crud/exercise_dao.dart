@@ -61,14 +61,8 @@ class ExerciseDao {
     return await database.query(tableName);
   }
 
-  Future<Map<String, dynamic>> localFetchAllExercises(String userId) async {
+  Future<Map<String, dynamic>> localFetchAllExercises(String? userId) async {
     final database = await DatabaseService().database;
-
-    // Fetch private exercises for the user
-    final privateData = await database
-        .query(tableName, where: 'userId = ?', whereArgs: [userId]);
-    List<Exercises> privateExercises =
-        privateData.map((entry) => Exercises.fromSqfl(entry)).toList();
 
     // Fetch public exercises
     final publicData = await database.query(tableName,
@@ -78,10 +72,17 @@ class ExerciseDao {
     List<Exercises> publicExercises =
         publicData.map((entry) => Exercises.fromSqfl(entry)).toList();
 
-    // Combine both lists
-    List<Exercises> allExercises = [...privateExercises, ...publicExercises];
+    if (userId != null && userId.isNotEmpty ) {
+      // Fetch private exercises for the user
+      final privateData = await database
+          .query(tableName, where: 'userId = ?', whereArgs: [userId]);
+      List<Exercises> privateExercises =
+      privateData.map((entry) => Exercises.fromSqfl(entry)).toList();
 
-    return {'exercises': allExercises};
+      return {'exercises': [...privateExercises, ...publicExercises]};
+    } else {
+      return {'exercises': publicExercises};
+    }
   }
 
   /////////////////////////////////////////////
@@ -93,35 +94,39 @@ class ExerciseDao {
   }
 
   Future<Map<String, dynamic>> fireBaseFetchAllExercisesFromFireBase(
-      String userId) async {
-    QuerySnapshot privateExercisesQuery = await FirebaseFirestore.instance
-        .collection('exercises')
-        .where('isPrivate', isEqualTo: true)
-        .where('userId', isEqualTo: userId)
-        .get();
+      String? userId) async {
 
+    // Fetch public exercises
     QuerySnapshot publicExercisesQuery = await FirebaseFirestore.instance
         .collection('exercises')
         .where('isPrivate', isEqualTo: false)
         .where('userId', isEqualTo: '')
         .get();
 
-    List<Exercises> privateExercises = privateExercisesQuery.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      data['exerciseId'] = doc.id;
-      return Exercises.fromMap(data);
-    }).toList();
-
-    print(privateExercises[0].name);
-    print(privateExercises[0].isPrivate);
     List<Exercises> publicExercises = publicExercisesQuery.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['exerciseId'] = doc.id;
       return Exercises.fromMap(data);
     }).toList();
 
-    List<Exercises> allExercises = [...privateExercises, ...publicExercises];
-    return {'exercises': allExercises};
+    // If user is logged in, fetch private exercises
+    if (userId != null){
+      QuerySnapshot privateExercisesQuery = await FirebaseFirestore.instance
+          .collection('exercises')
+          .where('isPrivate', isEqualTo: true)
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      List<Exercises> privateExercises = privateExercisesQuery.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['exerciseId'] = doc.id;
+        return Exercises.fromMap(data);
+      }).toList();
+
+      return {'exercises' : [...privateExercises, ...publicExercises]};
+    } else {
+      return {'exercises' : publicExercises};
+    }
   }
 
   Future<Map<String, dynamic>> fireBaseUpdateExercise(
