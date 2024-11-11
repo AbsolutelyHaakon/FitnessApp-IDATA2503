@@ -83,15 +83,30 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
 
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          if (hasActiveWorkout)
-            GestureDetector(
+@override
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Stack(
+      children: [
+        Positioned.fill(
+          child: Column(
+            children: [
+              const SizedBox(height: 70),
+              Expanded(
+                child: _getSelectedPage(_selectedIndex),
+              ),
+            ],
+          ),
+        ),
+        if (hasActiveWorkout)
+          Positioned(
+            bottom: 0, // Adjusted to account for the height of the active workout bar
+            left: 0,
+            right: 0,
+            child: GestureDetector(
               onTap: () async {
-                Map<Exercises, WorkoutExercises> exerciseMap =
-                    await fetchExercises();
+                Map<Exercises, WorkoutExercises> exerciseMap = await fetchExercises();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -104,7 +119,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
                 width: double.infinity,
                 height: 60,
                 color: AppColors.fitnessMainColor,
-                alignment: Alignment.bottomCenter,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.only(bottom: 5.0),
                 child: Text(
                   'Workout active: ${activeWorkout.name}',
@@ -117,59 +132,56 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
                 ),
               ),
             ),
-          SizedBox(height: hasActiveWorkout ? 20 : 70),
-          Expanded(
-            child: _getSelectedPage(_selectedIndex),
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/icons/home.svg',
-              width: 20.0,
-              height: 20.0,
-              color: _selectedIndex == 0
-                  ? AppColors.fitnessMainColor
-                  : AppColors.fitnessSecondaryTextColor,
-            ),
-            label: 'Home',
+      ],
+    ),
+    bottomNavigationBar: BottomNavigationBar(
+      items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: SvgPicture.asset(
+            'assets/icons/home.svg',
+            width: 20.0,
+            height: 20.0,
+            color: _selectedIndex == 0
+                ? AppColors.fitnessMainColor
+                : AppColors.fitnessSecondaryTextColor,
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/icons/workout.svg',
-              width: 30.0,
-              height: 30.0,
-              color: _selectedIndex == 1
-                  ? AppColors.fitnessMainColor
-                  : AppColors.fitnessSecondaryTextColor,
-            ),
-            label: 'Workout',
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: SvgPicture.asset(
+            'assets/icons/workout.svg',
+            width: 30.0,
+            height: 30.0,
+            color: _selectedIndex == 1
+                ? AppColors.fitnessMainColor
+                : AppColors.fitnessSecondaryTextColor,
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/icons/me.svg',
-              width: 25.0,
-              height: 25.0,
-              color: _selectedIndex == 2
-                  ? AppColors.fitnessMainColor
-                  : AppColors.fitnessSecondaryTextColor,
-            ),
-            label: 'Me',
+          label: 'Workout',
+        ),
+        BottomNavigationBarItem(
+          icon: SvgPicture.asset(
+            'assets/icons/me.svg',
+            width: 25.0,
+            height: 25.0,
+            color: _selectedIndex == 2
+                ? AppColors.fitnessMainColor
+                : AppColors.fitnessSecondaryTextColor,
           ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: AppColors.fitnessMainColor,
-        unselectedItemColor: AppColors.fitnessSecondaryTextColor,
-        backgroundColor: AppColors.fitnessBackgroundColor,
-        onTap: _onItemTapped,
-        iconSize: 30.0,
-        unselectedFontSize: 14.0,
-      ),
+          label: 'Me',
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: AppColors.fitnessMainColor,
+      unselectedItemColor: AppColors.fitnessSecondaryTextColor,
       backgroundColor: AppColors.fitnessBackgroundColor,
-    );
-  }
+      onTap: _onItemTapped,
+      iconSize: 30.0,
+      unselectedFontSize: 14.0,
+    ),
+    backgroundColor: AppColors.fitnessBackgroundColor,
+  );
+}
 
   Widget _getSelectedPage(int index) {
     switch (index) {

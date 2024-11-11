@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
 Map<Workouts, DateTime> workoutMap = {
-  new Workouts(workoutId: 'Gay', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime.now(),
+  new Workouts(workoutId: 'Gay', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime(1970, 1, 1),
 };
 
   @override
