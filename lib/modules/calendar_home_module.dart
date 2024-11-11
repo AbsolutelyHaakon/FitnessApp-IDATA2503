@@ -4,66 +4,55 @@ import 'package:intl/intl.dart';
 
 import '../styles.dart';
 
-class CalendarHomeModule extends StatelessWidget {
+class CalendarHomeModule extends StatefulWidget {
   const CalendarHomeModule({super.key});
+
+  @override
+  _CalendarHomeModuleState createState() => _CalendarHomeModuleState();
+}
+
+class _CalendarHomeModuleState extends State<CalendarHomeModule> {
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
-        child: CupertinoButton(
-          onPressed: () {
-            // Define the action to be performed when the button is pressed
-          },
-          padding: EdgeInsets.zero,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.fitnessModuleColor,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 5, bottom: 5),
-              child: Row (
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          CupertinoIcons.calendar_today,
-                          color: AppColors.fitnessMainColor,
-                          size: 80,
-                        ),
-                        Text(
-                          DateFormat('EEEE, MMM d').format(DateTime.now()),
-                          style: const TextStyle(
-                            color: AppColors.fitnessPrimaryTextColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.fitnessModuleColor,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5, bottom: 5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
 
-                        _buildWorkoutSlot('Leg day', '12:00 - 13:00'),
-                        _buildWorkoutSlot('Hike', '15:00 - 16:00'),
-                      ],
-                    ),
-                  ),
-                ],
-              )
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:
+                    _buildWorkoutSlots(),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildWorkoutSlots() {
+    List<Map<String, String>> workouts = [
+      {'title': 'Leg day', 'time': '12:00 - 13:00'},
+      {'title': 'Hike', 'time': '15:00 - 16:00'},
+    ];
+
+
+    return workouts.map((workout) {
+      return _buildWorkoutSlot(workout['title']!, workout['time']!);
+    }).toList();
   }
 
   Widget _buildWorkoutSlot(String title, String time) {
@@ -72,7 +61,7 @@ class CalendarHomeModule extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.fitnessMainColor,
+        color: AppColors.fitnessSecondaryModuleColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
