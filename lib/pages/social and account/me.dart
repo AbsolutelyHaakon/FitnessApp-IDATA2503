@@ -41,18 +41,18 @@ class _MeState extends State<Me> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            color: AppColors.fitnessBackgroundColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if(widget.user != null)
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Column(
+      children: [
+        Container(
+          width: double.infinity,
+          color: AppColors.fitnessBackgroundColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (widget.user != null)
                 IconButton(
                   icon: const Icon(Icons.sync),
                   color: AppColors.fitnessPrimaryTextColor,
@@ -63,10 +63,11 @@ class _MeState extends State<Me> {
                     );
                   },
                 ),
-              ],
-            ),
+            ],
           ),
-          Expanded(
+        ),
+        Expanded(
+          child: SingleChildScrollView(
             child: Container(
               width: double.infinity,
               color: AppColors.fitnessBackgroundColor,
@@ -100,9 +101,10 @@ class _MeState extends State<Me> {
               ),
             ),
           ),
-        ],
-      ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
-    );
-  }
+        ),
+      ],
+    ),
+    backgroundColor: AppColors.fitnessBackgroundColor,
+  );
+}
 }
