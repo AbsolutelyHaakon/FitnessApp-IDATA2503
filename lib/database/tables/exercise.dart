@@ -1,12 +1,12 @@
 class Exercises {
   final String exerciseId;
-  final String name;
-  final String? description;
-  final String? category;
-  final String? videoUrl;
-  final String? imageURL;
-  final bool isPrivate;
-  final String? userId;
+  String name;
+  String? description;
+  String? category;
+  String? videoUrl;
+  String? imageURL;
+  bool isPrivate;
+  String? userId;
 
   Exercises({
     required this.exerciseId,

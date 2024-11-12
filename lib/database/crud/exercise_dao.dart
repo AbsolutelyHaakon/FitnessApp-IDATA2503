@@ -163,6 +163,10 @@ class ExerciseDao {
       String? imageURL,
       bool? isPrivate,
       String? userId) async {
+
+    if (userId == null || userId.isEmpty) {
+      return {'error': 'You need to log in to edit an exercise'};
+    }
     // See if the person editing the exercise is the owner
     bool isOwner = false;
     bool isPrivateBefore = false;
@@ -170,6 +174,7 @@ class ExerciseDao {
         .collection('exercises')
         .doc(exerciseId)
         .get();
+    // If exercise exists
     if (documentSnapshot.exists && documentSnapshot.data() != null) {
       var data = documentSnapshot.data() as Map<String, dynamic>;
       // Check if they are the owner and if it is a public or private exercise
