@@ -27,16 +27,13 @@ class WorkoutPage extends StatefulWidget {
 }
 
 class _WorkoutPageState extends State<WorkoutPage>
-    with SingleTickerProviderStateMixin{
+    with SingleTickerProviderStateMixin {
   late AnimationController _addIconController;
   late Animation<double> _addIconAnimation;
   late Animation<double> _buttonAnimation;
   bool _showOptions = false;
   List<Workouts> workouts = [];
   Map<Workouts, DateTime> workoutsMap = {};
-
-
-
 
   @override
   void initState() {
@@ -56,8 +53,6 @@ class _WorkoutPageState extends State<WorkoutPage>
       parent: _addIconController,
       curve: Curves.easeInOut,
     );
-
-
   }
 
   void fetchAllWorkouts() async {
@@ -102,13 +97,14 @@ class _WorkoutPageState extends State<WorkoutPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text( 'Workout',
+                      Text(
+                        'Workout',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                         Text(
-                          'Select a workout to begin',
-                           style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                      Text(
+                        'Select a workout to begin',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ],
                   ),
                 ),
@@ -127,15 +123,12 @@ class _WorkoutPageState extends State<WorkoutPage>
           ),
           if (_showOptions) ...[
             Positioned(
-              bottom: 200,
+              bottom: 180,
               right: 16,
               child: ScaleTransition(
                 scale: _buttonAnimation,
-                child: FloatingActionButton(
-                  heroTag: 'AddButton',
-                  backgroundColor: AppColors.fitnessMainColor,
-                  shape: const CircleBorder(),
-                  onPressed: () async {
+                child: GestureDetector(
+                  onTap: () async {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -149,24 +142,49 @@ class _WorkoutPageState extends State<WorkoutPage>
                     }
                     _toggleOptions();
                   },
-                  child: const Icon(Icons.add),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessMainColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Create New',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
                 ),
               ),
             ),
             Positioned(
-              bottom: 140,
+              bottom: 130,
               right: 16,
               child: ScaleTransition(
                 scale: _buttonAnimation,
-                child: FloatingActionButton(
-                  heroTag: 'PresetButton',
-                  backgroundColor: AppColors.fitnessMainColor,
-                  shape: const CircleBorder(),
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
                     // Redirect to another page (not created yet)
                     _toggleOptions();
                   },
-                  child: const Icon(Icons.list),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessMainColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Choose Preset',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -175,11 +193,8 @@ class _WorkoutPageState extends State<WorkoutPage>
               right: 16,
               child: ScaleTransition(
                 scale: _buttonAnimation,
-                child: FloatingActionButton(
-                  heroTag: 'datePicker',
-                  backgroundColor: AppColors.fitnessMainColor,
-                  shape: const CircleBorder(),
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -190,7 +205,6 @@ class _WorkoutPageState extends State<WorkoutPage>
                         return Container(
                           decoration: const BoxDecoration(
                             color: AppColors.fitnessBackgroundColor,
-                            // Black semi-transparent background
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20),
@@ -202,9 +216,10 @@ class _WorkoutPageState extends State<WorkoutPage>
                             child: Column(
                               children: [
                                 const SizedBox(height: 20),
-                                // Your content here
-                                Text('Select a date',
-                                  style: Theme.of(context).textTheme.bodyMedium),
+                                Text(
+                                  'Select a date',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
                                 // Add more widgets as needed
                               ],
                             ),
@@ -214,7 +229,22 @@ class _WorkoutPageState extends State<WorkoutPage>
                     );
                     _toggleOptions();
                   },
-                  child: const Icon(Icons.calendar_today),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessMainColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Schedule',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
