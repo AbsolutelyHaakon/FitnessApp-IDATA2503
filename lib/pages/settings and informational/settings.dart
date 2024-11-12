@@ -8,8 +8,9 @@ import '../../database/Initialization/get_data_from_server.dart';
 
 class SettingsPage extends StatelessWidget {
   final User? user;
+  final VoidCallback? onLogout;
 
-  SettingsPage({Key? key, this.user}) : super(key: key);
+  SettingsPage({Key? key, this.user, this.onLogout}) : super(key: key);
 
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
@@ -34,6 +35,11 @@ class SettingsPage extends StatelessWidget {
         SnackBar(content: Text('Sync failed: $e')),
       );
     }
+  }
+
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    onLogout?.call();
   }
 
   @override
@@ -114,7 +120,8 @@ class SettingsPage extends StatelessWidget {
                   icon: Icons.logout,
                   text: 'Log out',
                   onTap: () {
-                    // Log out
+                    _logout();
+                    Navigator.of(context).pop();
                   },
                 ),
               ],

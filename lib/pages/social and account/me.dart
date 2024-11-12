@@ -1,11 +1,11 @@
-import 'package:fitnessapp_idata2503/modules/user_profile_module.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/user_profile_module.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
-import 'package:fitnessapp_idata2503/modules/authentication/login_module.dart';
 
 import '../../database/Initialization/get_data_from_server.dart';
+import '../../modules/profile and authentication/login_module.dart';
 
 class Me extends StatefulWidget {
   final User? user;

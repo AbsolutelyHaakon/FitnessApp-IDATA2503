@@ -45,7 +45,6 @@ class UserProfileModule extends StatelessWidget {
                 const SizedBox(height: 20),
                 _buildProfileDetails(),
                 const SizedBox(height: 16),
-                _buildLogoutButton(context),
               ],
             ),
           ),
@@ -81,7 +80,7 @@ class UserProfileModule extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SettingsPage(user: FirebaseAuth.instance.currentUser)),
+              MaterialPageRoute(builder: (context) => SettingsPage(user: FirebaseAuth.instance.currentUser, onLogout: onLogout)),
             );
           },
         ),
@@ -114,32 +113,6 @@ class UserProfileModule extends StatelessWidget {
         color: Colors.white70,
         fontSize: 15,
         fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Center _buildLogoutButton(BuildContext context) {
-    return Center(
-      child: CupertinoButton(
-        onPressed: () => _logout(context),
-        child: Container(
-          width: 410,
-          height: 60,
-          decoration: BoxDecoration(
-            color: AppColors.fitnessBackgroundColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          alignment: Alignment.center,
-          child: const Text(
-            "Logout",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: CupertinoColors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-        ),
       ),
     );
   }
