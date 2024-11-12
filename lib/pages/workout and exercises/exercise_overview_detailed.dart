@@ -37,7 +37,8 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.exercise.name);
-    _descriptionController = TextEditingController(text: widget.exercise.description);
+    _descriptionController =
+        TextEditingController(text: widget.exercise.description);
     _videoUrlController = TextEditingController(text: widget.exercise.videoUrl);
     _categoryController = TextEditingController(text: widget.exercise.category);
     _isPublic = !widget.exercise.isPrivate; // Improved for clarity
@@ -60,8 +61,10 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
       _nameController.text,
       _descriptionController.text,
       _categoryController.text,
-      widget.exercise.videoUrl, // Implement videoUrl editing
-      widget.exercise.imageURL, // Implement image editing
+      widget.exercise.videoUrl,
+      // Implement videoUrl editing
+      widget.exercise.imageURL,
+      // Implement image editing
       _isPublic,
       widget.user?.uid,
     );
@@ -100,7 +103,8 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -118,42 +122,72 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
       body: _buildBody(),
       bottomNavigationBar: _isEditing
           ? Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: _saveChanges,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.fitnessMainColor,
-          ),
-          child: const Text('Save', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-        ),
-      )
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: _saveChanges,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.fitnessMainColor,
+                ),
+                child: const Text('Save',
+                    style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+              ),
+            )
           : null,
     );
   }
 
-  Widget _buildBody() {
-    return Column(
+Widget _buildBody() {
+  return SingleChildScrollView(
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: _isEditing
               ? TextField(
-            controller: _nameController,
-            style: const TextStyle(fontSize: 32, color: AppColors.fitnessPrimaryTextColor, fontWeight: FontWeight.w900),
-          )
+                  controller: _nameController,
+                  style: const TextStyle(
+                      fontSize: 32,
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.w900),
+                  decoration: _inputDecoration('Exercise Name'),
+                )
               : Text(
-            widget.exercise.name,
-            style: const TextStyle(fontSize: 32, color: AppColors.fitnessPrimaryTextColor, fontWeight: FontWeight.w900),
-          ),
+                  widget.exercise.name,
+                  style: const TextStyle(
+                      fontSize: 32,
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.w900),
+                ),
         ),
         const SizedBox(height: 10),
-        if (widget.exercise.imageURL != null && widget.exercise.imageURL!.isNotEmpty)
+        if (widget.exercise.imageURL != null &&
+            widget.exercise.imageURL!.isNotEmpty)
           Image.network(
             widget.exercise.imageURL!,
             width: MediaQuery.of(context).size.width,
             height: 200,
             fit: BoxFit.cover,
+          )
+        else
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 200,
+            color: AppColors.fitnessSecondaryModuleColor,
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.image, size: 100, color: AppColors.fitnessMainColor),
+                Text(
+                  'No Image',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.fitnessPrimaryTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -164,42 +198,74 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
               const SizedBox(height: 20),
               _isEditing
                   ? TextField(
-                controller: _descriptionController,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.fitnessPrimaryTextColor),
-                minLines: 1,
-                maxLines: null,
-              )
-                  : Text(
-                widget.exercise.description ?? '',
-                style: const TextStyle(fontSize: 14, color: AppColors.fitnessPrimaryTextColor, fontWeight: FontWeight.w400),
-              ),
+                      controller: _descriptionController,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.fitnessPrimaryTextColor),
+                      decoration: _inputDecoration('Description'),
+                      minLines: 1,
+                      maxLines: null,
+                    )
+                  : widget.exercise.description != null &&
+                          widget.exercise.description!.isNotEmpty
+                      ? Text(
+                          widget.exercise.description!,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.fitnessPrimaryTextColor,
+                              fontWeight: FontWeight.w400),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.all(8.0),
+                          width: double.infinity,
+                          child: const Text(
+                            'No description...',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.fitnessSecondaryTextColor,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
             ],
           ),
         ),
       ],
-    );
-  }
-
+    ),
+  );
+}
   Widget _buildCategoryAndPrivacy() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _isEditing
             ? SizedBox(
-          width: 150,
-          child: DropdownButtonFormField<String>(
-            value: _categoryController.text,
-            items: _categories.map((category) => DropdownMenuItem(value: category, child: Text(category, style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)))).toList(),
-            onChanged: (newValue) => setState(() => _categoryController.text = newValue!),
-            decoration: _inputDecoration('Category'),
-            dropdownColor: AppColors.fitnessBackgroundColor,
-          ),
-        )
-            : Text(widget.exercise.category ?? '', style: const TextStyle(fontSize: 16, color: AppColors.fitnessPrimaryTextColor)),
+                width: 150,
+                child: DropdownButtonFormField<String>(
+                  value: _categoryController.text,
+                  items: _categories
+                      .map((category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category,
+                              style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor))))
+                      .toList(),
+                  onChanged: (newValue) =>
+                      setState(() => _categoryController.text = newValue!),
+                  decoration: _inputDecoration('Category'),
+                  dropdownColor: AppColors.fitnessBackgroundColor,
+                ),
+              )
+            : Text(widget.exercise.category ?? '',
+                style: const TextStyle(
+                    fontSize: 16, color: AppColors.fitnessPrimaryTextColor)),
         if (_isEditing)
           Row(
             children: [
-              const Text('Public: ', style: TextStyle(fontSize: 14, color: AppColors.fitnessPrimaryTextColor)),
+              const Text('Public: ',
+                  style: TextStyle(
+                      fontSize: 14, color: AppColors.fitnessPrimaryTextColor)),
               Transform.scale(
                 scale: .8,
                 child: Switch(
@@ -213,20 +279,24 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
         else
           Text(
             _isPublic ? "Public" : "Private",
-            style: TextStyle(fontSize: 14, color: _isPublic ? AppColors.fitnessMainColor : AppColors.fitnessSecondaryTextColor),
+            style: TextStyle(
+                fontSize: 14,
+                color: _isPublic
+                    ? AppColors.fitnessMainColor
+                    : AppColors.fitnessSecondaryTextColor),
           ),
       ],
     );
   }
 
   InputDecoration _inputDecoration(String label) => InputDecoration(
-    filled: true,
-    fillColor: AppColors.fitnessBackgroundColor,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide.none,
-    ),
-    hintText: label,
-    hintStyle: const TextStyle(color: AppColors.fitnessSecondaryTextColor),
-  );
+        filled: true,
+        fillColor: AppColors.fitnessBackgroundColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        hintText: label,
+        hintStyle: const TextStyle(color: AppColors.fitnessSecondaryTextColor),
+      );
 }
