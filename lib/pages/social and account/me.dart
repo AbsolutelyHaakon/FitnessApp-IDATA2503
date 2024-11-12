@@ -16,7 +16,6 @@ class Me extends StatefulWidget {
 }
 
 class _MeState extends State<Me> {
-  final GetDataFromServer _getDataFromServer = GetDataFromServer();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -46,26 +45,6 @@ Widget build(BuildContext context) {
   return Scaffold(
     body: Column(
       children: [
-        Container(
-          width: double.infinity,
-          color: AppColors.fitnessBackgroundColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (widget.user != null)
-                IconButton(
-                  icon: const Icon(Icons.sync),
-                  color: AppColors.fitnessPrimaryTextColor,
-                  onPressed: () async {
-                    await _getDataFromServer.syncData(widget.user?.uid ?? '');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sync completed')),
-                    );
-                  },
-                ),
-            ],
-          ),
-        ),
         Expanded(
           child: SingleChildScrollView(
             child: Container(
@@ -79,10 +58,7 @@ Widget build(BuildContext context) {
                     children: [
                       if (_currentUser != null) ...[
                         UserProfileModule(
-                          name: _currentUser!.displayName ?? 'Anonymous',
-                          height: 1.75, // Replace with actual height
-                          weight: 70.0, // Replace with actual weight
-                          email: _currentUser!.email ?? 'No email',
+                          user: _currentUser!,
                           onLogout: _onLogout,
                         ),
                       ] else ...[

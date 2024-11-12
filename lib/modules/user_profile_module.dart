@@ -2,103 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:fitnessapp_idata2503/pages/settings.dart';
 
 class UserProfileModule extends StatelessWidget {
   final String? imageUrl;
-  final String name;
-  final double height;
-  final double weight;
-  final String email;
+  final User user;
   final VoidCallback onLogout;
 
   const UserProfileModule({
     super.key,
     this.imageUrl,
-    required this.name,
-    required this.height,
-    required this.weight,
-    required this.email,
+    required this.user,
     required this.onLogout,
   });
 
   Future<void> _logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     onLogout();
-  }
-
-  void _showEditProfileSheet(BuildContext context) {
-    final heightController = TextEditingController(text: height.toString());
-    final weightController = TextEditingController(text: weight.toString());
-    final emailController = TextEditingController(text: email);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return FractionallySizedBox(
-          heightFactor: 0.8, // Increase the height factor as needed
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: const BoxDecoration(
-              color: AppColors.fitnessBackgroundColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20.0), // Add top padding
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTextField(
-                      emailController, 'Email', TextInputType.emailAddress),
-                  _buildTextField(
-                      heightController, 'Height (m)', TextInputType.number),
-                  _buildTextField(
-                      weightController, 'Weight (kg)', TextInputType.number),
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Save the updated profile information
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.fitnessMainColor,
-                    ),
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(
-                        color: AppColors.fitnessPrimaryTextColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  TextField _buildTextField(TextEditingController controller, String label,
-      TextInputType keyboardType) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: AppColors.fitnessPrimaryTextColor,
-        ),
-      ),
-      style: const TextStyle(
-        color: AppColors
-            .fitnessPrimaryTextColor, // Set the input text color to white
-      ),
-      keyboardType: keyboardType,
-    );
   }
 
   @override
@@ -156,9 +76,14 @@ class UserProfileModule extends StatelessWidget {
           ],
         ),
         IconButton(
-          icon: const Icon(Icons.edit),
+          icon: const Icon(Icons.settings, color: AppColors.fitnessMainColor),
           color: Colors.grey,
-          onPressed: () => _showEditProfileSheet(context),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingsPage(user: FirebaseAuth.instance.currentUser)),
+            );
+          },
         ),
       ],
     );
@@ -170,9 +95,13 @@ class UserProfileModule extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProfileDetailText('Email: $email'),
-          _buildProfileDetailText('Height: ${height.toStringAsFixed(2)} m'),
-          _buildProfileDetailText('Weight: ${weight.toStringAsFixed(2)} kg'),
+          // TODO: Implement height and weight attributes for the user
+          // _buildProfileDetailText('Email: $email'),
+          // _buildProfileDetailText('Height: ${user.height.toStringAsFixed(2)} m'),
+          // _buildProfileDetailText('Weight: ${weight.toStringAsFixed(2)} kg'),
+          _buildProfileDetailText('Email: ${user.email}'),
+          _buildProfileDetailText('Height: 170cm'),
+          _buildProfileDetailText('Weight: 90 kg'),
         ],
       ),
     );
