@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
-import 'package:fitnessapp_idata2503/pages/settings.dart';
+import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/settings.dart';
 
 class UserProfileModule extends StatelessWidget {
   final String? imageUrl;

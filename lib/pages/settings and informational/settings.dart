@@ -1,9 +1,10 @@
+import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/about_us.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../database/Initialization/get_data_from_server.dart';
+import '../../database/Initialization/get_data_from_server.dart';
 
 class SettingsPage extends StatelessWidget {
   final User? user;
@@ -81,7 +82,6 @@ class SettingsPage extends StatelessWidget {
                     _synchronizeCloud(context);
                   },
                 ),
-                const Spacer(),
                 _buildSettingsItem(
                   context,
                   icon: Icons.privacy_tip,
@@ -103,7 +103,10 @@ class SettingsPage extends StatelessWidget {
                   icon: Icons.info,
                   text: 'About us',
                   onTap: () {
-                    // Navigate to About us page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AboutUsPage()),
+                    );
                   },
                 ),
                 _buildSettingsItem(
