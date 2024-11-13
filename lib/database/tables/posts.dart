@@ -23,7 +23,7 @@ class Posts {
       'userId': userId,
       'content': content,
       'imageURL': imageURL,
-      'date': date,
+      'date': date.toIso8601String(),
       'workoutId': workoutId,
       'location': location,
     };
