@@ -32,6 +32,13 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     });
   }
 
+  void _clearFilter() {
+    setState((){
+      _searchQuery = '';
+      _filteredWorkouts = _workouts;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,7 +147,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                     ),
                   );
                 },
-              );
+              ).whenComplete(_clearFilter);
             },
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
