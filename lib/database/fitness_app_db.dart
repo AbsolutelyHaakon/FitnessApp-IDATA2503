@@ -66,8 +66,12 @@ class FitnessAppDB {
       userId STRING NOT NULL,
       title STRING,
       content STRING NOT NULL,
-      image_url STRING,
-      date DATE NOT NULL
+      imageURL STRING,
+      date DATE NOT NULL,
+      workoutId STRING,
+      location STRING,
+      FOREIGN KEY (workoutId) REFERENCES workouts (id),
+      FOREIGN KEY (userId) REFERENCES users (id)
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS comments (
       commentId STRING PRIMARY KEY,

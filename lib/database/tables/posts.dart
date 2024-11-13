@@ -3,16 +3,20 @@ class Posts {
   final String userId;
   final String? title;
   final String content;
-  final String? image_url;
+  final String? imageURL;
   final DateTime date;
+  final String? workoutId;
+  final String? location;
 
   const Posts({
     required this.postId,
     required this.userId,
     this.title,
     required this.content,
-    this.image_url,
+    this.imageURL,
     required this.date,
+    this.workoutId,
+    this.location,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,8 +25,10 @@ class Posts {
       'userId': userId,
       'title': title,
       'content': content,
-      'image_url': image_url,
+      'imageURL': imageURL,
       'date': date,
+      'workoutId': workoutId,
+      'location': location,
     };
   }
 
@@ -32,8 +38,10 @@ class Posts {
       userId: map['userId'],
       title: map['title'],
       content: map['content'],
-      image_url: map['image_url'],
+      imageURL: map['imageURL'],
       date: DateTime.parse(map['date']),
+      workoutId: map['workoutId'],
+      location: map['location'],
     );
   }
 }
