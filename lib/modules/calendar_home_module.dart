@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'workout_calendar.dart';
 
 import '../styles.dart';
 
@@ -18,6 +19,13 @@ class _CalendarHomeModuleState extends State<CalendarHomeModule> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WorkoutCalendar()),
+            );
+          },
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -38,6 +46,7 @@ class _CalendarHomeModuleState extends State<CalendarHomeModule> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

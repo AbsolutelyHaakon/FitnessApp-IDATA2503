@@ -1,11 +1,13 @@
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/detailed_workout_log.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutLog extends StatefulWidget {
-  const WorkoutLog({super.key});
+  final User? user;
+  const WorkoutLog({super.key, this.user});
 
   @override
   State<WorkoutLog> createState() {
