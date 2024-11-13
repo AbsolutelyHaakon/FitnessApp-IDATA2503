@@ -29,14 +29,17 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       ),
       body: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
-          height: MediaQuery.of(context).size.height * 0.9, // Adjust the height as needed
           color: AppColors.fitnessBackgroundColor,
           child: TableCalendar(
+            locale: 'en_US',
             firstDay: DateTime.utc(2024, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
             calendarFormat: _calendarFormat,
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            availableCalendarFormats: const {
+              CalendarFormat.month: 'Month',
+            },
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
@@ -54,8 +57,43 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               }
             },
             onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
+            _focusedDay = focusedDay;
             },
+            calendarStyle: const CalendarStyle(
+              defaultTextStyle: TextStyle(fontSize: 12),
+              weekendTextStyle: TextStyle(fontSize: 12),
+              selectedTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
+              todayTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
+              outsideDaysVisible: true,
+              outsideTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessSecondaryTextColor),
+              cellMargin: EdgeInsets.all(0),
+              rowDecoration: BoxDecoration(
+                color: AppColors.fitnessBackgroundColor,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: BoxDecoration(
+                color: AppColors.fitnessBackgroundColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            headerStyle: const HeaderStyle(
+              titleTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessPrimaryTextColor),
+              leftChevronIcon: Icon(
+                Icons.chevron_left,
+                color: AppColors.fitnessPrimaryTextColor,
+              ),
+              rightChevronIcon: Icon(
+                Icons.chevron_right,
+                color: AppColors.fitnessPrimaryTextColor,
+              ),
+            ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: TextStyle(fontSize: 9, color: AppColors.fitnessPrimaryTextColor),
+              weekendStyle: TextStyle(fontSize: 9, color: AppColors.fitnessMainColor),
+            ),
           ),
         ),
       ),
