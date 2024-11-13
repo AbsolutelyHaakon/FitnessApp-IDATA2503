@@ -1,7 +1,10 @@
 // lib/modules/community_module.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../pages/social and account/social_feed.dart';
 
 // Nutrition Module which contains an image and text beneath
 // Widget to be displayed on the home screen
@@ -10,13 +13,20 @@ import 'package:flutter/material.dart';
 // Last edited by: Matti Kjellstadli
 
 class CommunityModule extends StatelessWidget {
+  final User? user;
+
+  const CommunityModule({Key? key, required this.user}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
-          // Define the action when the button is pressed
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SocialFeed(user: user)),
+          );
         },
         child: Container(
           width: 180,
@@ -24,7 +34,6 @@ class CommunityModule extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
-
           ),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +55,6 @@ class CommunityModule extends StatelessWidget {
           ),
         ),
       ),
-
     );
   }
 }

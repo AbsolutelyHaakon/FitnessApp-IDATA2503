@@ -49,7 +49,7 @@ Map<Workouts, DateTime> workoutMap = {
               ),
 
               _buildModuleRow(
-                leftChild: CommunityModule(),
+                leftChild: CommunityModule(user: widget.user,),
                 rightChild: RingsModule(),
               ),
               const Padding(

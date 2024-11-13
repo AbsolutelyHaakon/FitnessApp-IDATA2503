@@ -259,7 +259,7 @@ class _WorkoutPageState extends State<WorkoutPage>
         onPressed: _toggleOptions,
         child: AnimatedBuilder(
           animation: _addIconAnimation,
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.add, color: Colors.black),
           builder: (context, child) {
             return Transform.rotate(
               angle: _addIconAnimation.value * 3.14159,
