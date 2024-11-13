@@ -133,20 +133,50 @@ class _CreatePostPageState extends State<CreatePostPage> {
                             child: GestureDetector(
                               onTap: _pickImage,
                               child: _selectedImage != null
-                                  ? Image.file(
-                                      File(_selectedImage!.path),
-                                      height: 250,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
+                                  ? Stack(
+                                      children: [
+                                        Image.file(
+                                          File(_selectedImage!.path),
+                                          height: 250,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedImage = null;
+                                                _imageUrl = null;
+                                              });
+                                            },
+                                            child: const Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 32,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     )
                                   : Container(
                                       width: double.infinity,
                                       height: 200,
                                       color: AppColors.fitnessModuleColor,
-                                      child: const Icon(
-                                        Icons.image,
-                                        color: AppColors.fitnessMainColor,
-                                        size: 100,
+                                      child: Center(
+                                        child: Container(
+                                          width: 220,
+                                          height: 120,
+                                          color: AppColors
+                                              .fitnessSecondaryModuleColor,
+                                          child: const Icon(
+                                            Icons.image,
+                                            color: AppColors
+                                                .fitnessPrimaryTextColor,
+                                            size: 50,
+                                          ),
+                                        ),
                                       ),
                                     ),
                             ),
@@ -192,22 +222,25 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           ),
                         ],
                       )
-                    : TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _isLocationFieldVisible = true;
-                          });
-                          Future.delayed(Duration(milliseconds: 100), () {
-                            FocusScope.of(context)
-                                .requestFocus(_locationFocusNode);
-                          });
-                        },
-                        child: const Text('+ Add location',
-                            style:
-                                TextStyle(color: AppColors.fitnessMainColor)),
+                    : Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isLocationFieldVisible = true;
+                            });
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              FocusScope.of(context)
+                                  .requestFocus(_locationFocusNode);
+                            });
+                          },
+                          child: const Text(
+                            '+ Add location',
+                            style: TextStyle(color: AppColors.fitnessMainColor),
+                          ),
+                        ),
                       ),
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
