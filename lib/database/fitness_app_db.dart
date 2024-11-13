@@ -64,8 +64,7 @@ class FitnessAppDB {
     await database.execute('''CREATE TABLE IF NOT EXISTS posts (
       postId STRING PRIMARY KEY,
       userId STRING NOT NULL,
-      title STRING,
-      content STRING NOT NULL,
+      content STRING,
       imageURL STRING,
       date DATE NOT NULL,
       workoutId STRING,
@@ -83,6 +82,7 @@ class FitnessAppDB {
       FOREIGN KEY (userId) REFERENCES users (id)
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS userFollows(
+    userFollowsId STRING PRIMARY KEY,
     userId STRING NOT NULL,
     followsId STRING NOT NULL,
     FOREIGN KEY (userId) REFERENCES users (id),

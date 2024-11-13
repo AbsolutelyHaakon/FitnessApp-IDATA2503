@@ -1,8 +1,7 @@
 class Posts {
   final String postId;
   final String userId;
-  final String? title;
-  final String content;
+  final String? content;
   final String? imageURL;
   final DateTime date;
   final String? workoutId;
@@ -11,8 +10,7 @@ class Posts {
   const Posts({
     required this.postId,
     required this.userId,
-    this.title,
-    required this.content,
+    this.content,
     this.imageURL,
     required this.date,
     this.workoutId,
@@ -23,7 +21,6 @@ class Posts {
     return {
       'postId': postId,
       'userId': userId,
-      'title': title,
       'content': content,
       'imageURL': imageURL,
       'date': date,
@@ -36,7 +33,6 @@ class Posts {
     return Posts(
       postId: map['postId'],
       userId: map['userId'],
-      title: map['title'],
       content: map['content'],
       imageURL: map['imageURL'],
       date: DateTime.parse(map['date']),
