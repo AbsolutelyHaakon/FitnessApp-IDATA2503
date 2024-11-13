@@ -12,6 +12,32 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  String _selectedWorkout = 'Leg day';
+  final List<String> _workouts = ['Leg day', 'Hike', 'Run', 'Sing', 'Neck', 'Russian deadlift'];
+  String _searchQuery = '';
+  List<String> _filteredWorkouts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredWorkouts = _workouts;
+  }
+
+  void _filterWorkouts(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredWorkouts = _workouts
+          .where((workout) => workout.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  void _clearFilter() {
+    setState((){
+      _searchQuery = '';
+      _filteredWorkouts = _workouts;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +74,80 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
               });
+              showModalBottomSheet(
+                context: context,
+                isDismissible: true,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) {
+                  return Container(
+                    decoration: const BoxDecoration(
+                      color: AppColors.fitnessBackgroundColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: FractionallySizedBox(
+                      heightFactor: 0.6,
+                      widthFactor: 1,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Text(
+                            'Select workout',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: TextField(
+                              decoration: InputDecoration(
+                                labelText: 'Search',
+                                labelStyle: TextStyle(fontSize: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              style: TextStyle(fontSize: 12),
+                              onChanged: _filterWorkouts,
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ListView.builder(
+                                itemCount: _filteredWorkouts.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedWorkout = _filteredWorkouts[index];
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(vertical: 5.0),
+                                      padding: const EdgeInsets.all(10.0),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.fitnessSecondaryModuleColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Text(
+                                        _filteredWorkouts[index],
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ).whenComplete(_clearFilter);
             },
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
@@ -57,7 +157,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               }
             },
             onPageChanged: (focusedDay) {
-            _focusedDay = focusedDay;
+              _focusedDay = focusedDay;
             },
             calendarStyle: const CalendarStyle(
               defaultTextStyle: TextStyle(fontSize: 12),
