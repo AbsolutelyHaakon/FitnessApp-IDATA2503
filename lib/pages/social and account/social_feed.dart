@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/post_builder.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -65,7 +66,10 @@ class _SocialFeedState extends State<SocialFeed> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // TODO: Navigate to create post page
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreatePostPage(user: widget.user)),
+            );
           },
           backgroundColor: AppColors.fitnessMainColor,
           shape: const CircleBorder(),
