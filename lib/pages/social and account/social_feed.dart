@@ -76,16 +76,18 @@ class _SocialFeedState extends State<SocialFeed> {
   }
 
   Widget _buildFeedSection() {
-    return RefreshIndicator(
-      onRefresh: _refreshFeed,
-      color: AppColors.fitnessMainColor,
-      backgroundColor: AppColors.fitnessBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20.0, left: 5, right: 5),
-        child: ListView.builder(
-          itemCount: 1,
-          itemBuilder: (context, index) {
-            return PostBuilder(
+  return RefreshIndicator(
+    onRefresh: _refreshFeed,
+    color: AppColors.fitnessMainColor,
+    backgroundColor: AppColors.fitnessBackgroundColor,
+    child: Padding(
+      padding: const EdgeInsets.only(top: 20.0, left: 5, right: 5),
+      child: ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 60.0),
+            child: PostBuilder(
               profileImageUrl: 'https://picsum.photos/id/237/200/200',
               name: 'Håkon Karlsen',
               date: DateTime.now(),
@@ -102,12 +104,13 @@ class _SocialFeedState extends State<SocialFeed> {
               commentCount: 10,
               shareCount: 5,
               heartCount: 20,
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildProfileSection() {
     return const Column(
