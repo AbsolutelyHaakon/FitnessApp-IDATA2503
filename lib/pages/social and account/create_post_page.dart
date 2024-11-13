@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../database/crud/posts_dao.dart';
 import '../../styles.dart';
 
 /// CreatePostPage which allows the user to create a post
@@ -15,7 +16,6 @@ import '../../styles.dart';
 ///
 /// TODO: Implement post creation logic
 /// TODO: Implement attach exercise logic
-/// TODO: Implement image removal
 
 class CreatePostPage extends StatefulWidget {
   final User? user;
@@ -29,7 +29,7 @@ class CreatePostPage extends StatefulWidget {
 class _CreatePostPageState extends State<CreatePostPage> {
   final _formKey = GlobalKey<FormState>();
   String? _message;
-  List<Map<String, String>> _workoutStats = [];
+  List<String> _workoutStats = [];
   String? _workoutId;
   String? _imageUrl;
   String? _location;
@@ -37,6 +37,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
   XFile? _selectedImage;
   bool _isLocationFieldVisible = false;
   final FocusNode _locationFocusNode = FocusNode();
+
+  final PostsDao _postsDao = PostsDao();
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -47,6 +49,28 @@ class _CreatePostPageState extends State<CreatePostPage> {
       });
     }
   }
+
+  Future<void> _createPost() async {
+  final result = await _postsDao.fireBaseCreatePost(
+    _message,
+    _imageUrl,
+    "", // TODO: implement workout
+    _location,
+    _workoutStats,
+    widget.user!.uid,
+  );
+
+  if (result['success']) {
+    Navigator.of(context).pop();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(result['message'],
+          style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+      textAlign: TextAlign.center,),
+          backgroundColor: AppColors.fitnessWarningColor),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +84,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
           },
         ),
         backgroundColor: AppColors.fitnessBackgroundColor,
-        title: const Text('Create Post',
-            style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -252,7 +274,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              // TODO: Handle post creation logic
+              _createPost();
             }
           },
           child: const Text('Create Post',

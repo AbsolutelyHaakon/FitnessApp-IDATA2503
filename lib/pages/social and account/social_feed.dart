@@ -73,7 +73,7 @@ class _SocialFeedState extends State<SocialFeed> {
           },
           backgroundColor: AppColors.fitnessMainColor,
           shape: const CircleBorder(),
-          child: const Icon(Icons.add, color: Colors.black),
+          child: const Icon(Icons.add, color: AppColors.fitnessPrimaryTextColor),
         ),
         backgroundColor: AppColors.fitnessBackgroundColor,
       ),
