@@ -55,6 +55,16 @@ class UserFollowsDao {
 /////////////////// FIREBASE FUNCTIONS /////////////////////
 ////////////////////////////////////////////////////////////
 
+  Future<bool> fireBaseCheckIfFollows(String userId, String followsId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('userFollows')
+        .where('userId', isEqualTo: userId)
+        .where('followsId', isEqualTo: followsId)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
   Future<void> fireBaseFollow(String userId, String followsId) async {
     DocumentReference docref =
         await FirebaseFirestore.instance.collection('userFollows').add({

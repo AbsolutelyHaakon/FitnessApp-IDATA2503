@@ -17,9 +17,7 @@ import 'package:flutter/material.dart';
 /// Last edited by: Håkon Karlsen
 ///
 /// TODO: Implement refresh logic
-/// TODO: Create "create" post page
 /// TODO: Implement backend logic
-/// TODO: Create profile page
 
 class SocialFeed extends StatefulWidget {
   final User? user;
@@ -30,7 +28,7 @@ class SocialFeed extends StatefulWidget {
   State<SocialFeed> createState() => _SocialFeedState();
 }
 
-class _SocialFeedState extends State<SocialFeed> {
+class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateMixin {
   final PostsDao _postsDao = PostsDao();
   final SocialFeedData _socialFeedData = SocialFeedData();
 
@@ -42,11 +40,17 @@ class _SocialFeedState extends State<SocialFeed> {
 
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
-
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_isSearching) {
+        _stopSearch();
+      }
+    });
     getFeed();
     getUsers();
   }
@@ -66,11 +70,15 @@ class _SocialFeedState extends State<SocialFeed> {
   }
 
   Future<void> getUsers() async {
-    final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch();
-    setState(() {
-      _allUsers = fetchedUsers["users"];
-      _filteredUsers = _allUsers;
-    });
+    try {
+      final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch();
+      setState(() {
+        _allUsers = fetchedUsers["users"] ?? [];
+        _filteredUsers = _allUsers;
+      });
+    } catch (e) {
+      print("Error fetching users: $e");
+    }
   }
 
   void _startSearch() {
@@ -92,7 +100,8 @@ class _SocialFeedState extends State<SocialFeed> {
   void _filterUsers(String query) {
     setState(() {
       _filteredUsers = _allUsers
-          .where((user) => user.email.toLowerCase().contains(query.toLowerCase()))
+          .where(
+              (user) => user.email.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -127,14 +136,15 @@ class _SocialFeedState extends State<SocialFeed> {
                   onPressed: _startSearch,
                 ),
             ],
-            bottom: const TabBar(
-              indicator: BoxDecoration(),
+            bottom: TabBar(
+              controller: _tabController,
+              indicator: const BoxDecoration(),
               labelColor: AppColors.fitnessMainColor,
               unselectedLabelColor: AppColors.fitnessSecondaryTextColor,
-              labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               unselectedLabelStyle:
-                  TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
-              tabs: [
+                  const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+              tabs: const [
                 Tab(text: 'Feed'),
                 Tab(text: 'Profile'),
               ],
@@ -144,6 +154,7 @@ class _SocialFeedState extends State<SocialFeed> {
               ? _isSearching
                   ? _buildSearchSection()
                   : TabBarView(
+                      controller: _tabController,
                       children: [
                         _buildFeedSection(),
                         ProfilePage(userId: widget.user!.uid),
@@ -157,12 +168,15 @@ class _SocialFeedState extends State<SocialFeed> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreatePostPage(user: FirebaseAuth.instance.currentUser)),
+                      MaterialPageRoute(
+                          builder: (context) => CreatePostPage(
+                              user: FirebaseAuth.instance.currentUser)),
                     );
                   },
                   backgroundColor: AppColors.fitnessMainColor,
                   shape: const CircleBorder(),
-                  child: const Icon(Icons.add, color: AppColors.fitnessPrimaryTextColor),
+                  child: const Icon(Icons.add,
+                      color: AppColors.fitnessPrimaryTextColor),
                 )
               : null,
           backgroundColor: AppColors.fitnessBackgroundColor,
@@ -240,16 +254,30 @@ class _SocialFeedState extends State<SocialFeed> {
             child: ListView.builder(
               itemCount: _filteredUsers.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(_filteredUsers[index].email
-                        [0]), // TODO: Replace with user profile image
-                  ),
-                  title: Text(_filteredUsers[index].email,
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfilePage(userId: _filteredUsers[index].userId),
+                      ),
+                    );
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(_filteredUsers[index]
+                          .email[0]), // TODO: Replace with user profile image
+                    ),
+                    title: Text(
+                      _filteredUsers[index].email,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                          color: AppColors.fitnessPrimaryTextColor)),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                        color: AppColors.fitnessPrimaryTextColor,
+                      ),
+                    ),
+                  ),
                 );
               },
             ),

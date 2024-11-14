@@ -23,7 +23,7 @@ class UserDao {
 
   Future<int> localCreate(LocalUser user) async {
     final database = await DatabaseService().database;
-    print('User created: ${user.id}');
+    print('User created: ${user.userId}');
     return await database.insert(
       tableName,
       user.toMap(),
@@ -37,7 +37,7 @@ class UserDao {
       tableName,
       user.toMap(),
       where: 'id = ?',
-      whereArgs: [user.id],
+      whereArgs: [user.userId],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -110,7 +110,7 @@ class UserDao {
       'weight': 0.0,
     });
     localCreate(LocalUser(
-        id: uid!, name: 'John Doe', email: email, weight: 0.0, height: 0.0));
+        userId: uid!, name: 'John Doe', email: email, weight: 0.0, height: 0.0));
   }
 
   void fireBaseUpdateUserData(
@@ -139,7 +139,7 @@ class UserDao {
 
     // Update local database
     localUpdate(LocalUser(
-      id: uid,
+      userId: uid,
       name: updatedName,
       email: existingData['email'],
       weight: updatedWeight,
