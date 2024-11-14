@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/imgur_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/user.dart';
@@ -12,6 +14,8 @@ import '../tables/user.dart';
 class UserDao {
   final tableName = 'users';
   FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final ImgurService imgurService = ImgurService();
 
   set auth(FirebaseAuth auth) {
     _auth = auth;
@@ -123,38 +127,49 @@ class UserDao {
   }
 
   void fireBaseUpdateUserData(
-      String uid, String name, double height, double weight) async {
-    if (uid == "") return;
+    String uid, String? name, double? height, double? weight, double? targetWeight, XFile? image) async {
+  if (uid == "") return;
 
-    // Fetch existing user data
-    DocumentSnapshot documentSnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    Map<String, dynamic>? existingData =
-        documentSnapshot.data() as Map<String, dynamic>?;
+  // Fetch existing user data
+  DocumentSnapshot documentSnapshot =
+      await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  Map<String, dynamic>? existingData =
+      documentSnapshot.data() as Map<String, dynamic>?;
 
-    if (existingData == null) return;
+  if (existingData == null) return;
 
-    // Replace empty values with existing values
-    String updatedName = name.isNotEmpty ? name : existingData['name'];
-    double updatedHeight = height != 0.0 ? height : existingData['height'];
-    double updatedWeight = weight != 0.0 ? weight : existingData['weight'];
-
-    // Update Firestore
-    FirebaseFirestore.instance.collection('users').doc(uid).update({
-      'name': updatedName,
-      'height': updatedHeight,
-      'weight': updatedWeight,
-    });
-
-    // Update local database
-    localUpdate(LocalUser(
-      userId: uid,
-      name: updatedName,
-      email: existingData['email'],
-      weight: updatedWeight,
-      height: updatedHeight,
-    ));
+  String imageURL = '';
+  if (image != null) {
+    imageURL = await uploadImage(image);
   }
+
+  // Replace empty values with existing values
+  String updatedName = name?.isNotEmpty == true ? name! : existingData['name'];
+  double updatedHeight = height != 0.0 ? height : existingData['height'];
+  double updatedWeight = weight != 0.0 ? weight : existingData['weight'];
+  double updatedTargetWeight = targetWeight != 0.0 ? targetWeight : existingData['targetWeight'];
+  String updatedImageURL = imageURL?.isNotEmpty == true ? imageURL! : existingData['imageURL'];
+
+  // Update Firestore
+  FirebaseFirestore.instance.collection('users').doc(uid).update({
+    'name': updatedName,
+    'height': updatedHeight,
+    'weight': updatedWeight,
+    'targetWeight': updatedTargetWeight,
+    'imageURL': updatedImageURL,
+  });
+
+  // Update local database
+  localUpdate(LocalUser(
+    userId: uid,
+    name: updatedName,
+    email: existingData['email'],
+    weight: updatedWeight,
+    height: updatedHeight,
+    targetWeight: updatedTargetWeight,
+    imageURL: updatedImageURL,
+  ));
+}
 
   Future<Map<String, dynamic>?> fireBaseGetUserData(String uid) async {
     try {
@@ -185,5 +200,16 @@ class UserDao {
       return {'user': null, 'error': e.toString()};
     }
     return {'user': null, 'error': 'Unknown error occurred.'};
+  }
+
+  Future<String> uploadImage(XFile image) async {
+    String? imgurUrl = await imgurService.saveImageToImgur(image);
+    if (imgurUrl != null) {
+      print('Image uploaded to Imgur: $imgurUrl');
+      return imgurUrl;
+    } else {
+      print('Failed to upload to Imgur.');
+      return "";
+    }
   }
 }
