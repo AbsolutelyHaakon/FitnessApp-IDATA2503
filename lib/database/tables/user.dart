@@ -30,8 +30,8 @@ class LocalUser {
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      weight: map['weight']?.toInt(),
-      height: map['height']?.toInt(),
+      weight: map['weight'],
+      height: map['height'],
     );
   }
 
@@ -41,8 +41,8 @@ class LocalUser {
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      weight: map['weight']?.toInt(),
-      height: map['height']?.toInt(),
+      weight: map['weight']?.toDouble(),
+      height: map['height']?.toDouble(),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Posts {
   final String postId;
   final String userId;
@@ -35,7 +37,7 @@ class Posts {
       userId: map['userId'],
       content: map['content'],
       imageURL: map['imageURL'],
-      date: DateTime.parse(map['date']),
+      date: map['date'] is Timestamp ? (map['date'] as Timestamp).toDate() : DateTime.parse(map['date']),
       workoutId: map['workoutId'],
       location: map['location'],
     );

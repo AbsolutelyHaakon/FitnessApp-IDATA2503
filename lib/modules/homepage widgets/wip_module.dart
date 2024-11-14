@@ -35,7 +35,7 @@ class _WipModuleState extends State<WipModule> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                   const CreateExercisePage(),
+                   const AccountSetupPage(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0);
