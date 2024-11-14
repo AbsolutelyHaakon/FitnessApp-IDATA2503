@@ -20,14 +20,14 @@ import 'package:flutter/material.dart';
 /// TODO: Implement backend logic
 
 class SocialFeed extends StatefulWidget {
-
   const SocialFeed({super.key});
 
   @override
   State<SocialFeed> createState() => _SocialFeedState();
 }
 
-class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateMixin {
+class _SocialFeedState extends State<SocialFeed>
+    with SingleTickerProviderStateMixin {
   final PostsDao _postsDao = PostsDao();
   final SocialFeedData _socialFeedData = SocialFeedData();
 
@@ -60,8 +60,11 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
   }
 
   Future<void> getFeed() async {
-    final fetchedPosts =
-        await _postsDao.fireBaseFetchUserPosts(FirebaseAuth.instance.currentUser?.uid);
+    if (FirebaseAuth.instance.currentUser == null) {
+      return;
+    }
+    final fetchedPosts = await _postsDao
+        .fireBaseFetchFeed(FirebaseAuth.instance.currentUser!.uid);
     setState(() {
       _posts = fetchedPosts["posts"];
       _isReady = true;
@@ -140,7 +143,8 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
               indicator: const BoxDecoration(),
               labelColor: AppColors.fitnessMainColor,
               unselectedLabelColor: AppColors.fitnessSecondaryTextColor,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              labelStyle:
+                  const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               unselectedLabelStyle:
                   const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
               tabs: const [
@@ -157,7 +161,8 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
                       controller: _tabController,
                       children: [
                         _buildFeedSection(),
-                        ProfilePage(userId: FirebaseAuth.instance.currentUser!.uid),
+                        ProfilePage(
+                            userId: FirebaseAuth.instance.currentUser!.uid),
                       ],
                     )
               : const Center(
@@ -168,8 +173,7 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => CreatePostPage()),
+                      MaterialPageRoute(builder: (context) => CreatePostPage()),
                     );
                   },
                   backgroundColor: AppColors.fitnessMainColor,
@@ -192,27 +196,14 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
       child: Padding(
         padding: const EdgeInsets.only(top: 20.0, left: 5, right: 5),
         child: ListView.builder(
-          itemCount: 1,
+          itemCount: _posts.length,
           itemBuilder: (context, index) {
+            final post = _posts[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 60.0),
               child: PostBuilder(
-                profileImageUrl: 'https://picsum.photos/id/237/200/200',
-                name: 'Håkon Karlsen',
-                date: DateTime.now(),
-                icon: Icons.message,
-                message: 'I really enjoyed my workout today!',
-                workoutStats: const [
-                  {'name': 'Duration', 'value': '30:00'},
-                  {'name': 'Sets', 'value': '3'},
-                  {'name': 'Weight', 'value': '50 kg'},
-                ],
-                workoutId: 'workout123',
-                imageUrl: 'https://picsum.photos/seed/picsum/400/300',
-                location: 'Mandal',
-                commentCount: 10,
-                shareCount: 5,
-                heartCount: 20,
+                post: post,
+                isProfile: false,
               ),
             );
           },

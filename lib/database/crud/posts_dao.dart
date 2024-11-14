@@ -73,7 +73,8 @@ class PostsDao {
         'message': 'Post must have content, image or workout to be posted',
       };
     }
-    DocumentReference docRef = await FirebaseFirestore.instance.collection('posts').add({
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('posts').add({
       'userId': userId,
       'content': content ?? '',
       'imageURL': imageURL ?? '',
@@ -97,26 +98,27 @@ class PostsDao {
   }
 
   Future<Map<String, dynamic>> fireBaseFetchFeed(String userId) async {
-  Map<String, dynamic> followingMap = await _userFollowsDao.fetchFollowing(userId);
+    Map<String, dynamic> followingMap =
+        await _userFollowsDao.fetchFollowing(userId);
 
-  List<String> following = followingMap['following'].map((userFollows) {
-    return userFollows.followsId;
-  }).toList();
+    List<String> following =
+        (followingMap['following'] as List<dynamic>).map((userFollows) {
+      return userFollows.followsId as String;
+    }).toList();
 
+    List<Posts> allPosts = [];
 
-  List<Posts> allPosts = [];
+    for (String followedUserId in following) {
+      Map<String, dynamic> userPostsResult =
+          await fireBaseFetchUserPosts(followedUserId);
+      List<Posts> userPosts = userPostsResult['posts'];
+      allPosts.addAll(userPosts);
+    }
 
-
-  for (String followedUserId in following) {
-    Map<String, dynamic> userPostsResult = await fireBaseFetchUserPosts(followedUserId);
-    List<Posts> userPosts = userPostsResult['posts'];
-    allPosts.addAll(userPosts);
+    return {
+      'posts': allPosts,
+    };
   }
-
-  return {
-    'posts': allPosts,
-  };
-}
 
   Future<Map<String, dynamic>> fireBaseFetchUserPosts(String? userId) async {
     if (userId == null) {

@@ -1,36 +1,67 @@
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../styles.dart';
 
-class PostBuilder extends StatelessWidget {
-  final String profileImageUrl;
-  final String name;
-  final DateTime date;
-  final IconData icon;
-  final String? message;
-  final List<Map<String, String>>? workoutStats;
-  final String? workoutId;
-  final String? imageUrl;
-  final String? location;
-  final int commentCount;
-  final int shareCount;
-  final int heartCount;
+// TODO: Implement likes and comments, get rid of shareCount
 
-  const PostBuilder({
-    required this.profileImageUrl,
-    required this.name,
-    required this.date,
-    required this.icon,
-    this.message,
-    this.workoutStats,
-    this.workoutId,
-    this.imageUrl,
-    this.location,
-    this.commentCount = 0,
-    this.shareCount = 0,
-    this.heartCount = 0,
-  });
+class PostBuilder extends StatefulWidget {
+  final Posts post;
+  final bool isProfile;
+
+  const PostBuilder({required this.post, required this.isProfile});
+
+  @override
+  State<PostBuilder> createState() => _PostBuilderState();
+}
+
+class _PostBuilderState extends State<PostBuilder> {
+  final UserDao _userDao = UserDao();
+
+  late String profileImageUrl;
+  late String name;
+  late DateTime date;
+  late String? message;
+  late String? workoutId;
+  late List<Map<String, String>>? workoutStats;
+  late String? imageUrl;
+  late String? location;
+  late int commentCount;
+  late int shareCount;
+  late int heartCount;
+
+  bool _isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserInformation();
+  }
+
+  Future<void> _getUserInformation() async {
+    final userData = await _userDao.fireBaseGetUserData(widget.post.userId);
+
+    setState(() {
+      profileImageUrl = userData?['imageURL'] ?? '';
+      name = userData?['name'] ?? '';
+      date = widget.post.date;
+      message = widget.post.content;
+      workoutId = widget.post.workoutId;
+      workoutStats = [];
+      imageUrl = widget.post.imageURL;
+      location = widget.post.location;
+      commentCount = 0;
+      shareCount = 0;
+      heartCount = 0;
+
+      _isReady = true;
+    });
+
+    print("Adrian");
+    print(imageUrl);
+  }
 
   Widget statBuilder(Map<String, String> stat) {
     return Row(
@@ -52,6 +83,14 @@ class PostBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isReady) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.fitnessMainColor,
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,6 +98,7 @@ class PostBuilder extends StatelessWidget {
           padding: const EdgeInsets.only(left: 10.0),
           child: Row(
             children: [
+              if(!widget.isProfile)
               CircleAvatar(
                 backgroundImage: NetworkImage(profileImageUrl),
               ),
@@ -66,6 +106,7 @@ class PostBuilder extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if(!widget.isProfile)
                   Text(name,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
@@ -99,7 +140,8 @@ class PostBuilder extends StatelessWidget {
                     children: [
                       Transform.scale(
                         scale: 0.8,
-                        child: Icon(icon, color: AppColors.fitnessMainColor),
+                        child: Icon(Icons.message,
+                            color: AppColors.fitnessMainColor),
                       ),
                       const SizedBox(width: 10.0),
                       Expanded(
@@ -144,23 +186,26 @@ class PostBuilder extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 10.0),
-              if (imageUrl != null)
+              if (imageUrl != null && imageUrl!.isNotEmpty)
                 SizedBox(
                   width: double.infinity,
                   height: 300,
-                  // TODO: Find out what other services use as their standard image dimensions
-                  child: Image.network(
-                    imageUrl!,
-                    fit: BoxFit.cover,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(imageUrl!),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                )
+                ),
             ],
           ),
         ),
         const SizedBox(height: 2.0),
         Row(
           children: [
-            if (location != null)
+            if (location != null && location!.isNotEmpty)
               Row(
                 children: [
                   Transform.scale(
@@ -175,15 +220,18 @@ class PostBuilder extends StatelessWidget {
             const Spacer(),
             Row(
               children: [
-                const Icon(Icons.comment, color: AppColors.fitnessMainColor, size: 16),
+                const Icon(Icons.comment,
+                    color: AppColors.fitnessMainColor, size: 16),
                 const SizedBox(width: 2.0),
                 Text('$commentCount', style: const TextStyle(fontSize: 12.0)),
                 const SizedBox(width: 10.0),
-                const Icon(Icons.share, color: AppColors.fitnessMainColor, size: 16),
+                const Icon(Icons.share,
+                    color: AppColors.fitnessMainColor, size: 16),
                 const SizedBox(width: 2.0),
                 Text('$shareCount', style: const TextStyle(fontSize: 12.0)),
                 const SizedBox(width: 10.0),
-                const Icon(Icons.favorite, color: AppColors.fitnessMainColor, size: 16),
+                const Icon(Icons.favorite,
+                    color: AppColors.fitnessMainColor, size: 16),
                 const SizedBox(width: 2.0),
                 Text('$heartCount', style: const TextStyle(fontSize: 12.0)),
                 const SizedBox(width: 10.0),

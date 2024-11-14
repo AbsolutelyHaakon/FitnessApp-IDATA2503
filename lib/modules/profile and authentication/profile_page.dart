@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
+
+import '../../pages/social and account/post_builder.dart';
 
 /// Profile page for a user
 /// Used for both your own but also other users profiles
@@ -11,7 +15,6 @@ import 'package:flutter/material.dart';
 /// Last edited by: Håkon Svensen Karlsen
 ///
 /// TODO: Implement backend logic
-/// TODO: Implement follow button
 
 class ProfilePage extends StatefulWidget {
   final String userId;
@@ -26,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // Fetch DAOs
   final UserDao _userDao = UserDao();
   final UserFollowsDao _userFollowsDao = UserFollowsDao();
+  final PostsDao _postsDao = PostsDao();
 
   String name = " ";
   String imageURL = " ";
@@ -38,6 +42,10 @@ class _ProfilePageState extends State<ProfilePage> {
   bool followerCountReady = false;
   bool _isReady = false;
 
+  NetworkImage? _profileImage;
+
+  List<Posts> _posts = [];
+
   @override
   void initState() {
     super.initState();
@@ -45,8 +53,16 @@ class _ProfilePageState extends State<ProfilePage> {
     if (FirebaseAuth.instance.currentUser?.uid != widget.userId) {
       _checkIfFollowing();
     }
+    _loadUserPosts();
     _loadFollowerData();
+  }
 
+  Future<void> _loadUserPosts() async {
+    final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
+
+    setState(() {
+      _posts = postsData["posts"];
+    });
   }
 
   Future<void> _loadUserData() async {
@@ -54,6 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     setState(() {
       name = user?["name"] ?? "Unknown";
+      _profileImage = NetworkImage(user?["imageURL"] ?? " ");
     });
   }
 
@@ -72,22 +89,27 @@ class _ProfilePageState extends State<ProfilePage> {
     _setReady();
   }
 
-  void _checkIfFollowing(){
-  if (FirebaseAuth.instance.currentUser?.uid != null) {
-    _userFollowsDao.fireBaseCheckIfFollows(FirebaseAuth.instance.currentUser!.uid, widget.userId).then((value) {
-      setState(() {
-        _isFollowing = value;
+  void _checkIfFollowing() {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      _userFollowsDao
+          .fireBaseCheckIfFollows(
+              FirebaseAuth.instance.currentUser!.uid, widget.userId)
+          .then((value) {
+        setState(() {
+          _isFollowing = value;
+        });
       });
-    });
-  }
+    }
   }
 
   void _toggleFollow() {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       if (_isFollowing) {
-        _userFollowsDao.fireBaseUnfollow(FirebaseAuth.instance.currentUser!.uid, widget.userId);
+        _userFollowsDao.fireBaseUnfollow(
+            FirebaseAuth.instance.currentUser!.uid, widget.userId);
       } else {
-        _userFollowsDao.fireBaseFollow(FirebaseAuth.instance.currentUser!.uid, widget.userId);
+        _userFollowsDao.fireBaseFollow(
+            FirebaseAuth.instance.currentUser!.uid, widget.userId);
       }
     }
     setState(() {
@@ -134,8 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         left: 20,
                         bottom: -45,
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              'https://picsum.photos/id/86/200/200'),
+                          backgroundImage: _profileImage,
                           onBackgroundImageError: (_, __) {
                             setState(() {
                               imageURL = 'assets/images/placeholder.png';
@@ -199,67 +220,54 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       const Spacer(),
-                      if (FirebaseAuth.instance.currentUser?.uid != widget.userId)
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        child: SizedBox(
-                          width: 120,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: _toggleFollow,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _isFollowing
-                                  ? AppColors.fitnessSecondaryModuleColor
-                                  : AppColors.fitnessMainColor,
-                            ),
-                            child: Text(
-                              _isFollowing ? 'Following' : 'Follow',
-                              style: const TextStyle(
-                                  color: AppColors.fitnessPrimaryTextColor),
+                      if (FirebaseAuth.instance.currentUser?.uid !=
+                          widget.userId)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          child: SizedBox(
+                            width: 120,
+                            height: 40,
+                            child: ElevatedButton(
+                              onPressed: _toggleFollow,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _isFollowing
+                                    ? AppColors.fitnessSecondaryModuleColor
+                                    : AppColors.fitnessMainColor,
+                              ),
+                              child: Text(
+                                _isFollowing ? 'Following' : 'Follow',
+                                style: const TextStyle(
+                                    color: AppColors.fitnessPrimaryTextColor),
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 60),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: GridView.builder(
+                  child: ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                    ),
-                    itemCount: 15,
+                    itemCount: _posts.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(
-                                'https://picsum.photos/id/${index + 1}/200/200'),
-                            onError: (_, __) {
-                              setState(() {
-                                imageURL = 'assets/images/placeholder.png';
-                              });
-                            },
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
+                      final post = _posts[index];
+                      return PostBuilder(
+                        post: post,
+                        isProfile: true,
                       );
                     },
                   ),
-                ),
+                )
               ],
             ),
           )
         : const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              color: AppColors.fitnessMainColor,
+            ),
           );
   }
 }
