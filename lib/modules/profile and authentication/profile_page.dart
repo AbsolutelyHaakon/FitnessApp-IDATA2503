@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
+import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
 /// Profile page for a user
@@ -30,6 +31,10 @@ class _ProfilePageState extends State<ProfilePage> {
   String imageURL = " ";
   String bannerURL = " ";
 
+  int followers = 0;
+  int following = 0;
+  bool _isFollowing = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +50,23 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  Future<void> _loadFollowerData() async {}
+  Future<void> _loadFollowerData() async {
+    final followerData =
+        await _userFollowsDao.fireBaseGetFollowerCount(widget.userId);
+    final followingData =
+        await _userFollowsDao.fireBaseGetFollowingCount(widget.userId);
+
+    setState(() {
+      followers = followerData;
+      following = followingData;
+    });
+  }
+
+  void _toggleFollow() {
+    setState(() {
+      _isFollowing = !_isFollowing;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,54 +100,74 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 5),
           Padding(
-            padding: EdgeInsets.only(left: 20.0),
+            padding: const EdgeInsets.only(left: 20.0),
             child: Row(
               children: [
                 const SizedBox(width: 110),
                 Expanded(
                   child: Text(
                     name,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     softWrap: true,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.only(right: 50.0),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'Followers',
                       style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                     ),
                     Text(
-                      '150',
+                      followers.toString(),
                       style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                          const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
-                SizedBox(width: 30),
+                const SizedBox(width: 20),
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'Following',
                       style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                     ),
                     Text(
-                      '200',
+                      following.toString(),
                       style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                          const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                   ],
+                ),
+                const Spacer(),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  child: SizedBox(
+                    width: 120,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: _toggleFollow,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _isFollowing
+                            ? AppColors.fitnessSecondaryModuleColor
+                            : AppColors.fitnessMainColor,
+                      ),
+                      child: Text(
+                        _isFollowing ? 'Following' : 'Follow',
+                        style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

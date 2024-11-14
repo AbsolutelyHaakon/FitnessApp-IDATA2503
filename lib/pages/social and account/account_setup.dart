@@ -14,9 +14,8 @@ import 'package:image_picker/image_picker.dart';
 // Last edited: 31/10/2024
 // Last edited by: Håkon Svensen Karlsen
 class AccountSetupPage extends StatefulWidget {
-  final User? user;
 
-  const AccountSetupPage({super.key, this.user});
+  const AccountSetupPage({super.key});
 
   @override
   _AccountSetupPageState createState() => _AccountSetupPageState();
@@ -32,9 +31,11 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   XFile? _image;
 
   void _updateUserData() {
+    if (FirebaseAuth.instance.currentUser == null) { return; }
+    print(FirebaseAuth.instance.currentUser?.uid);
     if (_formKey.currentState!.validate()) {
       UserDao().fireBaseUpdateUserData(
-        widget.user?.uid ?? '',
+        FirebaseAuth.instance.currentUser?.uid ?? '',
         _nameController.text,
         double.tryParse(_heightController.text) ?? 0.0,
         double.tryParse(_weightController.text) ?? 0.0,

@@ -117,4 +117,20 @@ class UserFollowsDao {
     };
   }
 
+  Future<int> fireBaseGetFollowerCount(String uid) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('userFollows')
+        .where('followsId', isEqualTo: uid)
+        .get();
+    return querySnapshot.size;
+  }
+
+  Future<int> fireBaseGetFollowingCount(String uid) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('userFollows')
+        .where('userId', isEqualTo: uid)
+        .get();
+    return querySnapshot.size;
+  }
+
 }

@@ -70,7 +70,7 @@ class _LoginModuleState extends State<LoginModule> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AccountSetupPage(user: result['user'])),
+              builder: (context) => const AccountSetupPage()),
         );
       } else {
         setState(() {
