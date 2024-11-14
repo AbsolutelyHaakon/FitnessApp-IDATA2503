@@ -118,7 +118,13 @@ class PostsDao {
   };
 }
 
-  Future<Map<String, dynamic>> fireBaseFetchUserPosts(String userId) async {
+  Future<Map<String, dynamic>> fireBaseFetchUserPosts(String? userId) async {
+    if (userId == null) {
+      return {
+        'posts': [],
+      };
+    }
+
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('posts')
         .where('userId', isEqualTo: userId)

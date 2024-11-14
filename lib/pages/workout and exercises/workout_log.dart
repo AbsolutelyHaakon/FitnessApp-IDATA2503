@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutLog extends StatefulWidget {
-  final User? user;
-  const WorkoutLog({super.key, this.user});
+  const WorkoutLog({super.key});
 
   @override
   State<WorkoutLog> createState() {

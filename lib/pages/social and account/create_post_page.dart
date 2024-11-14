@@ -18,9 +18,7 @@ import '../../styles.dart';
 /// TODO: Implement attach exercise logic
 
 class CreatePostPage extends StatefulWidget {
-  final User? user;
-
-  const CreatePostPage({super.key, required this.user});
+  const CreatePostPage({super.key});
 
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
@@ -51,26 +49,33 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> _createPost() async {
-  final result = await _postsDao.fireBaseCreatePost(
-    _message,
-    _imageUrl,
-    "", // TODO: implement workout
-    _location,
-    _workoutStats,
-    widget.user!.uid,
-  );
-
-  if (result['success']) {
-    Navigator.of(context).pop();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(result['message'],
-          style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-      textAlign: TextAlign.center,),
-          backgroundColor: AppColors.fitnessWarningColor),
+    // TODO: Add some form of error handling here
+    if (FirebaseAuth.instance.currentUser?.uid == null) {
+      return;
+    }
+    final result = await _postsDao.fireBaseCreatePost(
+      _message,
+      _imageUrl,
+      "", // TODO: implement workout
+      _location,
+      _workoutStats,
+      FirebaseAuth.instance.currentUser!.uid,
     );
+
+    if (result['success']) {
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+              result['message'],
+              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: AppColors.fitnessWarningColor),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

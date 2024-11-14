@@ -17,7 +17,6 @@ class LoginModule extends StatefulWidget {
   final TextEditingController passwordController;
   final UserDao userDao;
   final ValueChanged<User?> onLoginSuccess;
-  final User? user;
 
   const LoginModule({
     required this.formKey,
@@ -26,7 +25,6 @@ class LoginModule extends StatefulWidget {
     required this.userDao,
     required this.onLoginSuccess,
     super.key,
-    this.user,
   });
 
   @override

@@ -20,9 +20,8 @@ import 'package:flutter/material.dart';
 /// TODO: Implement backend logic
 
 class SocialFeed extends StatefulWidget {
-  final User? user;
 
-  const SocialFeed({super.key, required this.user});
+  const SocialFeed({super.key});
 
   @override
   State<SocialFeed> createState() => _SocialFeedState();
@@ -62,7 +61,7 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
 
   Future<void> getFeed() async {
     final fetchedPosts =
-        await _postsDao.fireBaseFetchUserPosts(widget.user!.uid);
+        await _postsDao.fireBaseFetchUserPosts(FirebaseAuth.instance.currentUser?.uid);
     setState(() {
       _posts = fetchedPosts["posts"];
       _isReady = true;
@@ -150,6 +149,7 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
               ],
             ),
           ),
+          // TODO: Remove the second tab if the user is not logged in (Public view)
           body: _isReady
               ? _isSearching
                   ? _buildSearchSection()
@@ -157,7 +157,7 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
                       controller: _tabController,
                       children: [
                         _buildFeedSection(),
-                        ProfilePage(userId: widget.user!.uid),
+                        ProfilePage(userId: FirebaseAuth.instance.currentUser!.uid),
                       ],
                     )
               : const Center(
@@ -169,8 +169,7 @@ class _SocialFeedState extends State<SocialFeed> with SingleTickerProviderStateM
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CreatePostPage(
-                              user: FirebaseAuth.instance.currentUser)),
+                          builder: (context) => CreatePostPage()),
                     );
                   },
                   backgroundColor: AppColors.fitnessMainColor,

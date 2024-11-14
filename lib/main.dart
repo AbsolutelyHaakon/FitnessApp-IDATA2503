@@ -94,8 +94,7 @@ class AuthWrapper extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasData) {
           // If the user is signed in, pass the user data to the navigation bar
-          return CustomNavigationBar(
-              user: snapshot.data); // Pass user info if needed
+          return CustomNavigationBar(); // Pass user info if needed
         } else {
           // If no user is logged in, load the app without any user-specific data
           return const CustomNavigationBar();

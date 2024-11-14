@@ -13,9 +13,8 @@ import '../../database/crud/workout_dao.dart';
 import '../../database/tables/exercise.dart';
 
 class CreateWorkoutPage extends StatefulWidget {
-  final User? user;
 
-  const CreateWorkoutPage({super.key, this.user});
+  const CreateWorkoutPage({super.key});
 
   @override
   State<CreateWorkoutPage> createState() => _CreateWorkoutPageState();
@@ -87,7 +86,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       return;
     }
 
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && FirebaseAuth.instance.currentUser?.uid != null) {
       try {
         final result = await workoutDao.fireBaseCreateWorkout(
           _selectedCategory,
@@ -96,7 +95,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           // TODO: Implement workout duration
           _intensity,
           !_isPublic,
-          widget.user?.uid,
+          FirebaseAuth.instance.currentUser!.uid,
           '',
           // TODO: Implement workout URL
           _titleController.text,
@@ -327,7 +326,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ExerciseSelectorPage(
-                                user: widget.user,
                                 selectedExercises: selectedExercises),
                           ),
                         );

@@ -6,10 +6,9 @@ import '../../database/tables/exercise.dart';
 import '../../styles.dart';
 
 class ExerciseOverviewPage extends StatefulWidget {
-  final User? user;
   final Exercises exercise; // Marked as final since it's not modified
 
-  const ExerciseOverviewPage({Key? key, this.user, required this.exercise})
+  const ExerciseOverviewPage({Key? key, required this.exercise})
       : super(key: key); // Added key and super
 
   @override
@@ -57,17 +56,16 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
 
   Future<void> _saveChanges() async {
     final result = await _exerciseDao.fireBaseUpdateExercise(
-      widget.exercise.exerciseId,
-      _nameController.text,
-      _descriptionController.text,
-      _categoryController.text,
-      widget.exercise.videoUrl,
-      // Implement videoUrl editing
-      widget.exercise.imageURL,
-      // Implement image editing
-      _isPublic,
-      widget.user?.uid,
-    );
+        widget.exercise.exerciseId,
+        _nameController.text,
+        _descriptionController.text,
+        _categoryController.text,
+        widget.exercise.videoUrl,
+        // Implement videoUrl editing
+        widget.exercise.imageURL,
+        // Implement image editing
+        _isPublic,
+        FirebaseAuth.instance.currentUser?.uid);
     if (result.containsKey('exerciseId')) {
       setState(() {
         widget.exercise.name = _nameController.text;
@@ -108,7 +106,7 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          if (widget.exercise.userId == widget.user?.uid)
+          if (widget.exercise.userId == FirebaseAuth.instance.currentUser?.uid)
             IconButton(
               icon: Icon(
                 _isEditing ? Icons.cancel_outlined : Icons.edit,
@@ -136,105 +134,107 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
     );
   }
 
-Widget _buildBody() {
-  return SingleChildScrollView(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: _isEditing
-              ? TextField(
-                  controller: _nameController,
-                  style: const TextStyle(
-                      fontSize: 32,
-                      color: AppColors.fitnessPrimaryTextColor,
-                      fontWeight: FontWeight.w900),
-                  decoration: _inputDecoration('Exercise Name'),
-                )
-              : Text(
-                  widget.exercise.name,
-                  style: const TextStyle(
-                      fontSize: 32,
-                      color: AppColors.fitnessPrimaryTextColor,
-                      fontWeight: FontWeight.w900),
-                ),
-        ),
-        const SizedBox(height: 10),
-        if (widget.exercise.imageURL != null &&
-            widget.exercise.imageURL!.isNotEmpty)
-          Image.network(
-            widget.exercise.imageURL!,
-            width: MediaQuery.of(context).size.width,
-            height: 200,
-            fit: BoxFit.cover,
-          )
-        else
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 200,
-            color: AppColors.fitnessSecondaryModuleColor,
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.image, size: 100, color: AppColors.fitnessMainColor),
-                Text(
-                  'No Image',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.fitnessPrimaryTextColor,
-                    fontWeight: FontWeight.bold,
+  Widget _buildBody() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: _isEditing
+                ? TextField(
+                    controller: _nameController,
+                    style: const TextStyle(
+                        fontSize: 32,
+                        color: AppColors.fitnessPrimaryTextColor,
+                        fontWeight: FontWeight.w900),
+                    decoration: _inputDecoration('Exercise Name'),
+                  )
+                : Text(
+                    widget.exercise.name,
+                    style: const TextStyle(
+                        fontSize: 32,
+                        color: AppColors.fitnessPrimaryTextColor,
+                        fontWeight: FontWeight.w900),
                   ),
-                ),
+          ),
+          const SizedBox(height: 10),
+          if (widget.exercise.imageURL != null &&
+              widget.exercise.imageURL!.isNotEmpty)
+            Image.network(
+              widget.exercise.imageURL!,
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              fit: BoxFit.cover,
+            )
+          else
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              color: AppColors.fitnessSecondaryModuleColor,
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.image,
+                      size: 100, color: AppColors.fitnessMainColor),
+                  Text(
+                    'No Image',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildCategoryAndPrivacy(),
+                const SizedBox(height: 20),
+                _isEditing
+                    ? TextField(
+                        controller: _descriptionController,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.fitnessPrimaryTextColor),
+                        decoration: _inputDecoration('Description'),
+                        minLines: 1,
+                        maxLines: null,
+                      )
+                    : widget.exercise.description != null &&
+                            widget.exercise.description!.isNotEmpty
+                        ? Text(
+                            widget.exercise.description!,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.fitnessPrimaryTextColor,
+                                fontWeight: FontWeight.w400),
+                          )
+                        : Container(
+                            padding: const EdgeInsets.all(8.0),
+                            width: double.infinity,
+                            child: const Text(
+                              'No description...',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.fitnessSecondaryTextColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
               ],
             ),
           ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCategoryAndPrivacy(),
-              const SizedBox(height: 20),
-              _isEditing
-                  ? TextField(
-                      controller: _descriptionController,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.fitnessPrimaryTextColor),
-                      decoration: _inputDecoration('Description'),
-                      minLines: 1,
-                      maxLines: null,
-                    )
-                  : widget.exercise.description != null &&
-                          widget.exercise.description!.isNotEmpty
-                      ? Text(
-                          widget.exercise.description!,
-                          style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.fitnessPrimaryTextColor,
-                              fontWeight: FontWeight.w400),
-                        )
-                      : Container(
-                          padding: const EdgeInsets.all(8.0),
-                          width: double.infinity,
-                          child: const Text(
-                            'No description...',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.fitnessSecondaryTextColor,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
+
   Widget _buildCategoryAndPrivacy() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

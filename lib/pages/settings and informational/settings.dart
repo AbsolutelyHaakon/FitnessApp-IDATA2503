@@ -7,17 +7,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../database/Initialization/get_data_from_server.dart';
 
 class SettingsPage extends StatelessWidget {
-  final User? user;
   final VoidCallback? onLogout;
 
-  SettingsPage({Key? key, this.user, this.onLogout}) : super(key: key);
+  SettingsPage({Key? key, this.onLogout}) : super(key: key);
 
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
   // TODO: Implement proper feedback logic on the sync function
   void _synchronizeCloud(BuildContext context) async {
     try {
-      await _getDataFromServer.syncData(user?.uid ?? '');
+      await _getDataFromServer.syncData(FirebaseAuth.instance.currentUser?.uid ?? '');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
@@ -71,7 +70,8 @@ class SettingsPage extends StatelessWidget {
                     // Navigate to Account settings page
                   },
                 ),
-                if (user?.uid == "8v56EVEYVPTXPigxMF0Hd4jNEBR2")
+                // TODO: Add a proper admin role
+                if (FirebaseAuth.instance.currentUser?.uid == "8v56EVEYVPTXPigxMF0Hd4jNEBR2")
                   _buildSettingsItem(
                     context,
                     icon: Icons.admin_panel_settings,

@@ -14,9 +14,8 @@ import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_serve
 import 'social and account/me.dart';
 
 class Home extends StatefulWidget {
-  final User? user;
 
-  const Home({super.key, this.user});
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -28,7 +27,7 @@ class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
 Map<Workouts, DateTime> workoutMap = {
-  new Workouts(workoutId: 'Gay', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime(1970, 1, 1),
+  new Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime(1970, 1, 1),
 };
 
   @override
@@ -49,7 +48,7 @@ Map<Workouts, DateTime> workoutMap = {
               ),
 
               _buildModuleRow(
-                leftChild: CommunityModule(user: widget.user,),
+                leftChild: CommunityModule(),
                 rightChild: RingsModule(),
               ),
               const Padding(
@@ -58,7 +57,7 @@ Map<Workouts, DateTime> workoutMap = {
               ),
               _buildModuleRow(
                 leftChild: WorkoutLogModule(),
-                rightChild: WipModule(user: widget.user),
+                rightChild: WipModule(),
               ),
             ],
           ),
@@ -109,7 +108,7 @@ Map<Workouts, DateTime> workoutMap = {
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => Me(user: widget.user),
+        pageBuilder: (context, animation, secondaryAnimation) => Me(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(0.0, 1.0);
           const end = Offset.zero;

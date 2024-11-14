@@ -80,7 +80,7 @@ class UserProfileModule extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SettingsPage(user: FirebaseAuth.instance.currentUser, onLogout: onLogout)),
+              MaterialPageRoute(builder: (context) => SettingsPage(onLogout: onLogout)),
             );
           },
         ),

@@ -8,9 +8,8 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateExercisePage extends StatefulWidget {
-  final User? user;
 
-  const CreateExercisePage({super.key, this.user});
+  const CreateExercisePage({super.key});
 
   @override
   _CreateExercisePageState createState() => _CreateExercisePageState();
@@ -38,7 +37,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
           _videoUrlController.text,
           _selectedImage,
           !_isPublic,
-          widget.user?.uid ?? '',
+          FirebaseAuth.instance.currentUser?.uid ?? '',
         );
         Navigator.of(context).pop(true); // Return true to indicate a new exercise was created
       } catch (e) {

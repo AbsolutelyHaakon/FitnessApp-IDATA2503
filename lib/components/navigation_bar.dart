@@ -18,9 +18,8 @@ import '../database/tables/workout.dart';
 
 
 class CustomNavigationBar extends StatefulWidget {
-  final User? user;
 
-  const CustomNavigationBar({super.key, this.user});
+  const CustomNavigationBar({super.key});
 
   @override
   _CustomNavigationBarState createState() => _CustomNavigationBarState();
@@ -189,13 +188,13 @@ Widget build(BuildContext context) {
   Widget _getSelectedPage(int index) {
     switch (index) {
       case 0:
-        return Home(user: widget.user);
+        return const Home();
       case 1:
-        return WorkoutPage(user: widget.user);
+        return const WorkoutPage();
       case 2:
-        return Me(user: widget.user);
+        return const Me();
       default:
-        return Home(user: widget.user);
+        return const Home();
     }
   }
 }

@@ -16,10 +16,9 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 // Last edited by Håkon Svensen Karlsen
 
 class WorkoutsBox extends StatefulWidget {
-  const WorkoutsBox({super.key, required this.workoutMap, this.user});
+  const WorkoutsBox({super.key, required this.workoutMap});
 
   final Map<Workouts, DateTime> workoutMap;
-  final User? user;
 
   String getFormattedDate(DateTime date) {
     String formattedMonth = DateFormat.MMMM().format(date);
@@ -98,7 +97,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
           padding: const EdgeInsets.only(right: 0.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
-            direction: workout.userId == widget.user?.uid
+            direction: workout.userId == FirebaseAuth.instance.currentUser?.uid
                 ? DismissDirection.endToStart
                 : DismissDirection.none,
             confirmDismiss: (direction) => _confirmDelete(context),

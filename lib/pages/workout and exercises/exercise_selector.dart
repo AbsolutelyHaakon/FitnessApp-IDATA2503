@@ -9,11 +9,10 @@ import 'create_exercise_page.dart';
 import 'exercise_overview_detailed.dart'; // Import the detailed overview page
 
 class ExerciseSelectorPage extends StatefulWidget {
-  final User? user;
   final List<Exercises> selectedExercises;
 
   const ExerciseSelectorPage(
-      {super.key, this.user, required this.selectedExercises});
+      {super.key, required this.selectedExercises});
 
   @override
   _ExerciseSelectorPageState createState() => _ExerciseSelectorPageState();
@@ -38,12 +37,12 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   }
 
   Future<void> _fetchExercises() async {
-    final result = await exerciseDao.localFetchAllExercises(widget.user?.uid);
+    final result = await exerciseDao.localFetchAllExercises(FirebaseAuth.instance.currentUser?.uid);
     setState(() {
       // Populate the list of exercises with users private exercises
-      if (widget.user != null) {
+      if (FirebaseAuth.instance.currentUser != null) {
         _allUserExercises = result['exercises']
-            .where((exercise) => exercise.userId == widget.user!.uid)
+            .where((exercise) => exercise.userId == FirebaseAuth.instance.currentUser?.uid)
             .cast<Exercises>()
             .toList();
       }
@@ -138,7 +137,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (widget.user != null)
+                    if (FirebaseAuth.instance.currentUser != null)
                      Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -146,7 +145,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
-                    if (widget.user != null)
+                    if (FirebaseAuth.instance.currentUser != null)
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -155,7 +154,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  CreateExercisePage(user: widget.user),
+                                  CreateExercisePage(),
                             ),
                           );
                           if (result == true) {
@@ -169,9 +168,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                     ),
                   ],
                 ),
-                if (widget.user != null)
+                if (FirebaseAuth.instance.currentUser != null)
                 const SizedBox(height: 16),
-                if (widget.user != null)
+                if (FirebaseAuth.instance.currentUser?.uid != null)
                 Container(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -216,7 +215,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ExerciseOverviewPage(
-                                    exercise: exercise, user: widget.user),
+                                    exercise: exercise),
                               ),
                             );
                           },
@@ -279,7 +278,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ExerciseOverviewPage(
-                                    exercise: exercise, user: widget.user),
+                                    exercise: exercise),
                               ),
                             );
                           },

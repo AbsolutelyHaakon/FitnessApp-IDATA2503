@@ -18,9 +18,8 @@ import '../../database/tables/workout.dart';
 /// @Last Edited By: Håkon Svensen Karlsen
 
 class WorkoutPage extends StatefulWidget {
-  final User? user;
 
-  const WorkoutPage({super.key, this.user});
+  const WorkoutPage({super.key});
 
   @override
   _WorkoutPageState createState() => _WorkoutPageState();
@@ -56,7 +55,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   }
 
   void fetchAllWorkouts() async {
-    workouts = await WorkoutDao().localFetchAllById(widget.user?.uid);
+    workouts = await WorkoutDao().localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
     if (!mounted) return;
     setState(() {
       for (var workout in workouts) {
@@ -133,7 +132,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            CreateWorkoutPage(user: widget.user),
+                            CreateWorkoutPage(),
                       ),
                     );
                     if (result == true) {

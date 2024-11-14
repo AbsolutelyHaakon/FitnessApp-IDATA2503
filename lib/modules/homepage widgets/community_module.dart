@@ -13,9 +13,8 @@ import '../../pages/social and account/social_feed.dart';
 // Last edited by: Matti Kjellstadli
 
 class CommunityModule extends StatelessWidget {
-  final User? user;
 
-  const CommunityModule({Key? key, required this.user}) : super(key: key);
+  const CommunityModule({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,7 @@ class CommunityModule extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => SocialFeed(user: user)),
+            MaterialPageRoute(builder: (context) => SocialFeed()),
           );
         },
         child: Container(

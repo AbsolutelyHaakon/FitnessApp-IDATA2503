@@ -18,8 +18,7 @@ import '../../styles.dart';
 // Last edited by: Håkon Svensen Karlsen
 
 class WipModule extends StatefulWidget {
-  final User? user;
-  const WipModule({super.key, this.user});
+  const WipModule({super.key});
   @override
   State<WipModule> createState() => _WipModuleState();
 }

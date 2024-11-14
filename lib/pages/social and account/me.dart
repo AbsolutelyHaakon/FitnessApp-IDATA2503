@@ -8,8 +8,7 @@ import '../../database/Initialization/get_data_from_server.dart';
 import '../../modules/profile and authentication/login_module.dart';
 
 class Me extends StatefulWidget {
-  final User? user;
-  const Me({super.key, this.user});
+  const Me({super.key});
 
   @override
   State<Me> createState() => _MeState();
@@ -25,12 +24,12 @@ class _MeState extends State<Me> {
   @override
   void initState() {
     super.initState();
-    _currentUser = widget.user;
+    _currentUser = FirebaseAuth.instance.currentUser;
   }
 
   void _onLoginSuccess(User? user) {
     setState(() {
-      _currentUser = user;
+      _currentUser = FirebaseAuth.instance.currentUser;
     });
   }
 
@@ -68,7 +67,6 @@ Widget build(BuildContext context) {
                           passwordController: _passwordController,
                           userDao: _userDao,
                           onLoginSuccess: _onLoginSuccess,
-                          user: _currentUser,
                         ),
                       ],
                     ],
