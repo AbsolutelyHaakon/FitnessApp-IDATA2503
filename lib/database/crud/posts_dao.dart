@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
+
+import '../imgur_service.dart';
 
 class PostsDao {
   final tableName = 'posts';
@@ -59,20 +62,26 @@ class PostsDao {
 
   Future<Map<String, dynamic>> fireBaseCreatePost(
       String? content,
-      String? imageURL,
+      XFile? image,
       String? workoutId,
       String? location,
       List<String>? visibleStats,
       String userId) async {
     // A post cant be made if there is no content, image or workout
     if ((content == null || content.isEmpty) &&
-        (imageURL == null || imageURL.isEmpty) &&
+        (image == null) &&
         (workoutId == null || workoutId.isEmpty)) {
       return {
         'success': false,
         'message': 'Post must have content, image or workout to be posted',
       };
     }
+
+    String imageURL = '';
+    if (image != null) {
+      imageURL = await uploadImage(image);
+    }
+
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('posts').add({
       'userId': userId,
@@ -141,5 +150,18 @@ class PostsDao {
     return {
       'posts': userPosts,
     };
+  }
+
+  ImgurService imgurService = ImgurService();
+
+  Future<String> uploadImage(XFile image) async {
+  String? imgurUrl = await imgurService.saveImageToImgur(image);
+  if (imgurUrl != null) {
+  print('Image uploaded to Imgur: $imgurUrl');
+  return imgurUrl;
+  } else {
+  print('Failed to upload to Imgur.');
+  return "";
+  }
   }
 }

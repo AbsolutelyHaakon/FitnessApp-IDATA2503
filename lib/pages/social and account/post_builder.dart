@@ -58,9 +58,6 @@ class _PostBuilderState extends State<PostBuilder> {
 
       _isReady = true;
     });
-
-    print("Adrian");
-    print(imageUrl);
   }
 
   Widget statBuilder(Map<String, String> stat) {

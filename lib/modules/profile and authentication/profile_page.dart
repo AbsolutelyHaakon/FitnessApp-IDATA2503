@@ -245,7 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: ListView.builder(
@@ -254,13 +254,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     itemCount: _posts.length,
                     itemBuilder: (context, index) {
                       final post = _posts[index];
-                      return PostBuilder(
-                        post: post,
-                        isProfile: true,
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 40.0),
+                        // Add bottom padding
+                        child: PostBuilder(
+                          post: post,
+                          isProfile: true,
+                        ),
                       );
                     },
                   ),
-                )
+                ),
               ],
             ),
           )

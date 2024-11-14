@@ -29,12 +29,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String? _message;
   List<String> _workoutStats = [];
   String? _workoutId;
-  String? _imageUrl;
   String? _location;
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
   bool _isLocationFieldVisible = false;
   final FocusNode _locationFocusNode = FocusNode();
+  bool _isSubmitting = false;
 
   final PostsDao _postsDao = PostsDao();
 
@@ -43,36 +43,44 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (image != null) {
       setState(() {
         _selectedImage = image;
-        _imageUrl = image.path;
       });
     }
   }
 
   Future<void> _createPost() async {
-    // TODO: Add some form of error handling here
     if (FirebaseAuth.instance.currentUser?.uid == null) {
       return;
     }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
     final result = await _postsDao.fireBaseCreatePost(
       _message,
-      _imageUrl,
+      _selectedImage,
       "", // TODO: implement workout
       _location,
       _workoutStats,
       FirebaseAuth.instance.currentUser!.uid,
     );
 
+    setState(() {
+      _isSubmitting = false;
+    });
+
     if (result['success']) {
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-              result['message'],
-              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: AppColors.fitnessWarningColor),
+          content: Text(
+            result['message'],
+            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: AppColors.fitnessWarningColor,
+        ),
       );
     }
   }
@@ -82,8 +90,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back,
-              color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -175,7 +182,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                             onTap: () {
                                               setState(() {
                                                 _selectedImage = null;
-                                                _imageUrl = null;
                                               });
                                             },
                                             child: const Icon(
@@ -195,12 +201,10 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                         child: Container(
                                           width: 220,
                                           height: 120,
-                                          color: AppColors
-                                              .fitnessSecondaryModuleColor,
+                                          color: AppColors.fitnessSecondaryModuleColor,
                                           child: const Icon(
                                             Icons.image,
-                                            color: AppColors
-                                                .fitnessPrimaryTextColor,
+                                            color: AppColors.fitnessPrimaryTextColor,
                                             size: 50,
                                           ),
                                         ),
@@ -221,8 +225,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         children: [
                           Transform.scale(
                             scale: 0.7,
-                            child: const Icon(Icons.location_on,
-                                color: AppColors.fitnessMainColor),
+                            child: const Icon(Icons.location_on, color: AppColors.fitnessMainColor),
                           ),
                           Expanded(
                             child: TextFormField(
@@ -257,8 +260,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                               _isLocationFieldVisible = true;
                             });
                             Future.delayed(Duration(milliseconds: 100), () {
-                              FocusScope.of(context)
-                                  .requestFocus(_locationFocusNode);
+                              FocusScope.of(context).requestFocus(_locationFocusNode);
                             });
                           },
                           child: const Text(
@@ -276,17 +278,25 @@ class _CreatePostPageState extends State<CreatePostPage> {
         width: 300,
         child: FloatingActionButton(
           backgroundColor: AppColors.fitnessMainColor,
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              _createPost();
-            }
-          },
-          child: const Text('Create Post',
-              style: TextStyle(
-                color: AppColors.fitnessPrimaryTextColor,
-                fontWeight: FontWeight.w700,
-              )),
+          onPressed: _isSubmitting
+              ? null
+              : () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _createPost();
+                  }
+                },
+          child: _isSubmitting
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.fitnessPrimaryTextColor),
+                )
+              : const Text(
+                  'Create Post',
+                  style: TextStyle(
+                    color: AppColors.fitnessPrimaryTextColor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

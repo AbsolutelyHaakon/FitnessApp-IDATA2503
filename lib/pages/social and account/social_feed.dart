@@ -257,7 +257,8 @@ class _SocialFeedState extends State<SocialFeed>
                   child: ListTile(
                     leading: CircleAvatar(
                       child: Text(_filteredUsers[index]
-                          .email[0]), // TODO: Replace with user profile image
+                          .email[0], style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),), // TODO: Replace with user profile image
+                      backgroundColor: AppColors.fitnessMainColor,
                     ),
                     title: Text(
                       _filteredUsers[index].email,
