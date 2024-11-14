@@ -59,6 +59,12 @@ class _LoginModuleState extends State<LoginModule> {
   }
 
   Future<void> _register() async {
+    if ( await widget.userDao.fireBaseCheckIfEmailExists(widget.emailController.text)) {
+      setState(() {
+        _errorMessage = 'An account already exists for that email';
+        return;
+      });
+    }
     try {
       final result =
           await widget.userDao.fireBaseCreateUserWithEmailAndPassword(
@@ -127,16 +133,16 @@ class _LoginModuleState extends State<LoginModule> {
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
+                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
+                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
                         errorStyle: TextStyle(
-                          color: Colors.red,
+                          color: AppColors.fitnessWarningColor,
                           fontSize: 12,
                         ),
                       ),
@@ -164,16 +170,16 @@ class _LoginModuleState extends State<LoginModule> {
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
+                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
+                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
                         errorStyle: TextStyle(
-                          color: Colors.red,
+                          color: AppColors.fitnessWarningColor,
                           fontSize: 12,
                         ),
                       ),
@@ -186,14 +192,6 @@ class _LoginModuleState extends State<LoginModule> {
                         return null;
                       },
                     ),
-                    if (_errorMessage != null)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          _errorMessage!,
-                          style: const TextStyle(color: AppColors.fitnessWarningColor),
-                        ),
-                      ),
                     const SizedBox(height: 16),
                     if (_isRegistering)
                       TextFormField(
@@ -210,16 +208,16 @@ class _LoginModuleState extends State<LoginModule> {
                             borderRadius: BorderRadius.all(Radius.circular(16.0)),
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
+                            borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                             borderRadius: BorderRadius.all(Radius.circular(16.0)),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
+                            borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                             borderRadius: BorderRadius.all(Radius.circular(16.0)),
                           ),
                           contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
                           errorStyle: TextStyle(
-                            color: Colors.red,
+                            color: AppColors.fitnessWarningColor,
                             fontSize: 12,
                           ),
                         ),
@@ -234,6 +232,14 @@ class _LoginModuleState extends State<LoginModule> {
                           }
                           return null;
                         },
+                      ),
+                    if (_errorMessage != null)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: AppColors.fitnessWarningColor),
+                        ),
                       ),
                     const SizedBox(height: 20),
                     SizedBox(

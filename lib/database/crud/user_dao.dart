@@ -76,6 +76,15 @@ class UserDao {
   //////////////////////// Firebase Authentication /////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  Future<bool> fireBaseCheckIfEmailExists(String email) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
   Future<Map<String, dynamic>> fireBaseCreateUserWithEmailAndPassword(
       String email, String password) async {
     try {
