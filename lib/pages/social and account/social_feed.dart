@@ -4,6 +4,7 @@ import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/database/tables/user.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/post_builder.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -154,11 +155,14 @@ class _SocialFeedState extends State<SocialFeed> {
           floatingActionButton: !_isSearching
               ? FloatingActionButton(
                   onPressed: () {
-                    // TODO: Navigate to create post page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreatePostPage(user: FirebaseAuth.instance.currentUser)),
+                    );
                   },
                   backgroundColor: AppColors.fitnessMainColor,
                   shape: const CircleBorder(),
-                  child: const Icon(Icons.add, color: Colors.black),
+                  child: const Icon(Icons.add, color: AppColors.fitnessPrimaryTextColor),
                 )
               : null,
           backgroundColor: AppColors.fitnessBackgroundColor,

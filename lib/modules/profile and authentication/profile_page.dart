@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:flutter/material.dart';
 
 /// Profile page for a user
@@ -10,7 +12,6 @@ import 'package:flutter/material.dart';
 /// TODO: Implement backend logic
 /// TODO: Implement follow button
 
-
 class ProfilePage extends StatefulWidget {
   final String userId;
 
@@ -21,15 +22,30 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // Fetch DAOs
+  final UserDao _userDao = UserDao();
+  final UserFollowsDao _userFollowsDao = UserFollowsDao();
+
+  String name = " ";
+  String imageURL = " ";
+  String bannerURL = " ";
+
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadUserData();
+    _loadFollowerData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> _loadUserData() async {
+    final user = await _userDao.fireBaseGetUserData(widget.userId);
 
+    setState(() {
+      name = user?["name"] as String;
+    });
   }
+
+  Future<void> _loadFollowerData() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +69,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 left: 20,
                 bottom: -45,
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage('https://picsum.photos/id/65/200'),
+                  backgroundImage:
+                      NetworkImage('https://picsum.photos/id/65/200'),
                   radius: 50.0,
                   backgroundColor: Colors.white,
                 ),
@@ -61,14 +78,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           const SizedBox(height: 5),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 20.0),
             child: Row(
               children: [
-                SizedBox(width: 110),
+                const SizedBox(width: 110),
                 Expanded(
                   child: Text(
-                    'Håkon Svensen Karlsen',
+                    name,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     softWrap: true,
                   ),
@@ -86,11 +103,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       'Followers',
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                     Text(
                       '150',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
@@ -99,11 +118,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       'Following',
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                     Text(
                       '200',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
@@ -126,7 +147,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 return Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage('https://picsum.photos/id/${index + 1}/200/200'),
+                      image: NetworkImage(
+                          'https://picsum.photos/id/${index + 1}/200/200'),
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
