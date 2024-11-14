@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserWorkouts {
   final String userWorkoutId;
   final String userId;
@@ -25,7 +27,7 @@ class UserWorkouts {
       userWorkoutId: map['userWorkoutId'],
       userId: map['userId'],
       workoutId: map['workoutId'],
-      date: DateTime.parse(map['date']),
+      date: map['date'] is Timestamp ? (map['date'] as Timestamp).toDate() : DateTime.parse(map['date']),
     );
   }
 }

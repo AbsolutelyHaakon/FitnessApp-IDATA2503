@@ -1,4 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/Initialization/social_feed_data.dart';
+import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/posts.dart';
+import 'package:fitnessapp_idata2503/database/tables/user.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/post_builder.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,53 +30,139 @@ class SocialFeed extends StatefulWidget {
 }
 
 class _SocialFeedState extends State<SocialFeed> {
+  final PostsDao _postsDao = PostsDao();
+  final SocialFeedData _socialFeedData = SocialFeedData();
+
+  List<Posts> _posts = [];
+  bool _isReady = false;
+  bool _isSearching = false;
+  List<LocalUser> _allUsers = [];
+  List<LocalUser> _filteredUsers = [];
+
+  final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    getFeed();
+    getUsers();
+  }
+
   Future<void> _refreshFeed() async {
     // TODO: Implement refresh logic here
     await Future.delayed(const Duration(seconds: 2));
+  }
+
+  Future<void> getFeed() async {
+    final fetchedPosts =
+        await _postsDao.fireBaseFetchUserPosts(widget.user!.uid);
+    setState(() {
+      _posts = fetchedPosts["posts"];
+      _isReady = true;
+    });
+  }
+
+  Future<void> getUsers() async {
+    final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch();
+    setState(() {
+      _allUsers = fetchedUsers["users"];
+      _filteredUsers = _allUsers;
+    });
+  }
+
+  void _startSearch() {
+    setState(() {
+      _isSearching = true;
+      _filteredUsers = _allUsers;
+    });
+    _searchFocusNode.requestFocus();
+  }
+
+  void _stopSearch() {
+    setState(() {
+      _isSearching = false;
+    });
+    _searchController.clear();
+  }
+
+  // TODO: Change this to search for people with @ tags in their name when they are implemented
+  void _filterUsers(String query) {
+    setState(() {
+      _filteredUsers = _allUsers
+          .where((user) => user.email.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(CupertinoIcons.back,
-                color: AppColors.fitnessMainColor),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          backgroundColor: AppColors.fitnessBackgroundColor,
-          bottom: const TabBar(
-            indicator: BoxDecoration(),
-            labelColor: AppColors.fitnessMainColor,
-            unselectedLabelColor: AppColors.fitnessSecondaryTextColor,
-            labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-            unselectedLabelStyle:
-                TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
-            tabs: [
-              Tab(text: 'Feed'),
-              Tab(text: 'Profile'),
+      child: WillPopScope(
+        onWillPop: () async {
+          if (_isSearching) {
+            _stopSearch();
+            return false;
+          }
+          return true;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(CupertinoIcons.back,
+                  color: AppColors.fitnessMainColor),
+              onPressed: _isSearching
+                  ? _stopSearch
+                  : () => Navigator.of(context).pop(),
+            ),
+            backgroundColor: AppColors.fitnessBackgroundColor,
+            actions: [
+              if (!_isSearching)
+                IconButton(
+                  icon: const Icon(Icons.search,
+                      color: AppColors.fitnessMainColor),
+                  onPressed: _startSearch,
+                ),
             ],
+            bottom: const TabBar(
+              indicator: BoxDecoration(),
+              labelColor: AppColors.fitnessMainColor,
+              unselectedLabelColor: AppColors.fitnessSecondaryTextColor,
+              labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              unselectedLabelStyle:
+                  TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+              tabs: [
+                Tab(text: 'Feed'),
+                Tab(text: 'Profile'),
+              ],
+            ),
           ),
+          body: _isReady
+              ? _isSearching
+                  ? _buildSearchSection()
+                  : TabBarView(
+                      children: [
+                        _buildFeedSection(),
+                        ProfilePage(userId: widget.user!.uid),
+                      ],
+                    )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+          floatingActionButton: !_isSearching
+              ? FloatingActionButton(
+                  onPressed: () {
+                    // TODO: Navigate to create post page
+                  },
+                  backgroundColor: AppColors.fitnessMainColor,
+                  shape: const CircleBorder(),
+                  child: const Icon(Icons.add, color: Colors.black),
+                )
+              : null,
+          backgroundColor: AppColors.fitnessBackgroundColor,
         ),
-        body: TabBarView(
-          children: [
-            _buildFeedSection(),
-            _buildProfileSection(),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // TODO: Navigate to create post page
-          },
-          backgroundColor: AppColors.fitnessMainColor,
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add, color: Colors.black),
-        ),
-        backgroundColor: AppColors.fitnessBackgroundColor,
       ),
     );
   }
@@ -113,111 +204,54 @@ class _SocialFeedState extends State<SocialFeed> {
     );
   }
 
- Widget _buildProfileSection() {
-  return SingleChildScrollView(
-    child: Column(
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              height: 150,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage('https://picsum.photos/id/13/800/300'),
-                  fit: BoxFit.cover,
+  Widget _buildSearchSection() {
+    return Container(
+      height: 300, // Set a fixed height
+      width: double.infinity, // Set width to infinity
+      color: AppColors.fitnessBackgroundColor, // Set background color
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              focusNode: _searchFocusNode,
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Search users...',
+                border: OutlineInputBorder(),
+                prefixIcon:
+                    Icon(Icons.search, color: AppColors.fitnessMainColor),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent),
                 ),
               ),
+              style: const TextStyle(
+                  color: AppColors.fitnessPrimaryTextColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15),
+              onChanged: _filterUsers,
             ),
-            const Positioned(
-              left: 20,
-              bottom: -45,
-              child: CircleAvatar(
-                backgroundImage: NetworkImage('https://picsum.photos/id/65/200'),
-                radius: 50.0,
-                backgroundColor: Colors.white,
-              ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredUsers.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    child: Text(_filteredUsers[index].email
+                        [0]), // TODO: Replace with user profile image
+                  ),
+                  title: Text(_filteredUsers[index].email,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          color: AppColors.fitnessPrimaryTextColor)),
+                );
+              },
             ),
-          ],
-        ),
-        const SizedBox(height: 5),
-        const Padding(
-          padding: EdgeInsets.only(left: 20.0),
-          child: Row(
-            children: [
-              SizedBox(width: 110),
-              Expanded(
-                child: Text(
-                  'Håkon Svensen Karlsen',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  softWrap: true,
-                ),
-              ),
-            ],
           ),
-        ),
-        const SizedBox(height: 10),
-        const Padding(
-          padding: EdgeInsets.only(right: 50.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    'Followers',
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                  ),
-                  Text(
-                    '150',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-              SizedBox(width: 30),
-              Column(
-                children: [
-                  Text(
-                    'Following',
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                  ),
-                  Text(
-                    '200',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 60),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10.0,
-              mainAxisSpacing: 10.0,
-            ),
-            itemCount: 100,
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage('https://picsum.photos/id/${index + 1}/200/200'),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }
