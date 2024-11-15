@@ -97,8 +97,8 @@ class _LoginModuleState extends State<LoginModule> {
           children: [
             SvgPicture.asset(
               'assets/icons/login.svg',
-              width: 100.0, // Set the desired width
-              height: 100.0, // Set the desired height
+              width: 100.0,
+              height: 100.0,
             ),
             Text(
               _isRegistering ? 'Register' : 'Log in',

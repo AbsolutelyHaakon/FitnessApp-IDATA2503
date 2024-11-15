@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../database/crud/user_workouts_dao.dart';
 import '../../database/crud/workout_dao.dart';
@@ -18,7 +22,6 @@ import '../../database/tables/workout.dart';
 /// @Last Edited By: Håkon Svensen Karlsen
 
 class WorkoutPage extends StatefulWidget {
-
   const WorkoutPage({super.key});
 
   @override
@@ -33,13 +36,28 @@ class _WorkoutPageState extends State<WorkoutPage>
   bool _showOptions = false;
   List<Workouts> workouts = [];
   Map<Workouts, DateTime> workoutsMap = {};
+  String _selectedCategory = 'All';
+
+  List<FavoriteWorkouts> favoriteWorkouts = [];
+  final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
+
+  final List<String> categories = ['All', 'Starred', 'Legs', 'Abs', 'Upper Body', 'Cardio', 'Outdoors'];
+  final List<SvgPicture> categoryIcons = [
+    SvgPicture.asset('assets/icons/allIcon.svg', width: 40, height: 40),
+    SvgPicture.asset('assets/icons/starIcon.svg', width: 25, height: 25),
+    SvgPicture.asset('assets/icons/lowerBodyIcon.svg', width: 40, height: 40),
+    SvgPicture.asset('assets/icons/absIcon.svg', width: 40, height: 40),
+    SvgPicture.asset('assets/icons/upperBodyIcon.svg', width: 40, height: 40),
+    SvgPicture.asset('assets/icons/runnerIcon.svg', width: 40, height: 40),
+    SvgPicture.asset('assets/icons/hikerIcon.svg', width: 40, height: 40),
+  ];
 
   @override
   void initState() {
     super.initState();
 
     // These actions are only done if a user is logged in
-    fetchAllWorkouts();
+    fetchAllWorkouts("All");
 
     // Animation controllers for floating button widget
     _addIconController = AnimationController(
@@ -54,8 +72,24 @@ class _WorkoutPageState extends State<WorkoutPage>
     );
   }
 
-  void fetchAllWorkouts() async {
+  void fetchFavorites() async {
+    favoriteWorkouts.clear();
+    final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(FirebaseAuth.instance.currentUser?.uid);
+    if (!mounted) return;
+    setState(() {
+      favoriteWorkouts = favoriteWorkoutsData;
+    });
+  }
+
+  void fetchAllWorkouts(String category) async {
+    workoutsMap.clear();
+    fetchFavorites();
     workouts = await WorkoutDao().localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+    if (category != "All" && category != "Starred") {
+      workouts = workouts.where((element) => element.category == category).toList();
+    } else if(category == "Starred") {
+      workouts = workouts.where((element) => favoriteWorkouts.any((favorite) => favorite.workoutId == element.workoutId)).toList();
+    }
     if (!mounted) return;
     setState(() {
       for (var workout in workouts) {
@@ -63,6 +97,7 @@ class _WorkoutPageState extends State<WorkoutPage>
       }
     });
   }
+
 
   @override
   void dispose() {
@@ -104,10 +139,43 @@ class _WorkoutPageState extends State<WorkoutPage>
                         'Select a workout to begin',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                      const SizedBox(height: 10),
+
                     ],
                   ),
                 ),
               ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: List.generate(categories.length, (index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = categories[index];
+                          fetchAllWorkouts(categories[index]);
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                        decoration: BoxDecoration(
+                          color: _selectedCategory == categories[index]
+                              ?  AppColors.fitnessMainColor
+                              : AppColors.fitnessModuleColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: Center(child: categoryIcons[index]),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              const SizedBox(height: 10),
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
@@ -131,19 +199,17 @@ class _WorkoutPageState extends State<WorkoutPage>
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            CreateWorkoutPage(),
+                        builder: (context) => const CreateWorkoutPage(),
                       ),
                     );
                     if (result == true) {
                       workoutsMap.clear();
-                      fetchAllWorkouts();
+                      fetchAllWorkouts("All");
                     }
                     _toggleOptions();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.fitnessMainColor,
                       borderRadius: BorderRadius.circular(20),
@@ -152,7 +218,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       'Create New',
                       style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: AppColors.fitnessBackgroundColor,
                           fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -170,8 +236,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                     _toggleOptions();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.fitnessMainColor,
                       borderRadius: BorderRadius.circular(20),
@@ -229,8 +294,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                     _toggleOptions();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.fitnessMainColor,
                       borderRadius: BorderRadius.circular(20),
