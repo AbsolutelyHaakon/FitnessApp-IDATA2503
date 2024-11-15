@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/exercise_selector.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,13 +33,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   List<Exercises> selectedExercises = [];
   List<IndExerciseBox> exercises = [];
-
-  final List<String> _categories = [
-    'Cardio',
-    'Strength',
-    'Flexibility',
-    'High Intensity',
-  ];
 
   int _intensity = 1;
   String _selectedCategory = 'Cardio';
@@ -278,7 +272,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                       ),
                       DropdownButton<String>(
                         value: _selectedCategory,
-                        items: _categories.map((String value) {
+                        items: officialWorkoutCategories.map((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value,

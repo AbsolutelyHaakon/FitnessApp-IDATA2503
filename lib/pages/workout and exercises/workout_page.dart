@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -40,17 +41,6 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   List<FavoriteWorkouts> favoriteWorkouts = [];
   final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
-
-  final List<String> categories = ['All', 'Starred', 'Legs', 'Abs', 'Upper Body', 'Cardio', 'Outdoors'];
-  final List<SvgPicture> categoryIcons = [
-    SvgPicture.asset('assets/icons/allIcon.svg', width: 40, height: 40),
-    SvgPicture.asset('assets/icons/starIcon.svg', width: 25, height: 25),
-    SvgPicture.asset('assets/icons/lowerBodyIcon.svg', width: 40, height: 40),
-    SvgPicture.asset('assets/icons/absIcon.svg', width: 40, height: 40),
-    SvgPicture.asset('assets/icons/upperBodyIcon.svg', width: 40, height: 40),
-    SvgPicture.asset('assets/icons/runnerIcon.svg', width: 40, height: 40),
-    SvgPicture.asset('assets/icons/hikerIcon.svg', width: 40, height: 40),
-  ];
 
   @override
   void initState() {
@@ -149,18 +139,18 @@ class _WorkoutPageState extends State<WorkoutPage>
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: List.generate(categories.length, (index) {
+                  children: List.generate(officialFilterCategories.length, (index) {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedCategory = categories[index];
-                          fetchAllWorkouts(categories[index]);
+                          _selectedCategory = officialFilterCategories[index];
+                          fetchAllWorkouts(officialFilterCategories[index]);
                         });
                       },
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
-                          color: _selectedCategory == categories[index]
+                          color: _selectedCategory == officialFilterCategories[index]
                               ?  AppColors.fitnessMainColor
                               : AppColors.fitnessModuleColor,
                           shape: BoxShape.circle,
@@ -168,7 +158,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                         child: SizedBox(
                           width: 60,
                           height: 60,
-                          child: Center(child: categoryIcons[index]),
+                          child: Center(child: officialFilterCategoryIcons[index]),
                         ),
                       ),
                     );
