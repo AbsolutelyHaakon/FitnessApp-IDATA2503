@@ -29,19 +29,22 @@ class _IndExerciseBoxState extends State<IndExerciseBox> {
   final FocusNode _setsFocusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    _repsFocusNode.addListener(() {
-      setState(() {
-        _isRepsFocused = _repsFocusNode.hasFocus;
-      });
+  @override
+void initState() {
+  super.initState();
+  widget.repsController.text = _selectedReps.toString();
+  widget.setsController.text = _selectedSets.toString();
+  _repsFocusNode.addListener(() {
+    setState(() {
+      _isRepsFocused = _repsFocusNode.hasFocus;
     });
-    _setsFocusNode.addListener(() {
-      setState(() {
-        _isSetsFocused = _setsFocusNode.hasFocus;
-      });
+  });
+  _setsFocusNode.addListener(() {
+    setState(() {
+      _isSetsFocused = _setsFocusNode.hasFocus;
     });
-  }
+  });
+}
 
   @override
   void dispose() {

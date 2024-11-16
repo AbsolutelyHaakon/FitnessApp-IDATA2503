@@ -28,8 +28,6 @@ class GetDataFromServer {
     Map<String, dynamic> firebaseData =
         await exerciseDao.fireBaseFetchAllExercisesFromFireBase(userId);
     List<Exercises> allExercises = firebaseData['exercises'];
-    print(allExercises[0].name);
-    print(allExercises[0].isPrivate);
     // Truncate the local database
     await exerciseDao.localTruncate();
 

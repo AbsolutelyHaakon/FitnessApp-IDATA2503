@@ -107,7 +107,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           // TODO: Implement workout calories
           exercises.length, // Number of exercises / sets
         );
-
+        
         for (var exercise in exercises) {
           final reps = int.tryParse(exercise.repsController.text) ?? 0;
           final sets = int.tryParse(exercise.setsController.text) ?? 0;
