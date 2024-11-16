@@ -83,6 +83,27 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
+                  leading: CircleAvatar(
+                    backgroundImage: exercise.imageURL != null &&
+                            exercise.imageURL!.isNotEmpty
+                        ? NetworkImage(exercise.imageURL!)
+                        : null,
+                    backgroundColor:
+                        exercise.imageURL == null || exercise.imageURL!.isEmpty
+                            ? Colors.green
+                            : null,
+                    child:
+                        exercise.imageURL == null || exercise.imageURL!.isEmpty
+                            ? Text(
+                                exercise.name[0],
+                                style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0,
+                                ),
+                              )
+                            : null,
+                  ),
                   title: Text(
                     exercise.name,
                     style: const TextStyle(
@@ -106,7 +127,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
               },
             ),
           ),
-          const SizedBox(height: 90),
+          const SizedBox(height: 40),
           CupertinoButton(
             onPressed: () async {
               if (hasActiveWorkout.value) {
@@ -114,20 +135,24 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Active Workout',
-                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                        style: TextStyle(
+                            color: AppColors.fitnessPrimaryTextColor)),
                     content: const Text(
                         'Starting a new workout will end the one currently active. Are you sure?',
-                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                        style: TextStyle(
+                            color: AppColors.fitnessPrimaryTextColor)),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         child: const Text('No',
-                            style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                            style: TextStyle(
+                                color: AppColors.fitnessPrimaryTextColor)),
                       ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
                         child: const Text('Yes',
-                            style: TextStyle(color: AppColors.fitnessMainColor)),
+                            style:
+                                TextStyle(color: AppColors.fitnessMainColor)),
                       ),
                     ],
                     backgroundColor: AppColors.fitnessModuleColor,
@@ -146,7 +171,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
               );
             },
             child: Container(
-              width: 410,
+              width: MediaQuery.of(context).size.width * 0.9,
               height: 60,
               decoration: BoxDecoration(
                 color: AppColors.fitnessMainColor,

@@ -63,7 +63,8 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   void fetchFavorites() async {
     favoriteWorkouts.clear();
-    final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(FirebaseAuth.instance.currentUser?.uid);
+    final favoriteWorkoutsData = await FavoriteWorkoutsDao()
+        .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid);
     if (!mounted) return;
     setState(() {
       favoriteWorkouts = favoriteWorkoutsData;
@@ -73,11 +74,16 @@ class _WorkoutPageState extends State<WorkoutPage>
   void fetchAllWorkouts(String category) async {
     workoutsMap.clear();
     fetchFavorites();
-    workouts = await WorkoutDao().localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+    workouts = await WorkoutDao()
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
     if (category != "All" && category != "Starred") {
-      workouts = workouts.where((element) => element.category == category).toList();
-    } else if(category == "Starred") {
-      workouts = workouts.where((element) => favoriteWorkouts.any((favorite) => favorite.workoutId == element.workoutId)).toList();
+      workouts =
+          workouts.where((element) => element.category == category).toList();
+    } else if (category == "Starred") {
+      workouts = workouts
+          .where((element) => favoriteWorkouts
+              .any((favorite) => favorite.workoutId == element.workoutId))
+          .toList();
     }
     if (!mounted) return;
     setState(() {
@@ -86,7 +92,6 @@ class _WorkoutPageState extends State<WorkoutPage>
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -129,7 +134,6 @@ class _WorkoutPageState extends State<WorkoutPage>
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 10),
-
                     ],
                   ),
                 ),
@@ -138,7 +142,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: List.generate(officialFilterCategories.length, (index) {
+                  children:
+                      List.generate(officialFilterCategories.length, (index) {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -149,15 +154,17 @@ class _WorkoutPageState extends State<WorkoutPage>
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
-                          color: _selectedCategory == officialFilterCategories[index]
-                              ?  AppColors.fitnessMainColor
+                          color: _selectedCategory ==
+                                  officialFilterCategories[index]
+                              ? AppColors.fitnessMainColor
                               : AppColors.fitnessModuleColor,
                           shape: BoxShape.circle,
                         ),
                         child: SizedBox(
                           width: 60,
                           height: 60,
-                          child: Center(child: officialFilterCategoryIcons[index]),
+                          child:
+                              Center(child: officialFilterCategoryIcons[index]),
                         ),
                       ),
                     );
@@ -169,8 +176,33 @@ class _WorkoutPageState extends State<WorkoutPage>
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: WorkoutsBox(
-                      workoutMap: workoutsMap,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (FirebaseAuth.instance.currentUser?.uid != null)
+                        WorkoutsBox(
+                          workoutMap: Map.fromEntries(
+                            workoutsMap.entries
+                                .where((entry) => entry.key.userId != ''),
+                          ),
+                        ),
+                        if (FirebaseAuth.instance.currentUser?.uid != null)
+                        const SizedBox(height: 40),
+                       if (workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty)
+                        Center(
+                          child: Text(
+                            'Premade Workouts',
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        WorkoutsBox(
+                          workoutMap: Map.fromEntries(
+                            workoutsMap.entries
+                                .where((entry) => entry.key.userId == ''),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -188,7 +220,9 @@ class _WorkoutPageState extends State<WorkoutPage>
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CreateWorkoutPage(isAdmin: false,),
+                        builder: (context) => CreateWorkoutPage(
+                          isAdmin: false,
+                        ),
                       ),
                     );
                     if (result == true) {
@@ -197,7 +231,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                     _toggleOptions();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.fitnessMainColor,
                       borderRadius: BorderRadius.circular(20),
@@ -224,7 +259,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                     _toggleOptions();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.fitnessMainColor,
                       borderRadius: BorderRadius.circular(20),
@@ -282,7 +318,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                     _toggleOptions();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppColors.fitnessMainColor,
                       borderRadius: BorderRadius.circular(20),

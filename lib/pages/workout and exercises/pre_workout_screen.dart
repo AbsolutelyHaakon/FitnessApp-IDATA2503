@@ -35,34 +35,31 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
                     widget.workout.name ?? '',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
+                  const SizedBox(height: 10),
+                  Text(
                     widget.workout.category ?? '',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 22.0),
-                  child: Text(
+                  const SizedBox(height: 10),
+                  Text(
                     widget.workout.description ?? '',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                ),
-                WorkoutPlanModule(workout: widget.workout),
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 20),
+                  WorkoutPlanModule(workout: widget.workout),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
