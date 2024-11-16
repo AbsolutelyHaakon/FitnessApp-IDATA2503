@@ -76,17 +76,22 @@ Future<void> localSetAllInactive() async {
   Future<List<Workouts>> localFetchAllById(String? id) async {
   final database = await DatabaseService().database;
   if (id != null && id.isNotEmpty){
-    final data = await database.query(
+    final privateData = await database.query(
       tableName,
-      where: 'userId = ? OR (isPrivate = ? AND userId = ?)',
-      whereArgs: [id, 0, ''],
+      where: 'userId = ?',
+      whereArgs: [id],
     );
-    return data.map((entry) => Workouts.fromMap(entry)).toList();
+    final publicData = await database.query(
+      tableName,
+      where: 'isPrivate = ? AND userId = ?',
+      whereArgs: [0, ''],
+    );
+    return [...privateData, ...publicData].map((entry) => Workouts.fromMap(entry)).toList();
   } else {
     final data = await database.query(
       tableName,
-      where: 'isPrivate = ? OR (isPrivate = ? AND userId = ?)',
-      whereArgs: [0, 1, ''],
+      where: '(isPrivate = ? AND userId = ?) OR (isPrivate = ? AND userId = ?)',
+      whereArgs: [0,'', 1, ''],
     );
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
@@ -217,7 +222,7 @@ Future<void> localSetAllInactive() async {
  Future<String?> fireBaseCreateWorkout(String? category, String? description, int? duration, int? intensity,
      bool isPrivate, String? userId, String? video_url, String name, bool wantId, int? calories, int? sets) async {
 
-    if (userId != null && userId.isNotEmpty) {
+    if (userId != null) {
       DocumentReference docRef = await FirebaseFirestore.instance.collection('workouts').add({
         'category': category ?? '',
         'description': description ?? '',
@@ -266,6 +271,43 @@ Future<void> localSetAllInactive() async {
 
       return wantId ? newDocId : null;
     }
+}
+
+  Future<Map<String, dynamic>> fireBaseFetchPublicWorkouts() async {
+  // Fetch our premade workouts
+  QuerySnapshot PremadequerySnapshot = await FirebaseFirestore.instance
+      .collection('workouts')
+      .where('isPrivate', isEqualTo: false)
+      .where('userId', isEqualTo: '')
+      .get();
+
+  print(PremadequerySnapshot.docs.length);
+
+  List<Workouts> workouts = PremadequerySnapshot.docs.map((doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    data['workoutId'] = doc.id;
+    return Workouts.fromMap(data);
+  }).toList();
+
+
+  // Fetch all public workouts
+  QuerySnapshot PublicquerySnapshot = await FirebaseFirestore.instance
+      .collection('workouts')
+      .where('isPrivate', isEqualTo: false)
+      .where('userId', isNotEqualTo: '')
+      .get();
+
+  print(PublicquerySnapshot.docs.length);
+
+  List<Workouts> publicWorkouts = PublicquerySnapshot.docs.map((doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    data['workoutId'] = doc.id;
+    return Workouts.fromMap(data);
+  }).toList();
+
+  workouts.addAll(publicWorkouts);
+
+  return {'workouts': workouts};
 }
 
 

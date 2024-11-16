@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/exercise_selector.dart';
@@ -14,8 +15,8 @@ import '../../database/crud/workout_dao.dart';
 import '../../database/tables/exercise.dart';
 
 class CreateWorkoutPage extends StatefulWidget {
-
-  const CreateWorkoutPage({super.key});
+  final bool isAdmin;
+  CreateWorkoutPage({super.key, required this.isAdmin});
 
   @override
   State<CreateWorkoutPage> createState() => _CreateWorkoutPageState();
@@ -29,6 +30,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final WorkoutDao workoutDao = WorkoutDao();
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
+  final UserDao userDao = UserDao();
   bool _isPublic = false;
 
   List<Exercises> selectedExercises = [];
@@ -80,8 +82,15 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       return;
     }
 
-    if (_formKey.currentState!.validate() && FirebaseAuth.instance.currentUser?.uid != null) {
+    if (_formKey.currentState!.validate()) {
+      String? user = FirebaseAuth.instance.currentUser?.uid;
+      user ??= "localUser";
+      if (await userDao.getAdminStatus(FirebaseAuth.instance.currentUser!.uid) && widget.isAdmin) {
+        user = "";
+      }
       try {
+        print("Creating workout..");
+        print(user);
         final result = await workoutDao.fireBaseCreateWorkout(
           _selectedCategory,
           _descriptionController.text,
@@ -89,7 +98,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           // TODO: Implement workout duration
           _intensity,
           !_isPublic,
-          FirebaseAuth.instance.currentUser!.uid,
+          user,
           '',
           // TODO: Implement workout URL
           _titleController.text,

@@ -93,7 +93,7 @@ class UserDao {
       String email, String password) async {
     try {
       UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
@@ -123,58 +123,68 @@ class UserDao {
       'weight': 0.0,
     });
     localCreate(LocalUser(
-        userId: uid!, name: 'John Doe', email: email, weight: 0.0, height: 0.0));
+        userId: uid!,
+        name: 'John Doe',
+        email: email,
+        weight: 0.0,
+        height: 0.0));
   }
 
-  void fireBaseUpdateUserData(
-    String uid, String? name, double? height, double? weight, double? targetWeight, XFile? image) async {
-  if (uid == "") return;
+  void fireBaseUpdateUserData(String uid, String? name, double? height,
+      double? weight, double? targetWeight, XFile? image) async {
+    if (uid == "") return;
 
-  // Fetch existing user data
-  DocumentSnapshot documentSnapshot =
-      await FirebaseFirestore.instance.collection('users').doc(uid).get();
-  Map<String, dynamic>? existingData =
-      documentSnapshot.data() as Map<String, dynamic>?;
+    // Fetch existing user data
+    DocumentSnapshot documentSnapshot =
+    await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    Map<String, dynamic>? existingData =
+    documentSnapshot.data() as Map<String, dynamic>?;
 
-  if (existingData == null) return;
+    if (existingData == null) return;
 
-  String imageURL = '';
-  if (image != null) {
-    imageURL = await uploadImage(image);
+    String imageURL = '';
+    if (image != null) {
+      imageURL = await uploadImage(image);
+    }
+
+    // Replace empty values with existing values
+    String updatedName = name?.isNotEmpty == true
+        ? name!
+        : existingData['name'];
+    double updatedHeight = height != 0.0 ? height : existingData['height'];
+    double updatedWeight = weight != 0.0 ? weight : existingData['weight'];
+    double updatedTargetWeight = targetWeight != 0.0
+        ? targetWeight
+        : existingData['targetWeight'];
+    String updatedImageURL = imageURL?.isNotEmpty == true
+        ? imageURL!
+        : existingData['imageURL'];
+
+    // Update Firestore
+    FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'name': updatedName,
+      'height': updatedHeight,
+      'weight': updatedWeight,
+      'targetWeight': updatedTargetWeight,
+      'imageURL': updatedImageURL,
+    });
+
+    // Update local database
+    localUpdate(LocalUser(
+      userId: uid,
+      name: updatedName,
+      email: existingData['email'],
+      weight: updatedWeight,
+      height: updatedHeight,
+      targetWeight: updatedTargetWeight,
+      imageURL: updatedImageURL,
+    ));
   }
-
-  // Replace empty values with existing values
-  String updatedName = name?.isNotEmpty == true ? name! : existingData['name'];
-  double updatedHeight = height != 0.0 ? height : existingData['height'];
-  double updatedWeight = weight != 0.0 ? weight : existingData['weight'];
-  double updatedTargetWeight = targetWeight != 0.0 ? targetWeight : existingData['targetWeight'];
-  String updatedImageURL = imageURL?.isNotEmpty == true ? imageURL! : existingData['imageURL'];
-
-  // Update Firestore
-  FirebaseFirestore.instance.collection('users').doc(uid).update({
-    'name': updatedName,
-    'height': updatedHeight,
-    'weight': updatedWeight,
-    'targetWeight': updatedTargetWeight,
-    'imageURL': updatedImageURL,
-  });
-
-  // Update local database
-  localUpdate(LocalUser(
-    userId: uid,
-    name: updatedName,
-    email: existingData['email'],
-    weight: updatedWeight,
-    height: updatedHeight,
-    targetWeight: updatedTargetWeight,
-    imageURL: updatedImageURL,
-  ));
-}
 
   Future<Map<String, dynamic>?> fireBaseGetUserData(String uid) async {
     try {
       DocumentSnapshot documentSnapshot =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      await FirebaseFirestore.instance.collection('users').doc(uid).get();
       return documentSnapshot.data() as Map<String, dynamic>?;
     } catch (e) {
       print(e);
@@ -182,8 +192,8 @@ class UserDao {
     }
   }
 
-  Future<Map<String, dynamic>> fireBaseLoginWithEmailAndPassword(
-      String email, String password) async {
+  Future<Map<String, dynamic>> fireBaseLoginWithEmailAndPassword(String email,
+      String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -212,4 +222,21 @@ class UserDao {
       return "";
     }
   }
+
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////  Firebase Admin /////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+  // Check if user is admin
+  // Admin status can only be given on the Firebase console and is not present within the app
+  Future<bool> getAdminStatus(String? uid) async {
+    if (uid == null) return false;
+    DocumentSnapshot documentSnapshot =
+    await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    Map<String, dynamic>? data = documentSnapshot.data() as Map<String,
+        dynamic>?;
+    return data?['isAdmin'] ?? false;
+  }
+
 }

@@ -37,6 +37,11 @@ class FavoriteWorkoutsDao {
     return data.map((entry) => FavoriteWorkouts.fromMap(entry)).toList();
   }
 
+  Future<void> localTruncate() async {
+    final database = await DatabaseService().database;
+    await database.delete(tableName);
+  }
+
   Future<void> localDelete(String favoriteWorkoutId) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -91,6 +96,20 @@ class FavoriteWorkoutsDao {
     await localDeleteByUserIdAndWorkoutId(userId, workoutId);
 
     return {"Success": true};
+  }
+
+  Future<Map<String, dynamic>> fireBaseFetchAllFavoriteWorkouts(String userId){
+    return FirebaseFirestore.instance.collection('favoriteWorkouts').where('userId', isEqualTo: userId).get().then((QuerySnapshot querySnapshot) {
+      List<FavoriteWorkouts> favoriteWorkouts = [];
+      querySnapshot.docs.forEach((doc) {
+        favoriteWorkouts.add(FavoriteWorkouts(
+          favoriteWorkoutId: doc.id,
+          userId: doc['userId'],
+          workoutId: doc['workoutId'],
+        ));
+      });
+      return {"favoriteWorkouts": favoriteWorkouts};
+    });
   }
 
 }

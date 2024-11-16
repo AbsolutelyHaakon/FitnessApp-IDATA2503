@@ -1,4 +1,6 @@
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/about_us.dart';
+import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/admin_panel.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ class SettingsPage extends StatelessWidget {
   SettingsPage({Key? key, this.onLogout}) : super(key: key);
 
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
+  final UserDao _userDao = UserDao();
 
   // TODO: Implement proper feedback logic on the sync function
   void _synchronizeCloud(BuildContext context) async {
@@ -56,78 +59,92 @@ class SettingsPage extends StatelessWidget {
           },
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: ListView(
+      body: FutureBuilder<bool>(
+        future: _userDao.getAdminStatus(FirebaseAuth.instance.currentUser?.uid),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final isAdmin = snapshot.data ?? false;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildSettingsItem(
-                  context,
-                  icon: Icons.account_circle,
-                  text: 'Account settings',
-                  onTap: () {
-                    // Navigate to Account settings page
-                  },
-                ),
-                // TODO: Add a proper admin role
-                if (FirebaseAuth.instance.currentUser?.uid == "8v56EVEYVPTXPigxMF0Hd4jNEBR2")
-                  _buildSettingsItem(
-                    context,
-                    icon: Icons.admin_panel_settings,
-                    text: 'Admin Panel',
-                    onTap: () {
-                      // Navigate to Admin Panel page
-                    },
+                Expanded(
+                  child: ListView(
+                    children: [
+                      _buildSettingsItem(
+                        context,
+                        icon: Icons.account_circle,
+                        text: 'Account settings',
+                        onTap: () {
+                          // Navigate to Account settings page
+                        },
+                      ),
+                      if (isAdmin)
+                        _buildSettingsItem(
+                          context,
+                          icon: Icons.admin_panel_settings,
+                          text: 'Admin Panel',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => AdminPanel()),
+                            );
+                          },
+                        ),
+                      _buildSettingsItem(
+                        context,
+                        icon: Icons.sync,
+                        text: 'Synchronize Cloud',
+                        onTap: () {
+                          _synchronizeCloud(context);
+                        },
+                      ),
+                      _buildSettingsItem(
+                        context,
+                        icon: Icons.privacy_tip,
+                        text: 'Data and Privacy',
+                        onTap: () {
+                          // Navigate to Data and Privacy page
+                        },
+                      ),
+                      _buildSettingsItem(
+                        context,
+                        icon: Icons.description,
+                        text: 'Terms and Conditions',
+                        onTap: () {
+                          // Navigate to Terms and Conditions page
+                        },
+                      ),
+                      _buildSettingsItem(
+                        context,
+                        icon: Icons.info,
+                        text: 'About us',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AboutUsPage()),
+                          );
+                        },
+                      ),
+                      _buildSettingsItem(
+                        context,
+                        icon: Icons.logout,
+                        text: 'Log out',
+                        onTap: () {
+                          _logout();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
                   ),
-                _buildSettingsItem(
-                  context,
-                  icon: Icons.sync,
-                  text: 'Synchronize Cloud',
-                  onTap: () {
-                    _synchronizeCloud(context);
-                  },
-                ),
-                _buildSettingsItem(
-                  context,
-                  icon: Icons.privacy_tip,
-                  text: 'Data and Privacy',
-                  onTap: () {
-                    // Navigate to Data and Privacy page
-                  },
-                ),
-                _buildSettingsItem(
-                  context,
-                  icon: Icons.description,
-                  text: 'Terms and Conditions',
-                  onTap: () {
-                    // Navigate to Terms and Conditions page
-                  },
-                ),
-                _buildSettingsItem(
-                  context,
-                  icon: Icons.info,
-                  text: 'About us',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AboutUsPage()),
-                    );
-                  },
-                ),
-                _buildSettingsItem(
-                  context,
-                  icon: Icons.logout,
-                  text: 'Log out',
-                  onTap: () {
-                    _logout();
-                    Navigator.of(context).pop();
-                  },
                 ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+        },
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
     );

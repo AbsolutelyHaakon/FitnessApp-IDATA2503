@@ -1,6 +1,8 @@
 import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
+import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 
 import '../crud/workout_exercises_dao.dart';
@@ -10,10 +12,12 @@ class GetDataFromServer {
   final ExerciseDao exerciseDao = ExerciseDao();
   final WorkoutDao workoutsDao = WorkoutDao();
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
+  final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
 
   Future<void> syncData(String? userId) async {
     await syncExercises(userId);
     await syncWorkouts(userId);
+    await syncFavoriteWorkouts(userId);
   }
 
   Future<void> syncExercises(String? userId) async {
@@ -69,6 +73,21 @@ class GetDataFromServer {
     // Add all fetched exercises to the local database
     for (WorkoutExercises workoutExercise in allWorkoutExercises) {
       await workoutExercisesDao.localCreate(workoutExercise);
+    }
+  }
+
+  Future<void> syncFavoriteWorkouts(String? userId) async {
+    // Fetch all favorite workouts from Firebase
+    Map<String, dynamic> firebaseData =
+        await favoriteWorkoutsDao.fireBaseFetchAllFavoriteWorkouts(userId ?? '');
+    List<FavoriteWorkouts> allFavoriteWorkouts = firebaseData['favoriteWorkouts'];
+
+    // Truncate the local database
+    await favoriteWorkoutsDao.localTruncate();
+
+    // Add all fetched favorite workouts to the local database
+    for (FavoriteWorkouts favoriteWorkout in allFavoriteWorkouts) {
+      await favoriteWorkoutsDao.localCreate(favoriteWorkout);
     }
   }
 

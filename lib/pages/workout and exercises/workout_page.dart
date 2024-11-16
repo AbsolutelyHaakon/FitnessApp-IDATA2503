@@ -46,7 +46,6 @@ class _WorkoutPageState extends State<WorkoutPage>
   void initState() {
     super.initState();
 
-    // These actions are only done if a user is logged in
     fetchAllWorkouts("All");
 
     // Animation controllers for floating button widget
@@ -189,11 +188,10 @@ class _WorkoutPageState extends State<WorkoutPage>
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CreateWorkoutPage(),
+                        builder: (context) => CreateWorkoutPage(isAdmin: false,),
                       ),
                     );
                     if (result == true) {
-                      workoutsMap.clear();
                       fetchAllWorkouts("All");
                     }
                     _toggleOptions();
