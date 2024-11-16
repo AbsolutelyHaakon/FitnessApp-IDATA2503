@@ -155,13 +155,24 @@ class PostsDao {
   ImgurService imgurService = ImgurService();
 
   Future<String> uploadImage(XFile image) async {
-  String? imgurUrl = await imgurService.saveImageToImgur(image);
-  if (imgurUrl != null) {
-  print('Image uploaded to Imgur: $imgurUrl');
-  return imgurUrl;
-  } else {
-  print('Failed to upload to Imgur.');
-  return "";
+    String? imgurUrl = await imgurService.saveImageToImgur(image);
+    if (imgurUrl != null) {
+      print('Image uploaded to Imgur: $imgurUrl');
+      return imgurUrl;
+    } else {
+      print('Failed to upload to Imgur.');
+      return "";
+    }
   }
+
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////  Firebase Admin /////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+  Future<int> getPostsCount() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('posts')
+        .get();
+    return querySnapshot.docs.length;
   }
 }

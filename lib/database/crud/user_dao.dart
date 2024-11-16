@@ -239,4 +239,11 @@ class UserDao {
     return data?['isAdmin'] ?? false;
   }
 
+  Future<int> getUserCount() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+    return querySnapshot.docs.length;
+  }
+
 }

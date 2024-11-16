@@ -42,7 +42,8 @@ class WorkoutExercisesDao {
     return data.map((entry) => WorkoutExercises.fromMap(entry)).toList();
   }
 
-  Future<WorkoutExercises> localFetchById(String workoutId, String exerciseId) async {
+  Future<WorkoutExercises> localFetchById(
+      String workoutId, String exerciseId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
       tableName,
@@ -64,55 +65,56 @@ class WorkoutExercisesDao {
   Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
-
   }
-
 
   ////////////////////////////////////////////////////////////
   /////////////////// FIREBASE FUNCTIONS /////////////////////
   ////////////////////////////////////////////////////////////
 
   Future<void> deleteAllWorkoutExercisesWithWorkoutId(String workoutId) async {
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('workoutExercises')
-      .where('workoutId', isEqualTo: workoutId)
-      .get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workoutExercises')
+        .where('workoutId', isEqualTo: workoutId)
+        .get();
 
-  for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-    await doc.reference.delete();
-  }
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
 
-  List<WorkoutExercises> deleteList = await localFetchByWorkoutId(workoutId);
+    List<WorkoutExercises> deleteList = await localFetchByWorkoutId(workoutId);
     for (WorkoutExercises workoutExercises in deleteList) {
       localDelete(workoutExercises.workoutId, workoutExercises.exerciseId);
     }
-}
+  }
 
+  Future<Map<String, dynamic>> fireBaseFetchAllWorkoutExercises(
+      String workoutId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workoutExercises')
+        .where('workoutId', isEqualTo: workoutId)
+        .get();
 
-  Future<Map<String, dynamic>> fireBaseFetchAllWorkoutExercises(String workoutId) async {
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('workoutExercises')
-      .where('workoutId', isEqualTo: workoutId).get();
+    List<WorkoutExercises> allWorkoutExercises = querySnapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return WorkoutExercises(
+        workoutExercisesId: doc.id,
+        workoutId: data['workoutId'],
+        exerciseId: data['exerciseId'],
+        reps: data['reps'],
+        sets: data['sets'],
+        exerciseOrder: data['exerciseOrder'],
+      );
+    }).toList();
 
-  List<WorkoutExercises> allWorkoutExercises = querySnapshot.docs.map((doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return WorkoutExercises(
-      workoutExercisesId: doc.id,
-      workoutId: data['workoutId'],
-      exerciseId: data['exerciseId'],
-      reps: data['reps'],
-      sets: data['sets'],
-      exerciseOrder: data['exerciseOrder'],
-    );
-  }).toList();
+    return {
+      'workoutExercises': allWorkoutExercises,
+    };
+  }
 
-  return {
-    'workoutExercises': allWorkoutExercises,
-  };
-}
-
-  void fireBaseCreateWorkoutExercise(String workoutId, String exerciseId, int reps, int sets, int exerciseOrder) async {
-    DocumentReference docRef = await FirebaseFirestore.instance.collection('workoutExercises').add({
+  void fireBaseCreateWorkoutExercise(String workoutId, String exerciseId,
+      int reps, int sets, int exerciseOrder) async {
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('workoutExercises').add({
       'workoutId': workoutId,
       'exerciseId': exerciseId,
       'reps': reps,
@@ -132,5 +134,35 @@ class WorkoutExercisesDao {
     ));
   }
 
+  Future<Map<String, dynamic>> fireBaseDeleteInactiveWorkoutExercises(
+      List<String> activeWorkoutIds) async {
+    if (activeWorkoutIds.isEmpty) {
+      return {'success': false, 'message': 'No active workouts'};
+    }
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('workoutExercises').get();
+    List<String> deletedIds = [];
 
+    if (querySnapshot.docs.isEmpty) {
+      return {'success': false, 'message': 'No WorkoutExercises to delete'};
+    }
+
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      if (!activeWorkoutIds.contains(data['workoutId'])) {
+        await doc.reference.delete();
+        deletedIds.add(doc.id);
+      }
+    }
+
+    if (deletedIds.isEmpty) {
+      return {'success': false, 'message': 'No inactive workoutExercises to delete'};
+    }
+
+    return {
+      'success': true,
+      'message': '${deletedIds.length} items deleted',
+      'deletedIds': deletedIds
+    };
+  }
 }

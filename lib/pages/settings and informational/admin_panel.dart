@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/modules/admin/general_tab.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class _AdminPanelState extends State<AdminPanel> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     WorkoutTab(),
-    const Text('General Tab'),
+    GeneralTab(),
     const Text('Social Tab'),
   ];
 
@@ -28,8 +29,6 @@ class _AdminPanelState extends State<AdminPanel> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Panel', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-        centerTitle: false,
-        titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),

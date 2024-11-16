@@ -77,14 +77,16 @@ class ExerciseDao {
     List<Exercises> publicExercises =
         publicData.map((entry) => Exercises.fromSqfl(entry)).toList();
 
-    if (userId != null && userId.isNotEmpty ) {
+    if (userId != null && userId.isNotEmpty) {
       // Fetch private exercises for the user
       final privateData = await database
           .query(tableName, where: 'userId = ?', whereArgs: [userId]);
       List<Exercises> privateExercises =
-      privateData.map((entry) => Exercises.fromSqfl(entry)).toList();
+          privateData.map((entry) => Exercises.fromSqfl(entry)).toList();
 
-      return {'exercises': [...privateExercises, ...publicExercises]};
+      return {
+        'exercises': [...privateExercises, ...publicExercises]
+      };
     } else {
       return {'exercises': publicExercises};
     }
@@ -94,25 +96,24 @@ class ExerciseDao {
   /////////// FIREBASE FUNCTIONS //////////////
   /////////////////////////////////////////////
 
- Future<void> fireBaseFirstTimeStartup() async {
-  final database = await DatabaseService().database;
+  Future<void> fireBaseFirstTimeStartup() async {
+    final database = await DatabaseService().database;
 
-  // Check for public exercises in the local database
-  final publicData = await database.query(
-    'exercises',
-    where: 'isPrivate = ? AND userId = ?',
-    whereArgs: [0, ''],
-  );
+    // Check for public exercises in the local database
+    final publicData = await database.query(
+      'exercises',
+      where: 'isPrivate = ? AND userId = ?',
+      whereArgs: [0, ''],
+    );
 
-  // If no public exercises exist, fetch from Firestore
-  if (publicData.isEmpty) {
-  final exercises = await fireBaseFetchAllExercisesFromFireBase(null);
-  for (var exercise in exercises['exercises']) {
-    await localCreate(exercise);
+    // If no public exercises exist, fetch from Firestore
+    if (publicData.isEmpty) {
+      final exercises = await fireBaseFetchAllExercisesFromFireBase(null);
+      for (var exercise in exercises['exercises']) {
+        await localCreate(exercise);
+      }
+    }
   }
-}
-}
-
 
   Future<Map<String, dynamic>> fireBaseDeleteExercise() async {
     return {'error': 'Not implemented'};
@@ -120,7 +121,6 @@ class ExerciseDao {
 
   Future<Map<String, dynamic>> fireBaseFetchAllExercisesFromFireBase(
       String? userId) async {
-
     // Fetch public exercises
     QuerySnapshot publicExercisesQuery = await FirebaseFirestore.instance
         .collection('exercises')
@@ -135,7 +135,7 @@ class ExerciseDao {
     }).toList();
 
     // If user is logged in, fetch private exercises
-    if (userId != null){
+    if (userId != null) {
       QuerySnapshot privateExercisesQuery = await FirebaseFirestore.instance
           .collection('exercises')
           .where('isPrivate', isEqualTo: true)
@@ -148,9 +148,11 @@ class ExerciseDao {
         return Exercises.fromMap(data);
       }).toList();
 
-      return {'exercises' : [...privateExercises, ...publicExercises]};
+      return {
+        'exercises': [...privateExercises, ...publicExercises]
+      };
     } else {
-      return {'exercises' : publicExercises};
+      return {'exercises': publicExercises};
     }
   }
 
@@ -163,7 +165,6 @@ class ExerciseDao {
       String? imageURL,
       bool? isPrivate,
       String? userId) async {
-
     if (userId == null || userId.isEmpty) {
       return {'error': 'You need to log in to edit an exercise'};
     }
@@ -233,7 +234,6 @@ class ExerciseDao {
       XFile? image,
       bool isPrivate,
       String? userId) async {
-
     // Handle ImageURL storing if it exits
     String imageURL = '';
     if (image != null) {
@@ -293,4 +293,13 @@ class ExerciseDao {
     }
   }
 
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////  Firebase Admin /////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+  Future<int> getExercisesCount() async {
+    final database = await DatabaseService().database;
+    final data = await database.query(tableName);
+    return data.length;
+  }
 }
