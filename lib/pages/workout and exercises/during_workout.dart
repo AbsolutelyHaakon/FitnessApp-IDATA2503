@@ -10,9 +10,13 @@ import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../database/tables/workout.dart';
 import '../../styles.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class DuringWorkoutScreen extends StatefulWidget {
   final Workouts workout;
@@ -27,7 +31,7 @@ class DuringWorkoutScreen extends StatefulWidget {
   }
 }
 
-class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
+class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsBindingObserver {
   double totalExercises = 0;
   double currentExercise = 0;
 
@@ -37,28 +41,75 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
   Duration remainingTime = Duration(minutes: 3);
   Timer? countdownTimer;
   bool isRunning = false;
+  bool isInBackground = false;
+
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _workoutDao.localSetAllInactive();
     _workoutDao.localUpdateActive(widget.workout, true);
     hasActiveWorkout.value = true;
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      isInBackground = true;
+    } else if (state == AppLifecycleState.resumed) {
+      isInBackground = false;
+    }
+  }
+
+  Future<void> _scheduleNotification() async {
+    if (isInBackground) {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+        'fitnessapp_idata2503', // id
+        'Fitness App', // title
+        channelDescription: 'Notification channel for the Fitness App',
+        importance: Importance.max,
+        priority: Priority.high,
+        showWhen: false,
+      );
+      const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Break Time',
+        'Your break time is over!',
+        platformChannelSpecifics,
+        payload: 'item x',
+      );
+    }
+  }
+
+
+
   void startTimer() {
     setState(() {
       isRunning = true;
     });
-    countdownTimer = Timer.periodic(Duration(seconds: 1), (_) {
-      setState(() {
-        if (remainingTime.inSeconds > 0) {
-          remainingTime -= Duration(seconds: 1);
-        } else {
-          countdownTimer?.cancel();
-          isRunning = false;
-        }
-      });
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) { // Check if the widget is still mounted
+        setState(() {
+          if (remainingTime.inSeconds > 0) {
+            remainingTime -= const Duration(seconds: 1);
+          } else {
+            countdownTimer?.cancel();
+            isRunning = false;
+            _scheduleNotification();
+          }
+        });
+      }
     });
   }
 
