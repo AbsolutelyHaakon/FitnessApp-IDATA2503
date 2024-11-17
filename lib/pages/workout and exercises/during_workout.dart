@@ -51,6 +51,8 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
     _workoutDao.localSetAllInactive();
     _workoutDao.localUpdateActive(widget.workout, true);
     hasActiveWorkout.value = true;
+    activeWorkoutId.value = widget.workout.workoutId;
+    activeWorkoutName.value = widget.workout.name;
   }
 
   @override

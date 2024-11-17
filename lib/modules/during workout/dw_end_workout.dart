@@ -19,9 +19,11 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
   final WorkoutDao _workoutDao = WorkoutDao();
 
   Future<void> _endWorkout() async {
-    await _workoutDao.localSetAllInactive();
     hasActiveWorkout.value = false;
+    activeWorkoutId.value = '';
+    activeWorkoutName.value = '';
     activeWorkoutIndex = 0;
+    await _workoutDao.localSetAllInactive();
   }
 
   @override
@@ -46,7 +48,7 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
                   CupertinoButton(
                     onPressed: () async {
                       await _endWorkout();
-                      Navigator.pop(context);
+                      Navigator.pop(context, true);
                     },
                     child: Container(
                       width: 410,

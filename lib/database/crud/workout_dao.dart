@@ -69,6 +69,16 @@ class WorkoutDao {
     });
   }
 
+  Future<Workouts> localFetchWorkoutById(String workoutId) async {
+    final database = await DatabaseService().database;
+    final data = await database.query(
+      tableName,
+      where: 'workoutId = ?',
+      whereArgs: [workoutId],
+    );
+    return Workouts.fromMap(data.first);
+  }
+
   Future<List<Workouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName, orderBy: 'name');
@@ -148,15 +158,20 @@ class WorkoutDao {
     return maps.isNotEmpty;
   }
 
-  Future<Workouts> fetchActiveWorkout() async {
-    final database = await DatabaseService().database;
-    final List<Map<String, dynamic>> maps = await database.query(
-      'workouts',
-      where: 'isActive = ?',
-      whereArgs: [1],
-    );
-    return Workouts.fromMap(maps.first);
+  Future<Workouts?> fetchActiveWorkout() async {
+  final database = await DatabaseService().database;
+  final List<Map<String, dynamic>> maps = await database.query(
+    'workouts',
+    where: 'isActive = ?',
+    whereArgs: [1],
+  );
+
+  if (maps.isEmpty) {
+    return null;
   }
+
+  return Workouts.fromMap(maps.first);
+}
 
   Future<String> generateUniqueWorkoutId() async {
     final database = await DatabaseService().database;

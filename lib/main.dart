@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
@@ -10,6 +12,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
+
+final WorkoutDao _workoutDao = WorkoutDao();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +27,16 @@ void main() async {
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
   );
-
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
   await ExerciseDao().fireBaseFirstTimeStartup();
+
+  await _workoutDao.fetchActiveWorkout().then((value) {
+    if (value != null) {
+      hasActiveWorkout.value = true;
+      activeWorkoutId.value = value.workoutId;
+      activeWorkoutName.value = value.name;
+    }
+  });
 
   runApp(MyApp());
 }

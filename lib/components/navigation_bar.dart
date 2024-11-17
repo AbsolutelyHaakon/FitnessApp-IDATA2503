@@ -10,26 +10,27 @@ import 'package:fitnessapp_idata2503/pages/social%20and%20account/me.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 
-
 import '../database/crud/workout_dao.dart';
 import '../database/crud/workout_exercises_dao.dart';
 import '../database/tables/workout.dart';
 
-
-
 class CustomNavigationBar extends StatefulWidget {
-
   const CustomNavigationBar({super.key});
 
   @override
   _CustomNavigationBarState createState() => _CustomNavigationBarState();
 }
 
-class _CustomNavigationBarState extends State<CustomNavigationBar>  {
+class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int _selectedIndex = 0;
-  Workouts activeWorkout =
-      const Workouts(workoutId: '', name: '', isPrivate: true, userId: '');
   final WorkoutDao _workoutDao = WorkoutDao();
+  bool localHasActiveWorkout = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkForActiveWorkouts();
+  }
 
   void _onItemTapped(int index) {
     if (_selectedIndex == index) {
@@ -41,26 +42,37 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
   }
 
   Future<void> _checkForActiveWorkouts() async {
-    hasActiveWorkout.value = await _workoutDao.hasActiveWorkouts();
-    if (hasActiveWorkout.value) {
-      Workouts temp = await _workoutDao.fetchActiveWorkout();
+    print("Checking once more");
+  if (hasActiveWorkout.value && activeWorkoutId.value.isEmpty) {
+    print("Checking for active workouts");
+    final temp = await _workoutDao.fetchActiveWorkout();
+    if (temp != null) {
+      print("Active workout found");
+      activeWorkoutId.value = temp.workoutId;
+      activeWorkoutName.value = temp.name;
       setState(() {
-        activeWorkout = temp;
+        localHasActiveWorkout = true;
       });
     }
+  } else if (hasActiveWorkout.value) {
+    setState(() {
+      localHasActiveWorkout = true;
+    });
+  } else {
+    setState(() {
+      localHasActiveWorkout = false;
+    });
   }
-
-
-
+}
 
   Future<Map<Exercises, WorkoutExercises>> fetchExercises() async {
     try {
       Map<Exercises, WorkoutExercises> exerciseMap = {};
       List<Exercises> exercises = await WorkoutDao()
-          .localFetchExercisesForWorkout(activeWorkout.workoutId);
+          .localFetchExercisesForWorkout(activeWorkoutId.value);
       for (final exercise in exercises) {
         final workoutExercise = await WorkoutExercisesDao()
-            .localFetchById(activeWorkout.workoutId, exercise.exerciseId);
+            .localFetchById(activeWorkoutId.value, exercise.exerciseId);
         if (workoutExercise != null) {
           exerciseMap[exercise] = workoutExercise;
         }
@@ -73,117 +85,111 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>  {
   }
 
   @override
-  void initState() {
-    super.initState();
-    hasActiveWorkout.addListener(() {
-      if (hasActiveWorkout.value) {
-        _checkForActiveWorkouts();
-      }
-    });
-  }
-
-
-
-  @override
-@override
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Stack(
-      children: [
-        Positioned.fill(
-          child: Column(
-            children: [
-              const SizedBox(height: 70),
-              Expanded(
-                child: _getSelectedPage(_selectedIndex),
-              ),
-            ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Column(
+              children: [
+                const SizedBox(height: 70),
+                Expanded(
+                  child: _getSelectedPage(_selectedIndex),
+                ),
+              ],
+            ),
           ),
-        ),
-        if (hasActiveWorkout.value)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () async {
-                Map<Exercises, WorkoutExercises> exerciseMap = await fetchExercises();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DuringWorkoutScreen(
-                        workout: activeWorkout, exerciseMap: exerciseMap),
+          if (localHasActiveWorkout)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () async {
+                  Map<Exercises, WorkoutExercises> exerciseMap =
+                      await fetchExercises();
+                  var workout = await _workoutDao
+                      .localFetchWorkoutById(activeWorkoutId.value);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DuringWorkoutScreen(
+                        workout: workout,
+                        exerciseMap: exerciseMap,
+                      ),
+                    ),
+                  ).then((result) {
+                    print("checking for active workouts");
+                      _checkForActiveWorkouts();
+                  });;
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 30,
+                  color: AppColors.fitnessMainColor,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: Text(
+                    'Workout active: ${activeWorkoutName.value}',
+                    style: const TextStyle(
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                height: 30,
-                color: AppColors.fitnessMainColor,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Text(
-                  'Workout active: ${activeWorkout.name}',
-                  style: const TextStyle(
-                    color: AppColors.fitnessPrimaryTextColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.0,
-                  ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/home.svg',
+              width: 20.0,
+              height: 20.0,
+              color: _selectedIndex == 0
+                  ? AppColors.fitnessMainColor
+                  : AppColors.fitnessSecondaryTextColor,
+            ),
+            label: 'Home',
           ),
-      ],
-    ),
-    bottomNavigationBar: BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/icons/home.svg',
-            width: 20.0,
-            height: 20.0,
-            color: _selectedIndex == 0
-                ? AppColors.fitnessMainColor
-                : AppColors.fitnessSecondaryTextColor,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/workout.svg',
+              width: 30.0,
+              height: 30.0,
+              color: _selectedIndex == 1
+                  ? AppColors.fitnessMainColor
+                  : AppColors.fitnessSecondaryTextColor,
+            ),
+            label: 'Workout',
           ),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/icons/workout.svg',
-            width: 30.0,
-            height: 30.0,
-            color: _selectedIndex == 1
-                ? AppColors.fitnessMainColor
-                : AppColors.fitnessSecondaryTextColor,
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/me.svg',
+              width: 25.0,
+              height: 25.0,
+              color: _selectedIndex == 2
+                  ? AppColors.fitnessMainColor
+                  : AppColors.fitnessSecondaryTextColor,
+            ),
+            label: 'Me',
           ),
-          label: 'Workout',
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/icons/me.svg',
-            width: 25.0,
-            height: 25.0,
-            color: _selectedIndex == 2
-                ? AppColors.fitnessMainColor
-                : AppColors.fitnessSecondaryTextColor,
-          ),
-          label: 'Me',
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: AppColors.fitnessMainColor,
-      unselectedItemColor: AppColors.fitnessSecondaryTextColor,
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: AppColors.fitnessMainColor,
+        unselectedItemColor: AppColors.fitnessSecondaryTextColor,
+        backgroundColor: AppColors.fitnessBackgroundColor,
+        onTap: _onItemTapped,
+        iconSize: 30.0,
+        unselectedFontSize: 14.0,
+      ),
       backgroundColor: AppColors.fitnessBackgroundColor,
-      onTap: _onItemTapped,
-      iconSize: 30.0,
-      unselectedFontSize: 14.0,
-    ),
-    backgroundColor: AppColors.fitnessBackgroundColor,
-  );
-}
+    );
+  }
 
   Widget _getSelectedPage(int index) {
     switch (index) {
