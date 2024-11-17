@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
@@ -32,6 +33,11 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
 
   final WorkoutDao _workoutDao = WorkoutDao();
 
+  Duration countdownDuration = Duration(minutes: 3);
+  Duration remainingTime = Duration(minutes: 3);
+  Timer? countdownTimer;
+  bool isRunning = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +46,46 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
     hasActiveWorkout.value = true;
   }
 
+  void startTimer() {
+    setState(() {
+      isRunning = true;
+    });
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (_) {
+      setState(() {
+        if (remainingTime.inSeconds > 0) {
+          remainingTime -= Duration(seconds: 1);
+        } else {
+          countdownTimer?.cancel();
+          isRunning = false;
+        }
+      });
+    });
+  }
+
+  void pauseTimer() {
+    setState(() {
+      isRunning = false;
+    });
+    countdownTimer?.cancel();
+  }
+
+  void resetTimer() {
+    setState(() {
+      remainingTime = countdownDuration;
+      isRunning = false;
+    });
+    countdownTimer?.cancel();
+  }
+
+  void setCountdownDuration(Duration duration) {
+    setState(() {
+      countdownDuration = duration;
+      remainingTime = duration;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     if (widget.exerciseMap.isEmpty) {
       return Center(
         child: Text(
@@ -53,18 +95,65 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
       );
     }
 
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          if (remainingTime != countdownDuration)
+            Center(
+              child: Text(
+                '${remainingTime.inMinutes}:${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          IconButton(
+            icon: Icon(CupertinoIcons.pencil, color: AppColors.fitnessSecondaryTextColor),
+            onPressed: () {
+              showCupertinoModalPopup(
+                context: context,
+                builder: (context) {
+                  return Container(
+                    height: 250,
+                    color: AppColors.fitnessBackgroundColor,
+                    child: CupertinoTheme(
+                      data: const CupertinoThemeData(
+                        textTheme: CupertinoTextThemeData(
+                          dateTimePickerTextStyle:
+                              TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                        ),
+                      ),
+                      child: CupertinoTimerPicker(
+                        mode: CupertinoTimerPickerMode.ms,
+                        initialTimerDuration: countdownDuration,
+                        onTimerDurationChanged: (Duration newDuration) {
+                          setCountdownDuration(newDuration);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(CupertinoIcons.restart, color: Colors.white),
+            onPressed: resetTimer,
+          ),
+          IconButton(
+            icon: Icon(isRunning ? CupertinoIcons.pause : CupertinoIcons.timer,
+                color: Colors.white),
+            onPressed: isRunning ? pauseTimer : startTimer,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -80,7 +169,6 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
                 ),
                 DwCurrentExercise(exerciseMap: widget.exerciseMap),
                 const SizedBox(height: 20),
-                const BreakTimerModule(),
                 const SizedBox(height: 20),
                 DwEndWorkout(workout: widget.workout),
                 const SizedBox(height: 30),
@@ -89,7 +177,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> {
           ),
         ),
       ),
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 }

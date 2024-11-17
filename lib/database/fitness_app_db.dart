@@ -60,6 +60,8 @@ class FitnessAppDB {
       userId STRING,
       workoutId STRING,
       date DATE NOT NULL,
+      duration DOUBLE,
+      statistics STRING,
       FOREIGN KEY (userId) REFERENCES users (id),
       FOREIGN KEY (workoutId) REFERENCES workouts (id)
     );''');

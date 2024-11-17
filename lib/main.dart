@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
       title: 'Fitness App',
       theme: ThemeData(
         fontFamily: 'Inter',
-        // Set Inter as the default font
         primarySwatch: Colors.blue,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
