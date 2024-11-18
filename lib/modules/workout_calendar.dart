@@ -43,7 +43,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     });
   }
 
-
   void _filterWorkouts(String query) {
     setState(() {
       _searchQuery = query;
@@ -54,10 +53,135 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   }
 
   void _clearFilter() {
-    setState((){
+    setState(() {
       _searchQuery = '';
       _filteredWorkouts = _workouts;
     });
+  }
+
+  // showModalBottomSheet for adding workout
+  void _showWorkoutSelectionModal() {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.fitnessBackgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: FractionallySizedBox(
+            heightFactor: 0.6,
+            widthFactor: 1,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  'Select workout',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      labelStyle: TextStyle(fontSize: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    style: TextStyle(fontSize: 12),
+                    onChanged: _filterWorkouts,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ListView.builder(
+                      itemCount: _filteredWorkouts.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedWorkout = _filteredWorkouts[index];
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 5.0),
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: AppColors.fitnessSecondaryModuleColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              _filteredWorkouts[index],
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).whenComplete(_clearFilter);
+  }
+
+  // Show any event onDayPressed
+  void _showInitialModal(DateTime selectedDay) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.fitnessBackgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: FractionallySizedBox(
+            heightFactor: 0.3,
+            widthFactor: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${selectedDay.toLocal().toString().split(' ')[0]}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Painful legday everyday',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showWorkoutSelectionModal(); // Show workout selection modal
+                  },
+                  child: const Text('Add Workout'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -95,80 +219,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
               });
-              showModalBottomSheet(
-                context: context,
-                isDismissible: true,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) {
-                  return Container(
-                    decoration: const BoxDecoration(
-                      color: AppColors.fitnessBackgroundColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: FractionallySizedBox(
-                      heightFactor: 0.6,
-                      widthFactor: 1,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          Text(
-                            'Select workout',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Search',
-                                labelStyle: TextStyle(fontSize: 12),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              style: TextStyle(fontSize: 12),
-                              onChanged: _filterWorkouts,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: ListView.builder(
-                                itemCount: _filteredWorkouts.length,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedWorkout = _filteredWorkouts[index];
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(vertical: 5.0),
-                                      padding: const EdgeInsets.all(10.0),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.fitnessSecondaryModuleColor,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        _filteredWorkouts[index],
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ).whenComplete(_clearFilter);
+              _showInitialModal(selectedDay);
             },
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
