@@ -1,7 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:table_calendar/table_calendar.dart";
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_page.dart';
+
+import '../database/crud/workout_dao.dart';
+import '../database/tables/workout.dart';
 
 class WorkoutCalendar extends StatefulWidget {
   @override
@@ -13,7 +18,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String _selectedWorkout = 'Leg day';
-  final List<String> _workouts = ['Leg day', 'Hike', 'Run', 'Sing', 'Neck', 'Russian deadlift'];
+  final List<String> _workouts = [];
   String _searchQuery = '';
   List<String> _filteredWorkouts = [];
 
@@ -21,7 +26,23 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   void initState() {
     super.initState();
     _filteredWorkouts = _workouts;
+    fetchAllWorkouts("All");
   }
+
+  void fetchAllWorkouts(String category) async {
+    List<Workouts> workouts = await WorkoutDao()
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+    if (category != "All") {
+      workouts = workouts.where((element) => element.category == category).toList();
+    }
+    if (!mounted) return;
+    setState(() {
+      _workouts.clear();
+      _workouts.addAll(workouts.map((workout) => workout.name).toList());
+      _filteredWorkouts = _workouts;
+    });
+  }
+
 
   void _filterWorkouts(String query) {
     setState(() {
