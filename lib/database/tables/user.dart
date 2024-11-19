@@ -55,4 +55,12 @@ class LocalUser {
       imageURL: map['imageURL'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'name': name,
+      'email': email,
+    };
+  }
 }
