@@ -76,4 +76,5 @@ class Workouts {
       userId: map['userId'],
     );
   }
+
 }

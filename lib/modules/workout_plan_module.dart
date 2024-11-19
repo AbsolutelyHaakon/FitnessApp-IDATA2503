@@ -55,24 +55,22 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(height: 40),
-          Container(
+@override
+Widget build(BuildContext context) {
+  return Center(
+    child: Column(
+      children: [
+        const SizedBox(height: 40),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: Container(
             width: 400,
             height: 400,
             decoration: BoxDecoration(
               color: AppColors.fitnessModuleColor,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: Color(0xFF262626), // Almost the same color
-                width: 1.0, // Very thin
-              ),
             ),
             child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: exercises.length,
               itemBuilder: (context, index) {
                 final exercise = exercises[index];
@@ -127,70 +125,71 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
               },
             ),
           ),
-          const SizedBox(height: 40),
-          CupertinoButton(
-            onPressed: () async {
-              if (hasActiveWorkout.value) {
-                bool shouldStartNewWorkout = await showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Active Workout',
-                        style: TextStyle(
-                            color: AppColors.fitnessPrimaryTextColor)),
-                    content: const Text(
-                        'Starting a new workout will end the one currently active. Are you sure?',
-                        style: TextStyle(
-                            color: AppColors.fitnessPrimaryTextColor)),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text('No',
-                            style: TextStyle(
-                                color: AppColors.fitnessPrimaryTextColor)),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Yes',
-                            style:
-                                TextStyle(color: AppColors.fitnessMainColor)),
-                      ),
-                    ],
-                    backgroundColor: AppColors.fitnessModuleColor,
-                  ),
-                );
-                if (!shouldStartNewWorkout) {
-                  return;
-                }
-              }
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DuringWorkoutScreen(
-                      workout: widget.workout, exerciseMap: exerciseMap),
+        ),
+        const SizedBox(height: 40),
+        CupertinoButton(
+          onPressed: () async {
+            if (hasActiveWorkout.value) {
+              bool shouldStartNewWorkout = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Active Workout',
+                      style: TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor)),
+                  content: const Text(
+                      'Starting a new workout will end the one currently active. Are you sure?',
+                      style: TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor)),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('No',
+                          style: TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor)),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Yes',
+                          style:
+                              TextStyle(color: AppColors.fitnessMainColor)),
+                    ),
+                  ],
+                  backgroundColor: AppColors.fitnessModuleColor,
                 ),
               );
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: 60,
-              decoration: BoxDecoration(
-                color: AppColors.fitnessMainColor,
-                borderRadius: BorderRadius.circular(20),
+              if (!shouldStartNewWorkout) {
+                return;
+              }
+            }
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DuringWorkoutScreen(
+                    workout: widget.workout, exerciseMap: exerciseMap),
               ),
-              alignment: Alignment.center,
-              child: const Text(
-                "Start Workout",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+            );
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 60,
+            decoration: BoxDecoration(
+              color: AppColors.fitnessMainColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            alignment: Alignment.center,
+            child: const Text(
+              "Start Workout",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.fitnessPrimaryTextColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

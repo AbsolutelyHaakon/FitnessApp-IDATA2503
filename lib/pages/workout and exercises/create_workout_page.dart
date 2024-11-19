@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/exercise_selector.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -16,7 +17,9 @@ import '../../database/tables/exercise.dart';
 
 class CreateWorkoutPage extends StatefulWidget {
   final bool isAdmin;
-  CreateWorkoutPage({super.key, required this.isAdmin});
+  final Workouts? preWorkout;
+
+  CreateWorkoutPage({super.key, required this.isAdmin, this.preWorkout});
 
   @override
   State<CreateWorkoutPage> createState() => _CreateWorkoutPageState();
@@ -52,6 +55,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   @override
   void initState() {
     super.initState();
+    _checkForPreData();
     _descriptionFocusNode.addListener(() {
       setState(() {
         _isDescriptionFocused = _descriptionFocusNode.hasFocus;
@@ -65,6 +69,26 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  _checkForPreData() {
+    if (widget.preWorkout != null) {
+      _titleController.text = widget.preWorkout!.name;
+      _descriptionController.text = widget.preWorkout!.description!;
+      _intensity = widget.preWorkout!.intensity!;
+      _isPublic = !widget.preWorkout!.isPrivate!;
+      _selectedCategory = widget.preWorkout!.category!;
+      workoutDao
+          .localFetchExercisesForWorkout(widget.preWorkout!.workoutId!)
+          .then((value) {
+        setState(() {
+          for (var exercise in value) {
+            selectedExercises.add(exercise);
+            exercises.add(createIndExerciseBox(exercise));
+          }
+        });
+      });
+    }
   }
 
   void _createWorkout() async {
@@ -82,15 +106,15 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       return;
     }
 
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && widget.preWorkout == null) {
       String? user = FirebaseAuth.instance.currentUser?.uid;
       user ??= "localUser";
-      if (await userDao.getAdminStatus(FirebaseAuth.instance.currentUser!.uid) && widget.isAdmin) {
+      if (await userDao
+              .getAdminStatus(FirebaseAuth.instance.currentUser!.uid) &&
+          widget.isAdmin) {
         user = "";
       }
       try {
-        print("Creating workout..");
-        print(user);
         final result = await workoutDao.fireBaseCreateWorkout(
           _selectedCategory,
           _descriptionController.text,
@@ -107,7 +131,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           // TODO: Implement workout calories
           exercises.length, // Number of exercises / sets
         );
-        
+
         for (var exercise in exercises) {
           final reps = int.tryParse(exercise.repsController.text) ?? 0;
           final sets = int.tryParse(exercise.setsController.text) ?? 0;
@@ -126,6 +150,41 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         print(e);
         // Optionally, show an error dialog or message here
       }
+    } else if (_formKey.currentState!.validate() && widget.preWorkout != null) {
+      final result = await workoutDao.firebaseUpdateWorkout(
+        widget.preWorkout!.workoutId,
+        _selectedCategory,
+        _descriptionController.text,
+        0,
+        // TODO: Implement workout duration
+        _intensity,
+        !_isPublic,
+        FirebaseAuth.instance.currentUser?.uid ?? "localUser",
+        '',
+        // TODO: Implement workout URL
+        _titleController.text,
+        true,
+        0,
+        // TODO: Implement workout calories
+        exercises.length, // Number of exercises / sets
+      );
+
+      await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(selectedExercises,
+          widget.preWorkout!.workoutId!);
+
+      for (var exercise in exercises) {
+        final reps = int.tryParse(exercise.repsController.text) ?? 0;
+        final sets = int.tryParse(exercise.setsController.text) ?? 0;
+         await workoutExercisesDao.fireBaseCreateWorkoutExercise(
+          widget.preWorkout!.workoutId,
+          exercise.exerciseId,
+          reps,
+          sets,
+          exercises.indexOf(exercise),
+        );
+      }
+
+      Navigator.pop(context, true);
     }
   }
 
@@ -401,8 +460,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         child: FloatingActionButton(
           onPressed: _createWorkout,
           backgroundColor: AppColors.fitnessMainColor,
-          child: const Text(
-            "Create Workout",
+          child: Text(widget.preWorkout == null ? "Create Workout" : "Update Workout",
             style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
           ),
         ),

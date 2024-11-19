@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/workout_exercises.dart';
@@ -71,6 +72,21 @@ class WorkoutExercisesDao {
   /////////////////// FIREBASE FUNCTIONS /////////////////////
   ////////////////////////////////////////////////////////////
 
+Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, String workoutId) async {
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection('workoutExercises')
+      .where('workoutId', isEqualTo: workoutId)
+      .get();
+
+  for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    if (!exercises.any((exercise) => exercise.exerciseId == data['exerciseId'])) {
+      await doc.reference.delete();
+      await localDelete(data['workoutId'], data['exerciseId']);
+    }
+  }
+}
+
   Future<void> deleteAllWorkoutExercisesWithWorkoutId(String workoutId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('workoutExercises')
@@ -111,8 +127,20 @@ class WorkoutExercisesDao {
     };
   }
 
-  void fireBaseCreateWorkoutExercise(String workoutId, String exerciseId,
+  Future<void> fireBaseCreateWorkoutExercise(String workoutId, String exerciseId,
       int reps, int sets, int exerciseOrder) async {
+    // Check if the workoutExercise already exists
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workoutExercises')
+        .where('workoutId', isEqualTo: workoutId)
+        .where('exerciseId', isEqualTo: exerciseId)
+        .get();
+
+    // If the workoutExercise already exists, return
+    if (querySnapshot.docs.isNotEmpty) {
+      return;
+    }
+
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('workoutExercises').add({
       'workoutId': workoutId,
@@ -156,7 +184,10 @@ class WorkoutExercisesDao {
     }
 
     if (deletedIds.isEmpty) {
-      return {'success': false, 'message': 'No inactive workoutExercises to delete'};
+      return {
+        'success': false,
+        'message': 'No inactive workoutExercises to delete'
+      };
     }
 
     return {

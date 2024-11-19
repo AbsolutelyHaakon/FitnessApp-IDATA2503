@@ -239,6 +239,54 @@ class WorkoutDao {
     return {'workouts': allWorkouts};
   }
 
+  Future<void> firebaseUpdateWorkout( String workoutId,
+      String? category,
+      String? description,
+      int? duration,
+      int? intensity,
+      bool isPrivate,
+      String? userId,
+      String? video_url,
+      String name,
+      bool wantId,
+      int? calories,
+      int? sets) async {
+
+    if (userId ==null) {return;}
+
+    // Update it locally
+    Workouts previousWorkout = await localFetchByWorkoutId(workoutId);
+    Workouts updatedWorkout = Workouts(
+      workoutId: workoutId,
+      category: category ?? previousWorkout.category,
+      description: description ?? previousWorkout.description,
+      duration: duration ?? previousWorkout.duration,
+      calories: calories ?? previousWorkout.calories,
+      sets: sets ?? previousWorkout.sets,
+      intensity: intensity ?? previousWorkout.intensity,
+      isPrivate: isPrivate ?? previousWorkout.isPrivate,
+      userId: userId ?? previousWorkout.userId,
+      videoUrl: video_url ?? previousWorkout.videoUrl,
+      name: name ?? previousWorkout.name,
+    );
+
+    final result = localUpdate(updatedWorkout);
+
+    // Update it on Firebase
+    await FirebaseFirestore.instance.collection('workouts').doc(workoutId).update({
+      'category': category ?? previousWorkout.category,
+      'description': description ?? previousWorkout.description,
+      'duration': duration ?? previousWorkout.duration,
+      'calories': calories ?? previousWorkout.calories,
+      'sets': sets ?? previousWorkout.sets,
+      'intensity': intensity ?? previousWorkout.intensity,
+      'isPrivate': isPrivate ?? previousWorkout.isPrivate,
+      'userId': userId ?? previousWorkout.userId,
+      'video_url': video_url ?? previousWorkout.videoUrl,
+      'name': name ?? previousWorkout.name,
+    });
+  }
+
   Future<String?> fireBaseCreateWorkout(
       String? category,
       String? description,
