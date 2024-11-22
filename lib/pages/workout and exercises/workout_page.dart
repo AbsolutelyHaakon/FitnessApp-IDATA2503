@@ -156,7 +156,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                         decoration: BoxDecoration(
                           color: _selectedCategory ==
                                   officialFilterCategories[index]
-                              ? AppColors.fitnessMainColor
+                              ? AppColors.fitnessPrimaryTextColor
                               : AppColors.fitnessModuleColor,
                           shape: BoxShape.circle,
                         ),
@@ -175,7 +175,7 @@ class _WorkoutPageState extends State<WorkoutPage>
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

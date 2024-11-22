@@ -11,6 +11,7 @@ import '../database/tables/workout.dart';
 import '../modules/date_picker.dart';
 import '../modules/homepage widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
+import '../modules/workouts_box_home.dart';
 import 'social and account/me.dart';
 
 class Home extends StatefulWidget {
@@ -42,21 +43,32 @@ Map<Workouts, DateTime> workoutMap = {
             children: [
               _buildHeader(formattedDate),
 
-              Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: WorkoutsBox(workoutMap: workoutMap),
+              Container(
+                margin: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.fitnessModuleColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Column(
+                  children: [
+                    WorkoutsBoxHome(workoutMap: workoutMap),
+                    SizedBox(height: 20),
+                    RingsModule(),
+                  ],
+                ),
               ),
 
-              _buildModuleRow(
-                leftChild: CommunityModule(),
-                rightChild: RingsModule(),
-              ),
-              const Padding(
-                  padding: EdgeInsets.only(top: 24),
-                  child: CalendarHomeModule()
-              ),
+              // Add the social feed module
+
+
+
               _buildModuleRow(
                 leftChild: WorkoutLogModule(),
+                rightChild: WipModule(),
+              ),
+              _buildModuleRow(
+                leftChild: CommunityModule(),
                 rightChild: WipModule(),
               ),
             ],
@@ -130,6 +142,25 @@ Map<Workouts, DateTime> workoutMap = {
   }) {
     return Padding(
       padding: EdgeInsets.only(left: commonPadding, right: commonPadding, top: topPadding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(child: leftChild),
+          const SizedBox(width: commonPadding),
+          Expanded(child: rightChild),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildModuleRowInDashboard({
+    required Widget leftChild,
+    required Widget rightChild,
+    double topPadding = 15,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(left: 0, right: 0, top: topPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

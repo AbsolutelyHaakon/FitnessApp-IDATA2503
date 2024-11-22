@@ -13,40 +13,35 @@ class CalendarHomeModule extends StatefulWidget {
 }
 
 class _CalendarHomeModuleState extends State<CalendarHomeModule> {
-
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20),
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => WorkoutCalendar()),
-            );
-          },
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WorkoutCalendar()),
+          );
+        },
         child: Container(
-          width: double.infinity,
+          width: 170,
+          height: 170,
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 5),
+            padding: const EdgeInsets.only(top: 0, bottom: 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children:
-                    _buildWorkoutSlots(),
+                  children: _buildWorkoutSlots(),
                 ),
               ],
             ),
           ),
-        ),
         ),
       ),
     );
@@ -58,7 +53,6 @@ class _CalendarHomeModuleState extends State<CalendarHomeModule> {
       {'title': 'Hike', 'time': '15:00 - 16:00'},
     ];
 
-
     return workouts.map((workout) {
       return _buildWorkoutSlot(workout['title']!, workout['time']!);
     }).toList();
@@ -66,8 +60,8 @@ class _CalendarHomeModuleState extends State<CalendarHomeModule> {
 
   Widget _buildWorkoutSlot(String title, String time) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+      margin: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.fitnessSecondaryModuleColor,

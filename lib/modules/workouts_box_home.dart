@@ -18,8 +18,8 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 ///
 /// TODO: Remove scheduling elements a make a calendar friendly version of the workouts box
 
-class WorkoutsBox extends StatefulWidget {
-  const WorkoutsBox({super.key, required this.workoutMap});
+class WorkoutsBoxHome extends StatefulWidget {
+  const WorkoutsBoxHome({super.key, required this.workoutMap});
 
   final Map<Workouts, DateTime> workoutMap;
 
@@ -50,11 +50,11 @@ class WorkoutsBox extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _WorkoutsBoxState();
+    return _WorkoutsBoxHomeState();
   }
 }
 
-class _WorkoutsBoxState extends State<WorkoutsBox> {
+class _WorkoutsBoxHomeState extends State<WorkoutsBoxHome> {
   final WorkoutDao _workoutDao = WorkoutDao();
   Map<String, bool> _favorites = {};
   final FavoriteWorkoutsDao _favoriteWorkoutsDao = FavoriteWorkoutsDao();
@@ -133,7 +133,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         final isFavorite = _favorites[workout.workoutId] ?? false;
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
+          padding: const EdgeInsets.only(bottom: 0.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
             direction: workout.userId == FirebaseAuth.instance.currentUser?.uid
@@ -164,8 +164,8 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     constraints: const BoxConstraints(minHeight: 80),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: AppColors.fitnessModuleColor,
-                      borderRadius: BorderRadius.circular(30),
+                      color: AppColors.fitnessSecondaryModuleColor,
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                     child: Row(

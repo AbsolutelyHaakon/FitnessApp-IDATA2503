@@ -16,151 +16,166 @@ class RingsModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: () {
-          // Define the action when the button is pressed
-        },
-        child: Container(
-          width: 180,
-          height: 180,
-          decoration: BoxDecoration(
-            color: AppColors.fitnessModuleColor,
-            borderRadius: BorderRadius.circular(30),
-
-          ),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          width: 60.0,
-                          height: 60.0,
-                          child: CircularProgressIndicator(
-                            value: 0.75, // Example progress value
-                            strokeWidth: 8.0,
-                            strokeCap: StrokeCap.round,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.fitnessMainColor),
-                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
-                          ),
-                        ),
-                        Text(
-                          'KG',
-                          style: TextStyle(
-                            color: AppColors.fitnessMainColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+      child: Container(
+        width: 350,
+        height: 100,
+        decoration: BoxDecoration(
+          color: AppColors.fitnessSecondaryModuleColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                // Define the action when the button is pressed
+              },
+              child: const SizedBox(
+                width: 70,
+                height: 70,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60.0,
+                      height: 60.0,
+                      child: CircularProgressIndicator(
+                        value: 0.75,
+                        // Example progress value
+                        strokeWidth: 8.0,
+                        strokeCap: StrokeCap.round,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.fitnessMainColor),
+                        backgroundColor: AppColors.fitnessModuleColor,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          width: 60.0,
-                          height: 60.0,
-                          child: CircularProgressIndicator(
-                            value: 0.5, // Example progress value
-                            strokeWidth: 8.0,
-                            strokeCap: StrokeCap.round,
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF)),
-                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
-                          ),
-                        ),
-                        Text(
-                          'Cal',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'KG',
+                      style: TextStyle(
+                        color: AppColors.fitnessMainColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          width: 60.0,
-                          height: 60.0,
-                          child: CircularProgressIndicator(
-                            value: 0.25, // Example progress value
-                            strokeWidth: 8.0,
-                            strokeCap: StrokeCap.round,
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCC9748)),
-                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
-                          ),
-                        ),
-                        Text(
-                          'Body\nFat',
-                          style: TextStyle(
-                            color: Color(0xFFCC9748),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+            ),
+            const SizedBox(width: 10),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                // Define the action when the button is pressed
+              },
+              child: const SizedBox(
+                width: 70,
+                height: 70,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60.0,
+                      height: 60.0,
+                      child: CircularProgressIndicator(
+                        value: 0.5,
+                        // Example progress value
+                        strokeWidth: 8.0,
+                        strokeCap: StrokeCap.round,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFFFFFFFF)),
+                        backgroundColor: AppColors.fitnessModuleColor,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          width: 60.0,
-                          height: 60.0,
-                          child: CircularProgressIndicator(
-                            value: 1, // Example progress value
-                            strokeWidth: 8.0,
-                            strokeCap: StrokeCap.round,
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFCC4848)),
-                            backgroundColor: AppColors.fitnessSecondaryModuleColor,
-                          ),
-                        ),
-                        Text(
-                          'Cal\nBurn',
-                          style: TextStyle(
-                            color: Color(0xFFCC4848),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                    Text(
+                      'Cal',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 10),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                // Define the action when the button is pressed
+              },
+              child: const SizedBox(
+                width: 70,
+                height: 70,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60.0,
+                      height: 60.0,
+                      child: CircularProgressIndicator(
+                        value: 0.25,
+                        // Example progress value
+                        strokeWidth: 8.0,
+                        strokeCap: StrokeCap.round,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF11ABFF)),
+                        backgroundColor: AppColors.fitnessModuleColor,
+                      ),
+                    ),
+                    Text(
+                      'Water\nGoal',
+                      style: TextStyle(
+                        color: Color(0xFF11ABFF),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                // Define the action when the button is pressed
+              },
+              child: const SizedBox(
+                width: 70,
+                height: 70,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60.0,
+                      height: 60.0,
+                      child: CircularProgressIndicator(
+                        value: 1,
+                        // Example progress value
+                        strokeWidth: 8.0,
+                        strokeCap: StrokeCap.round,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFFCC4848)),
+                        backgroundColor: AppColors.fitnessModuleColor,
+                      ),
+                    ),
+                    Text(
+                      'Cal\nBurn',
+                      style: TextStyle(
+                        color: Color(0xFFCC4848),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
