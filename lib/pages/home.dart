@@ -4,6 +4,7 @@ import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dar
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
 Map<Workouts, DateTime> workoutMap = {
-  new Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime(1970, 1, 1),
+  const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime(1970, 1, 1),
 };
 
   @override
@@ -53,7 +54,7 @@ Map<Workouts, DateTime> workoutMap = {
                 child: Column(
                   children: [
                     WorkoutsBoxHome(workoutMap: workoutMap),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     RingsModule(),
                   ],
                 ),
@@ -75,6 +76,7 @@ Map<Workouts, DateTime> workoutMap = {
           ),
         ),
       ),
+
     );
   }
 

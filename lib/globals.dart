@@ -10,8 +10,8 @@ ValueNotifier<String> activeWorkoutName = ValueNotifier<String>('');
 
 int activeWorkoutIndex = 0;
 
-List<String> officialFilterCategories = ['All', 'Starred', 'Legs', 'Abs', 'Upper Body', 'Cardio', 'Outdoors'];
-List<String> officialWorkoutCategories = ['Legs', 'Abs', 'Upper Body', 'Cardio', 'Outdoors'];
+List<String> officialFilterCategories = ['All', 'Starred', 'Legs', 'Core', 'Upper Body', 'Cardio', 'Outdoors'];
+List<String> officialWorkoutCategories = ['Legs', 'Core', 'Upper Body', 'Cardio', 'Outdoors'];
 
 List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/allIcon.svg', width: 40, height: 40),

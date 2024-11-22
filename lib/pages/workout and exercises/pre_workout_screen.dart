@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
@@ -72,34 +73,40 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
+        title: Text(
+          'Workout Plan',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.fitnessPrimaryTextColor,
+          ),
+        ),
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back,
-              color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: AppColors.fitnessMainColor),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateWorkoutPage(
-                    isAdmin: false,
-                    preWorkout: widget.workout,
+          if (FirebaseAuth.instance.currentUser != null)
+            TextButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateWorkoutPage(
+                      isAdmin: false,
+                      preWorkout: widget.workout,
+                    ),
                   ),
-                ),
-              );
-              if (result == true) {
-                await fetchExercises();
-              }
-            },
-          ),
+                );
+                if (result == true) {
+                  await fetchExercises();
+                }
+              },
+              child: const Text('Edit Workout',
+                  style: TextStyle(color: AppColors.fitnessMainColor)),
+            ),
         ],
       ),
       body: SafeArea(

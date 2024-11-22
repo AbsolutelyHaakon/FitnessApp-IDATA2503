@@ -11,6 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../database/crud/workout_dao.dart';
 import '../../database/tables/exercise.dart';
@@ -110,7 +112,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       String? user = FirebaseAuth.instance.currentUser?.uid;
       user ??= "localUser";
       if (await userDao
-              .getAdminStatus(FirebaseAuth.instance.currentUser!.uid) &&
+          .getAdminStatus(FirebaseAuth.instance.currentUser!.uid) &&
           widget.isAdmin) {
         user = "";
       }
@@ -151,7 +153,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         // Optionally, show an error dialog or message here
       }
     } else if (_formKey.currentState!.validate() && widget.preWorkout != null) {
-      final result = await workoutDao.firebaseUpdateWorkout(
+      await workoutDao.firebaseUpdateWorkout(
         widget.preWorkout!.workoutId,
         _selectedCategory,
         _descriptionController.text,
@@ -169,13 +171,14 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         exercises.length, // Number of exercises / sets
       );
 
-      await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(selectedExercises,
-          widget.preWorkout!.workoutId!);
+      print("Heo9!");
+      await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(
+          selectedExercises, widget.preWorkout!.workoutId!);
 
       for (var exercise in exercises) {
         final reps = int.tryParse(exercise.repsController.text) ?? 0;
         final sets = int.tryParse(exercise.setsController.text) ?? 0;
-         await workoutExercisesDao.fireBaseCreateWorkoutExercise(
+        await workoutExercisesDao.fireBaseCreateWorkoutExercise(
           widget.preWorkout!.workoutId,
           exercise.exerciseId,
           reps,
@@ -188,11 +191,68 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     }
   }
 
+  void _showCategoryPicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: AppColors.fitnessBackgroundColor,
+        child: CupertinoPicker(
+          backgroundColor: AppColors.fitnessBackgroundColor,
+          itemExtent: 32.0,
+          onSelectedItemChanged: (int index) {
+            setState(() {
+              _selectedCategory = officialWorkoutCategories[index];
+            });
+          },
+          children: officialWorkoutCategories.map((String value) {
+            return Center(
+              child: Text(
+                value,
+                style:
+                const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  void _showIntensityPicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: AppColors.fitnessBackgroundColor,
+        child: CupertinoPicker(
+          backgroundColor: AppColors.fitnessBackgroundColor,
+          itemExtent: 32.0,
+          onSelectedItemChanged: (int index) {
+            setState(() {
+              _intensity = index + 1;
+            });
+          },
+          children: const [
+            Center(child: Text('Low', style: TextStyle(color: AppColors.fitnessPrimaryTextColor))),
+            Center(child: Text('Medium', style: TextStyle(color: AppColors.fitnessPrimaryTextColor))),
+            Center(child: Text('High', style: TextStyle(color: AppColors.fitnessPrimaryTextColor))),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
+        title: Text(
+          widget.preWorkout == null ? 'Create Workout' : 'Edit Workout',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.fitnessPrimaryTextColor,
+          ),
+        ),
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
@@ -202,6 +262,34 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          if (FirebaseAuth.instance.currentUser != null)
+            TextButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExerciseSelectorPage(
+                        selectedExercises: selectedExercises),
+                  ),
+                );
+                setState(() {
+                  selectedExercises.clear();
+                  exercises.clear();
+                });
+                if (result != null && result is List<Exercises>) {
+                  setState(() {
+                    for (var exercise in result) {
+                      selectedExercises.add(exercise);
+                      exercises.add(createIndExerciseBox(exercise));
+                    }
+                  });
+                }
+              },
+              child: const Text('Add Exercise',
+                  style: TextStyle(color: AppColors.fitnessMainColor)),
+            ),
+        ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: SafeArea(
@@ -219,7 +307,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     controller: _titleController,
                     cursorColor: AppColors.fitnessMainColor,
                     style: const TextStyle(
-                        color: AppColors.fitnessMainColor, fontSize: 25),
+                        color: AppColors.fitnessPrimaryTextColor, fontSize: 25),
                     decoration: const InputDecoration(
                       labelText: 'Workout Title',
                       labelStyle: TextStyle(
@@ -228,12 +316,12 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                       fillColor: AppColors.fitnessBackgroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderSide:
-                            BorderSide(color: AppColors.fitnessModuleColor),
+                        BorderSide(color: AppColors.fitnessModuleColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: AppColors.fitnessMainColor),
+                        borderSide: BorderSide(
+                            color: AppColors.fitnessPrimaryTextColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       errorBorder: OutlineInputBorder(
@@ -275,9 +363,10 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     focusNode: _descriptionFocusNode,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
-                    cursorColor: AppColors.fitnessMainColor,
+                    textInputAction: TextInputAction.done,
+                    cursorColor: AppColors.fitnessPrimaryTextColor,
                     style: const TextStyle(
-                        color: AppColors.fitnessMainColor, fontSize: 16),
+                        color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
                     decoration: const InputDecoration(
                       labelText: 'Description',
                       labelStyle: TextStyle(
@@ -286,12 +375,12 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                       fillColor: AppColors.fitnessBackgroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderSide:
-                            BorderSide(color: AppColors.fitnessModuleColor),
+                        BorderSide(color: AppColors.fitnessModuleColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                            BorderSide(color: AppColors.fitnessMainColor),
+                        BorderSide(color: AppColors.fitnessMainColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       errorBorder: OutlineInputBorder(
@@ -313,59 +402,96 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                         color: AppColors.fitnessSecondaryTextColor,
                       ),
                     ),
+                    onEditingComplete: () {
+                      _descriptionFocusNode.unfocus();
+                    },
                   ),
                 ),
                 SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 10, bottom: 10),
+                        child: Text(
+                          'Intensity',
+                          style: TextStyle(
+                            color: AppColors.fitnessSecondaryTextColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                       Row(
-                        children: List.generate(3, (index) {
-                          return IconButton(
-                            icon: Icon(
-                              Icons.whatshot,
-                              color: index < _intensity
-                                  ? AppColors.fitnessMainColor
-                                  : AppColors.fitnessSecondaryTextColor,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _intensity = index + 1;
-                              });
-                            },
-                          );
-                        }),
-                      ),
-                      DropdownButton<String>(
-                        value: _selectedCategory,
-                        items: officialWorkoutCategories.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value,
-                                style: const TextStyle(
-                                    color: AppColors.fitnessPrimaryTextColor)),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedCategory = newValue!;
-                          });
-                        },
-                        dropdownColor: AppColors.fitnessBackgroundColor,
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15, right: 15),
-                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Switch(
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _showIntensityPicker(context),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.fitnessModuleColor,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _intensity == 1 ? 'Low' : _intensity == 2 ? 'Medium' : 'High',
+                                      style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                                    ),
+                                    const Icon(
+                                      CupertinoIcons.chevron_down,
+                                      color: AppColors.fitnessPrimaryTextColor,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: () => _showCategoryPicker(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              decoration: BoxDecoration(
+                                color: AppColors.fitnessModuleColor,
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    _selectedCategory,
+                                    style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                                  ),
+                                  const Icon(
+                                    CupertinoIcons.chevron_down,
+                                    color: AppColors.fitnessPrimaryTextColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              'Public',
+                              style: TextStyle(
+                                color: AppColors.fitnessSecondaryTextColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          CupertinoSwitch(
                             value: _isPublic,
                             onChanged: (value) {
                               setState(() {
@@ -374,79 +500,49 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                             },
                             activeColor: AppColors.fitnessMainColor,
                           ),
-                          const SizedBox(width: 10),
-                          const Text('Public',
-                              style: TextStyle(
-                                  color: AppColors.fitnessPrimaryTextColor,
-                                  fontSize: 16)),
                         ],
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ExerciseSelectorPage(
-                                selectedExercises: selectedExercises),
-                          ),
-                        );
-                        setState(() {
-                          selectedExercises.clear();
-                          exercises.clear();
-                        });
-                        if (result != null && result is List<Exercises>) {
-                          setState(() {
-                            for (var exercise in result) {
-                              selectedExercises.add(exercise);
-                              exercises.add(createIndExerciseBox(exercise));
-                            }
-                          });
-                        }
-                      },
-                      child: const Text('+ Add Exercise to Workout',
-                          style: TextStyle(color: AppColors.fitnessMainColor)),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Container(
                   height: MediaQuery.of(context).size.height - 300,
                   child: exercises.isEmpty
                       ? const Center(
-                          child: Text(
-                            'No exercises selected..',
-                            style: TextStyle(
-                                color: AppColors.fitnessSecondaryModuleColor,
-                                fontSize: 16),
-                          ),
-                        )
+                    child: Text(
+                      'No exercises selected..',
+                      style: TextStyle(
+                          color: AppColors.fitnessSecondaryModuleColor,
+                          fontSize: 16),
+                    ),
+                  )
                       : ReorderableListView(
-                          proxyDecorator: (Widget child, int index,
-                              Animation<double> animation) {
-                            return Transform.scale(
-                              scale: 1.05,
-                              child: Material(
-                                child: child,
-                                color: Colors.transparent,
-                                shadowColor: AppColors.fitnessBackgroundColor
-                                    .withOpacity(0.3),
-                                elevation: 6,
-                              ),
-                            );
-                          },
-                          scrollDirection: Axis.vertical,
-                          onReorder: (int oldIndex, int newIndex) {
-                            setState(() {
-                              if (newIndex > oldIndex) {
-                                newIndex -= 1;
-                              }
-                              final item = exercises.removeAt(oldIndex);
-                              exercises.insert(newIndex, item);
-                            });
-                          },
-                          children: exercises,
+                    proxyDecorator: (Widget child, int index,
+                        Animation<double> animation) {
+                      return Transform.scale(
+                        scale: 1.05,
+                        child: Material(
+                          child: child,
+                          color: Colors.transparent,
+                          shadowColor: AppColors.fitnessBackgroundColor
+                              .withOpacity(0.3),
+                          elevation: 6,
                         ),
+                      );
+                    },
+                    scrollDirection: Axis.vertical,
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (newIndex > oldIndex) {
+                          newIndex -= 1;
+                        }
+                        final item = exercises.removeAt(oldIndex);
+                        exercises.insert(newIndex, item);
+                      });
+                    },
+                    children: exercises,
+                  ),
                 ),
                 const SizedBox(height: 100),
               ],
@@ -460,7 +556,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         child: FloatingActionButton(
           onPressed: _createWorkout,
           backgroundColor: AppColors.fitnessMainColor,
-          child: Text(widget.preWorkout == null ? "Create Workout" : "Update Workout",
+          child: Text(
+            widget.preWorkout == null ? "Create Workout" : "Update Workout",
             style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
           ),
         ),

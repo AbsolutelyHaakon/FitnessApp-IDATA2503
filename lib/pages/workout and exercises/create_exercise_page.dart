@@ -75,8 +75,12 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.fitnessBackgroundColor,
-        title: const Text('Create Exercise',
-            style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+        title: Text(
+        'Create Exercise',
+        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          color: AppColors.fitnessPrimaryTextColor,
+        ),
+      ),
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
           onPressed: () => Navigator.of(context).pop(),
