@@ -151,6 +151,8 @@ class UserWorkoutsDao {
       userId: userId,
       workoutId: workoutId,
       date: date,
+      duration: 0,
+      statistics: '',
     ));
 
     return newDocId;
