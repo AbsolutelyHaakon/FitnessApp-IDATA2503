@@ -49,6 +49,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
       // Populate the list of exercises with public exercises
       _allPublicExercises = result['exercises']
           .where((exercise) => exercise.isPrivate == false)
+          .where((exercise) => exercise.userId != FirebaseAuth.instance.currentUser?.uid)
           .cast<Exercises>()
           .toList();
     });
@@ -67,9 +68,12 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.fitnessBackgroundColor,
-          title:
-          Text('Select Exercises',
-              style:Theme.of(context).textTheme.headlineMedium,),
+          title: Text(
+            'Select Exercises',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: AppColors.fitnessPrimaryTextColor,
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(CupertinoIcons.back,
                 color: AppColors.fitnessMainColor),
@@ -77,35 +81,63 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
               Navigator.of(context).pop();
             },
           ),
+          actions: [
+            if (FirebaseAuth.instance.currentUser != null)
+              TextButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateExercisePage(),
+                    ),
+                  );
+                  if (result == true) {
+                    _fetchExercises(); // Reload exercises if a new exercise was created
+                  }
+                },
+                child: const Text('Create Exercise',
+                    style: TextStyle(color: AppColors.fitnessMainColor)),
+              ),
+          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 40.0,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
-            ),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 TextField(
                   controller: _searchController,
-                  cursorColor: AppColors.fitnessMainColor,
-                  style:
-                      const TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
+                  cursorColor: AppColors.fitnessPrimaryTextColor,
+                  style: const TextStyle(
+                      color: AppColors.fitnessPrimaryTextColor, fontSize: 20),
                   decoration: const InputDecoration(
                     labelText: 'Search for exercises',
-                    labelStyle: TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
-                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(
+                        color: AppColors.fitnessPrimaryTextColor, fontSize: 20),
+                    filled: true,
+                    fillColor: AppColors.fitnessBackgroundColor,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                      BorderSide(color: AppColors.fitnessModuleColor),
+                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                      borderSide:
+                      BorderSide(color: AppColors.fitnessPrimaryTextColor),
+                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                        vertical: 20.0, horizontal: 12.0),
+                    hintText: 'Workout Title..',
+                    hintStyle: TextStyle(
+                      color: AppColors.fitnessSecondaryTextColor,
                     ),
                   ),
                   onChanged: (value) {
                     setState(() {});
                   },
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Column(
                   children: [
                     if (_selectedExercisesMap.values.toList().isEmpty)
@@ -145,86 +177,75 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
-                    if (FirebaseAuth.instance.currentUser != null)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CreateExercisePage(),
-                            ),
-                          );
-                          if (result == true) {
-                            _fetchExercises(); // Reload exercises if a new exercise was created
-                          }
-                        },
-                        child: const Text('+ Add New Exercise',
-                            style:
-                                TextStyle(color: AppColors.fitnessMainColor)),
-                      ),
-                    ),
                   ],
                 ),
                 if (FirebaseAuth.instance.currentUser != null)
                 const SizedBox(height: 16),
                 if (FirebaseAuth.instance.currentUser?.uid != null)
                 Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    // Makes the ListView use only as much height as its children
-                    physics: const NeverScrollableScrollPhysics(),
-                    // Disables scrolling to avoid conflicting with parent's scrolling
-                    itemCount: _allUserExercises.length,
-                    itemBuilder: (context, index) {
-                      Exercises exercise = _allUserExercises[index];
-                      if (_searchController.text.isEmpty ||
-                          exercise.name
-                              .toLowerCase()
-                              .contains(_searchController.text.toLowerCase())) {
-                        return ListTile(
-                          title: Text(
-                            exercise.name,
+                  decoration: BoxDecoration(
+                    color: AppColors.fitnessModuleColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  constraints: const BoxConstraints(minHeight: 150),
+                  child: _allUserExercises.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No exercises available.',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          trailing: IconButton(
-                            icon: Icon(
-                              _selectedExercisesMap
-                                      .containsKey(exercise.exerciseId!)
-                                  ? Icons.remove
-                                  : Icons.add,
-                              color: AppColors.fitnessMainColor,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                if (_selectedExercisesMap
-                                    .containsKey(exercise.exerciseId!)) {
-                                  _selectedExercisesMap
-                                      .remove(exercise.exerciseId!);
-                                } else {
-                                  _selectedExercisesMap[exercise.exerciseId!] =
-                                      exercise;
-                                }
-                              });
-                            },
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ExerciseOverviewPage(
-                                    exercise: exercise),
-                              ),
-                            );
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _allUserExercises.length,
+                          itemBuilder: (context, index) {
+                            Exercises exercise = _allUserExercises[index];
+                            if (_searchController.text.isEmpty ||
+                                exercise.name
+                                    .toLowerCase()
+                                    .contains(_searchController.text.toLowerCase())) {
+                              return ListTile(
+                                title: Text(
+                                  exercise.name,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    _selectedExercisesMap
+                                            .containsKey(exercise.exerciseId!)
+                                        ? Icons.remove
+                                        : Icons.add,
+                                    color: AppColors.fitnessMainColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_selectedExercisesMap
+                                          .containsKey(exercise.exerciseId!)) {
+                                        _selectedExercisesMap
+                                            .remove(exercise.exerciseId!);
+                                      } else {
+                                        _selectedExercisesMap[exercise.exerciseId!] =
+                                            exercise;
+                                      }
+                                    });
+                                  },
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ExerciseOverviewPage(
+                                          exercise: exercise),
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              return Container();
+                            }
                           },
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),
+                        ),
                 ),
                 const SizedBox(height: 16),
                  Align(
@@ -235,59 +256,69 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   ),
                 ),
                 Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    // Makes the ListView use only as much height as its children
-                    physics: const NeverScrollableScrollPhysics(),
-                    // Disables scrolling to avoid conflicting with parent's scrolling
-                    itemCount: _allPublicExercises.length,
-                    itemBuilder: (context, index) {
-                      Exercises exercise = _allPublicExercises[index];
-                      if (_searchController.text.isEmpty ||
-                          exercise.name
-                              .toLowerCase()
-                              .contains(_searchController.text.toLowerCase())) {
-                        return ListTile(
-                          title: Text(
-                            exercise.name,
+                  decoration: BoxDecoration(
+                    color: AppColors.fitnessModuleColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  constraints: const BoxConstraints(minHeight: 150),
+                  child: _allPublicExercises.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No exercises available.',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          trailing: IconButton(
-                            icon: Icon(
-                              _selectedExercisesMap
-                                  .containsKey(exercise.exerciseId!)
-                                  ? Icons.remove
-                                  : Icons.add,
-                              color: AppColors.fitnessMainColor,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                if (_selectedExercisesMap
-                                    .containsKey(exercise.exerciseId!)) {
-                                  _selectedExercisesMap
-                                      .remove(exercise.exerciseId!);
-                                } else {
-                                  _selectedExercisesMap[exercise.exerciseId!] =
-                                      exercise;
-                                }
-                              });
-                            },
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ExerciseOverviewPage(
-                                    exercise: exercise),
-                              ),
-                            );
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _allPublicExercises.length,
+                          itemBuilder: (context, index) {
+                            Exercises exercise = _allPublicExercises[index];
+                            if (_searchController.text.isEmpty ||
+                                exercise.name
+                                    .toLowerCase()
+                                    .contains(_searchController.text.toLowerCase())) {
+                              return ListTile(
+                                title: Text(
+                                  exercise.name,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    _selectedExercisesMap
+                                            .containsKey(exercise.exerciseId!)
+                                        ? Icons.remove
+                                        : Icons.add,
+                                    color: AppColors.fitnessMainColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_selectedExercisesMap
+                                          .containsKey(exercise.exerciseId!)) {
+                                        _selectedExercisesMap
+                                            .remove(exercise.exerciseId!);
+                                      } else {
+                                        _selectedExercisesMap[exercise.exerciseId!] =
+                                            exercise;
+                                      }
+                                    });
+                                  },
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ExerciseOverviewPage(
+                                          exercise: exercise),
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              return Container();
+                            }
                           },
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),
+                        ),
                 ),
               ],
             ),
