@@ -29,21 +29,31 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     isPrivate: false,
   );
   List<Workouts> _workouts = [];
+  List<Workouts> _filteredWorkouts = [];
   List<UserWorkouts> _upcomingWorkouts = [];
   String _searchQuery = '';
   List<DateTime> workoutDates = [];
-  List<Workouts> _filteredWorkouts = [];
   final WorkoutDao _workoutDao = WorkoutDao();
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
+  Map<UserWorkouts, String> _userWorkoutsMap = {};
+
 
   @override
   void initState() {
     super.initState();
     _filteredWorkouts = _workouts;
     fetchAllWorkouts("All");
-    fetchUpcomingWorkouts().then((_) {
-      print(workoutDates);
+  }
+
+  Future<void> fetchWorkoutNames() async {
+    _upcomingWorkouts.forEach((workout) {
+      _workoutDao.localFetchByWorkoutId(workout.workoutId).then((value) {
+        setState(() {
+          _userWorkoutsMap[workout] = value.name;
+        });
+      });
     });
+    print(_userWorkoutsMap);
   }
 
   void fetchAllWorkouts(String category) async {
@@ -55,6 +65,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       _workouts = wourkoutsData;
       _filteredWorkouts = _workouts;
     });
+    await fetchUpcomingWorkouts();
+    await fetchWorkoutNames();
   }
 
   void _filterWorkouts(String query) {
@@ -93,8 +105,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       });
     }
   }
-
-
 
   // Select workout modal
   void _showSecondModal() {
@@ -187,6 +197,16 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        String workoutName = 'No workout scheduled';
+        for (var workout in _upcomingWorkouts) {
+          if (workout.date.year == selectedDay.year &&
+              workout.date.month == selectedDay.month &&
+              workout.date.day == selectedDay.day) {
+            workoutName = _userWorkoutsMap[workout] ?? 'No workout scheduled';
+            print(workoutName);
+            break;
+          }
+        }
         return Container(
           decoration: const BoxDecoration(
             color: AppColors.fitnessBackgroundColor,
@@ -211,7 +231,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Painful legday everyday',
+                  workoutName,
                   style: Theme
                       .of(context)
                       .textTheme
@@ -222,6 +242,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 InkWell(
                     onTap: () {
                       Navigator.pop(context);
+                      // Select workout modal
                       _showSecondModal();
                     },
                     child: Container(
