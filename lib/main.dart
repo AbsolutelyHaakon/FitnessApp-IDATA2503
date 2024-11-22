@@ -51,7 +51,6 @@ void main() async {
 Future<void> _initializeFirebase() async {
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
-        name: "fitnessdatabase",
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
