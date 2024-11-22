@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
+import 'package:fitnessapp_idata2503/modules/floating_button_component.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -340,22 +341,7 @@ class _WorkoutPageState extends State<WorkoutPage>
         ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'toggleOptions',
-        backgroundColor: AppColors.fitnessMainColor,
-        shape: const CircleBorder(),
-        onPressed: _toggleOptions,
-        child: AnimatedBuilder(
-          animation: _addIconAnimation,
-          child: const Icon(Icons.add, color: Colors.black),
-          builder: (context, child) {
-            return Transform.rotate(
-              angle: _addIconAnimation.value * 3.14159,
-              child: child,
-            );
-          },
-        ),
-      ),
+      floatingActionButton: ToggleOptionsButton(onPressed: _toggleOptions),
     );
   }
 }
