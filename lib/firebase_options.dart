@@ -63,13 +63,14 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDzVImYo5bLRLeVFe3q2UWlUH0vuWlTHJE',
-    appId: '1:960616738857:ios:e4fb2de9be35d24bb72c38',
+    appId: '1:960616738857:ios:4054b075f7cfb11eb72c38',
     messagingSenderId: '960616738857',
     projectId: 'fitnessapp-group03',
     databaseURL: 'https://fitnessapp-group03-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'fitnessapp-group03.appspot.com',
-    iosBundleId: 'com.mattkje.WatchApp',
+    iosBundleId: 'com.gruppe5.Fitness',
   );
+
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDzVImYo5bLRLeVFe3q2UWlUH0vuWlTHJE',

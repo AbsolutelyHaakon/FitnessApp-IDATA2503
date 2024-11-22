@@ -17,16 +17,23 @@ final WorkoutDao _workoutDao = WorkoutDao();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await _initializeFirebase();
 
   const AndroidInitializationSettings initializationSettingsAndroid =
   AndroidInitializationSettings('@mipmap/ic_launcher');
 
+  const DarwinInitializationSettings initializationSettingsIOS =
+  DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
+
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
   );
+
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   await ExerciseDao().fireBaseFirstTimeStartup();
 
@@ -39,6 +46,15 @@ void main() async {
   });
 
   runApp(MyApp());
+}
+
+Future<void> _initializeFirebase() async {
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+        name: "fitnessdatabase",
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
