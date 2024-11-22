@@ -1,13 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import "package:table_calendar/table_calendar.dart";
+import 'package:sqflite/sqflite.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_page.dart';
 import 'package:fitnessapp_idata2503/modules/appBar.dart';
-
-import '../database/crud/workout_dao.dart';
-import '../database/tables/workout.dart';
 
 class WorkoutCalendar extends StatefulWidget {
   @override
@@ -18,28 +22,37 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  String _selectedWorkout = 'Leg day';
-  final List<String> _workouts = [];
+  Workouts _selectedWorkout = Workouts(
+    userId: 'exampleUserId',
+    workoutId: 'exampleId',
+    name: 'exampleName',
+    isPrivate: false,
+  );
+  List<Workouts> _workouts = [];
+  List<UserWorkouts> _upcomingWorkouts = [];
   String _searchQuery = '';
-  List<String> _filteredWorkouts = [];
+  List<DateTime> workoutDates = [];
+  List<Workouts> _filteredWorkouts = [];
+  final WorkoutDao _workoutDao = WorkoutDao();
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
 
   @override
   void initState() {
     super.initState();
     _filteredWorkouts = _workouts;
     fetchAllWorkouts("All");
+    fetchUpcomingWorkouts().then((_) {
+      print(workoutDates);
+    });
   }
 
   void fetchAllWorkouts(String category) async {
-    List<Workouts> workouts = await WorkoutDao()
+    List<Workouts> wourkoutsData = await WorkoutDao()
         .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
-    if (category != "All") {
-      workouts = workouts.where((element) => element.category == category).toList();
-    }
     if (!mounted) return;
     setState(() {
       _workouts.clear();
-      _workouts.addAll(workouts.map((workout) => workout.name).toList());
+      _workouts = wourkoutsData;
       _filteredWorkouts = _workouts;
     });
   }
@@ -48,7 +61,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     setState(() {
       _searchQuery = query;
       _filteredWorkouts = _workouts
-          .where((workout) => workout.toLowerCase().contains(query.toLowerCase()))
+          .where((workout) =>
+          workout.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -60,65 +74,30 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     });
   }
 
-  // Show any event onDayPressed
-  void _showInitialModal(DateTime selectedDay) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.fitnessBackgroundColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: FractionallySizedBox(
-            heightFactor: 0.3,
-            widthFactor: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${selectedDay.toLocal().toString().split(' ')[0]}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Painful legday everyday',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showWorkoutSelectionModal();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                    decoration: BoxDecoration(
-                      color: AppColors.fitnessMainColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      'Add workout',
-                      style: TextStyle(color: Colors.white),
-                    )
-                  )
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  void addToCalendar() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null &&
+        _selectedDay != null) {
+      _userWorkoutsDao.fireBaseCreateUserWorkout(
+          FirebaseAuth.instance.currentUser!.uid,
+          _selectedWorkout.workoutId, _selectedDay!);
+    }
   }
 
-  // showModalBottomSheet for adding workout
-  void _showWorkoutSelectionModal() {
+  Future<void> fetchUpcomingWorkouts() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      final result = await _userWorkoutsDao.fireBaseFetchUpcomingWorkouts(
+          FirebaseAuth.instance.currentUser!.uid);
+      setState(() {
+        _upcomingWorkouts = result['upcomingWorkouts'];
+        workoutDates = _upcomingWorkouts.map((workout) => workout.date).toList();
+      });
+    }
+  }
+
+
+
+  // Select workout modal
+  void _showSecondModal() {
     showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -141,7 +120,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 const SizedBox(height: 20),
                 Text(
                   'Select workout',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 16),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -167,6 +150,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                           onTap: () {
                             setState(() {
                               _selectedWorkout = _filteredWorkouts[index];
+                              addToCalendar();
                             });
                             Navigator.pop(context);
                           },
@@ -178,7 +162,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              _filteredWorkouts[index],
+                              _filteredWorkouts[index].name,
                               style: TextStyle(fontSize: 14),
                             ),
                           ),
@@ -194,8 +178,72 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       },
     ).whenComplete(_clearFilter);
   }
-  
 
+
+  void _showFirstModal(DateTime selectedDay) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.fitnessBackgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: FractionallySizedBox(
+            heightFactor: 0.3,
+            widthFactor: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${selectedDay.toLocal().toString().split(' ')[0]}',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Painful legday everyday',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showSecondModal();
+                    },
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 24.0),
+                        decoration: BoxDecoration(
+                          color: AppColors.fitnessMainColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Add workout',
+                          style: TextStyle(color: Colors.white),
+                        )
+                    )
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +270,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
               });
-              _showInitialModal(selectedDay);
+              _showFirstModal(selectedDay);
             },
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
@@ -234,14 +282,41 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, day, focusedDay) {
+                  bool isSpecificDate = workoutDates.any((date) =>
+                  date.year == day.year && date.month == day.month && date.day == day.day);
+                  return Stack(
+                    children: [
+                      Center(
+                        //Day number, if there is a existing date, make the text red, if not primarycolor
+                        child: Text(
+                          '${day.day}',
+                          style: TextStyle(
+                            color: isSpecificDate ? Colors.red : AppColors.fitnessPrimaryTextColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             calendarStyle: const CalendarStyle(
+              //Default days
               defaultTextStyle: TextStyle(fontSize: 12),
+              //Weekend days
               weekendTextStyle: TextStyle(fontSize: 12),
-              selectedTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
-              todayTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
+              selectedTextStyle: TextStyle(
+                  fontSize: 12, color: AppColors.fitnessMainColor),
+              todayTextStyle: TextStyle(
+                  fontSize: 12, color: AppColors.fitnessMainColor),
               outsideDaysVisible: true,
-              outsideTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessSecondaryTextColor),
+              //Outside days: days that are not in the current month
+              outsideTextStyle: TextStyle(
+                  fontSize: 12, color: AppColors.fitnessSecondaryTextColor),
               cellMargin: EdgeInsets.all(0),
+              //Background color for the callendar
               rowDecoration: BoxDecoration(
                 color: AppColors.fitnessBackgroundColor,
               ),
@@ -253,9 +328,14 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 color: AppColors.fitnessBackgroundColor,
                 shape: BoxShape.circle,
               ),
+              markerDecoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
             ),
             headerStyle: const HeaderStyle(
-              titleTextStyle: TextStyle(fontSize: 12, color: AppColors.fitnessPrimaryTextColor),
+              titleTextStyle: TextStyle(
+                  fontSize: 12, color: AppColors.fitnessPrimaryTextColor),
               leftChevronIcon: Icon(
                 Icons.chevron_left,
                 color: AppColors.fitnessPrimaryTextColor,
@@ -266,8 +346,10 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               ),
             ),
             daysOfWeekStyle: DaysOfWeekStyle(
-              weekdayStyle: TextStyle(fontSize: 9, color: AppColors.fitnessPrimaryTextColor),
-              weekendStyle: TextStyle(fontSize: 9, color: AppColors.fitnessMainColor),
+              weekdayStyle: TextStyle(
+                  fontSize: 9, color: AppColors.fitnessPrimaryTextColor),
+              weekendStyle: TextStyle(
+                  fontSize: 9, color: AppColors.fitnessMainColor),
             ),
           ),
         ),

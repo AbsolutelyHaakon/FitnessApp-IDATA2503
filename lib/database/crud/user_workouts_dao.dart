@@ -141,7 +141,7 @@ class UserWorkoutsDao {
     DocumentReference docRef = await FirebaseFirestore.instance.collection('userWorkouts').add({
       'userId': userId,
       'workoutId': workoutId,
-      'date': date.millisecondsSinceEpoch,
+      'date': date,
     });
 
     String newDocId = docRef.id;
@@ -165,8 +165,9 @@ class UserWorkoutsDao {
     QuerySnapshot upcomingWorkoutsQuery = await FirebaseFirestore.instance
         .collection('userWorkouts')
         .where('userId', isEqualTo: uid)
-        .where('date', isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch)
+        .where('date', isGreaterThanOrEqualTo: DateTime.now())
         .get();
+
 
     List<UserWorkouts> upcomingWorkouts = upcomingWorkoutsQuery.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
