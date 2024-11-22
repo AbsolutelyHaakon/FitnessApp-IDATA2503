@@ -18,6 +18,8 @@ class FitnessAppDB {
       weight INTEGER,
       height INTEGER,
       date DATE NOT NULL,
+      calories INTEGER,
+      waterIntake INTEGER,
       FOREIGN KEY (userId) REFERENCES users (id)
     );''');
     await database.execute('''CREATE TABLE IF NOT EXISTS exercises (

@@ -4,6 +4,8 @@ class UserHealthData {
   final DateTime date;
   final int weight;
   final int height;
+  final int calories;
+  final int waterIntake;
 
   const UserHealthData({
     required this.userHealthDataId,
@@ -11,6 +13,8 @@ class UserHealthData {
     required this.date,
     this.weight = 0,
     this.height = 0,
+    this.calories = 0,
+    this.waterIntake = 0,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +24,8 @@ class UserHealthData {
       'date': date.toIso8601String(),
       'weight': weight,
       'height': height,
+      'calories': calories,
+      'waterIntake': waterIntake,
     };
   }
 
@@ -30,6 +36,8 @@ class UserHealthData {
       date: DateTime.parse(map['date']),
       weight: map['weight'],
       height: map['height'],
+      calories: map['calories'],
+      waterIntake: map['waterIntake'],
     );
   }
 }
