@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import "package:table_calendar/table_calendar.dart";
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_page.dart';
+import 'package:fitnessapp_idata2503/modules/appBar.dart';
 
 import '../database/crud/workout_dao.dart';
 import '../database/tables/workout.dart';
@@ -57,6 +58,63 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       _searchQuery = '';
       _filteredWorkouts = _workouts;
     });
+  }
+
+  // Show any event onDayPressed
+  void _showInitialModal(DateTime selectedDay) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.fitnessBackgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: FractionallySizedBox(
+            heightFactor: 0.3,
+            widthFactor: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${selectedDay.toLocal().toString().split(' ')[0]}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Painful legday everyday',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showWorkoutSelectionModal();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessMainColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      'Add workout',
+                      style: TextStyle(color: Colors.white),
+                    )
+                  )
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // showModalBottomSheet for adding workout
@@ -136,68 +194,13 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       },
     ).whenComplete(_clearFilter);
   }
+  
 
-  // Show any event onDayPressed
-  void _showInitialModal(DateTime selectedDay) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.fitnessBackgroundColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: FractionallySizedBox(
-            heightFactor: 0.3,
-            widthFactor: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${selectedDay.toLocal().toString().split(' ')[0]}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Painful legday everyday',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _showWorkoutSelectionModal(); // Show workout selection modal
-                  },
-                  child: const Text('Add Workout'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        titleSpacing: 40,
-        backgroundColor: AppColors.fitnessBackgroundColor,
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
+      appBar: CustomAppBar.buildAppBar(context),
       body: Center(
         child: Container(
           color: AppColors.fitnessBackgroundColor,
