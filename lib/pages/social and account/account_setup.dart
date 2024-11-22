@@ -41,6 +41,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
         double.tryParse(_weightController.text) ?? 0.0,
         double.tryParse(_weightGoalController.text) ?? 0.0,
         _image,
+        null
       );
     }
   }

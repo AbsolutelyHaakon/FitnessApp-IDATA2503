@@ -9,7 +9,8 @@ class FitnessAppDB {
       weight DOUBLE,
       targetWeight DOUBLE,
       height DOUBLE,
-      imageURL STRING
+      imageURL STRING,
+      bannerURL STRING
     );''');
     // TODO: Connect the lastWeight to the log history of the users last time on that specific exercise (FRONTEND)
     await database.execute('''CREATE TABLE IF NOT EXISTS userHealthData (

@@ -6,6 +6,7 @@ class LocalUser {
   final double? targetWeight;
   final double? height;
   final String? imageURL;
+  final String? bannerURL;
 
   const LocalUser({
     required this.userId,
@@ -14,7 +15,8 @@ class LocalUser {
     this.weight,
     this.targetWeight,
     this.height,
-    this.imageURL
+    this.imageURL,
+    this.bannerURL
   });
 
   // Convert a User object into a Map object
@@ -27,6 +29,7 @@ class LocalUser {
       'targetWeight': targetWeight,
       'height': height,
       'imageURL': imageURL,
+      'bannerURL': bannerURL,
     };
   }
 
@@ -40,6 +43,7 @@ class LocalUser {
       targetWeight: map['targetWeight'],
       height: map['height'],
       imageURL: map['imageURL'],
+      bannerURL: map['bannerURL'],
     );
   }
 
@@ -53,6 +57,7 @@ class LocalUser {
       targetWeight: map['targetWeight']?.toDouble(),
       height: map['height']?.toDouble(),
       imageURL: map['imageURL'],
+      bannerURL: map['bannerURL'],
     );
   }
 

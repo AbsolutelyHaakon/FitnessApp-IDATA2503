@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -5,16 +6,9 @@ import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../pages/social and account/post_builder.dart';
-
-/// Profile page for a user
-/// Used for both your own but also other users profiles
-///
-/// Last edited: 14.11.2024
-/// Last edited by: Håkon Svensen Karlsen
-///
-/// TODO: Implement backend logic
 
 class ProfilePage extends StatefulWidget {
   final String userId;
@@ -26,7 +20,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Fetch DAOs
   final UserDao _userDao = UserDao();
   final UserFollowsDao _userFollowsDao = UserFollowsDao();
   final PostsDao _postsDao = PostsDao();
@@ -38,11 +31,14 @@ class _ProfilePageState extends State<ProfilePage> {
   int followers = 0;
   int following = 0;
   bool _isFollowing = false;
+  bool _isEditing = false;
+  bool _changeMade = false;
 
   bool followerCountReady = false;
   bool _isReady = false;
 
-  NetworkImage? _profileImage;
+  XFile? _profileImage;
+  XFile? _bannerImage;
 
   List<Posts> _posts = [];
 
@@ -70,7 +66,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
     setState(() {
       name = user?["name"] ?? "Unknown";
-      _profileImage = NetworkImage(user?["imageURL"] ?? " ");
+      imageURL = user?["imageURL"] ?? "";
+      bannerURL = user?["bannerURL"] ?? "";
     });
   }
 
@@ -127,6 +124,42 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _pickImage(ImageSource source, bool isBanner) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        if (isBanner) {
+          _bannerImage = pickedFile;
+        } else {
+          _profileImage = pickedFile;
+        }
+        _changeMade = true;
+      });
+    }
+  }
+
+  void _toggleEdit() {
+    if (_isEditing &&
+        _changeMade &&
+        FirebaseAuth.instance.currentUser?.uid != null) {
+      _userDao.fireBaseUpdateUserData(
+        FirebaseAuth.instance.currentUser!.uid,
+        '',
+        0.0,
+        0.0,
+        0.0,
+        _profileImage,
+        _bannerImage,
+      );
+    }
+
+    setState(() {
+      _isEditing = !_isEditing;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return _isReady
@@ -136,27 +169,57 @@ class _ProfilePageState extends State<ProfilePage> {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(
-                      height: 150,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              'https://picsum.photos/id/13/800/300'),
-                          fit: BoxFit.cover,
-                          onError: (exception, stackTrace) {
-                            setState(() {
-                              bannerURL = 'assets/images/placeholder.png';
-                            });
-                          },
+                    GestureDetector(
+                      onTap: _isEditing
+                          ? () => _pickImage(ImageSource.gallery, true)
+                          : null,
+                      child: Container(
+                        height: 150,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: _bannerImage != null
+                                ? FileImage(File(_bannerImage!.path))
+                                : (bannerURL.isNotEmpty
+                                        ? NetworkImage(bannerURL)
+                                        : AssetImage(
+                                            'assets/images/placeholder.png'))
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                            onError: (exception, stackTrace) {
+                              setState(() {
+                                bannerURL = 'assets/images/placeholder.png';
+                              });
+                            },
+                          ),
                         ),
+                        child: _isEditing && _bannerImage == null
+                            ? Center(
+                                child: Icon(
+                                  Icons.image,
+                                  color: AppColors.fitnessMainColor
+                                      .withOpacity(0.7),
+                                  size: 50,
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                     Positioned(
-                        left: 20,
-                        bottom: -45,
+                      left: 20,
+                      bottom: -45,
+                      child: GestureDetector(
+                        onTap: _isEditing
+                            ? () => _pickImage(ImageSource.gallery, false)
+                            : null,
                         child: CircleAvatar(
-                          backgroundImage: _profileImage,
+                          backgroundImage: _profileImage != null
+                              ? FileImage(File(_profileImage!.path))
+                              : (imageURL.isNotEmpty
+                                      ? NetworkImage(imageURL)
+                                      : AssetImage(
+                                          'assets/images/placeholder.png'))
+                                  as ImageProvider,
                           onBackgroundImageError: (_, __) {
                             setState(() {
                               imageURL = 'assets/images/placeholder.png';
@@ -164,7 +227,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                           radius: 50.0,
                           backgroundColor: Colors.white,
-                        )),
+                          child: _isEditing && _profileImage == null
+                              ? Icon(
+                                  Icons.image,
+                                  color: AppColors.fitnessMainColor
+                                      .withOpacity(0.7),
+                                  size: 30,
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 5),
@@ -242,6 +315,23 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
+                      if (FirebaseAuth.instance.currentUser?.uid ==
+                          widget.userId)
+                        SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: _toggleEdit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.fitnessMainColor,
+                            ),
+                            child: Text(
+                                _isEditing ? 'Save Changes' : 'Edit Profile',
+                                style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor,
+                                ),
+                              ),
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -256,7 +346,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       final post = _posts[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 40.0),
-                        // Add bottom padding
                         child: PostBuilder(
                           post: post,
                           isProfile: true,

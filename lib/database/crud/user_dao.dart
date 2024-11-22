@@ -131,7 +131,7 @@ class UserDao {
   }
 
   void fireBaseUpdateUserData(String uid, String? name, double? height,
-      double? weight, double? targetWeight, XFile? image) async {
+      double? weight, double? targetWeight, XFile? profileImage, XFile? bannerImage) async {
     if (uid == "") return;
 
     // Fetch existing user data
@@ -143,8 +143,8 @@ class UserDao {
     if (existingData == null) return;
 
     String imageURL = '';
-    if (image != null) {
-      imageURL = await uploadImage(image);
+    if (profileImage != null) {
+      imageURL = await uploadImage(profileImage);
     }
 
     // Replace empty values with existing values
@@ -159,6 +159,9 @@ class UserDao {
     String updatedImageURL = imageURL?.isNotEmpty == true
         ? imageURL!
         : existingData['imageURL'];
+    String updatedBannerURL = bannerImage != null
+        ? await uploadImage(bannerImage)
+        : existingData['bannerURL'];
 
     // Update Firestore
     FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -167,6 +170,7 @@ class UserDao {
       'weight': updatedWeight,
       'targetWeight': updatedTargetWeight,
       'imageURL': updatedImageURL,
+      'bannerURL': updatedBannerURL,
     });
 
     // Update local database
