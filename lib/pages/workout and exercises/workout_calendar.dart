@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
@@ -56,6 +54,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     print(_userWorkoutsMap);
   }
 
+
+
   void fetchAllWorkouts(String category) async {
     List<Workouts> wourkoutsData = await WorkoutDao()
         .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
@@ -103,7 +103,98 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
         _upcomingWorkouts = result['upcomingWorkouts'];
         workoutDates = _upcomingWorkouts.map((workout) => workout.date).toList();
       });
+      print(workoutDates);
     }
+  }
+
+
+  //Check if workoutId exist
+  bool workoutExist(String workoutId) {
+    return _workouts.any((workout) => workout.workoutId == workoutId);
+  }
+
+
+  void _showFirstModal(DateTime selectedDay) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        bool canAddWorkout = !_upcomingWorkouts.any((workout) =>
+        workout.date.year == selectedDay.year &&
+            workout.date.month == selectedDay.month &&
+            workout.date.day == selectedDay.day &&
+            workoutExist(workout.workoutId)
+        );
+        String workoutName = 'No workout scheduled';
+        for (var workout in _upcomingWorkouts) {
+          if (workout.date.year == selectedDay.year &&
+              workout.date.month == selectedDay.month &&
+              workout.date.day == selectedDay.day) {
+            workoutName = _userWorkoutsMap[workout] ?? 'No workout scheduled';
+            break;
+          }
+        }
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.fitnessBackgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: FractionallySizedBox(
+            heightFactor: 0.3,
+            widthFactor: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${selectedDay.toLocal().toString().split(' ')[0]}',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  workoutName,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                //Check if workout can be added
+                if(canAddWorkout)
+                InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      //Show add workout modal
+                      _showSecondModal();
+                    },
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 24.0),
+                        decoration: BoxDecoration(
+                          color: AppColors.fitnessMainColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Add workout',
+                          style: TextStyle(color: Colors.white),
+                        )
+                    )
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Select workout modal
@@ -189,83 +280,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     ).whenComplete(_clearFilter);
   }
 
-
-  void _showFirstModal(DateTime selectedDay) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        String workoutName = 'No workout scheduled';
-        for (var workout in _upcomingWorkouts) {
-          if (workout.date.year == selectedDay.year &&
-              workout.date.month == selectedDay.month &&
-              workout.date.day == selectedDay.day) {
-            workoutName = _userWorkoutsMap[workout] ?? 'No workout scheduled';
-            print(workoutName);
-            break;
-          }
-        }
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.fitnessBackgroundColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: FractionallySizedBox(
-            heightFactor: 0.3,
-            widthFactor: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${selectedDay.toLocal().toString().split(' ')[0]}',
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  workoutName,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      // Select workout modal
-                      _showSecondModal();
-                    },
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 24.0),
-                        decoration: BoxDecoration(
-                          color: AppColors.fitnessMainColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'Add workout',
-                          style: TextStyle(color: Colors.white),
-                        )
-                    )
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -305,8 +319,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             },
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (context, day, focusedDay) {
-                  bool isSpecificDate = workoutDates.any((date) =>
-                  date.year == day.year && date.month == day.month && date.day == day.day);
+                  bool isSpecificDate = _upcomingWorkouts.any((value) =>
+                  value.date.year == day.year && value.date.month == day.month && value.date.day == day.day && workoutExist(value.workoutId));
                   return Stack(
                     children: [
                       Center(
