@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:sqflite/sqflite.dart';
@@ -34,7 +35,6 @@ class UserWorkoutsDao {
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
-
   Future<List<UserWorkouts>> localFetchByUserId(String userId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -44,8 +44,6 @@ class UserWorkoutsDao {
     );
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
-
-
 
   Future<UserWorkouts> localFetchById(String userId, String workoutId) async {
     final database = await DatabaseService().database;
@@ -66,7 +64,7 @@ class UserWorkoutsDao {
     );
   }
 
-  Future <List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
+  Future<List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 
     // fetch all workouts for the user
@@ -77,10 +75,9 @@ class UserWorkoutsDao {
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
-
   }
 
-  Future <List<UserWorkouts>> localFetchPreviousUserWorkouts(String id) async {
+  Future<List<UserWorkouts>> localFetchPreviousUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 
     // fetch all workouts for the user
@@ -91,27 +88,27 @@ class UserWorkoutsDao {
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
-
   }
 
- Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
-  final database = await DatabaseService().database;
+  Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
+    final database = await DatabaseService().database;
 
-  Map<Workouts, DateTime> upcomingWorkouts = {};
-  final data = await localFetchUpcomingUserWorkouts(uid);
+    Map<Workouts, DateTime> upcomingWorkouts = {};
+    final data = await localFetchUpcomingUserWorkouts(uid);
 
-  for (UserWorkouts userWorkout in data) {
-    final upcomingWorkoutData = await database.query(
-      'workouts',
-      where: 'workoutId = ?',
-      whereArgs: [userWorkout.workoutId],
-    );
+    for (UserWorkouts userWorkout in data) {
+      final upcomingWorkoutData = await database.query(
+        'workouts',
+        where: 'workoutId = ?',
+        whereArgs: [userWorkout.workoutId],
+      );
 
-    upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] = userWorkout.date;
+      upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] =
+          userWorkout.date;
+    }
+
+    return upcomingWorkouts;
   }
-
-  return upcomingWorkouts;
-}
 
   Future<Map<Workouts, DateTime>> FetchPreviousWorkouts(String uid) async {
     final database = await DatabaseService().database;
@@ -126,7 +123,8 @@ class UserWorkoutsDao {
         whereArgs: [userWorkout.workoutId],
       );
 
-      upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] = userWorkout.date;
+      upcomingWorkouts[Workouts.fromMap(upcomingWorkoutData.first)] =
+          userWorkout.date;
     }
 
     return upcomingWorkouts;
@@ -136,9 +134,10 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
-  Future<String?> fireBaseCreateUserWorkout(String userId, String workoutId, DateTime date) async {
-
-    DocumentReference docRef = await FirebaseFirestore.instance.collection('userWorkouts').add({
+  Future<String?> fireBaseCreateUserWorkout(
+      String userId, String workoutId, DateTime date) async {
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('userWorkouts').add({
       'userId': userId,
       'workoutId': workoutId,
       'date': date,
@@ -156,18 +155,14 @@ class UserWorkoutsDao {
     ));
 
     return newDocId;
-
   }
 
-
   Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {
-
     QuerySnapshot upcomingWorkoutsQuery = await FirebaseFirestore.instance
         .collection('userWorkouts')
         .where('userId', isEqualTo: uid)
         .where('date', isGreaterThanOrEqualTo: DateTime.now())
         .get();
-
 
     List<UserWorkouts> upcomingWorkouts = upcomingWorkoutsQuery.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -177,4 +172,35 @@ class UserWorkoutsDao {
 
     return {'upcomingWorkouts': upcomingWorkouts};
   }
+
+  Future<bool> fireBaseDeleteUserWorkout(String workoutId) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (workoutId.isNotEmpty && uid != null) {
+      // Delete from Firebase
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('userWorkouts')
+          .where('userId', isEqualTo: uid)
+          .where('workoutId', isEqualTo: workoutId)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      // Delete locally
+      await localDelete(uid, workoutId);
+
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> fireBaseReplaceUserWorkout(String toBeDeletedId, String userId, String workoutId, DateTime date) async {
+   final deleted =  await fireBaseDeleteUserWorkout(toBeDeletedId);
+
+   if (deleted) {
+     fireBaseCreateUserWorkout(userId, workoutId, date);
+     return true;
+   }
+    return false;
 }
