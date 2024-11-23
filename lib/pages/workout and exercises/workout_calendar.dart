@@ -185,7 +185,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                       onTap: () {
                         Navigator.pop(context);
                         //Show add workout modal
-                        _showSecondModal();
+                        _showSecondModal(true);
                       },
                       child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -202,7 +202,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                   InkWell(
                     onTap: () {
                       Navigator.pop(context);
-                      _showSecondModal();
+                      _showSecondModal(false);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -226,7 +226,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   }
 
   // Select workout modal
-  void _showSecondModal() {
+  void _showSecondModal(bool isAddWorkout) {
     showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -278,7 +278,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                           onTap: () {
                             setState(() {
                               _selectedWorkout = _filteredWorkouts[index];
-                              addToCalendar();
+                              if (isAddWorkout) {
+                                addToCalendar();
+                              } else {
+                                replaceExisting(_selectedWorkout.workoutId, _selectedWorkout.workoutId, _selectedDay!);
+                              }
                             });
                             Navigator.pop(context);
                           },
