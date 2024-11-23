@@ -8,7 +8,6 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateExercisePage extends StatefulWidget {
-
   const CreateExercisePage({super.key});
 
   @override
@@ -23,7 +22,12 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
   final exerciseDao = ExerciseDao();
   bool _isPublic = false;
   String _selectedCategory = 'Strength';
-  final List<String> _categories = ['Strength', 'Cardio', 'Flexibility', 'Balance'];
+  final List<String> _categories = [
+    'Strength',
+    'Cardio',
+    'Flexibility',
+    'Balance'
+  ];
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
 
@@ -39,11 +43,40 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
           !_isPublic,
           FirebaseAuth.instance.currentUser?.uid ?? '',
         );
-        Navigator.of(context).pop(true); // Return true to indicate a new exercise was created
+        Navigator.of(context)
+            .pop(true); // Return true to indicate a new exercise was created
       } catch (e) {
         print('Error creating exercise: $e');
       }
     }
+  }
+
+  void _showCategoryPicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: AppColors.fitnessBackgroundColor,
+        child: CupertinoPicker(
+          backgroundColor: AppColors.fitnessBackgroundColor,
+          itemExtent: 32.0,
+          onSelectedItemChanged: (int index) {
+            setState(() {
+              _selectedCategory = _categories[index];
+            });
+          },
+          children: _categories.map((String value) {
+            return Center(
+              child: Text(
+                value,
+                style:
+                    const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
   }
 
   Future<void> _pickImage() async {
@@ -58,39 +91,35 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
   }
 
   InputDecoration _inputDecoration(String label) => InputDecoration(
-      filled: true,
-      fillColor: AppColors.fitnessBackgroundColor,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
-      ),
-      hintText: label,
-      hintStyle: const TextStyle(
+        filled: true,
+        fillColor: AppColors.fitnessBackgroundColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        hintText: label,
+        hintStyle: const TextStyle(
           color: AppColors.fitnessSecondaryTextColor,
-      ),
-  );
+        ),
+      );
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.fitnessBackgroundColor,
         title: Text(
-        'Create Exercise',
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-          color: AppColors.fitnessPrimaryTextColor,
+          'Create Exercise',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppColors.fitnessPrimaryTextColor,
+              ),
         ),
-      ),
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.image, color: AppColors.fitnessMainColor),
-            onPressed: _pickImage,
-          ),
-        ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: LayoutBuilder(
@@ -110,74 +139,298 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                         controller: _nameController,
                         cursorColor: AppColors.fitnessMainColor,
                         style: const TextStyle(
-                          color: AppColors.fitnessPrimaryTextColor,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                            color: AppColors.fitnessPrimaryTextColor,
+                            fontSize: 25),
+                        decoration: const InputDecoration(
+                          labelText: 'Exercise Name',
+                          labelStyle: TextStyle(
+                              color: AppColors.fitnessMainColor, fontSize: 25),
+                          filled: true,
+                          fillColor: AppColors.fitnessBackgroundColor,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.fitnessModuleColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: AppColors.fitnessPrimaryTextColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 20.0, horizontal: 12.0),
+                          errorStyle: TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                          ),
+                          hintText: 'Exercise Name..',
+                          hintStyle: TextStyle(
+                            color: AppColors.fitnessSecondaryTextColor,
+                          ),
                         ),
-                        decoration: _inputDecoration('Exercise Name..'),
-                        validator: (value) =>
-                            (value?.isEmpty ?? true) ? 'Please enter an exercise name' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an exercise name';
+                          }
+                          return null;
+                        },
                       ),
-                      const SizedBox(height: 4),
+
+                      const SizedBox(height: 16),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (_selectedImage != null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Image.file(
-                                File(_selectedImage!.path),
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+
                           Flexible(
                             child: TextFormField(
                               controller: _descriptionController,
-                              cursorColor: AppColors.fitnessMainColor,
-                              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500),
-                              decoration: _inputDecoration('Description'),
-                              maxLines: 4,
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.done,
+                              cursorColor: AppColors.fitnessPrimaryTextColor,
+                              style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor,
+                                  fontSize: 16),
+                              decoration: const InputDecoration(
+                                labelText: 'Description',
+                                labelStyle: TextStyle(
+                                    color: AppColors.fitnessMainColor,
+                                    fontSize: 14),
+                                filled: true,
+                                fillColor: AppColors.fitnessBackgroundColor,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.fitnessModuleColor),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.fitnessMainColor),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 20.0, horizontal: 12.0),
+                                errorStyle: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                                hintText: 'Description..',
+                                hintStyle: TextStyle(
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _videoUrlController,
-                        cursorColor: AppColors.fitnessMainColor,
-                        style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                        decoration: _inputDecoration('Video URL'),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _videoUrlController,
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.done,
+                              cursorColor: AppColors.fitnessPrimaryTextColor,
+                              style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor,
+                                  fontSize: 16),
+                              decoration: const InputDecoration(
+                                labelText: 'Video URL',
+                                labelStyle: TextStyle(
+                                    color: AppColors.fitnessMainColor,
+                                    fontSize: 14),
+                                filled: true,
+                                fillColor: AppColors.fitnessBackgroundColor,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.fitnessModuleColor),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.fitnessMainColor),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 20.0, horizontal: 12.0),
+                                errorStyle: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                                hintText: 'Video URL',
+                                hintStyle: TextStyle(
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.info_outline,
+                                color: AppColors.fitnessMainColor),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    backgroundColor: Colors.black,
+                                    title: const Text('Info',
+                                        style: TextStyle(color: Colors.white)),
+                                    content: const Text(
+                                        'This video can be used to help anyone trying to do this workout with an instructional video.',
+                                        style: TextStyle(color: Colors.white)),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('OK',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedCategory,
-                        items: _categories.map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category,
-                              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-                        )).toList(),
-                        onChanged: (newValue) => setState(() => _selectedCategory = newValue!),
-                        decoration: _inputDecoration('Category'),
-                        dropdownColor: AppColors.fitnessBackgroundColor,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _showCategoryPicker(context),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 13.0, horizontal: 16.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.fitnessModuleColor,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _selectedCategory,
+                                      style: const TextStyle(
+                                          color: AppColors
+                                              .fitnessPrimaryTextColor),
+                                    ),
+                                    const Icon(
+                                      CupertinoIcons.chevron_down,
+                                      color: AppColors.fitnessPrimaryTextColor,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _pickImage,
+                              icon: const Icon(Icons.image,
+                                  color: AppColors.fitnessPrimaryTextColor),
+                              label: const Text(
+                                'Add Image',
+                                style: TextStyle(
+                                    color: AppColors.fitnessPrimaryTextColor),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.fitnessMainColor,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 24.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                      if (_selectedImage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16.0),
+                            child: Image.file(
+                              File(_selectedImage!.path),
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Public', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-                            Switch(
+                            const Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text(
+                                'Public',
+                                style: TextStyle(
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            CupertinoSwitch(
                               value: _isPublic,
-                              onChanged: (value) => setState(() => _isPublic = value),
+                              onChanged: (value) {
+                                setState(() {
+                                  _isPublic = value;
+                                });
+                              },
                               activeColor: AppColors.fitnessMainColor,
                             ),
                           ],
                         ),
+
                       ),
                     ],
                   ),
