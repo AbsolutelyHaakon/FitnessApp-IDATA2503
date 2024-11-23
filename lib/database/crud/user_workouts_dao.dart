@@ -71,10 +71,7 @@ class UserWorkoutsDao {
     final data = await database.query(
       tableName,
       where: 'userId = ? AND date >= ?',
-      whereArgs: [id, DateTime
-          .now()
-          .millisecondsSinceEpoch
-      ],
+      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
@@ -87,10 +84,7 @@ class UserWorkoutsDao {
     final data = await database.query(
       tableName,
       where: 'userId = ? AND date <= ?',
-      whereArgs: [id, DateTime
-          .now()
-          .millisecondsSinceEpoch
-      ],
+      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
@@ -140,10 +134,10 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
-  Future<String?> fireBaseCreateUserWorkout(String userId, String workoutId,
-      DateTime date) async {
+  Future<String?> fireBaseCreateUserWorkout(
+      String userId, String workoutId, DateTime date) async {
     DocumentReference docRef =
-    await FirebaseFirestore.instance.collection('userWorkouts').add({
+        await FirebaseFirestore.instance.collection('userWorkouts').add({
       'userId': userId,
       'workoutId': workoutId,
       'date': date,
@@ -179,7 +173,8 @@ class UserWorkoutsDao {
     return {'upcomingWorkouts': upcomingWorkouts};
   }
 
-  Future<bool> fireBaseDeleteUserWorkout(String workoutId) async {
+  Future<bool> fireBaseDeleteUserWorkout(
+      String workoutId, DateTime date) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (workoutId.isNotEmpty && uid != null) {
       // Delete from Firebase
@@ -187,6 +182,7 @@ class UserWorkoutsDao {
           .collection('userWorkouts')
           .where('userId', isEqualTo: uid)
           .where('workoutId', isEqualTo: workoutId)
+          .where('date', isEqualTo: date)
           .get();
 
       for (var doc in querySnapshot.docs) {
@@ -203,7 +199,7 @@ class UserWorkoutsDao {
 
   Future<bool> fireBaseReplaceUserWorkout(String toBeDeletedId, String userId,
       String workoutId, DateTime date) async {
-    final deleted = await fireBaseDeleteUserWorkout(toBeDeletedId);
+    final deleted = await fireBaseDeleteUserWorkout(toBeDeletedId, date);
 
     if (deleted) {
       fireBaseCreateUserWorkout(userId, workoutId, date);
