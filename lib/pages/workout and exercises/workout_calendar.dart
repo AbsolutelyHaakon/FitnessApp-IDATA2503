@@ -87,11 +87,16 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   }
 
   void addToCalendar() async {
-    if (FirebaseAuth.instance.currentUser?.uid != null &&
-        _selectedDay != null) {
-      _userWorkoutsDao.fireBaseCreateUserWorkout(
+    if (FirebaseAuth.instance.currentUser?.uid != null && _selectedDay != null) {
+      await _userWorkoutsDao.fireBaseCreateUserWorkout(
           FirebaseAuth.instance.currentUser!.uid,
-          _selectedWorkout.workoutId, _selectedDay!);
+          _selectedWorkout.workoutId,
+          _selectedDay!
+      );
+      setState(() {
+        // Fetch the updated list of upcoming workouts
+        fetchUpcomingWorkouts();
+      });
     }
   }
 
@@ -110,7 +115,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   //Check if workoutId exist
   bool workoutExist(String workoutId) {
-    return _workouts.any((workout) => workout.workoutId == workoutId);
+    return _workouts.any((value) => value.workoutId == workoutId);
   }
 
 
@@ -121,6 +126,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        //If all conditions are met (true), restrict user to add a workokut.
         bool canAddWorkout = !_upcomingWorkouts.any((workout) =>
         workout.date.year == selectedDay.year &&
             workout.date.month == selectedDay.month &&
@@ -320,7 +326,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (context, day, focusedDay) {
                   bool isSpecificDate = _upcomingWorkouts.any((value) =>
-                  value.date.year == day.year && value.date.month == day.month && value.date.day == day.day && workoutExist(value.workoutId));
+                  value.date.year == day.year && value.date.month == day.month && value.date.day == day.day && workoutExist(value.workoutId)); // Checks if _workout_id exist in _upcoming
                   return Stack(
                     children: [
                       Center(
