@@ -87,16 +87,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   }
 
   void addToCalendar() async {
-    if (FirebaseAuth.instance.currentUser?.uid != null && _selectedDay != null) {
-      await _userWorkoutsDao.fireBaseCreateUserWorkout(
+    if (FirebaseAuth.instance.currentUser?.uid != null &&
+        _selectedDay != null) {
+      _userWorkoutsDao.fireBaseCreateUserWorkout(
           FirebaseAuth.instance.currentUser!.uid,
-          _selectedWorkout.workoutId,
-          _selectedDay!
-      );
-      setState(() {
-        // Fetch the updated list of upcoming workouts
-        fetchUpcomingWorkouts();
-      });
+          _selectedWorkout.workoutId, _selectedDay!);
     }
   }
 
