@@ -108,6 +108,20 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     }
   }
 
+  Future<void> replaceExisting(String toBeDeletedId, String workoutId, DateTime date) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(toBeDeletedId, userId, workoutId, date);
+      if (success) {
+        await fetchUpcomingWorkouts();
+        await fetchWorkoutNames();
+      } else {
+        // Handle the failure case
+        print('Failed to replace workout');
+      }
+    }
+  }
+
   //Check if workoutId exist
   bool workoutExist(String workoutId) {
     return _workouts.any((value) => value.workoutId == workoutId);
@@ -165,7 +179,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                       ?.copyWith(fontSize: 16),
                 ),
                 const SizedBox(height: 20),
-                //Check if workout can be added
+                //Check if workout can be added, true = add workout, false = replace workout
                 if (canAddWorkout)
                   InkWell(
                       onTap: () {
@@ -184,6 +198,25 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                             'Add workout',
                             style: TextStyle(color: Colors.white),
                           )))
+                else
+                  InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showSecondModal();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 24.0),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'Replace workout',
+                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                      ),
+                    )
+                  )
               ],
             ),
           ),
@@ -337,13 +370,20 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 );
               },
             ),
-            calendarStyle: const CalendarStyle(
+            calendarStyle: CalendarStyle(
               //Default days
               defaultTextStyle: TextStyle(fontSize: 12),
               //Weekend days
               weekendTextStyle: TextStyle(fontSize: 12),
-              selectedTextStyle:
-                  TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
+              selectedTextStyle: TextStyle(
+                fontSize: 12,
+                color: _selectedDay != null && !_upcomingWorkouts.any((workout) =>
+                workout.date.year == _selectedDay!.year &&
+                    workout.date.month == _selectedDay!.month &&
+                    workout.date.day == _selectedDay!.day &&
+                    workoutExist(workout.workoutId)
+                ) ? AppColors.fitnessMainColor : Colors.red,
+              ),
               todayTextStyle:
                   TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
               outsideDaysVisible: true,
