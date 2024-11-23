@@ -63,10 +63,14 @@ class UserHealthDataDao {
   Future<void> fireBaseCreateUserHealthData(String userId, int? height,
       int? weight, DateTime date, int? calories, int? waterIntake) async {
     // See if there already exists a document with the same userId and date
+    DateTime startOfDay = DateTime(date.year, date.month, date.day);
+    DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userHealthData')
         .where('userId', isEqualTo: userId)
-        .where('date', isEqualTo: date)
+        .where('date', isGreaterThanOrEqualTo: startOfDay)
+        .where('date', isLessThanOrEqualTo: endOfDay)
         .get();
     // If it does not exist, create a new document
     if (querySnapshot.docs.isEmpty) {
@@ -122,7 +126,8 @@ class UserHealthDataDao {
     }
   }
 
-  Future<Map<String, dynamic>> fireBaseFetchUserHealthData(String userId) async {
+  Future<Map<String, dynamic>> fireBaseFetchUserHealthData(
+      String userId) async {
     QuerySnapshot userHealthDataQuery = await FirebaseFirestore.instance
         .collection('userHealthData')
         .where('userId', isEqualTo: userId)
