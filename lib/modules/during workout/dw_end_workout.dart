@@ -38,8 +38,8 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
                 color: AppColors.fitnessModuleColor,
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                  color: Color(0xFF262626), // Almost the same color
-                  width: 1.0, // Very thin
+                  color: Color(0xFF262626),
+                  width: 1.0,
                 ),
               ),
               child: Column(

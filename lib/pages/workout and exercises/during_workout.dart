@@ -169,7 +169,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
               ),
             ),
           IconButton(
-            icon: Icon(CupertinoIcons.pencil, color: AppColors.fitnessSecondaryTextColor),
+            icon: Icon(CupertinoIcons.pencil, color: AppColors.fitnessPrimaryTextColor),
             onPressed: () {
               showCupertinoModalPopup(
                 context: context,
