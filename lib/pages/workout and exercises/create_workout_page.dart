@@ -558,7 +558,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           backgroundColor: AppColors.fitnessMainColor,
           child: Text(
             widget.preWorkout == null ? "Create Workout" : "Update Workout",
-            style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
           ),
         ),
       ),

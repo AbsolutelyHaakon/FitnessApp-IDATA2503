@@ -35,7 +35,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   Map<UserWorkouts, String> _userWorkoutsMap = {};
 
-
   @override
   void initState() {
     super.initState();
@@ -53,8 +52,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     });
     print(_userWorkoutsMap);
   }
-
-
 
   void fetchAllWorkouts(String category) async {
     List<Workouts> wourkoutsData = await WorkoutDao()
@@ -74,7 +71,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       _searchQuery = query;
       _filteredWorkouts = _workouts
           .where((workout) =>
-          workout.name.toLowerCase().contains(query.toLowerCase()))
+              workout.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -91,8 +88,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
         _selectedDay != null) {
       _userWorkoutsDao.fireBaseCreateUserWorkout(
           FirebaseAuth.instance.currentUser!.uid,
-          _selectedWorkout.workoutId, _selectedDay!);
+          _selectedWorkout.workoutId,
+          _selectedDay!);
     }
+    await fetchUpcomingWorkouts();
+    await fetchWorkoutNames();
   }
 
   Future<void> fetchUpcomingWorkouts() async {
@@ -101,18 +101,31 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
           FirebaseAuth.instance.currentUser!.uid);
       setState(() {
         _upcomingWorkouts = result['upcomingWorkouts'];
-        workoutDates = _upcomingWorkouts.map((workout) => workout.date).toList();
+        workoutDates =
+            _upcomingWorkouts.map((workout) => workout.date).toList();
       });
       print(workoutDates);
     }
   }
 
+  Future<void> replaceExisting(String toBeDeletedId, String workoutId, DateTime date) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(toBeDeletedId, userId, workoutId, date);
+      if (success) {
+        await fetchUpcomingWorkouts();
+        await fetchWorkoutNames();
+      } else {
+        // Handle the failure case
+        print('Failed to replace workout');
+      }
+    }
+  }
 
   //Check if workoutId exist
   bool workoutExist(String workoutId) {
     return _workouts.any((value) => value.workoutId == workoutId);
   }
-
 
   void _showFirstModal(DateTime selectedDay) {
     showModalBottomSheet(
@@ -123,11 +136,10 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       builder: (context) {
         //If all conditions are met (true), restrict user to add a workokut.
         bool canAddWorkout = !_upcomingWorkouts.any((workout) =>
-        workout.date.year == selectedDay.year &&
+            workout.date.year == selectedDay.year &&
             workout.date.month == selectedDay.month &&
             workout.date.day == selectedDay.day &&
-            workoutExist(workout.workoutId)
-        );
+            workoutExist(workout.workoutId));
         String workoutName = 'No workout scheduled';
         for (var workout in _upcomingWorkouts) {
           if (workout.date.year == selectedDay.year &&
@@ -153,8 +165,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               children: [
                 Text(
                   '${selectedDay.toLocal().toString().split(' ')[0]}',
-                  style: Theme
-                      .of(context)
+                  style: Theme.of(context)
                       .textTheme
                       .bodyMedium
                       ?.copyWith(fontSize: 16),
@@ -162,34 +173,50 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 const SizedBox(height: 20),
                 Text(
                   workoutName,
-                  style: Theme
-                      .of(context)
+                  style: Theme.of(context)
                       .textTheme
                       .bodyMedium
                       ?.copyWith(fontSize: 16),
                 ),
                 const SizedBox(height: 20),
-                //Check if workout can be added
-                if(canAddWorkout)
-                InkWell(
+                //Check if workout can be added, true = add workout, false = replace workout
+                if (canAddWorkout)
+                  InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        //Show add workout modal
+                        _showSecondModal();
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 24.0),
+                          decoration: BoxDecoration(
+                            color: AppColors.fitnessMainColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Text(
+                            'Add workout',
+                            style: TextStyle(color: Colors.white),
+                          )))
+                else
+                  InkWell(
                     onTap: () {
                       Navigator.pop(context);
-                      //Show add workout modal
                       _showSecondModal();
                     },
                     child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 24.0),
-                        decoration: BoxDecoration(
-                          color: AppColors.fitnessMainColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'Add workout',
-                          style: TextStyle(color: Colors.white),
-                        )
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 24.0),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'Replace workout',
+                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                      ),
                     )
-                )
+                  )
               ],
             ),
           ),
@@ -222,8 +249,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 const SizedBox(height: 20),
                 Text(
                   'Select workout',
-                  style: Theme
-                      .of(context)
+                  style: Theme.of(context)
                       .textTheme
                       .bodyMedium
                       ?.copyWith(fontSize: 16),
@@ -318,35 +344,48 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: (context, day, focusedDay) {
-                  bool isSpecificDate = _upcomingWorkouts.any((value) =>
-                  value.date.year == day.year && value.date.month == day.month && value.date.day == day.day && workoutExist(value.workoutId)); // Checks if _workout_id exist in _upcoming
-                  return Stack(
-                    children: [
-                      Center(
-                        //Day number, if there is a existing date, make the text red, if not primarycolor
-                        child: Text(
-                          '${day.day}',
-                          style: TextStyle(
-                            color: isSpecificDate ? Colors.red : AppColors.fitnessPrimaryTextColor,
-                            fontSize: 12,
-                          ),
+            calendarBuilders: CalendarBuilders(
+              defaultBuilder: (context, day, focusedDay) {
+                bool isSpecificDate = _upcomingWorkouts.any((value) =>
+                    value.date.year == day.year &&
+                    value.date.month == day.month &&
+                    value.date.day == day.day &&
+                    workoutExist(value
+                        .workoutId)); // Checks if _workout_id exist in _upcoming
+                return Stack(
+                  children: [
+                    Center(
+                      //Day number, if there is a existing date, make the text red, if not primarycolor
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(
+                          color: isSpecificDate
+                              ? Colors.red
+                              : AppColors.fitnessPrimaryTextColor,
+                          fontSize: 12,
                         ),
                       ),
-                    ],
-                  );
-                },
-              ),
-            calendarStyle: const CalendarStyle(
+                    ),
+                  ],
+                );
+              },
+            ),
+            calendarStyle: CalendarStyle(
               //Default days
               defaultTextStyle: TextStyle(fontSize: 12),
               //Weekend days
               weekendTextStyle: TextStyle(fontSize: 12),
               selectedTextStyle: TextStyle(
-                  fontSize: 12, color: AppColors.fitnessMainColor),
-              todayTextStyle: TextStyle(
-                  fontSize: 12, color: AppColors.fitnessMainColor),
+                fontSize: 12,
+                color: _selectedDay != null && !_upcomingWorkouts.any((workout) =>
+                workout.date.year == _selectedDay!.year &&
+                    workout.date.month == _selectedDay!.month &&
+                    workout.date.day == _selectedDay!.day &&
+                    workoutExist(workout.workoutId)
+                ) ? AppColors.fitnessMainColor : Colors.red,
+              ),
+              todayTextStyle:
+                  TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
               outsideDaysVisible: true,
               //Outside days: days that are not in the current month
               outsideTextStyle: TextStyle(
@@ -384,8 +423,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             daysOfWeekStyle: DaysOfWeekStyle(
               weekdayStyle: TextStyle(
                   fontSize: 9, color: AppColors.fitnessPrimaryTextColor),
-              weekendStyle: TextStyle(
-                  fontSize: 9, color: AppColors.fitnessMainColor),
+              weekendStyle:
+                  TextStyle(fontSize: 9, color: AppColors.fitnessMainColor),
             ),
           ),
         ),
