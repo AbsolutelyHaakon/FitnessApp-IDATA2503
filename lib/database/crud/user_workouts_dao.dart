@@ -71,7 +71,10 @@ class UserWorkoutsDao {
     final data = await database.query(
       tableName,
       where: 'userId = ? AND date >= ?',
-      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
+      whereArgs: [id, DateTime
+          .now()
+          .millisecondsSinceEpoch
+      ],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
@@ -84,7 +87,10 @@ class UserWorkoutsDao {
     final data = await database.query(
       tableName,
       where: 'userId = ? AND date <= ?',
-      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
+      whereArgs: [id, DateTime
+          .now()
+          .millisecondsSinceEpoch
+      ],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
@@ -134,10 +140,10 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
-  Future<String?> fireBaseCreateUserWorkout(
-      String userId, String workoutId, DateTime date) async {
+  Future<String?> fireBaseCreateUserWorkout(String userId, String workoutId,
+      DateTime date) async {
     DocumentReference docRef =
-        await FirebaseFirestore.instance.collection('userWorkouts').add({
+    await FirebaseFirestore.instance.collection('userWorkouts').add({
       'userId': userId,
       'workoutId': workoutId,
       'date': date,
@@ -195,12 +201,14 @@ class UserWorkoutsDao {
     return false;
   }
 
-  Future<bool> fireBaseReplaceUserWorkout(String toBeDeletedId, String userId, String workoutId, DateTime date) async {
-   final deleted =  await fireBaseDeleteUserWorkout(toBeDeletedId);
+  Future<bool> fireBaseReplaceUserWorkout(String toBeDeletedId, String userId,
+      String workoutId, DateTime date) async {
+    final deleted = await fireBaseDeleteUserWorkout(toBeDeletedId);
 
-   if (deleted) {
-     fireBaseCreateUserWorkout(userId, workoutId, date);
-     return true;
-   }
+    if (deleted) {
+      fireBaseCreateUserWorkout(userId, workoutId, date);
+      return true;
+    }
     return false;
+  }
 }
