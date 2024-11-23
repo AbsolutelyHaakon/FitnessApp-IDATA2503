@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/globals.dart';

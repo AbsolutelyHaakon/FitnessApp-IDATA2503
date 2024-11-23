@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,12 +18,19 @@ class SetStats {
   int weight;
 
   SetStats({required this.set, required this.reps, required this.weight});
+
+  Map<String, dynamic> toJson() => {
+    'set': set,
+    'reps': reps,
+    'weight': weight,
+  };
 }
 
 class DwCurrentExercise extends StatefulWidget {
   final Map<Exercises, WorkoutExercises> exerciseMap;
+  final Workouts workout;
 
-  const DwCurrentExercise({super.key, required this.exerciseMap});
+  const DwCurrentExercise({super.key, required this.exerciseMap, required this.workout});
 
   @override
   _DwCurrentExerciseState createState() => _DwCurrentExerciseState();
@@ -31,8 +40,20 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   List<Exercises> exercises = [];
   List<WorkoutExercises> workoutExercises = [];
   Map<Exercises, List<SetStats>> exerciseStats = {};
-  int _selectedReps = 1;
-  int _selectedWeight = 0;
+  final WorkoutDao _workoutDao = WorkoutDao();
+
+  Future<void> _endWorkout() async {
+    hasActiveWorkout.value = false;
+    activeWorkoutId.value = '';
+    activeWorkoutName.value = '';
+    activeWorkoutIndex = 0;
+    await _workoutDao.localSetAllInactive();
+
+    String jsonString = jsonEncode(exerciseStats.map((key, value) => MapEntry(key.toString(), value.map((set) => set.toJson()).toList())));
+    print(jsonString);
+  }
+
+
 
   @override
   void initState() {
@@ -437,6 +458,49 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                   ),
               ],
             ),
+          const SizedBox(height: 40),
+          IntrinsicHeight(
+            child: Container(
+              width: 400,
+              decoration: BoxDecoration(
+                color: AppColors.fitnessModuleColor,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: Color(0xFF262626),
+                  width: 1.0,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CupertinoButton(
+                    onPressed: () async {
+                      await _endWorkout();
+                      Navigator.pop(context, true);
+                    },
+                    child: Container(
+                      width: 410,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFCC4848),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        "End Workout",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: CupertinoColors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
