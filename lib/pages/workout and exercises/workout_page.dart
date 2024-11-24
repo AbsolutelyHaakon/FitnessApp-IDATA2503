@@ -65,7 +65,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   void fetchFavorites() async {
     favoriteWorkouts.clear();
     final favoriteWorkoutsData = await FavoriteWorkoutsDao()
-        .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid);
+        .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
     if (!mounted) return;
     setState(() {
       favoriteWorkouts = favoriteWorkoutsData;
@@ -76,7 +76,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     workoutsMap.clear();
     fetchFavorites();
     workouts = await WorkoutDao()
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
     if (category != "All" && category != "Starred") {
       workouts =
           workouts.where((element) => element.category == category).toList();
@@ -180,19 +180,17 @@ class _WorkoutPageState extends State<WorkoutPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (FirebaseAuth.instance.currentUser?.uid != null)
                         WorkoutsBox(
                           workoutMap: Map.fromEntries(
                             workoutsMap.entries
                                 .where((entry) => entry.key.userId != ''),
                           ),
                         ),
-                        if (FirebaseAuth.instance.currentUser?.uid != null)
                         const SizedBox(height: 40),
                        if (workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty)
                         Center(
-                          child: Text( FirebaseAuth.instance.currentUser?.uid == null ? '' :
-                            'Premade Workouts',
+                          child: Text( workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty ? 'Premade Workouts' :
+                            '',
                             style: Theme.of(context).textTheme.headlineLarge,
                           ),
                         ),

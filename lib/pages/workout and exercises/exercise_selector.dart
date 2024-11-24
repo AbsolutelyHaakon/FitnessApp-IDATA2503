@@ -286,12 +286,13 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
+                const SizedBox(height: 16),
                 Container(
                   decoration: BoxDecoration(
                     color: AppColors.fitnessModuleColor,
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  constraints: const BoxConstraints(minHeight: 150),
+                  constraints: const BoxConstraints(minHeight: 40),
                   child: _allPublicExercises.isEmpty
                       ? Center(
                           child: Text(

@@ -112,7 +112,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       String? user = FirebaseAuth.instance.currentUser?.uid;
       user ??= "localUser";
       if (await userDao
-          .getAdminStatus(FirebaseAuth.instance.currentUser!.uid) &&
+          .getAdminStatus(FirebaseAuth.instance.currentUser?.uid) &&
           widget.isAdmin) {
         user = "";
       }
@@ -263,7 +263,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           },
         ),
         actions: [
-          if (FirebaseAuth.instance.currentUser != null)
             TextButton(
               onPressed: () async {
                 final result = await Navigator.push(
@@ -477,7 +476,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: FirebaseAuth.instance.currentUser?.uid != null ? 20 : 0),
+                      if(FirebaseAuth.instance.currentUser?.uid != null)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
