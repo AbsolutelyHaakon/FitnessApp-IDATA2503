@@ -76,11 +76,21 @@ class _RingsModuleState extends State<RingsModule>
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userGoalsMap = await UserDao()
           .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      waterGoal = userGoalsMap?["waterTarget"] ?? 1;
-      calorieGoal = userGoalsMap?["caloriesTarget"] ?? 1;
-      calorieBurnGoal = userGoalsMap?["caloriesBurnedTarget"] ?? 1;
-      weightGoal = userGoalsMap?["weightTarget"] ?? 1;
-      weightInitial = userGoalsMap?["weightInitial"] ?? 1;
+      waterGoal = (userGoalsMap?["waterTarget"] ?? 1) == 0
+          ? 2500
+          : userGoalsMap?["waterTarget"] ?? 2500;
+      calorieGoal = (userGoalsMap?["caloriesTarget"] ?? 1) == 0
+          ? 2200
+          : userGoalsMap?["caloriesTarget"] ?? 2200;
+      weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0
+          ? 1
+          : userGoalsMap?["weightTarget"] ?? 1;
+      calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
+          ? 400
+          : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
+      weightInitial = (userGoalsMap?["weightInitial"] ?? 1) == 0
+          ? 1
+          : userGoalsMap?["weightInitial"] ?? 1;
     }
 
     fetchAllRingData();
@@ -129,7 +139,6 @@ class _RingsModuleState extends State<RingsModule>
           weightPercentage =
               (todayWeight - weightInitial) / (weightGoal - weightInitial);
         }
-
       });
     }
   }
