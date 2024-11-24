@@ -23,9 +23,20 @@ class WeightBarChart extends StatelessWidget {
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
 
+      Map<DateTime, UserHealthData> latestDataPerDay = {};
       for (var entry in userData) {
-        returnData[entry.date] = entry.weight;
+        DateTime date =
+            DateTime(entry.date.year, entry.date.month, entry.date.day);
+        if (!latestDataPerDay.containsKey(date) ||
+            entry.date.isAfter(latestDataPerDay[date]!.date)) {
+          latestDataPerDay[date] = entry;
+        }
       }
+
+      latestDataPerDay.forEach((date, entry) {
+        returnData[date] = entry.weight;
+      });
+
       return returnData;
     }
     return {};

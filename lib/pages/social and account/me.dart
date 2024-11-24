@@ -155,7 +155,6 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                 child: GestureDetector(
                   onTap: () async {
                     _toggleOptions();
-
                     showDialog(
                         context: context,
                         builder: (BuildContext builder) {
