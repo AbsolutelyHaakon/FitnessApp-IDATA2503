@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
@@ -13,9 +14,10 @@ import 'package:flutter/material.dart';
 import '../../database/crud/workout_dao.dart';
 
 class PreWorkoutScreen extends StatefulWidget {
-  Workouts workout;
+  UserWorkouts? userWorkouts;
+  Workouts? workouts;
 
-  PreWorkoutScreen({super.key, required this.workout});
+  PreWorkoutScreen({super.key, this.userWorkouts, this.workouts});
 
   @override
   State<PreWorkoutScreen> createState() {
@@ -30,24 +32,49 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   List<Exercises> exercises = [];
   Map<Exercises, WorkoutExercises> exerciseMap = {};
 
+  final WorkoutDao _workoutDao = WorkoutDao();
+  Workouts workouts = const Workouts(
+    workoutId: '0',
+    name: 'Workout 1',
+    description: 'Description 1',
+    duration: 30,
+    isPrivate: false,
+    userId: '1',
+  );
+
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController(text: widget.workout.name);
-    categoryController = TextEditingController(text: widget.workout.category);
-    descriptionController =
-        TextEditingController(text: widget.workout.description);
-    fetchExercises();
+    if (widget.workouts != null) {
+      workouts = widget.workouts!;
+      nameController = TextEditingController(text: workouts.name);
+      categoryController = TextEditingController(text: workouts.category);
+      descriptionController = TextEditingController(text: workouts.description);
+      fetchExercises();
+    } else {
+      _getWorkoutData();
+    }
+  }
+
+  _getWorkoutData() async {
+    workouts = await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+    if (workouts.workoutId != '0'){
+      nameController = TextEditingController(text: workouts.name);
+      categoryController = TextEditingController(text: workouts.category);
+      descriptionController =
+          TextEditingController(text: workouts.description);
+      fetchExercises();
+    }
   }
 
   Future<void> fetchExercises() async {
     try {
       final tempExercises = await WorkoutDao()
-          .localFetchExercisesForWorkout(widget.workout.workoutId);
+          .localFetchExercisesForWorkout(workouts.workoutId);
       Map<Exercises, WorkoutExercises> newExerciseMap = {};
       for (final exercise in tempExercises) {
         final workoutExercise = await WorkoutExercisesDao()
-            .localFetchById(widget.workout.workoutId, exercise.exerciseId);
+            .localFetchById(workouts.workoutId, exercise.exerciseId);
         if (workoutExercise != null) {
           newExerciseMap[exercise] = workoutExercise;
         }
@@ -93,10 +120,11 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
+                  // TODO: FIX THIS SO IT EDITS IT PROPERLY
                   MaterialPageRoute(
                     builder: (context) => CreateWorkoutPage(
                       isAdmin: false,
-                      preWorkout: widget.workout,
+                      preWorkout: workouts,
                     ),
                   ),
                 );
@@ -119,17 +147,17 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    widget.workout.name ?? '',
+                    workouts.name ?? '',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.workout.category ?? '',
+                    workouts.category ?? '',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.workout.description ?? '',
+                    workouts.description ?? '',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 20),
@@ -252,7 +280,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DuringWorkoutScreen(
-                                    workout: widget.workout,
+                                    userWorkouts: widget.userWorkouts,
+                                    workouts: widget.workouts,
                                     exerciseMap: exerciseMap),
                               ),
                             );

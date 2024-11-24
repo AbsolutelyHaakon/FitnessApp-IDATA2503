@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -13,8 +14,9 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
+final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
 final WorkoutDao _workoutDao = WorkoutDao();
 
 void main() async {
@@ -22,10 +24,10 @@ void main() async {
   await _initializeFirebase();
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const DarwinInitializationSettings initializationSettingsIOS =
-  DarwinInitializationSettings(
+      DarwinInitializationSettings(
     requestAlertPermission: true,
     requestBadgePermission: true,
     requestSoundPermission: true,
@@ -39,17 +41,30 @@ void main() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   await ExerciseDao().fireBaseFirstTimeStartup();
 
-  await _workoutDao.fetchActiveWorkout().then((value) {
-    if (value != null) {
+  var userWorkout = await _userWorkoutsDao.fetchActiveUserWorkout();
+  if (userWorkout != null) {
+    print("Active User workout found");
+    hasActiveWorkout.value = true;
+    activeUserWorkoutId.value = userWorkout.userId;
+    activeWorkoutId.value = userWorkout.workoutId;
+    activeWorkoutName.value = userWorkout.name;
+  } else {
+    var workout = await _workoutDao.fetchActiveWorkout();
+    if (workout != null) {
+      print("Active non-user workout found");
       hasActiveWorkout.value = true;
-      activeWorkoutId.value = value.workoutId;
-      activeWorkoutName.value = value.name;
+      activeWorkoutId.value = workout.workoutId;
+      activeWorkoutName.value = workout.name;
+    } else {
+      print("No active workout found");
+      hasActiveWorkout.value = false;
+      activeWorkoutId.value = '';
+      activeWorkoutName.value = '';
     }
-  });
+  }
 
   runApp(MyApp());
 }
-
 
 Future<void> _initializeFirebase() async {
   if (Firebase.apps.isEmpty) {
@@ -88,10 +103,10 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w800,
               fontSize: 24),
           displayLarge: TextStyle(
-            color: AppColors.fitnessPrimaryTextColor,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-            fontSize: 28),
+              color: AppColors.fitnessPrimaryTextColor,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              fontSize: 28),
           displayMedium: TextStyle(
               color: AppColors.fitnessPrimaryTextColor,
               fontFamily: 'Inter',

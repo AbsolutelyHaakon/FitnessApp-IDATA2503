@@ -45,14 +45,19 @@ class UserWorkoutsDao {
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
-  Future<UserWorkouts> localFetchById(String userId, String workoutId) async {
+  Future<UserWorkouts?> localFetchById(String userId, String workoutId) async {
     final database = await DatabaseService().database;
-    final data = await database.query(
+    final List<Map<String, dynamic>> maps = await database.query(
       tableName,
       where: 'userId = ? AND workoutId = ?',
       whereArgs: [userId, workoutId],
     );
-    return UserWorkouts.fromMap(data.first);
+
+    if (maps.isNotEmpty) {
+      return UserWorkouts.fromMap(maps.first);
+    } else {
+      return null;
+    }
   }
 
   Future<void> localDelete(String userId, String workoutId) async {
@@ -130,6 +135,56 @@ class UserWorkoutsDao {
     return upcomingWorkouts;
   }
 
+  Future<void> localSetAllInactive() async {
+    final database = await DatabaseService().database;
+    await database.update(
+      tableName,
+      {'isActive': 0},
+    );
+  }
+
+  Future<void> localSetActive(String workoutId, DateTime date, bool isActive) async {
+    final database = await DatabaseService().database;
+    await database.update(
+      tableName,
+      {'isActive': isActive ? 1 : 0},
+      where: 'workoutId = ? AND date = ?',
+      whereArgs: [workoutId, date],
+    );
+  }
+
+  Future<void> localUpdateActive(UserWorkouts userWorkout, bool isActive) async {
+    final database = await DatabaseService().database;
+    await database.update(
+      tableName,
+      {'isActive': isActive ? 1 : 0},
+      where: 'userId = ? AND workoutId = ?',
+      whereArgs: [userWorkout.userId, userWorkout.workoutId],
+    );
+  }
+
+  Future<Workouts?> fetchActiveUserWorkout() async {
+    final database = await DatabaseService().database;
+    final data = await database.query(
+      tableName,
+      where: 'isActive = ?',
+      whereArgs: [1],
+    );
+
+    if (data.isNotEmpty) {
+      final userWorkout = UserWorkouts.fromMap(data.first);
+      final workoutData = await database.query(
+        'workouts',
+        where: 'workoutId = ?',
+        whereArgs: [userWorkout.workoutId],
+      );
+
+      return Workouts.fromMap(workoutData.first);
+    }
+
+    return null;
+  }
+
   /////////////////////////////////////////////////////////
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
@@ -152,9 +207,44 @@ class UserWorkoutsDao {
       date: date,
       duration: 0,
       statistics: '',
+      isActive: false,
     ));
 
     return newDocId;
+  }
+
+  bool fireBaseUpdateUserWorkout(String userId, String workoutId,
+      DateTime date, String? workoutStats, int duration) {
+    DateTime startOfDay = DateTime(date.year, date.month, date.day);
+    DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+    FirebaseFirestore.instance
+        .collection('userWorkouts')
+        .where('userId', isEqualTo: userId)
+        .where('workoutId', isEqualTo: workoutId)
+        .where('date', isGreaterThanOrEqualTo: startOfDay)
+        .where('date', isLessThanOrEqualTo: endOfDay)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        element.reference.update({
+          'statistics': workoutStats,
+          'duration': duration,
+        });
+      });
+    });
+
+    localUpdate(UserWorkouts(
+      userWorkoutId: '',
+      userId: userId,
+      workoutId: workoutId,
+      date: date,
+      duration: duration.toDouble(),
+      statistics: workoutStats,
+      isActive: false,
+    ));
+
+    return true;
   }
 
   Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {

@@ -65,6 +65,7 @@ class FitnessAppDB {
       date DATE NOT NULL,
       duration DOUBLE,
       statistics STRING,
+      isActive BOOLEAN NOT NULL DEFAULT FALSE,
       FOREIGN KEY (userId) REFERENCES users (id),
       FOREIGN KEY (workoutId) REFERENCES workouts (id)
     );''');

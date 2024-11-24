@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/break_timer_module.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_current_exercise.dart';
@@ -19,11 +21,12 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 class DuringWorkoutScreen extends StatefulWidget {
-  final Workouts workout;
+  final UserWorkouts? userWorkouts;
+  final Workouts? workouts;
   final Map<Exercises, WorkoutExercises> exerciseMap;
 
   const DuringWorkoutScreen(
-      {super.key, required this.workout, required this.exerciseMap});
+      {super.key, this.userWorkouts, required this.exerciseMap, this.workouts});
 
   @override
   State<DuringWorkoutScreen> createState() {
@@ -35,7 +38,16 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
   double totalExercises = 0;
   double currentExercise = 0;
 
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   final WorkoutDao _workoutDao = WorkoutDao();
+  Workouts workouts = const Workouts(
+    workoutId: '0',
+    name: 'Workout 1',
+    description: 'Description 1',
+    duration: 30,
+    isPrivate: false,
+    userId: '1',
+  );
 
   Duration countdownDuration = Duration(minutes: 3);
   Duration remainingTime = Duration(minutes: 3);
@@ -47,12 +59,39 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _workoutDao.localSetAllInactive();
-    _workoutDao.localUpdateActive(widget.workout, true);
-    hasActiveWorkout.value = true;
-    activeWorkoutId.value = widget.workout.workoutId;
-    activeWorkoutName.value = widget.workout.name;
+    if (widget.userWorkouts != null) {
+      _getWorkoutData();
+    } else if (widget.workouts != null) {
+      WidgetsBinding.instance.addObserver(this);
+      _userWorkoutsDao.localSetAllInactive();
+      _workoutDao.localUpdateActive(widget.workouts!, true);
+      if (!hasActiveWorkout.value) {
+        activeWorkoutStartTime = DateTime.now();
+      }
+      print("Active workout found");
+      hasActiveWorkout.value = true;
+      activeWorkoutId.value = workouts.workoutId;
+      activeWorkoutName.value = workouts.name;
+      workouts = widget.workouts!;
+    }
+    totalExercises = widget.exerciseMap.length.toDouble();
+  }
+
+  _getWorkoutData() async {
+    workouts = await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+    if (workouts.workoutId != '0'){
+      WidgetsBinding.instance.addObserver(this);
+      _userWorkoutsDao.localSetAllInactive();
+      _workoutDao.localUpdateActive(widget.workouts!, true);
+      if (!hasActiveWorkout.value) {
+        activeWorkoutStartTime = DateTime.now();
+      }
+      hasActiveWorkout.value = true;
+      activeUserWorkoutId.value = widget.userWorkouts!.userWorkoutId;
+      activeWorkoutId.value = workouts.workoutId;
+      activeWorkoutName.value = workouts.name;
+    }
+    // TODO: MAYBE ADD A CHECK HERE OR SOME ERROR HANDLING ON THE FRONTEND SIDE
   }
 
   @override
@@ -217,10 +256,10 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  widget.workout.name,
+                  workouts.name,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                DwCurrentExercise(exerciseMap: widget.exerciseMap, workout: widget.workout),
+                DwCurrentExercise(exerciseMap: widget.exerciseMap, userWorkouts: widget.userWorkouts, workouts: workouts),
                 const SizedBox(height: 30),
               ],
             ),
