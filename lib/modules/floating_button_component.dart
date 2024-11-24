@@ -53,7 +53,7 @@ class _ToggleOptionsButtonState extends State<ToggleOptionsButton>
       onPressed: _spinButton,
       child: AnimatedBuilder(
         animation: _addIconAnimation,
-        child: const Icon(Icons.add, color: Colors.black),
+        child: const Icon(Icons.add, color: AppColors.fitnessBackgroundColor),
         builder: (context, child) {
           return Transform.rotate(
             angle: _addIconAnimation.value * 3.14159,

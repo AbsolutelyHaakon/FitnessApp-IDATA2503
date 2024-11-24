@@ -66,7 +66,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   @override
   void initState() {
     super.initState();
-    _userDao.getAdminStatus(FirebaseAuth.instance.currentUser?.uid).then((value) {
+    _userDao
+        .getAdminStatus(FirebaseAuth.instance.currentUser?.uid)
+        .then((value) {
       setState(() {
         isAdmin = value;
       });
@@ -74,12 +76,12 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
     for (final workout in widget.workoutMap.keys) {
       _favorites[workout.workoutId] = false;
     }
-    _favoriteWorkoutsDao.localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? '')
+    _favoriteWorkoutsDao
+        .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? '')
         .then((favorites) {
       setState(() {
         _favorites = {
-          for (final favorite in favorites)
-            favorite.workoutId: true,
+          for (final favorite in favorites) favorite.workoutId: true,
         };
       });
     });
@@ -106,8 +108,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
               onPressed: () {
                 Navigator.of(context).pop(true); // Return true
               },
-              child: const Text("Delete",
-                  style: TextStyle(color: AppColors.fitnessMainColor),
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: AppColors.fitnessMainColor),
               ),
             ),
           ],
@@ -121,21 +124,21 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
       if (FirebaseAuth.instance.currentUser != null) {
         _favoriteWorkoutsDao.localDeleteByUserIdAndWorkoutId(
             FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
-      } else {
-        _favoriteWorkoutsDao.localDeleteByUserIdAndWorkoutId('localUser', workoutId);
       }
+
+      _favoriteWorkoutsDao.localDeleteByUserIdAndWorkoutId(
+          FirebaseAuth.instance.currentUser?.uid ?? 'localUser', workoutId);
     } else {
       if (FirebaseAuth.instance.currentUser != null) {
         _favoriteWorkoutsDao.fireBaseCreateFavoriteWorkout(
             FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
-      } else {
-        _favoriteWorkoutsDao.localCreate(FavoriteWorkouts(
-          favoriteWorkoutId: '1',
-          userId: 'localUser',
-          workoutId: workoutId,
-        ));
       }
 
+      _favoriteWorkoutsDao.localCreate(FavoriteWorkouts(
+        favoriteWorkoutId: '1',
+        userId: FirebaseAuth.instance.currentUser?.uid ?? 'localUser',
+        workoutId: workoutId,
+      ));
     }
     setState(() {
       _favorites[workoutId] = !(_favorites[workoutId] ?? false);
@@ -155,9 +158,11 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
-            direction: workout.userId == FirebaseAuth.instance.currentUser?.uid || isAdmin
-                ? DismissDirection.endToStart
-                : DismissDirection.none,
+            direction:
+                workout.userId == FirebaseAuth.instance.currentUser?.uid ||
+                        isAdmin
+                    ? DismissDirection.endToStart
+                    : DismissDirection.none,
             confirmDismiss: (direction) => _confirmDelete(context),
             onDismissed: (direction) {
               setState(() {
@@ -236,7 +241,8 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     Navigator.push(
                       context,
                       CupertinoPageRoute(
-                        builder: (context) => PreWorkoutScreen(workouts: workout),
+                        builder: (context) =>
+                            PreWorkoutScreen(workouts: workout),
                       ),
                     );
                   },
@@ -248,7 +254,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     child: IconButton(
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.green : AppColors.fitnessPrimaryTextColor,
+                        color: isFavorite
+                            ? Colors.green
+                            : AppColors.fitnessPrimaryTextColor,
                       ),
                       onPressed: () => _favorite(workout.workoutId),
                     ),

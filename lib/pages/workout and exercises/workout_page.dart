@@ -211,8 +211,8 @@ class _WorkoutPageState extends State<WorkoutPage>
           ),
           if (_showOptions) ...[
             Positioned(
-              bottom: 180,
-              right: 16,
+              bottom: 150,
+              right: 10,
               child: ScaleTransition(
                 scale: _buttonAnimation,
                 child: GestureDetector(
@@ -249,36 +249,8 @@ class _WorkoutPageState extends State<WorkoutPage>
               ),
             ),
             Positioned(
-              bottom: 130,
-              right: 16,
-              child: ScaleTransition(
-                scale: _buttonAnimation,
-                child: GestureDetector(
-                  onTap: () {
-                    // Redirect to another page (not created yet)
-                    _toggleOptions();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.fitnessMainColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Choose Preset',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 80,
-              right: 16,
+              bottom: 100,
+              right: 10,
               child: ScaleTransition(
                 scale: _buttonAnimation,
                 child: GestureDetector(
@@ -337,10 +309,14 @@ class _WorkoutPageState extends State<WorkoutPage>
               ),
             ),
           ],
+          Positioned(
+            bottom: 35,
+            right: 10,
+            child: ToggleOptionsButton(onPressed: _toggleOptions),
+          ),
         ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
-      floatingActionButton: ToggleOptionsButton(onPressed: _toggleOptions),
     );
   }
 }
