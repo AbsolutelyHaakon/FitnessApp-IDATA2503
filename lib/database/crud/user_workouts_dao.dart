@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
@@ -9,14 +11,30 @@ import '../tables/workout.dart';
 class UserWorkoutsDao {
   final tableName = 'userWorkouts';
 
-  Future<int> localCreate(UserWorkouts userWorkout) async {
-    final database = await DatabaseService().database;
-    return await database.insert(
-      tableName,
-      userWorkout.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+
+
+Future<int> localCreate(UserWorkouts userWorkout) async {
+  final database = await DatabaseService().database;
+
+  // Check if userWorkoutId is "1" and generate a unique ID if necessary
+  if (userWorkout.userWorkoutId == "1") {
+    userWorkout = UserWorkouts(
+      userWorkoutId: '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(1000)}',
+      userId: userWorkout.userId,
+      workoutId: userWorkout.workoutId,
+      date: userWorkout.date,
+      duration: userWorkout.duration,
+      statistics: userWorkout.statistics,
+      isActive: userWorkout.isActive,
     );
   }
+
+  return await database.insert(
+    tableName,
+    userWorkout.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
 
   Future<int> localUpdate(UserWorkouts userWorkout) async {
     final database = await DatabaseService().database;

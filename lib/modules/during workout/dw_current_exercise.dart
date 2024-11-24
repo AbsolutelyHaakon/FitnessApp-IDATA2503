@@ -73,7 +73,8 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
 
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       _userWorkoutsDao.fireBaseUpdateUserWorkout(
-          FirebaseAuth.instance.currentUser!.uid, workoutId, widget.userWorkouts?.date ?? DateTime.now(),
+          FirebaseAuth.instance.currentUser!.uid, workoutId,
+          widget.userWorkouts?.date ?? DateTime.now(),
           jsonString, finalTime);
     }
   }
@@ -89,8 +90,17 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
       workoutId = widget.userWorkouts!.workoutId;
     } else {
       workoutId = widget.workouts!.workoutId;
-
-      _userWorkoutsDao.fireBaseCreateUserWorkout(FirebaseAuth.instance.currentUser!.uid, workoutId, DateTime.now());
+      if (FirebaseAuth.instance.currentUser?.uid != null) {
+        _userWorkoutsDao.fireBaseCreateUserWorkout(
+            FirebaseAuth.instance.currentUser!.uid, workoutId, DateTime.now());
+      } else {
+        // TODO: HANDLE NON USERS CREATION OF USERWORKOUTS
+        _userWorkoutsDao.localCreate(UserWorkouts(userWorkoutId: '1',
+            userId: "",
+            workoutId: workoutId,
+            date: DateTime.now(),
+            isActive: false));
+      }
     }
   }
 

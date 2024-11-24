@@ -195,6 +195,25 @@ class WorkoutDao {
         .join();
   }
 
+Future<void> fireBaseFirstTimeStartup() async {
+  final database = await DatabaseService().database;
+
+  // Check for public workouts in the local database
+  final publicData = await database.query(
+    tableName,
+    where: 'isPrivate = ? AND userId = ?',
+    whereArgs: [0, ''],
+  );
+
+  // If no public workouts exist, fetch from Firestore
+  if (publicData.isEmpty) {
+    final workouts = await fireBaseFetchPublicWorkouts();
+    for (var workout in workouts['workouts']) {
+      await localCreate(workout);
+    }
+  }
+}
+
   ////////////////////////////////////////////////////////////
   ////////////////// FIREBASE FUNCTIONS //////////////////////
   ////////////////////////////////////////////////////////////

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
@@ -276,12 +277,23 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                 return;
                               }
                             }
+                            if (widget.userWorkouts == null && widget.workouts != null){
+                              widget.userWorkouts = UserWorkouts(
+                                userWorkoutId: '1',
+                                userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+                                workoutId: widget.workouts!.workoutId,
+                                date: DateTime.now(),
+                                duration: 0,
+                                statistics: '',
+                                isActive: true,
+                              );
+                              await UserWorkoutsDao().localCreate(widget.userWorkouts!);
+                            }
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DuringWorkoutScreen(
                                     userWorkouts: widget.userWorkouts,
-                                    workouts: widget.workouts,
                                     exerciseMap: exerciseMap),
                               ),
                             );

@@ -40,6 +40,7 @@ void main() async {
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   await ExerciseDao().fireBaseFirstTimeStartup();
+  await _workoutDao.fireBaseFirstTimeStartup();
 
   var userWorkout = await _userWorkoutsDao.fetchActiveUserWorkout();
   if (userWorkout != null) {

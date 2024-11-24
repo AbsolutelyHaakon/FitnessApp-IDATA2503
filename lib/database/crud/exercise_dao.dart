@@ -101,7 +101,7 @@ class ExerciseDao {
 
     // Check for public exercises in the local database
     final publicData = await database.query(
-      'exercises',
+      tableName,
       where: 'isPrivate = ? AND userId = ?',
       whereArgs: [0, ''],
     );

@@ -191,7 +191,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                         const SizedBox(height: 40),
                        if (workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty)
                         Center(
-                          child: Text(
+                          child: Text( FirebaseAuth.instance.currentUser?.uid == null ? '' :
                             'Premade Workouts',
                             style: Theme.of(context).textTheme.headlineLarge,
                           ),
