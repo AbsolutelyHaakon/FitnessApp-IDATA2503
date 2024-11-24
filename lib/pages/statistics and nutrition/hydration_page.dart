@@ -62,9 +62,20 @@ class _HydrationPageState extends State<HydrationPage> {
             dailyIntake[date] = entry.waterIntake!;
           }
         }
-        hourlyIntake =
-            userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
+
+        DateTime today = DateTime.now();
+        DateTime startOfDay = DateTime(today.year, today.month, today.day);
+
+
+        hourlyIntake = userData
+            .where((e) => e.waterIntake != null && e.waterIntake! >= 1)
+            .map((e) => MapEntry(e.date, e.waterIntake!))
+            .toList();
+
+        hourlyIntake.insert(0, MapEntry(startOfDay, 0));
       });
+
+      print(hourlyIntake);
     }
   }
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -58,15 +59,20 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   final WorkoutDao _workoutDao = WorkoutDao();
   Map<String, bool> _favorites = {};
   final FavoriteWorkoutsDao _favoriteWorkoutsDao = FavoriteWorkoutsDao();
+  final UserDao _userDao = UserDao();
+  bool isAdmin = false;
 
   @override
   void initState() {
     super.initState();
-
+    _userDao.getAdminStatus(FirebaseAuth.instance.currentUser?.uid ?? '').then((value) {
+      setState(() {
+        isAdmin = value;
+      });
+    });
     for (final workout in widget.workoutMap.keys) {
       _favorites[workout.workoutId] = false;
     }
-
     _favoriteWorkoutsDao.localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? '')
         .then((favorites) {
       setState(() {
@@ -76,7 +82,6 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         };
       });
     });
-
   }
 
   Future<bool?> _confirmDelete(BuildContext context) {
@@ -136,7 +141,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
-            direction: workout.userId == FirebaseAuth.instance.currentUser?.uid
+            direction: workout.userId == FirebaseAuth.instance.currentUser?.uid || isAdmin
                 ? DismissDirection.endToStart
                 : DismissDirection.none,
             confirmDismiss: (direction) => _confirmDelete(context),
