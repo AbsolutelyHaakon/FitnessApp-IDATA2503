@@ -18,7 +18,7 @@ class CalorieIntakePage extends StatefulWidget {
 class _CalorieIntakePageState extends State<CalorieIntakePage> {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   List<MapEntry<DateTime, int>> hourlyIntake = [];
-  final double goal = 2000.0; // Example goal in liters
+  final double goal = 2200.0; // Example goal in liters
   bool isLoading = false;
 
   @override
