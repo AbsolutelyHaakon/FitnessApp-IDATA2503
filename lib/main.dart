@@ -55,7 +55,7 @@ Future<void> _initializeFirebase() async {
   if (Firebase.apps.isEmpty) {
     if (Platform.isIOS) {
       await Firebase.initializeApp(
-        name: 'fitnessapp',
+        name: 'fitnessapp2',
         options: DefaultFirebaseOptions.currentPlatform,
       );
     } else {

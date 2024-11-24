@@ -128,17 +128,17 @@ class UserHealthDataDao {
 
   Future<Map<String, dynamic>> fireBaseFetchUserHealthData(
       String userId) async {
+
     QuerySnapshot userHealthDataQuery = await FirebaseFirestore.instance
         .collection('userHealthData')
         .where('userId', isEqualTo: userId)
         .get();
-
     List<UserHealthData> userHealthData = userHealthDataQuery.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['userHealthDataId'] = doc.id;
       return UserHealthData.fromMap(data);
     }).toList();
-
+    print('Tiss tass3');
     return {'userHealthData': userHealthData};
   }
 }

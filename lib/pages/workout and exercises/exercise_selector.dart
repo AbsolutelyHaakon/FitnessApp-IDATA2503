@@ -11,17 +11,17 @@ import 'exercise_overview_detailed.dart'; // Import the detailed overview page
 class ExerciseSelectorPage extends StatefulWidget {
   final List<Exercises> selectedExercises;
 
-  const ExerciseSelectorPage(
-      {super.key, required this.selectedExercises});
+  const ExerciseSelectorPage({super.key, required this.selectedExercises});
 
   @override
   _ExerciseSelectorPageState createState() => _ExerciseSelectorPageState();
 }
 
+
 class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   final TextEditingController _searchController = TextEditingController();
   final ExerciseDao exerciseDao = ExerciseDao();
-  Map<String, Exercises> _selectedExercisesMap = {};
+  final Map<String, Exercises> _selectedExercisesMap = {};
   List<Exercises> _allUserExercises = [];
   List<Exercises> _allPublicExercises = [];
 
@@ -37,19 +37,22 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   }
 
   Future<void> _fetchExercises() async {
-    final result = await exerciseDao.localFetchAllExercises(FirebaseAuth.instance.currentUser?.uid);
+    final result = await exerciseDao
+        .localFetchAllExercises(FirebaseAuth.instance.currentUser?.uid);
     setState(() {
       // Populate the list of exercises with users private exercises
       if (FirebaseAuth.instance.currentUser != null) {
         _allUserExercises = result['exercises']
-            .where((exercise) => exercise.userId == FirebaseAuth.instance.currentUser?.uid)
+            .where((exercise) =>
+                exercise.userId == FirebaseAuth.instance.currentUser?.uid)
             .cast<Exercises>()
             .toList();
       }
       // Populate the list of exercises with public exercises
       _allPublicExercises = result['exercises']
           .where((exercise) => exercise.isPrivate == false)
-          .where((exercise) => exercise.userId != FirebaseAuth.instance.currentUser?.uid)
+          .where((exercise) =>
+              exercise.userId != FirebaseAuth.instance.currentUser?.uid)
           .cast<Exercises>()
           .toList();
     });
@@ -71,8 +74,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
           title: Text(
             'Select Exercises',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppColors.fitnessPrimaryTextColor,
-            ),
+                  color: AppColors.fitnessPrimaryTextColor,
+                ),
           ),
           leading: IconButton(
             icon: const Icon(CupertinoIcons.back,
@@ -88,7 +91,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CreateExercisePage(),
+                      builder: (context) => const CreateExercisePage(),
                     ),
                   );
                   if (result == true) {
@@ -118,16 +121,16 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                     fillColor: AppColors.fitnessBackgroundColor,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
-                      BorderSide(color: AppColors.fitnessModuleColor),
+                          BorderSide(color: AppColors.fitnessModuleColor),
                       borderRadius: BorderRadius.all(Radius.circular(16.0)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                      BorderSide(color: AppColors.fitnessPrimaryTextColor),
+                          BorderSide(color: AppColors.fitnessPrimaryTextColor),
                       borderRadius: BorderRadius.all(Radius.circular(16.0)),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 12.0),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
                     hintText: 'Workout Title..',
                     hintStyle: TextStyle(
                       color: AppColors.fitnessSecondaryTextColor,
@@ -156,7 +159,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                 child: Chip(
                                   label: Text(
                                     exercise.name,
-                                    style: Theme.of(context).textTheme.labelSmall,
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall,
                                   ),
                                   backgroundColor: AppColors.fitnessMainColor,
                                 ),
@@ -170,89 +174,116 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (FirebaseAuth.instance.currentUser != null)
-                     Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Your Exercises',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Your Exercises',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 if (FirebaseAuth.instance.currentUser != null)
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 if (FirebaseAuth.instance.currentUser?.uid != null)
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.fitnessModuleColor,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  constraints: const BoxConstraints(minHeight: 150),
-                  child: _allUserExercises.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No exercises available.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _allUserExercises.length,
-                          itemBuilder: (context, index) {
-                            Exercises exercise = _allUserExercises[index];
-                            if (_searchController.text.isEmpty ||
-                                exercise.name
-                                    .toLowerCase()
-                                    .contains(_searchController.text.toLowerCase())) {
-                              return ListTile(
-                                title: Text(
-                                  exercise.name,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    _selectedExercisesMap
-                                            .containsKey(exercise.exerciseId!)
-                                        ? Icons.remove
-                                        : Icons.add,
-                                    color: AppColors.fitnessMainColor,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      if (_selectedExercisesMap
-                                          .containsKey(exercise.exerciseId!)) {
-                                        _selectedExercisesMap
-                                            .remove(exercise.exerciseId!);
-                                      } else {
-                                        _selectedExercisesMap[exercise.exerciseId!] =
-                                            exercise;
-                                      }
-                                    });
-                                  },
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ExerciseOverviewPage(
-                                          exercise: exercise),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessModuleColor,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    constraints: const BoxConstraints(minHeight: 100),
+                    child: _allUserExercises.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No exercises available.',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _allUserExercises.length,
+                              itemBuilder: (context, index) {
+                                Exercises exercise = _allUserExercises[index];
+                                if (_searchController.text.isEmpty ||
+                                    exercise.name.toLowerCase().contains(
+                                        _searchController.text.toLowerCase())) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor:
+                                            AppColors.fitnessPrimaryTextColor,
+                                        backgroundColor: AppColors
+                                            .fitnessSecondaryModuleColor,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10.0, horizontal: 12.0),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16.0),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ExerciseOverviewPage(
+                                                    exercise: exercise),
+                                          ),
+                                        );
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            exercise.name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                          IconButton(
+                                            icon: Icon(
+                                              _selectedExercisesMap.containsKey(
+                                                      exercise.exerciseId!)
+                                                  ? Icons.remove
+                                                  : Icons.add,
+                                              color: AppColors.fitnessMainColor,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                if (_selectedExercisesMap
+                                                    .containsKey(
+                                                        exercise.exerciseId!)) {
+                                                  _selectedExercisesMap.remove(
+                                                      exercise.exerciseId!);
+                                                } else {
+                                                  _selectedExercisesMap[exercise
+                                                      .exerciseId!] = exercise;
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
-                                },
-                              );
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
-                ),
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            )),
+                  ),
                 const SizedBox(height: 16),
-                 Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Premade Exercises',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 Container(
@@ -275,9 +306,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                           itemBuilder: (context, index) {
                             Exercises exercise = _allPublicExercises[index];
                             if (_searchController.text.isEmpty ||
-                                exercise.name
-                                    .toLowerCase()
-                                    .contains(_searchController.text.toLowerCase())) {
+                                exercise.name.toLowerCase().contains(
+                                    _searchController.text.toLowerCase())) {
                               return ListTile(
                                 title: Text(
                                   exercise.name,
@@ -298,8 +328,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                         _selectedExercisesMap
                                             .remove(exercise.exerciseId!);
                                       } else {
-                                        _selectedExercisesMap[exercise.exerciseId!] =
-                                            exercise;
+                                        _selectedExercisesMap[
+                                            exercise.exerciseId!] = exercise;
                                       }
                                     });
                                   },
@@ -308,8 +338,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ExerciseOverviewPage(
-                                          exercise: exercise),
+                                      builder: (context) =>
+                                          ExerciseOverviewPage(
+                                              exercise: exercise),
                                     ),
                                   );
                                 },

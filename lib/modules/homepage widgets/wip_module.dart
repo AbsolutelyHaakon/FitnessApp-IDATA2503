@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/pages/statistics%20and%20nutrition/hydration_page.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_exercise_page.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
@@ -35,7 +36,7 @@ class _WipModuleState extends State<WipModule> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                   WorkoutCalendar(),
+                   HydrationPage(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 const begin = Offset(1.0, 0.0);
