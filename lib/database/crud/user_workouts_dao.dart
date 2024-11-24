@@ -13,7 +13,7 @@ class UserWorkoutsDao {
 
 
 
-Future<int> localCreate(UserWorkouts userWorkout) async {
+Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
   final database = await DatabaseService().database;
 
   // Check if userWorkoutId is "1" and generate a unique ID if necessary
@@ -29,11 +29,13 @@ Future<int> localCreate(UserWorkouts userWorkout) async {
     );
   }
 
-  return await database.insert(
+  await database.insert(
     tableName,
     userWorkout.toMap(),
     conflictAlgorithm: ConflictAlgorithm.replace,
   );
+
+  return userWorkout;
 }
 
   Future<int> localUpdate(UserWorkouts userWorkout) async {
@@ -303,6 +305,22 @@ Future<int> localCreate(UserWorkouts userWorkout) async {
       return true;
     }
     return false;
+  }
+
+  Future<Map<String, dynamic>> fireBaseFetchPreviousWorkouts (String uid) async {
+    QuerySnapshot previousWorkoutsQuery = await FirebaseFirestore.instance
+        .collection('userWorkouts')
+        .where('userId', isEqualTo: uid)
+        .where('date', isLessThanOrEqualTo: DateTime.now())
+        .get();
+
+    List<UserWorkouts> previousWorkouts = previousWorkoutsQuery.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['userWorkoutId'] = doc.id;
+      return UserWorkouts.fromMap(data);
+    }).toList();
+
+    return {'previousWorkouts': previousWorkouts};
   }
 
   Future<bool> fireBaseReplaceUserWorkout(String toBeDeletedId, String userId,
