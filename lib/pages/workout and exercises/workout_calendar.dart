@@ -46,7 +46,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     _upcomingWorkouts.forEach((workout) {
       _workoutDao.localFetchByWorkoutId(workout.workoutId).then((value) {
         setState(() {
-          _userWorkoutsMap[workout] = value.name;
+          _userWorkoutsMap[workout] = '${value.name} - ${value.description}';
         });
       });
     });
@@ -115,6 +115,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       if (success) {
         await fetchUpcomingWorkouts();
         await fetchWorkoutNames();
+        print("SUCCESS!");
       } else {
         // Handle the failure case
         print('Failed to replace workout');
@@ -141,11 +142,13 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             workout.date.day == selectedDay.day &&
             workoutExist(workout.workoutId));
         String workoutName = 'No workout scheduled';
+        String workoutDescription = 'No description available';
         for (var workout in _upcomingWorkouts) {
           if (workout.date.year == selectedDay.year &&
               workout.date.month == selectedDay.month &&
               workout.date.day == selectedDay.day) {
-            workoutName = _userWorkoutsMap[workout] ?? 'No workout scheduled';
+            workoutName = _userWorkoutsMap[workout]?.split(' - ')[0] ?? 'No workout scheduled';
+            workoutDescription = _userWorkoutsMap[workout]?.split(' - ')[1] ?? 'No description available';
             break;
           }
         }
@@ -176,7 +179,15 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
-                      ?.copyWith(fontSize: 16),
+                      ?.copyWith(fontSize: 16, color: AppColors.fitnessPrimaryTextColor),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  workoutDescription,
+                  style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontSize: 14, color: AppColors.fitnessSecondaryTextColor),
                 ),
                 const SizedBox(height: 20),
                 //Check if workout can be added, true = add workout, false = replace workout
@@ -281,7 +292,19 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                               if (isAddWorkout) {
                                 addToCalendar();
                               } else {
-                                replaceExisting(_selectedWorkout.workoutId, _selectedWorkout.workoutId, _selectedDay!);
+                                // Find the workout to be deleted
+                                String? toBeDeletedId;
+                                for (var workout in _upcomingWorkouts) {
+                                  if (workout.date.year == _selectedDay!.year &&
+                                      workout.date.month == _selectedDay!.month &&
+                                      workout.date.day == _selectedDay!.day) {
+                                    toBeDeletedId = workout.workoutId;
+                                    break;
+                                  }
+                                }
+                                if (toBeDeletedId != null) {
+                                  replaceExisting(toBeDeletedId, _selectedWorkout.workoutId, _selectedDay!);
+                                }
                               }
                             });
                             Navigator.pop(context);

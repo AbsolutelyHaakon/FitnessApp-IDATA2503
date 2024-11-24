@@ -1,5 +1,6 @@
 // lib/modules/community_module.dart
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/pre_workout_screen.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_calendar.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_log.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,7 +21,7 @@ class WorkoutLogModule extends StatelessWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => const WorkoutLog(), //TODO: Change to workout log            )
+              builder: (context) => WorkoutCalendar(), //TODO: Change to workout log            )
             ),
           );
         },
