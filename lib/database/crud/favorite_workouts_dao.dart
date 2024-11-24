@@ -8,6 +8,15 @@ class FavoriteWorkoutsDao {
   final tableName = 'favoriteWorkouts';
 
   Future<void> localCreate(FavoriteWorkouts favoriteWorkouts) async {
+
+    if (favoriteWorkouts.favoriteWorkoutId == "1") {
+      favoriteWorkouts = FavoriteWorkouts(
+        favoriteWorkoutId: '${DateTime.now().millisecondsSinceEpoch}',
+        userId: favoriteWorkouts.userId,
+        workoutId: favoriteWorkouts.workoutId,
+      );
+    }
+
     final database = await DatabaseService().database;
     await database.insert(
       tableName,

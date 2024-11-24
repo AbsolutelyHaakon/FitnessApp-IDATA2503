@@ -186,6 +186,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                                 .where((entry) => entry.key.userId != ''),
                           ),
                         ),
+                        if (workoutsMap.entries.where((entry) => entry.key.userId != '').isNotEmpty)
                         const SizedBox(height: 40),
                        if (workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty)
                         Center(

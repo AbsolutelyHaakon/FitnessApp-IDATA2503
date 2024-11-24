@@ -12,7 +12,7 @@ class FavoriteWorkouts {
 
   Map<String, dynamic> toMap() {
     return {
-      'favoriteWorkoutId': favoriteWorkoutId,
+      'favoriteWorkoutId': favoriteWorkoutId.toString(),
       'userId': userId,
       'workoutId': workoutId,
     };
@@ -20,7 +20,7 @@ class FavoriteWorkouts {
 
   factory FavoriteWorkouts.fromMap(Map<String, dynamic> map) {
     return FavoriteWorkouts(
-      favoriteWorkoutId: map['favoriteWorkoutId'],
+      favoriteWorkoutId: map['favoriteWorkoutId'].toString(),
       userId: map['userId'],
       workoutId: map['workoutId'],
     );

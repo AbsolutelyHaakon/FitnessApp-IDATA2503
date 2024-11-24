@@ -4,6 +4,7 @@ import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -117,11 +118,24 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
 
   void _favorite(String workoutId) {
     if (_favorites[workoutId] ?? false) {
-      _favoriteWorkoutsDao.fireBaseDeleteFavoriteWorkout(
-          FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
+      if (FirebaseAuth.instance.currentUser != null) {
+        _favoriteWorkoutsDao.localDeleteByUserIdAndWorkoutId(
+            FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
+      } else {
+        _favoriteWorkoutsDao.localDeleteByUserIdAndWorkoutId('localUser', workoutId);
+      }
     } else {
-      _favoriteWorkoutsDao.fireBaseCreateFavoriteWorkout(
-          FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
+      if (FirebaseAuth.instance.currentUser != null) {
+        _favoriteWorkoutsDao.fireBaseCreateFavoriteWorkout(
+            FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
+      } else {
+        _favoriteWorkoutsDao.localCreate(FavoriteWorkouts(
+          favoriteWorkoutId: '1',
+          userId: 'localUser',
+          workoutId: workoutId,
+        ));
+      }
+
     }
     setState(() {
       _favorites[workoutId] = !(_favorites[workoutId] ?? false);
