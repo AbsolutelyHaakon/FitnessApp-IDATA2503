@@ -173,25 +173,31 @@ class _WeightPageState extends State<WeightPage>
 
   @override
   Widget build(BuildContext context) {
-    double progressValue = dailyIntake.values.isNotEmpty
-        ? (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                    dailyIntake.values.length) >
+    // Sort the dailyIntake map by date in descending order
+    var sortedDailyIntake = Map.fromEntries(
+      dailyIntake.entries.toList()
+        ..sort((a, b) => b.key.compareTo(a.key)),
+    );
+
+    double progressValue = sortedDailyIntake.values.isNotEmpty
+        ? (sortedDailyIntake.values.reduce((a, b) => a + b).toDouble() /
+                    sortedDailyIntake.values.length) >
                 goal
             ? (weightInitial -
-                    (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                        dailyIntake.values.length)) /
+                    (sortedDailyIntake.values.reduce((a, b) => a + b).toDouble() /
+                        sortedDailyIntake.values.length)) /
                 (weightInitial - goal)
             : (weightInitial - goal) /
                 (weightInitial -
-                    (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                        dailyIntake.values.length))
+                    (sortedDailyIntake.values.reduce((a, b) => a + b).toDouble() /
+                        sortedDailyIntake.values.length))
         : 0.0;
 
-    double minY = dailyIntake.values.isNotEmpty
-        ? dailyIntake.values.reduce((a, b) => a < b ? a : b).toDouble()
+    double minY = sortedDailyIntake.values.isNotEmpty
+        ? sortedDailyIntake.values.reduce((a, b) => a < b ? a : b).toDouble()
         : 0.0;
-    double maxY = dailyIntake.values.isNotEmpty
-        ? dailyIntake.values.reduce((a, b) => a > b ? a : b).toDouble()
+    double maxY = sortedDailyIntake.values.isNotEmpty
+        ? sortedDailyIntake.values.reduce((a, b) => a > b ? a : b).toDouble()
         : 3.0;
 
     // Add some padding to minY and maxY for better visualization
@@ -202,7 +208,7 @@ class _WeightPageState extends State<WeightPage>
     Map<DateTime, double> weightLoss = {};
     DateTime previousDate;
     double previousWeight = 0.0;
-    dailyIntake.entries.toList().asMap().forEach((index, entry) {
+    sortedDailyIntake.entries.toList().asMap().forEach((index, entry) {
       if (index > 0) {
         weightLoss[entry.key] = previousWeight - entry.value.toDouble();
       }
@@ -266,14 +272,14 @@ class _WeightPageState extends State<WeightPage>
                               ),
                             ),
                             Text(
-                              dailyIntake.values.isNotEmpty
-                                  ? (dailyIntake.values
+                              sortedDailyIntake.values.isNotEmpty
+                                  ? (sortedDailyIntake.values
                                                   .reduce((a, b) => a + b)
                                                   .toDouble() /
-                                              dailyIntake.values.length) >
+                                              sortedDailyIntake.values.length) >
                                           goal
-                                      ? 'Weight Goal: ${((weightInitial - (dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length)) / (weightInitial - goal) * 100).toStringAsFixed(1)}%'
-                                      : 'Weight Goal: ${((dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length) / goal * 100).toStringAsFixed(1)}%'
+                                      ? 'Weight Goal: ${((weightInitial - (sortedDailyIntake.values.reduce((a, b) => a + b).toDouble() / sortedDailyIntake.values.length)) / (weightInitial - goal) * 100).toStringAsFixed(1)}%'
+                                      : 'Weight Goal: ${((sortedDailyIntake.values.reduce((a, b) => a + b).toDouble() / sortedDailyIntake.values.length) / goal * 100).toStringAsFixed(1)}%'
                                   : 'Weight Goal: 0%',
                               style: const TextStyle(
                                 color: Colors.white,
@@ -325,7 +331,7 @@ class _WeightPageState extends State<WeightPage>
                           barGroups: List.generate(7, (index) {
                             final date = DateTime.now()
                                 .subtract(Duration(days: 6 - index));
-                            final intake = dailyIntake[DateTime(
+                            final intake = sortedDailyIntake[DateTime(
                                     date.year, date.month, date.day)] ??
                                 0.0;
                             return BarChartGroupData(
@@ -364,7 +370,7 @@ class _WeightPageState extends State<WeightPage>
                     ),
                     const SizedBox(height: 16),
                     Column(
-                      children: dailyIntake.entries.map((entry) {
+                      children: sortedDailyIntake.entries.map((entry) {
                         DateTime date = entry.key;
                         double intake = entry.value.toDouble();
                         String formattedDate =
