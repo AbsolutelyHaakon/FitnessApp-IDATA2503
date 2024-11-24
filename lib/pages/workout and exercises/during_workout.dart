@@ -21,12 +21,11 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 class DuringWorkoutScreen extends StatefulWidget {
-  final UserWorkouts? userWorkouts;
-  final Workouts? workouts;
+  final UserWorkouts userWorkouts;
   final Map<Exercises, WorkoutExercises> exerciseMap;
 
   const DuringWorkoutScreen(
-      {super.key, this.userWorkouts, required this.exerciseMap, this.workouts});
+      {super.key, required this.userWorkouts, required this.exerciseMap});
 
   @override
   State<DuringWorkoutScreen> createState() {
@@ -34,7 +33,8 @@ class DuringWorkoutScreen extends StatefulWidget {
   }
 }
 
-class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsBindingObserver {
+class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
+    with WidgetsBindingObserver {
   double totalExercises = 0;
   double currentExercise = 0;
 
@@ -55,36 +55,20 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
   bool isRunning = false;
   bool isInBackground = false;
 
-
   @override
   void initState() {
     super.initState();
-    if (widget.userWorkouts != null) {
-      _getWorkoutData();
-    } else if (widget.workouts != null) {
-      workouts = widget.workouts!;
-      WidgetsBinding.instance.addObserver(this);
-      _userWorkoutsDao.localSetAllInactive();
-      _workoutDao.localUpdateActive(widget.workouts!, true);
-      if (!hasActiveWorkout.value) {
-        activeWorkoutStartTime = DateTime.now();
-      }
-      print("Active workout found");
-
-      hasActiveWorkout.value = true;
-      activeWorkoutId.value = workouts.workoutId;
-      activeWorkoutName.value = workouts.name;
-
-    }
+    _getWorkoutData();
     totalExercises = widget.exerciseMap.length.toDouble();
   }
 
   _getWorkoutData() async {
-    workouts = await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
-    if (workouts.workoutId != '0'){
+    workouts =
+        await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+    if (workouts.workoutId != '0') {
       WidgetsBinding.instance.addObserver(this);
       _userWorkoutsDao.localSetAllInactive();
-      _workoutDao.localUpdateActive(widget.workouts!, true);
+      _userWorkoutsDao.localUpdateActive(widget.userWorkouts!, true);
       if (!hasActiveWorkout.value) {
         activeWorkoutStartTime = DateTime.now();
       }
@@ -115,7 +99,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
   Future<void> _scheduleNotification() async {
     if (isInBackground) {
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
+          AndroidNotificationDetails(
         'fitnessapp_idata2503', // id
         'Fitness App', // title
         channelDescription: 'Notification channel for the Fitness App',
@@ -124,7 +108,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
         showWhen: false,
       );
       const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
+          NotificationDetails(android: androidPlatformChannelSpecifics);
       await flutterLocalNotificationsPlugin.show(
         0,
         'Break Time',
@@ -135,14 +119,13 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
     }
   }
 
-
-
   void startTimer() {
     setState(() {
       isRunning = true;
     });
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) { // Check if the widget is still mounted
+      if (mounted) {
+        // Check if the widget is still mounted
         setState(() {
           if (remainingTime.inSeconds > 0) {
             remainingTime -= const Duration(seconds: 1);
@@ -210,7 +193,8 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
               ),
             ),
           IconButton(
-            icon: Icon(CupertinoIcons.pencil, color: AppColors.fitnessPrimaryTextColor),
+            icon: Icon(CupertinoIcons.pencil,
+                color: AppColors.fitnessPrimaryTextColor),
             onPressed: () {
               showCupertinoModalPopup(
                 context: context,
@@ -221,8 +205,8 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
                     child: CupertinoTheme(
                       data: const CupertinoThemeData(
                         textTheme: CupertinoTextThemeData(
-                          dateTimePickerTextStyle:
-                              TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                          dateTimePickerTextStyle: TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor),
                         ),
                       ),
                       child: CupertinoTimerPicker(
@@ -261,7 +245,9 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
                   workouts.name,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                DwCurrentExercise(exerciseMap: widget.exerciseMap, userWorkouts: widget.userWorkouts, workouts: workouts),
+                DwCurrentExercise(
+                    exerciseMap: widget.exerciseMap,
+                    userWorkouts: widget.userWorkouts),
                 const SizedBox(height: 30),
               ],
             ),

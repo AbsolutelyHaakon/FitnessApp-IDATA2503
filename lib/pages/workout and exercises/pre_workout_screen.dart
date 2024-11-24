@@ -293,7 +293,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DuringWorkoutScreen(
-                                    userWorkouts: widget.userWorkouts,
+                                    userWorkouts: widget.userWorkouts!,
                                     exerciseMap: exerciseMap),
                               ),
                             );

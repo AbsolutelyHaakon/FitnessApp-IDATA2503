@@ -255,7 +255,7 @@ class UserDao {
   // Check if user is admin
   // Admin status can only be given on the Firebase console and is not present within the app
   Future<bool> getAdminStatus(String? uid) async {
-    if (uid == null) return false;
+    if (uid == null || uid!.isEmpty) {return false;}
     DocumentSnapshot documentSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
     Map<String, dynamic>? data =

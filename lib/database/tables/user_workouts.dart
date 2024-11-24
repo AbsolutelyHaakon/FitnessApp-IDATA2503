@@ -22,7 +22,7 @@ class UserWorkouts {
 
   Map<String, dynamic> toMap() {
     return {
-      'userWorkoutId': userWorkoutId,
+      'userWorkoutId': userWorkoutId.toString(),
       'userId': userId,
       'workoutId': workoutId,
       'date': date.toIso8601String(),
@@ -34,7 +34,7 @@ class UserWorkouts {
 
   factory UserWorkouts.fromMap(Map<String, dynamic> map) {
     return UserWorkouts(
-      userWorkoutId: map['userWorkoutId'],
+      userWorkoutId: map['userWorkoutId'].toString(),
       userId: map['userId'],
       workoutId: map['workoutId'],
       date: map['date'] is Timestamp
@@ -43,7 +43,7 @@ class UserWorkouts {
       duration: map['duration'],
       statistics:
           map['statistics'] != null ? jsonDecode(map['statistics']) : null,
-      isActive: map['isActive'],
+      isActive: map['isActive'] == 1,
     );
   }
 }

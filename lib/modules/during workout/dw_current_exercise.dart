@@ -32,11 +32,10 @@ class SetStats {
 
 class DwCurrentExercise extends StatefulWidget {
   final Map<Exercises, WorkoutExercises> exerciseMap;
-  final UserWorkouts? userWorkouts;
-  final Workouts? workouts;
+  final UserWorkouts userWorkouts;
 
   const DwCurrentExercise(
-      {super.key, required this.exerciseMap, this.userWorkouts, this.workouts});
+      {super.key, required this.exerciseMap, required this.userWorkouts});
 
   @override
   _DwCurrentExerciseState createState() => _DwCurrentExerciseState();
@@ -76,6 +75,16 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
           FirebaseAuth.instance.currentUser!.uid, workoutId,
           widget.userWorkouts?.date ?? DateTime.now(),
           jsonString, finalTime);
+    } else {
+      _userWorkoutsDao.localUpdate(UserWorkouts(
+        userWorkoutId: '',
+        userId: '',
+        workoutId: workoutId,
+        date: DateTime.now(),
+        duration: finalTime.toDouble(),
+        statistics: jsonString,
+        isActive: false,
+      ));
     }
   }
 
@@ -86,22 +95,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     fetchExercises();
     populateExerciseStats();
 
-    if (widget.userWorkouts != null) {
       workoutId = widget.userWorkouts!.workoutId;
-    } else {
-      workoutId = widget.workouts!.workoutId;
-      if (FirebaseAuth.instance.currentUser?.uid != null) {
-        _userWorkoutsDao.fireBaseCreateUserWorkout(
-            FirebaseAuth.instance.currentUser!.uid, workoutId, DateTime.now());
-      } else {
-        // TODO: HANDLE NON USERS CREATION OF USERWORKOUTS
-        _userWorkoutsDao.localCreate(UserWorkouts(userWorkoutId: '1',
-            userId: "",
-            workoutId: workoutId,
-            date: DateTime.now(),
-            isActive: false));
-      }
-    }
   }
 
   void fetchExercises() {

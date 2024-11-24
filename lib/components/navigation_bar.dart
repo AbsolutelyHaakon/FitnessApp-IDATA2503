@@ -123,23 +123,27 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 onTap: () async {
                   Map<Exercises, WorkoutExercises> exerciseMap =
                       await fetchExercises();
-                  UserWorkouts? userWorkout;
-                  Workouts? workout;
-                  if (activeUserWorkoutId.value.isNotEmpty){
-                    userWorkout = await _userWorkoutsDao.localFetchById(
-                        FirebaseAuth.instance.currentUser!.uid,
+
+                    var userWorkout = await _userWorkoutsDao.localFetchById(
+                        FirebaseAuth.instance.currentUser?.uid ?? '',
                         activeWorkoutId.value);
-                  } else {
-                    workout = await _workoutDao.localFetchByWorkoutId(
-                        activeWorkoutId.value);
-                  }
-                  
+
+                    if (userWorkout == null) {
+                      userWorkout = UserWorkouts(
+                        userWorkoutId: '1',
+                        userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+                        workoutId: activeWorkoutId.value,
+                        date: DateTime.now(),
+                        isActive: true,
+                      );
+                      await _userWorkoutsDao.localCreate(userWorkout);
+                    }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DuringWorkoutScreen(
-                        userWorkouts: userWorkout,
-                        workouts: workout,
+                        userWorkouts: userWorkout!,
                         exerciseMap: exerciseMap,
                       ),
                     ),

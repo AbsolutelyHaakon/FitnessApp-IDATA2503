@@ -197,7 +197,7 @@ class WorkoutDao {
 
 Future<void> fireBaseFirstTimeStartup() async {
   final database = await DatabaseService().database;
-
+  final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
   // Check for public workouts in the local database
   final publicData = await database.query(
     tableName,
@@ -210,6 +210,10 @@ Future<void> fireBaseFirstTimeStartup() async {
     final workouts = await fireBaseFetchPublicWorkouts();
     for (var workout in workouts['workouts']) {
       await localCreate(workout);
+      final temp = await workoutExercisesDao.fireBaseFetchAllWorkoutExercises(workout.workoutId);
+      for (var exercise in temp['workoutExercises']) {
+        await workoutExercisesDao.localCreate(exercise);
+      }
     }
   }
 }

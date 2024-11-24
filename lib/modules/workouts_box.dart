@@ -65,7 +65,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   @override
   void initState() {
     super.initState();
-    _userDao.getAdminStatus(FirebaseAuth.instance.currentUser?.uid ?? '').then((value) {
+    _userDao.getAdminStatus(FirebaseAuth.instance.currentUser?.uid).then((value) {
       setState(() {
         isAdmin = value;
       });
