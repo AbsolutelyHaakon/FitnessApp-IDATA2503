@@ -289,6 +289,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                               );
                               await UserWorkoutsDao().localCreate(widget.userWorkouts!);
                             }
+                            exerciseStats = {};
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

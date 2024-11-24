@@ -15,20 +15,7 @@ import '../../database/tables/workout_exercises.dart';
 import '../../globals.dart';
 import '../../styles.dart';
 
-class SetStats {
-  int set;
-  int reps;
-  int weight;
 
-  SetStats({required this.set, required this.reps, required this.weight});
-
-  Map<String, dynamic> toJson() =>
-      {
-        'set': set,
-        'reps': reps,
-        'weight': weight,
-      };
-}
 
 class DwCurrentExercise extends StatefulWidget {
   final Map<Exercises, WorkoutExercises> exerciseMap;
@@ -44,7 +31,6 @@ class DwCurrentExercise extends StatefulWidget {
 class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   List<Exercises> exercises = [];
   List<WorkoutExercises> workoutExercises = [];
-  Map<Exercises, List<SetStats>> exerciseStats = {};
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   final WorkoutDao _workoutDao = WorkoutDao();
   final ScrollController _scrollController = ScrollController();
@@ -106,13 +92,15 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   }
 
   void populateExerciseStats() {
-    widget.exerciseMap.forEach((key, value) {
-      List<SetStats> stats = [];
-      for (int i = 0; i < value.sets; i++) {
-        stats.add(SetStats(set: i + 1, reps: value.reps, weight: 0));
-      }
-      exerciseStats[key] = stats;
-    });
+    if (exerciseStats.isEmpty) {
+      widget.exerciseMap.forEach((key, value) {
+        List<SetStats> stats = [];
+        for (int i = 0; i < value.sets; i++) {
+          stats.add(SetStats(set: i + 1, reps: value.reps, weight: 0));
+        }
+        exerciseStats[key] = stats;
+      });
+    }
   }
 
   void _showPicker(BuildContext context, Exercises exercise, int setIndex) {
