@@ -1,4 +1,6 @@
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -23,6 +25,7 @@ class CustomNavigationBar extends StatefulWidget {
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int _selectedIndex = 0;
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   final WorkoutDao _workoutDao = WorkoutDao();
   bool localHasActiveWorkout = false;
 
@@ -42,28 +45,37 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   }
 
   Future<void> _checkForActiveWorkouts() async {
-    print("Checking once more");
-  if (hasActiveWorkout.value && activeWorkoutId.value.isEmpty) {
-    print("Checking for active workouts");
-    final temp = await _workoutDao.fetchActiveWorkout();
-    if (temp != null) {
-      print("Active workout found");
-      activeWorkoutId.value = temp.workoutId;
-      activeWorkoutName.value = temp.name;
-      setState(() {
-        localHasActiveWorkout = true;
-      });
-    }
-  } else if (hasActiveWorkout.value) {
-    setState(() {
-      localHasActiveWorkout = true;
-    });
-  } else {
-    setState(() {
-      localHasActiveWorkout = false;
-    });
+      final temp = await _userWorkoutsDao.fetchActiveUserWorkout();
+      if (temp != null) {
+        print("Active workout found");
+        hasActiveWorkout.value = true;
+        activeUserWorkoutId.value = temp.userId;
+        activeWorkoutId.value = temp.workoutId;
+        activeWorkoutName.value = temp.name;
+        setState(() {
+          localHasActiveWorkout = true;
+        });
+      } else {
+        final temp2 = await _workoutDao.fetchActiveWorkout();
+        if (temp2 != null) {
+          print("Active workout found");
+          hasActiveWorkout.value = true;
+          activeWorkoutId.value = temp2.workoutId;
+          activeWorkoutName.value = temp2.name;
+          setState(() {
+            localHasActiveWorkout = true;
+          });
+        } else if (hasActiveWorkout.value) {
+          setState(() {
+            localHasActiveWorkout = true;
+          });
+        } else {
+          setState(() {
+            localHasActiveWorkout = false;
+          });
+        }
+      }
   }
-}
 
   Future<Map<Exercises, WorkoutExercises>> fetchExercises() async {
     try {
@@ -99,7 +111,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               ],
             ),
           ),
-          if (localHasActiveWorkout)
+          if (hasActiveWorkout.value || localHasActiveWorkout)
             Positioned(
               bottom: 0,
               left: 0,
@@ -108,20 +120,31 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 onTap: () async {
                   Map<Exercises, WorkoutExercises> exerciseMap =
                       await fetchExercises();
-                  var workout = await _workoutDao
-                      .localFetchWorkoutById(activeWorkoutId.value);
+                  UserWorkouts? userWorkout;
+                  Workouts? workout;
+                  if (activeUserWorkoutId.value.isNotEmpty){
+                    userWorkout = await _userWorkoutsDao.localFetchById(
+                        FirebaseAuth.instance.currentUser!.uid,
+                        activeWorkoutId.value);
+                  } else {
+                    workout = await _workoutDao.localFetchByWorkoutId(
+                        activeWorkoutId.value);
+                  }
+                  
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DuringWorkoutScreen(
-                        workout: workout,
+                        userWorkouts: userWorkout,
+                        workouts: workout,
                         exerciseMap: exerciseMap,
                       ),
                     ),
                   ).then((result) {
                     print("checking for active workouts");
-                      _checkForActiveWorkouts();
-                  });;
+                    _checkForActiveWorkouts();
+                  });
+                  ;
                 },
                 child: Container(
                   width: double.infinity,

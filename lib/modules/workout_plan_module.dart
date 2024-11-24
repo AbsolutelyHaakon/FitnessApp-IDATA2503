@@ -1,5 +1,6 @@
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -13,16 +14,16 @@ import '../pages/workout and exercises/during_workout.dart';
 // Shows the selected workout plan details before deciding to start it
 // Displays workout info and potentially a map of the workout route
 
-// Last edited: 27/09/2024
-// Last edited by: Matti Kjellstadli
+// Last edited: 24/11/2024
+// Last edited by: Håkon Svensen Karlsen
 
 //TODO: Implement map functionality
 //TODO: Connect it to the persistent storage
 
 class WorkoutPlanModule extends StatefulWidget {
-  final Workouts workout;
+  final UserWorkouts userWorkouts;
 
-  WorkoutPlanModule({super.key, required this.workout});
+  WorkoutPlanModule({super.key, required this.userWorkouts});
 
   @override
   State<WorkoutPlanModule> createState() => _WorkoutPlanModuleState();
@@ -41,10 +42,10 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
   void fetchExercises() async {
     try {
       exercises = await WorkoutDao()
-          .localFetchExercisesForWorkout(widget.workout.workoutId);
+          .localFetchExercisesForWorkout(widget.userWorkouts.workoutId);
       for (final exercise in exercises) {
         final workoutExercise = await WorkoutExercisesDao()
-            .localFetchById(widget.workout.workoutId, exercise.exerciseId);
+            .localFetchById(widget.userWorkouts.workoutId, exercise.exerciseId);
         if (workoutExercise != null) {
           exerciseMap[exercise] = workoutExercise;
         }
@@ -165,7 +166,7 @@ Widget build(BuildContext context) {
               context,
               MaterialPageRoute(
                 builder: (context) => DuringWorkoutScreen(
-                    workout: widget.workout, exerciseMap: exerciseMap),
+                    userWorkouts: widget.userWorkouts, exerciseMap: exerciseMap),
               ),
             );
           },

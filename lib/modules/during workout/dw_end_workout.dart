@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,14 +18,14 @@ class DwEndWorkout extends StatefulWidget {
 }
 
 class _DwEndWorkoutState extends State<DwEndWorkout> {
-  final WorkoutDao _workoutDao = WorkoutDao();
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
 
   Future<void> _endWorkout() async {
     hasActiveWorkout.value = false;
     activeWorkoutId.value = '';
     activeWorkoutName.value = '';
     activeWorkoutIndex = 0;
-    await _workoutDao.localSetAllInactive();
+    await _userWorkoutsDao.localSetAllInactive();
   }
 
   @override

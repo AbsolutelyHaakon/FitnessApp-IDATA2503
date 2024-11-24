@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
@@ -19,18 +22,21 @@ class SetStats {
 
   SetStats({required this.set, required this.reps, required this.weight});
 
-  Map<String, dynamic> toJson() => {
-    'set': set,
-    'reps': reps,
-    'weight': weight,
-  };
+  Map<String, dynamic> toJson() =>
+      {
+        'set': set,
+        'reps': reps,
+        'weight': weight,
+      };
 }
 
 class DwCurrentExercise extends StatefulWidget {
   final Map<Exercises, WorkoutExercises> exerciseMap;
-  final Workouts workout;
+  final UserWorkouts? userWorkouts;
+  final Workouts? workouts;
 
-  const DwCurrentExercise({super.key, required this.exerciseMap, required this.workout});
+  const DwCurrentExercise(
+      {super.key, required this.exerciseMap, this.userWorkouts, this.workouts});
 
   @override
   _DwCurrentExerciseState createState() => _DwCurrentExerciseState();
@@ -40,26 +46,52 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   List<Exercises> exercises = [];
   List<WorkoutExercises> workoutExercises = [];
   Map<Exercises, List<SetStats>> exerciseStats = {};
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   final WorkoutDao _workoutDao = WorkoutDao();
-  final ScrollController _scrollController = ScrollController(); // Add this line
+  final ScrollController _scrollController = ScrollController();
+  Duration workoutDuration = Duration.zero;
+  int finalTime = 0;
+  String workoutId = '';
+
+  UserWorkouts? userWorkouts;
 
   Future<void> _endWorkout() async {
     hasActiveWorkout.value = false;
+    activeUserWorkoutId.value = '';
     activeWorkoutId.value = '';
     activeWorkoutName.value = '';
     activeWorkoutIndex = 0;
+    await _userWorkoutsDao.localSetAllInactive();
     await _workoutDao.localSetAllInactive();
 
-    String jsonString = jsonEncode(exerciseStats.map((key, value) => MapEntry(key.toString(), value.map((set) => set.toJson()).toList())));
+    String jsonString = jsonEncode(exerciseStats.map((key, value) =>
+        MapEntry(key.toString(), value.map((set) => set.toJson()).toList())));
 
-    print(jsonString);
+    DateTime endTime = DateTime.now();
+    workoutDuration = endTime.difference(activeWorkoutStartTime);
+    finalTime = workoutDuration.inMinutes;
+
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      _userWorkoutsDao.fireBaseUpdateUserWorkout(
+          FirebaseAuth.instance.currentUser!.uid, workoutId, widget.userWorkouts?.date ?? DateTime.now(),
+          jsonString, finalTime);
+    }
   }
 
   @override
   void initState() {
     super.initState();
+
     fetchExercises();
     populateExerciseStats();
+
+    if (widget.userWorkouts != null) {
+      workoutId = widget.userWorkouts!.workoutId;
+    } else {
+      workoutId = widget.workouts!.workoutId;
+
+      _userWorkoutsDao.fireBaseCreateUserWorkout(FirebaseAuth.instance.currentUser!.uid, workoutId, DateTime.now());
+    }
   }
 
   void fetchExercises() {
@@ -102,7 +134,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       child: CupertinoPicker(
                         scrollController: FixedExtentScrollController(
                             initialItem:
-                                exerciseStats[exercise]![setIndex].reps - 1),
+                            exerciseStats[exercise]![setIndex].reps - 1),
                         itemExtent: 32.0,
                         onSelectedItemChanged: (int index) {
                           setState(() {
@@ -124,7 +156,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       child: CupertinoPicker(
                         scrollController: FixedExtentScrollController(
                             initialItem:
-                                exerciseStats[exercise]![setIndex].weight),
+                            exerciseStats[exercise]![setIndex].weight),
                         itemExtent: 32.0,
                         onSelectedItemChanged: (int index) {
                           setState(() {
@@ -222,12 +254,13 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                             thickness: 4.0,
                             radius: Radius.circular(20.0),
                             thumbColor: AppColors.fitnessMainColor,
-                            controller: _scrollController, // Add this line
+                            controller: _scrollController,
+                            // Add this line
                             child: SingleChildScrollView(
                               controller: _scrollController, // Add this line
                               child: Column(
                                 children: exerciseStats[
-                                        exercises[activeWorkoutIndex]]!
+                                exercises[activeWorkoutIndex]]!
                                     .asMap()
                                     .entries
                                     .map((entry) {
@@ -238,12 +271,12 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                                         horizontal: 30.0, vertical: 2.0),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                       children: [
                                         Expanded(
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 '\u2022 Set ${stats.set}',
@@ -279,15 +312,16 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                                           children: [
                                             if (index ==
                                                 exerciseStats[exercises[
-                                                            activeWorkoutIndex]]!
-                                                        .length -
+                                                activeWorkoutIndex]]!
+                                                    .length -
                                                     1)
                                               CupertinoButton(
                                                 padding: EdgeInsets.zero,
-                                                onPressed: () => _removeSet(
-                                                    exercises[
+                                                onPressed: () =>
+                                                    _removeSet(
+                                                        exercises[
                                                         activeWorkoutIndex],
-                                                    index),
+                                                        index),
                                                 child: const Icon(
                                                   CupertinoIcons.minus_circle,
                                                   color: Colors.red,
@@ -301,10 +335,11 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                                               ),
                                             CupertinoButton(
                                               padding: EdgeInsets.zero,
-                                              onPressed: () => _showPicker(
-                                                  context,
-                                                  exercises[activeWorkoutIndex],
-                                                  index),
+                                              onPressed: () =>
+                                                  _showPicker(
+                                                      context,
+                                                      exercises[activeWorkoutIndex],
+                                                      index),
                                               child: const Icon(
                                                 CupertinoIcons.pencil,
                                                 color: AppColors
@@ -413,7 +448,8 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Sets: ${workoutExercises[activeWorkoutIndex + 1].sets}',
+                                'Sets: ${workoutExercises[activeWorkoutIndex +
+                                    1].sets}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,
@@ -422,7 +458,8 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'Reps: ${workoutExercises[activeWorkoutIndex + 1].reps}',
+                                'Reps: ${workoutExercises[activeWorkoutIndex +
+                                    1].reps}',
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.bold,
@@ -440,24 +477,24 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                 ),
                 const SizedBox(height: 10),
                 CupertinoButton(
-                    onPressed: _nextExercise,
-                    child: Container(
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        "Next Exercise",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                  onPressed: _nextExercise,
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "Next Exercise",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           const SizedBox(height: 40),

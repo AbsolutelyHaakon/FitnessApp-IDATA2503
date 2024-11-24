@@ -217,7 +217,7 @@ class _WorkoutsBoxHomeState extends State<WorkoutsBoxHome> {
                     Navigator.push(
                       context,
                       CupertinoPageRoute(
-                        builder: (context) => PreWorkoutScreen(workout: workout),
+                        builder: (context) => PreWorkoutScreen(workouts: workout),
                       ),
                     );
                   },

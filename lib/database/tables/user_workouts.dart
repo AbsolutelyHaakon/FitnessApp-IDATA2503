@@ -8,6 +8,7 @@ class UserWorkouts {
   final DateTime date;
   final double? duration;
   final String? statistics;
+  final bool isActive;
 
   const UserWorkouts({
     required this.userWorkoutId,
@@ -16,6 +17,7 @@ class UserWorkouts {
     required this.date,
     this.duration,
     this.statistics,
+    required this.isActive,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class UserWorkouts {
       'date': date.toIso8601String(),
       'duration': duration,
       'statistics': statistics != null ? jsonEncode(statistics) : null,
+      'isActive': isActive ? 1 : 0,
     };
   }
 
@@ -34,9 +37,13 @@ class UserWorkouts {
       userWorkoutId: map['userWorkoutId'],
       userId: map['userId'],
       workoutId: map['workoutId'],
-      date: map['date'] is Timestamp ? (map['date'] as Timestamp).toDate() : DateTime.parse(map['date']),
+      date: map['date'] is Timestamp
+          ? (map['date'] as Timestamp).toDate()
+          : DateTime.parse(map['date']),
       duration: map['duration'],
-      statistics: map['statistics'] != null ? jsonDecode(map['statistics']) : null,
+      statistics:
+          map['statistics'] != null ? jsonDecode(map['statistics']) : null,
+      isActive: map['isActive'],
     );
   }
 }
