@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Exercises {
   final String exerciseId;
   String name;
@@ -40,7 +42,7 @@ class Exercises {
       category: map['category'],
       videoUrl: map['videoUrl'],
       imageURL: map['imageURL'],
-      isPrivate: map['isPrivate'],
+      isPrivate: map['isPrivate'] == 1,
       userId: map['userId'],
     );
   }
@@ -56,5 +58,21 @@ class Exercises {
       isPrivate: map['isPrivate'] == 1,
       userId: map['userId'],
     );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'exerciseId': exerciseId,
+    'name': name,
+    'description': description,
+    'category': category,
+    'videoUrl': videoUrl,
+    'imageURL': imageURL,
+    'isPrivate': isPrivate,
+    'userId': userId,
+  };
+
+  @override
+  String toString() {
+    return name;
   }
 }

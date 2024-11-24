@@ -41,6 +41,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   List<WorkoutExercises> workoutExercises = [];
   Map<Exercises, List<SetStats>> exerciseStats = {};
   final WorkoutDao _workoutDao = WorkoutDao();
+  final ScrollController _scrollController = ScrollController(); // Add this line
 
   Future<void> _endWorkout() async {
     hasActiveWorkout.value = false;
@@ -50,10 +51,9 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     await _workoutDao.localSetAllInactive();
 
     String jsonString = jsonEncode(exerciseStats.map((key, value) => MapEntry(key.toString(), value.map((set) => set.toJson()).toList())));
+
     print(jsonString);
   }
-
-
 
   @override
   void initState() {
@@ -222,7 +222,9 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                             thickness: 4.0,
                             radius: Radius.circular(20.0),
                             thumbColor: AppColors.fitnessMainColor,
+                            controller: _scrollController, // Add this line
                             child: SingleChildScrollView(
+                              controller: _scrollController, // Add this line
                               child: Column(
                                 children: exerciseStats[
                                         exercises[activeWorkoutIndex]]!
