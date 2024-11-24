@@ -10,10 +10,16 @@ import 'package:flutter/material.dart';
 
 import '../../styles.dart';
 
-class WeightBarChart extends StatelessWidget {
+class WeightBarChart extends StatefulWidget {
   WeightBarChart({super.key});
 
+  @override
+  State<WeightBarChart> createState() => _WeightBarChartState();
+}
+
+class _WeightBarChartState extends State<WeightBarChart> {
   var goalWeight;
+  late final weightController = TextEditingController();
 
   Future<Map<DateTime, int>> getUserHealthData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
@@ -40,6 +46,32 @@ class WeightBarChart extends StatelessWidget {
       return returnData;
     }
     return {};
+  }
+
+  void setWeightGoal(int weight) {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      UserDao().fireBaseUpdateUserData(FirebaseAuth.instance.currentUser!.uid,
+          '', 0, 0, weight.toDouble(), null, null);
+    }
+    Navigator.of(context).pop();
+    setState(() {});
+  }
+
+  void onAddWeightSave() async {
+    int weight = int.parse(weightController.text);
+    DateTime date = DateTime.now();
+
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      await UserHealthDataDao().fireBaseCreateUserHealthData(
+          FirebaseAuth.instance.currentUser!.uid,
+          null,
+          weight,
+          date,
+          null,
+          null);
+      Navigator.of(context).pop();
+      setState(() {});
+    }
   }
 
   Future<int> getGoalWeight() async {
@@ -148,8 +180,8 @@ class WeightBarChart extends StatelessWidget {
 
               return Container(
                 width: screenWidth * 0.9,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                height: 250,
+                padding: const EdgeInsets.only(bottom: 20),
+                height: 270,
                 decoration: BoxDecoration(
                   color: AppColors.fitnessModuleColor,
                   borderRadius: BorderRadius.circular(30),
@@ -158,98 +190,258 @@ class WeightBarChart extends StatelessWidget {
                     width: 1.0,
                   ),
                 ),
-                child: AspectRatio(
-                  aspectRatio: 2.0,
-                  child: BarChart(
-                    BarChartData(
-                      barTouchData: BarTouchData(
-                        touchTooltipData: BarTouchTooltipData(
-                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                            return BarTooltipItem(
-                              '${rod.toY.toInt()} kg',
-                              const TextStyle(
-                                  color: AppColors.fitnessMainColor),
-                            );
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: const Text(
+                            'Add Weight',
+                            style: TextStyle(color: AppColors.fitnessMainColor),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext builder) {
+                                  return AlertDialog(
+                                    backgroundColor:
+                                        AppColors.fitnessModuleColor,
+                                    title: const Text('Insert Weight'),
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextFormField(
+                                            cursorColor: Colors.white,
+                                            controller: weightController,
+                                            decoration: const InputDecoration(
+                                              hintStyle: TextStyle(
+                                                  color: Colors.white),
+                                              labelStyle: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white),
+                                              suffixStyle: TextStyle(
+                                                  color: Colors.white),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors
+                                                        .fitnessMainColor),
+                                              ),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors
+                                                        .fitnessMainColor),
+                                              ),
+                                              labelText: 'Weight',
+                                              hintText: 'Enter your weight',
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: onAddWeightSave,
+                                        child: const Text(
+                                          'Save',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                });
                           },
                         ),
-                      ),
-                      rangeAnnotations: RangeAnnotations(
-                        horizontalRangeAnnotations: [
-                          if (goalWeight != 0)
-                            HorizontalRangeAnnotation(
-                              y1: goalWeight.toDouble(),
-                              y2: goalWeight.toDouble() - 1,
-                              color: Colors.white.withOpacity(0.5),
-                            ),
-                        ],
-                      ),
-                      maxY: maxY,
-                      minY: minY,
-                      gridData: const FlGridData(show: false),
-                      backgroundColor: Colors.white.withOpacity(0.05),
-                      alignment: BarChartAlignment.start,
-                      groupsSpace: 2,
-                      barGroups: barGroups,
-                      titlesData: FlTitlesData(
-                        rightTitles: const AxisTitles(
-                          axisNameWidget: Text(''),
-                          axisNameSize: 40,
-                        ),
-                        topTitles: const AxisTitles(
-                          axisNameWidget: Text('Weight Progress'),
-                          axisNameSize: 25,
-                          sideTitles: SideTitles(
-                            showTitles: false,
+                        CupertinoButton(
+                          child: const Text(
+                            'Set Weight Goal',
+                            style: TextStyle(color: AppColors.fitnessMainColor),
                           ),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext builder) {
+                                  return AlertDialog(
+                                    backgroundColor:
+                                        AppColors.fitnessModuleColor,
+                                    title: const Text('Set Weight Goal'),
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextFormField(
+                                            cursorColor: Colors.white,
+                                            controller: weightController,
+                                            decoration: const InputDecoration(
+                                              hintStyle: TextStyle(
+                                                  color: Colors.white),
+                                              labelStyle: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white),
+                                              suffixStyle: TextStyle(
+                                                  color: Colors.white),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors
+                                                        .fitnessMainColor),
+                                              ),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors
+                                                        .fitnessMainColor),
+                                              ),
+                                              labelText: 'Weight',
+                                              hintText:
+                                                  'Enter your weight goal',
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          setWeightGoal(int.parse(
+                                              weightController.text
+                                                  .toString()));
+                                        },
+                                        child: const Text(
+                                          'Save',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
                         ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (double value, TitleMeta meta) {
-                              int index = value.toInt();
-                              if (index < limitedData.length) {
-                                DateTime date = limitedData[index].key;
-                                String monthYear = "${date.month}-${date.year}";
-                                String month = monthLabels[date.month - 1];
-                                int monthCount = groupedData[monthYear]!.length;
-                                int middleIndex = (monthCount / 2).floor();
-                                int startIndex = limitedData.indexWhere(
-                                    (entry) =>
-                                        "${entry.key.month}-${entry.key.year}" ==
-                                        monthYear);
-                                if (monthCount % 2 == 0) {
-                                  if (index == startIndex + middleIndex) {
-                                    return SideTitleWidget(
-                                      axisSide: meta.axisSide,
-                                      child: Text(
-                                        month,
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                        ),
-                                      ),
-                                    );
+                      ],
+                    ),
+                    AspectRatio(
+                      aspectRatio: 2.0,
+                      child: BarChart(
+                        BarChartData(
+                          barTouchData: BarTouchData(
+                            touchTooltipData: BarTouchTooltipData(
+                              getTooltipItem:
+                                  (group, groupIndex, rod, rodIndex) {
+                                return BarTooltipItem(
+                                  '${rod.toY.toInt()} kg',
+                                  const TextStyle(
+                                      color: AppColors.fitnessMainColor),
+                                );
+                              },
+                            ),
+                          ),
+                          rangeAnnotations: RangeAnnotations(
+                            horizontalRangeAnnotations: [
+                              if (goalWeight != 0)
+                                HorizontalRangeAnnotation(
+                                  y1: goalWeight.toDouble(),
+                                  y2: goalWeight.toDouble() - 1,
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                            ],
+                          ),
+                          maxY: maxY,
+                          minY: minY,
+                          gridData: const FlGridData(show: false),
+                          backgroundColor: Colors.white.withOpacity(0.05),
+                          alignment: BarChartAlignment.start,
+                          groupsSpace: 2,
+                          barGroups: barGroups,
+                          titlesData: FlTitlesData(
+                            rightTitles: const AxisTitles(
+                              axisNameWidget: Text(''),
+                              axisNameSize: 40,
+                            ),
+                            topTitles: const AxisTitles(
+                              axisNameWidget: Text('Weight Progress'),
+                              axisNameSize: 25,
+                              sideTitles: SideTitles(
+                                showTitles: false,
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget:
+                                    (double value, TitleMeta meta) {
+                                  int index = value.toInt();
+                                  if (index < limitedData.length) {
+                                    DateTime date = limitedData[index].key;
+                                    String monthYear =
+                                        "${date.month}-${date.year}";
+                                    String month = monthLabels[date.month - 1];
+                                    int monthCount =
+                                        groupedData[monthYear]!.length;
+                                    int middleIndex = (monthCount / 2).floor();
+                                    int startIndex = limitedData.indexWhere(
+                                        (entry) =>
+                                            "${entry.key.month}-${entry.key.year}" ==
+                                            monthYear);
+                                    if (monthCount % 2 == 0) {
+                                      if (index == startIndex + middleIndex) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                            month,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      if (index == startIndex + middleIndex) {
+                                        return SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          child: Text(
+                                            month,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }
                                   }
-                                } else {
-                                  if (index == startIndex + middleIndex) {
-                                    return SideTitleWidget(
-                                      axisSide: meta.axisSide,
-                                      child: Text(
-                                        month,
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              }
-                              return const SizedBox.shrink();
-                            },
+                                  return const SizedBox.shrink();
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               );
             }
