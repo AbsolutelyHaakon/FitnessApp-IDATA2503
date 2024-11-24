@@ -20,7 +20,9 @@ class _WeightPageState extends State<WeightPage>
     with SingleTickerProviderStateMixin {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   double goal = 0;
+  int weightGoal = 0;
   int weightInitial = 0;
+  double weightPercentage = 0;
   bool isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -58,21 +60,27 @@ class _WeightPageState extends State<WeightPage>
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userGoalsMap = await UserDao()
           .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      var goalInt = userGoalsMap?["weightTarget"] ?? 1;
+      weightGoal = userGoalsMap?["weightTarget"] ?? 1;
       weightInitial = userGoalsMap?["weightInitial"] ?? 1;
+
       setState(() {
-        goal = goalInt.toDouble();
+        goal = weightGoal.toDouble();
       });
     }
   }
+
+
 
   Future<void> fetchHydrationData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
+      DateTime today = DateTime.now();
+      DateTime todayDate = DateTime(today.year, today.month, today.day);
 
       Map<DateTime, int> aggregatedData = {};
+      int todayWeight = 0;
       for (var entry in userData) {
         DateTime date =
             DateTime(entry.date.year, entry.date.month, entry.date.day);
@@ -83,6 +91,11 @@ class _WeightPageState extends State<WeightPage>
           aggregatedData[date] = aggregatedData[date]! + entry.weight!;
         } else {
           aggregatedData[date] = entry.weight!;
+        }
+        if (date == todayDate) {
+          if (entry.weight < 300 && entry.weight > 30) {
+            todayWeight = entry.weight;
+          }
         }
       }
       setState(() {
@@ -101,6 +114,14 @@ class _WeightPageState extends State<WeightPage>
             dailyIntake[date] = entry.weight!;
           }
         }
+        if (todayWeight < weightGoal) {
+          weightPercentage =
+              (weightInitial - todayWeight) / (weightInitial - weightGoal);
+        } else {
+          weightPercentage =
+              (todayWeight - weightInitial) / (weightGoal - weightInitial);
+        }
+
       });
     }
   }
@@ -171,235 +192,214 @@ class _WeightPageState extends State<WeightPage>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double progressValue = dailyIntake.values.isNotEmpty
-        ? (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                    dailyIntake.values.length) >
-                goal
-            ? (weightInitial -
-                    (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                        dailyIntake.values.length)) /
-                (weightInitial - goal)
-            : (weightInitial - goal) /
-                (weightInitial -
-                    (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                        dailyIntake.values.length))
-        : 0.0;
+@override
+Widget build(BuildContext context) {
+  double minY = dailyIntake.values.isNotEmpty
+      ? dailyIntake.values.reduce((a, b) => a < b ? a : b).toDouble()
+      : 0.0;
+  double maxY = dailyIntake.values.isNotEmpty
+      ? dailyIntake.values.reduce((a, b) => a > b ? a : b).toDouble()
+      : 3.0;
 
-    double minY = dailyIntake.values.isNotEmpty
-        ? dailyIntake.values.reduce((a, b) => a < b ? a : b).toDouble()
-        : 0.0;
-    double maxY = dailyIntake.values.isNotEmpty
-        ? dailyIntake.values.reduce((a, b) => a > b ? a : b).toDouble()
-        : 3.0;
+  // Add some padding to minY and maxY for better visualization
+  minY = (minY - 5).clamp(0.0, double.infinity);
+  maxY = maxY + 5;
 
-    // Add some padding to minY and maxY for better visualization
-    minY = (minY - 5).clamp(0.0, double.infinity);
-    maxY = maxY + 5;
+  // Calculate weight loss for each day
+  Map<DateTime, double> weightLoss = {};
+  double previousWeight = 0.0;
+  dailyIntake.entries.toList().asMap().forEach((index, entry) {
+    if (index > 0) {
+      weightLoss[entry.key] = previousWeight - entry.value.toDouble();
+    }
+    previousWeight = entry.value.toDouble();
+  });
 
-    // Calculate weight loss for each day
-    Map<DateTime, double> weightLoss = {};
-    DateTime previousDate;
-    double previousWeight = 0.0;
-    dailyIntake.entries.toList().asMap().forEach((index, entry) {
-      if (index > 0) {
-        weightLoss[entry.key] = previousWeight - entry.value.toDouble();
-      }
-      previousDate = entry.key;
-      previousWeight = entry.value.toDouble();
-    });
+  // Ensure weightPercentage is a valid number
+  double validWeightPercentage = weightPercentage.isFinite ? weightPercentage : 0.0;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Weight',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.fitnessPrimaryTextColor,
-              ),
-        ),
-        titleSpacing: 40,
-        backgroundColor: AppColors.fitnessBackgroundColor,
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back,
-              color: AppColors.fitnessMainColor),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          if (FirebaseAuth.instance.currentUser != null)
-            TextButton(
-              onPressed: () async {
-                _addData();
-              },
-              child: const Text('Add Data',
-                  style: TextStyle(color: AppColors.fitnessMainColor)),
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        'Weight',
+        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: AppColors.fitnessPrimaryTextColor,
             ),
-        ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      child: SizedBox(
-                        width: 210,
-                        height: 210,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 180.0,
-                              height: 180.0,
-                              child: CircularProgressIndicator(
-                                value: _animation.value * progressValue,
-                                strokeWidth: 18.0,
-                                strokeCap: StrokeCap.round,
-                                valueColor: const AlwaysStoppedAnimation<Color>(
-                                    AppColors.fitnessMainColor),
-                                backgroundColor: AppColors.fitnessModuleColor,
-                              ),
+      titleSpacing: 40,
+      backgroundColor: AppColors.fitnessBackgroundColor,
+      leading: IconButton(
+        icon: const Icon(CupertinoIcons.back,
+            color: AppColors.fitnessMainColor),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+      actions: [
+        if (FirebaseAuth.instance.currentUser != null)
+          TextButton(
+            onPressed: () async {
+              _addData();
+            },
+            child: const Text('Add Data',
+                style: TextStyle(color: AppColors.fitnessMainColor)),
+          ),
+      ],
+    ),
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 200,
+                    child: SizedBox(
+                      width: 210,
+                      height: 210,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 180.0,
+                            height: 180.0,
+                            child: CircularProgressIndicator(
+                              value: _animation.value * validWeightPercentage,
+                              strokeWidth: 18.0,
+                              strokeCap: StrokeCap.round,
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  AppColors.fitnessMainColor),
+                              backgroundColor: AppColors.fitnessModuleColor,
                             ),
-                            Text(
-                              dailyIntake.values.isNotEmpty
-                                  ? (dailyIntake.values
-                                                  .reduce((a, b) => a + b)
-                                                  .toDouble() /
-                                              dailyIntake.values.length) >
-                                          goal
-                                      ? 'Weight Goal: ${((weightInitial - (dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length)) / (weightInitial - goal) * 100).toStringAsFixed(1)}%'
-                                      : 'Weight Goal: ${((dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length) / goal * 100).toStringAsFixed(1)}%'
-                                  : 'Weight Goal: 0%',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                          ),
+                          Text(
+                            'Weight Goal: ${(validWeightPercentage * 100).clamp(0.0, 100.0).toStringAsFixed(1)}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 46),
+                  SizedBox(
+                    height: 200,
+                    child: BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        minY: minY,
+                        maxY: maxY,
+                        barTouchData: BarTouchData(enabled: false),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final date = DateTime.now().subtract(
+                                    Duration(days: 6 - value.toInt()));
+                                return SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  space: 5,
+                                  child: Text(
+                                    DateFormat('MM/dd').format(date),
+                                    style: const TextStyle(
+                                      color: AppColors.fitnessMainColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          leftTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        barGroups: List.generate(7, (index) {
+                          final date = DateTime.now()
+                              .subtract(Duration(days: 6 - index));
+                          final intake = dailyIntake[DateTime(
+                                  date.year, date.month, date.day)] ??
+                              0.0;
+                          return BarChartGroupData(
+                            x: index,
+                            barRods: [
+                              BarChartRodData(
+                                toY: intake.toDouble(),
+                                color: AppColors.fitnessMainColor,
+                                width: 16,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ],
+                          );
+                        }),
+                        extraLinesData: ExtraLinesData(
+                          horizontalLines: [
+                            HorizontalLine(
+                              y: goal,
+                              color: Colors.red,
+                              strokeWidth: 2,
+                              dashArray: [5, 5],
+                              label: HorizontalLineLabel(
+                                show: true,
+                                alignment: Alignment.topRight,
+                                labelResolver: (line) => 'Goal',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 46),
-                    SizedBox(
-                      height: 200,
-                      child: BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          minY: minY,
-                          maxY: maxY,
-                          barTouchData: BarTouchData(enabled: false),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  final date = DateTime.now().subtract(
-                                      Duration(days: 6 - value.toInt()));
-                                  return SideTitleWidget(
-                                    axisSide: meta.axisSide,
-                                    space: 5,
-                                    child: Text(
-                                      DateFormat('MM/dd').format(date),
-                                      style: const TextStyle(
-                                        color: AppColors.fitnessMainColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            leftTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          barGroups: List.generate(7, (index) {
-                            final date = DateTime.now()
-                                .subtract(Duration(days: 6 - index));
-                            final intake = dailyIntake[DateTime(
-                                    date.year, date.month, date.day)] ??
-                                0.0;
-                            return BarChartGroupData(
-                              x: index,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: intake.toDouble(),
-                                  color: AppColors.fitnessMainColor,
-                                  width: 16,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ],
-                            );
-                          }),
-                          extraLinesData: ExtraLinesData(
-                            horizontalLines: [
-                              HorizontalLine(
-                                y: goal,
-                                color: Colors.red,
-                                strokeWidth: 2,
-                                dashArray: [5, 5],
-                                label: HorizontalLineLabel(
-                                  show: true,
-                                  alignment: Alignment.topRight,
-                                  labelResolver: (line) => 'Goal',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                  ),
+                  const SizedBox(height: 16),
+                  Column(
+                    children: dailyIntake.entries.map((entry) {
+                      DateTime date = entry.key;
+                      double intake = entry.value.toDouble();
+                      String formattedDate =
+                          DateFormat('MMM dd, yyyy').format(date);
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4.0),
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: AppColors.fitnessModuleColor,
+                          borderRadius: BorderRadius.circular(16.0),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: dailyIntake.entries.map((entry) {
-                        DateTime date = entry.key;
-                        double intake = entry.value.toDouble();
-                        String formattedDate =
-                            DateFormat('MMM dd, yyyy').format(date);
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: AppColors.fitnessModuleColor,
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(formattedDate,
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
-                              Text(
-                                '${intake.toStringAsFixed(1)} Kg / ${goal.toStringAsFixed(1)} Kg',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                        color: AppColors.fitnessMainColor),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(formattedDate,
+                                style:
+                                    Theme.of(context).textTheme.bodyMedium),
+                            Text(
+                              '${intake.toStringAsFixed(1)} Kg / ${goal.toStringAsFixed(1)} Kg',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                      color: AppColors.fitnessMainColor),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
             ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
-    );
-  }
+          ),
+    backgroundColor: AppColors.fitnessBackgroundColor,
+  );
+}
 }
