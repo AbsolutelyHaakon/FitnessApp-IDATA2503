@@ -18,24 +18,28 @@ class CalorieIntakePage extends StatefulWidget {
 class _CalorieIntakePageState extends State<CalorieIntakePage> {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   List<MapEntry<DateTime, int>> hourlyIntake = [];
-  final double goal = 2.0; // Example goal in liters
+  final double goal = 2000.0; // Example goal in liters
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    fetchCalorieIntakeData();
+    fetchHydrationData();
   }
 
-  Future<void> fetchCalorieIntakeData() async {
+  Future<void> fetchHydrationData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userDataMap = await UserHealthDataDao().fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
+      var userDataMap = await UserHealthDataDao()
+          .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
 
       Map<DateTime, int> aggregatedData = {};
       for (var entry in userData) {
         DateTime date =
         DateTime(entry.date.year, entry.date.month, entry.date.day);
+        if (entry.waterIntake == null) {
+          continue;
+        }
         if (aggregatedData.containsKey(date)) {
           aggregatedData[date] = aggregatedData[date]! + entry.waterIntake!;
         } else {
@@ -45,7 +49,11 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
       setState(() {
         dailyIntake = {};
         for (var entry in userData) {
-          DateTime date = DateTime(entry.date.year, entry.date.month, entry.date.day);
+          if (entry.waterIntake == null) {
+            continue;
+          }
+          DateTime date =
+          DateTime(entry.date.year, entry.date.month, entry.date.day);
           if (dailyIntake.containsKey(date)) {
             dailyIntake[date] = entry.waterIntake! > dailyIntake[date]!
                 ? entry.waterIntake!
@@ -54,7 +62,8 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
             dailyIntake[date] = entry.waterIntake!;
           }
         }
-        hourlyIntake = userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
+        hourlyIntake =
+            userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
       });
     } else {
       // Example data
@@ -82,6 +91,79 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
         }
       }
     }
+  }
+
+  Future<void> _addData() async {
+    int waterIntake = 0;
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Add Calorie Intake'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.local_drink, size: 50, color: Colors.blue),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            if (waterIntake > 0) waterIntake -= 100;
+                          });
+                        },
+                      ),
+                      Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            waterIntake += 100;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    // Save the water intake data
+                    if (FirebaseAuth.instance.currentUser?.uid != null) {
+                      await UserHealthDataDao().fireBaseCreateUserHealthData(
+                        FirebaseAuth.instance.currentUser!.uid,
+                        null,
+                        null,
+                        DateTime.now(),
+                        null,
+                        // if the current day has an entry, add the new intake to the largest existing intake
+                        waterIntake,
+                      );
+                      fetchHydrationData();
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -117,7 +199,9 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
         actions: [
           if (FirebaseAuth.instance.currentUser != null)
             TextButton(
-              onPressed: () async {},
+              onPressed: () async {
+                _addData();
+              },
               child: const Text('Add Data',
                   style: TextStyle(color: Color(0xFFFFFFFF))),
             ),
@@ -143,7 +227,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                             .map((e) => FlSpot(e.key.hour.toDouble(),
                             e.value.toDouble()))
                             .toList(),
-                        isCurved: true,
+                        isCurved: false,
                         color: const Color(0xFFFFFFFF),
                         barWidth: 4,
                         belowBarData: BarAreaData(
@@ -232,7 +316,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                             style:
                             Theme.of(context).textTheme.bodyMedium),
                         Text(
-                          '${intake.toStringAsFixed(1)} L / ${goal.toStringAsFixed(1)} L',
+                          '${intake.toStringAsFixed(1)} mL / ${goal.toStringAsFixed(1)} mL',
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium

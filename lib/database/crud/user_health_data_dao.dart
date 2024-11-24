@@ -56,6 +56,24 @@ class UserHealthDataDao {
     await database.delete(tableName);
   }
 
+  Future<double> getTodayWaterIntakePercentage(String userId, double goal) async {
+    var userDataMap = await fireBaseFetchUserHealthData(userId);
+    List<UserHealthData> userData = userDataMap['userHealthData'];
+
+    DateTime today = DateTime.now();
+    DateTime todayDate = DateTime(today.year, today.month, today.day);
+    int todayIntake = 0;
+
+    for (var entry in userData) {
+      DateTime date = DateTime(entry.date.year, entry.date.month, entry.date.day);
+      if (date == todayDate && entry.waterIntake != null) {
+        todayIntake = entry.waterIntake! > todayIntake ? entry.waterIntake! : todayIntake;
+      }
+    }
+
+    return todayIntake / goal;
+  }
+
 ////////////////////////////////////////////////////////////
 ////////////////// FIREBASE FUNCTIONS //////////////////////
 ////////////////////////////////////////////////////////////

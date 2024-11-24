@@ -18,7 +18,7 @@ class HydrationPage extends StatefulWidget {
 class _HydrationPageState extends State<HydrationPage> {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   List<MapEntry<DateTime, int>> hourlyIntake = [];
-  final double goal = 2.0; // Example goal in liters
+  final double goal = 2000.0; // Example goal in milliliters
   bool isLoading = false;
 
   @override
@@ -37,7 +37,7 @@ class _HydrationPageState extends State<HydrationPage> {
       for (var entry in userData) {
         DateTime date =
             DateTime(entry.date.year, entry.date.month, entry.date.day);
-        if (entry.waterIntake == null) {
+        if (entry.waterIntake == null || entry.waterIntake! <= 0) {
           continue;
         }
         if (aggregatedData.containsKey(date)) {
@@ -49,7 +49,7 @@ class _HydrationPageState extends State<HydrationPage> {
       setState(() {
         dailyIntake = {};
         for (var entry in userData) {
-          if (entry.waterIntake == null) {
+          if (entry.waterIntake == null || entry.waterIntake! <= 0) {
             continue;
           }
           DateTime date =
@@ -65,105 +65,81 @@ class _HydrationPageState extends State<HydrationPage> {
         hourlyIntake =
             userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
       });
-    } else {
-      // Example data
-      hourlyIntake = [
-        MapEntry(DateTime.now().subtract(Duration(hours: 72)), 4),
-        MapEntry(DateTime.now().subtract(Duration(hours: 48)), 3),
-        MapEntry(DateTime.now().subtract(Duration(hours: 24)), 5),
-        MapEntry(DateTime.now().subtract(Duration(hours: 8)), 1),
-        MapEntry(DateTime.now().subtract(Duration(hours: 7)), 2),
-        MapEntry(DateTime.now().subtract(Duration(hours: 6)), 3),
-        MapEntry(DateTime.now().subtract(Duration(hours: 3)), 4),
-        MapEntry(DateTime.now().subtract(Duration(hours: 1)), 5),
-      ];
-
-      dailyIntake = {};
-      for (var entry in hourlyIntake) {
-        DateTime date =
-            DateTime(entry.key.year, entry.key.month, entry.key.day);
-        if (dailyIntake.containsKey(date)) {
-          dailyIntake[date] = entry.value > dailyIntake[date]!
-              ? entry.value
-              : dailyIntake[date]!;
-        } else {
-          dailyIntake[date] = entry.value;
-        }
-      }
     }
   }
 
   Future<void> _addData() async {
-  int waterIntake = 0;
+    int waterIntake = 0;
 
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text('Add Water Intake'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.local_drink, size: 50, color: Colors.blue),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: () {
-                        setState(() {
-                          if (waterIntake > 0) waterIntake -= 100;
-                        });
-                      },
-                    ),
-                    Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        setState(() {
-                          waterIntake += 100;
-                        });
-                      },
-                    ),
-                  ],
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Add Water Intake'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.local_drink, size: 50, color: Colors.blue),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            if (waterIntake > 0) waterIntake -= 100;
+                          });
+                        },
+                      ),
+                      Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            waterIntake += 100;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    // Save the water intake data
+                    if (FirebaseAuth.instance.currentUser?.uid != null) {
+                      await UserHealthDataDao().fireBaseCreateUserHealthData(
+                        FirebaseAuth.instance.currentUser!.uid,
+                        null,
+                        null,
+                        DateTime.now(),
+                        null,
+                        // if the current day has an entry, add the new intake to the largest existing intake
+                        waterIntake,
+                      );
+                      fetchHydrationData();
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
                 ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  // Save the water intake data
-                  if (FirebaseAuth.instance.currentUser?.uid != null) {
-                    await UserHealthDataDao().fireBaseCreateUserHealthData(
-                      FirebaseAuth.instance.currentUser!.uid,
-                      null,
-                      null,
-                      DateTime.now(),
-                      null,
-                      waterIntake,
-                    );
-                    fetchHydrationData();
-                  }
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +202,7 @@ class _HydrationPageState extends State<HydrationPage> {
                                   .map((e) => FlSpot(e.key.hour.toDouble(),
                                       e.value.toDouble()))
                                   .toList(),
-                              isCurved: true,
+                              isCurved: false,
                               color: const Color(0xFF468CF6),
                               barWidth: 4,
                               belowBarData: BarAreaData(
@@ -234,6 +210,25 @@ class _HydrationPageState extends State<HydrationPage> {
                                   color: Color(0xFF468CF6).withOpacity(0.3)),
                             ),
                           ],
+                          extraLinesData: ExtraLinesData(
+                            horizontalLines: [
+                              HorizontalLine(
+                                y: goal,
+                                color: Colors.red,
+                                strokeWidth: 2,
+                                dashArray: [5, 5],
+                                label: HorizontalLineLabel(
+                                  show: true,
+                                  alignment: Alignment.topRight,
+                                  labelResolver: (line) => 'Goal',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -315,7 +310,7 @@ class _HydrationPageState extends State<HydrationPage> {
                                   style:
                                       Theme.of(context).textTheme.bodyMedium),
                               Text(
-                                '${intake.toStringAsFixed(1)} L / ${goal.toStringAsFixed(1)} L',
+                                '${intake.toStringAsFixed(1)} mL / ${goal.toStringAsFixed(1)} mL',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium

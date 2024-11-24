@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/pages/statistics%20and%20nutrition/calorie_burn_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../database/crud/user_health_data_dao.dart';
+import '../../database/tables/user_health_data.dart';
 import '../../pages/statistics and nutrition/calorie_intake_page.dart';
 import '../../pages/statistics and nutrition/hydration_page.dart';
 
@@ -15,7 +19,73 @@ import '../../pages/statistics and nutrition/hydration_page.dart';
 //TODO: Implement the actual progress values as persistent values
 //TODO: Link the values up to the actual data
 
-class RingsModule extends StatelessWidget {
+class RingsModule extends StatefulWidget {
+  const RingsModule({super.key});
+
+  @override
+  _RingsModuleState createState() => _RingsModuleState();
+}
+
+
+class _RingsModuleState extends State<RingsModule> {
+
+  double waterPercentage = 0.01;
+  double caloriePercentage = 0.01;
+  double weightPercentage = 0.01;
+  double calorieBurnPercentage = 0.01;
+
+  double waterGoal = 2000;
+  double calorieGoal = 2000;
+  double weightGoal = 2000;
+  double calorieBurnGoal = 2000;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllRingData();
+  }
+
+  Future<void> fetchAllUserGoals() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      var userGoalsMap = await UserHealthDataDao()
+          .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
+      //TODO: Implement fetching user goals
+    }
+  }
+
+  Future<void> fetchAllRingData() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      var userDataMap = await UserHealthDataDao()
+          .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
+      List<UserHealthData> userData = userDataMap['userHealthData'];
+
+      DateTime today = DateTime.now();
+      DateTime todayDate = DateTime(today.year, today.month, today.day);
+      int todayIntakew = 0;
+      int todaycb = 0;
+      int todayc = 0;
+      int todayWeight = 0;
+
+      for (var entry in userData) {
+        DateTime date = DateTime(entry.date.year, entry.date.month, entry.date.day);
+        if (date == todayDate && entry.waterIntake != null) {
+          todayIntakew += entry.waterIntake!;
+          //todaycb += entry.caloriesBurned!;
+          //todayc += entry.caloriesIntake!;
+          todayWeight += entry.weight!;
+        }
+      }
+
+      setState(() {
+        waterPercentage = todayIntakew / waterGoal;
+        calorieBurnPercentage = 0.01 / calorieBurnGoal;
+        caloriePercentage = 0.01 / calorieGoal;
+        weightPercentage = todayWeight / weightGoal;
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -34,7 +104,7 @@ class RingsModule extends StatelessWidget {
               onPressed: () {
                 // Define the action when the button is pressed
               },
-              child: const SizedBox(
+              child: SizedBox(
                 width: 70,
                 height: 70,
                 child: Stack(
@@ -44,16 +114,16 @@ class RingsModule extends StatelessWidget {
                       width: 60.0,
                       height: 60.0,
                       child: CircularProgressIndicator(
-                        value: 0.75,
+                        value: weightPercentage,
                         // Example progress value
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
-                        valueColor: AlwaysStoppedAnimation<Color>(
+                        valueColor: const AlwaysStoppedAnimation<Color>(
                             AppColors.fitnessMainColor),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'KG',
                       style: TextStyle(
                         color: AppColors.fitnessMainColor,
@@ -92,7 +162,7 @@ class RingsModule extends StatelessWidget {
                   ),
                 );
               },
-              child: const SizedBox(
+              child: SizedBox(
                 width: 70,
                 height: 70,
                 child: Stack(
@@ -102,16 +172,16 @@ class RingsModule extends StatelessWidget {
                       width: 60.0,
                       height: 60.0,
                       child: CircularProgressIndicator(
-                        value: 0.5,
+                        value: caloriePercentage,
                         // Example progress value
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFFFFFFFF)),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF)),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'Cal',
                       style: TextStyle(
                         color: Colors.white,
@@ -150,7 +220,7 @@ class RingsModule extends StatelessWidget {
                   ),
                 );
               },
-              child: const SizedBox(
+              child: SizedBox(
                 width: 70,
                 height: 70,
                 child: Stack(
@@ -160,16 +230,16 @@ class RingsModule extends StatelessWidget {
                       width: 60.0,
                       height: 60.0,
                       child: CircularProgressIndicator(
-                        value: 0.25,
+                        value: waterPercentage,
                         // Example progress value
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFF11ABFF)),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Color(0xFF11ABFF)),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'Water\nGoal',
                       style: TextStyle(
                         color: Color(0xFF11ABFF),
@@ -186,9 +256,30 @@ class RingsModule extends StatelessWidget {
             CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                // Define the action when the button is pressed
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        CalorieBurnPage(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
               },
-              child: const SizedBox(
+              child: SizedBox(
                 width: 70,
                 height: 70,
                 child: Stack(
@@ -198,16 +289,16 @@ class RingsModule extends StatelessWidget {
                       width: 60.0,
                       height: 60.0,
                       child: CircularProgressIndicator(
-                        value: 1,
+                        value: calorieBurnPercentage,
                         // Example progress value
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFFCC4848)),
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Color(0xFFCC4848)),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'Cal\nBurn',
                       style: TextStyle(
                         color: Color(0xFFCC4848),
