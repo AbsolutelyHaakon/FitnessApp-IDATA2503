@@ -62,6 +62,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
     if (widget.userWorkouts != null) {
       _getWorkoutData();
     } else if (widget.workouts != null) {
+      workouts = widget.workouts!;
       WidgetsBinding.instance.addObserver(this);
       _userWorkoutsDao.localSetAllInactive();
       _workoutDao.localUpdateActive(widget.workouts!, true);
@@ -69,10 +70,11 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen> with WidgetsB
         activeWorkoutStartTime = DateTime.now();
       }
       print("Active workout found");
+
       hasActiveWorkout.value = true;
       activeWorkoutId.value = workouts.workoutId;
       activeWorkoutName.value = workouts.name;
-      workouts = widget.workouts!;
+
     }
     totalExercises = widget.exerciseMap.length.toDouble();
   }

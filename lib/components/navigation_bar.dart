@@ -33,6 +33,9 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   void initState() {
     super.initState();
     _checkForActiveWorkouts();
+
+    print("Active workout: ${hasActiveWorkout.value}");
+    print(localHasActiveWorkout);
   }
 
   void _onItemTapped(int index) {

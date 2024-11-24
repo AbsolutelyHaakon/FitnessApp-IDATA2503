@@ -1,4 +1,7 @@
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/about_us.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/admin_panel.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/data_and_privacy_page.dart';
@@ -16,6 +19,7 @@ class SettingsPage extends StatelessWidget {
 
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
   final UserDao _userDao = UserDao();
+
 
   // TODO: Implement proper feedback logic on the sync function
   void _synchronizeCloud(BuildContext context) async {
@@ -41,6 +45,18 @@ class SettingsPage extends StatelessWidget {
   }
 
   Future<void> _logout() async {
+    // Set all local workouts and user workouts to inactive when logging out to prevent data from being displayed
+    hasActiveWorkout.value = false;
+    activeUserWorkoutId.value = '';
+    activeWorkoutId.value = '';
+    activeWorkoutName.value = '';
+
+    final WorkoutDao _workoutDao = WorkoutDao();
+    final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
+    await _workoutDao.localSetAllInactive();
+    await _userWorkoutsDao.localSetAllInactive();
+
+    // Sign out of Firebase
     await FirebaseAuth.instance.signOut();
     onLogout?.call();
   }
