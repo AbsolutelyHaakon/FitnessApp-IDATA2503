@@ -29,13 +29,17 @@ class _HydrationPageState extends State<HydrationPage> {
 
   Future<void> fetchHydrationData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userDataMap = await UserHealthDataDao().fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
+      var userDataMap = await UserHealthDataDao()
+          .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
 
       Map<DateTime, int> aggregatedData = {};
       for (var entry in userData) {
         DateTime date =
             DateTime(entry.date.year, entry.date.month, entry.date.day);
+        if (entry.waterIntake == null) {
+          continue;
+        }
         if (aggregatedData.containsKey(date)) {
           aggregatedData[date] = aggregatedData[date]! + entry.waterIntake!;
         } else {
@@ -43,19 +47,24 @@ class _HydrationPageState extends State<HydrationPage> {
         }
       }
       setState(() {
-  dailyIntake = {};
-  for (var entry in userData) {
-    DateTime date = DateTime(entry.date.year, entry.date.month, entry.date.day);
-    if (dailyIntake.containsKey(date)) {
-      dailyIntake[date] = entry.waterIntake! > dailyIntake[date]!
-          ? entry.waterIntake!
-          : dailyIntake[date]!;
-    } else {
-      dailyIntake[date] = entry.waterIntake!;
-    }
-  }
-  hourlyIntake = userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
-});
+        dailyIntake = {};
+        for (var entry in userData) {
+          if (entry.waterIntake == null) {
+            continue;
+          }
+          DateTime date =
+              DateTime(entry.date.year, entry.date.month, entry.date.day);
+          if (dailyIntake.containsKey(date)) {
+            dailyIntake[date] = entry.waterIntake! > dailyIntake[date]!
+                ? entry.waterIntake!
+                : dailyIntake[date]!;
+          } else {
+            dailyIntake[date] = entry.waterIntake!;
+          }
+        }
+        hourlyIntake =
+            userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
+      });
     } else {
       // Example data
       hourlyIntake = [
