@@ -69,6 +69,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
           date,
           null,
           null);
+      weightController.clear();
       Navigator.of(context).pop();
       setState(() {});
     }
@@ -331,6 +332,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                                           setWeightGoal(int.parse(
                                               weightController.text
                                                   .toString()));
+                                          weightController.clear();
                                         },
                                         child: const Text(
                                           'Save',

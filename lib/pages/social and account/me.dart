@@ -24,35 +24,12 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final UserDao _userDao = UserDao();
-  late final weightController = TextEditingController();
-  late final caloriesController = TextEditingController();
-  late AnimationController _addIconController;
-  late Animation<double> _buttonAnimation;
   User? _currentUser;
-  bool _showOptions = false;
 
   @override
   void initState() {
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
-
-    _addIconController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _buttonAnimation = CurvedAnimation(
-      parent: _addIconController,
-      curve: Curves.easeInOut,
-    );
-  }
-
-  void setWeightGoal(int weight) {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
-      UserDao().fireBaseUpdateUserData(FirebaseAuth.instance.currentUser!.uid,
-          '', 0, 0, weight.toDouble(), null, null);
-    }
-    Navigator.of(context).pop();
-    setState(() {});
   }
 
   void _onLoginSuccess(User? user) {
