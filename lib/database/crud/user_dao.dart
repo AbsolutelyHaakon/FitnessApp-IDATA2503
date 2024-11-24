@@ -169,13 +169,13 @@ class UserDao {
         ? await uploadImage(bannerImage)
         : existingData['bannerURL'];
     int updatedWaterTarget =
-        waterTarget != 0 ? waterTarget : existingData['waterTarget'];
+        waterTarget != 0 ? waterTarget : (existingData['waterTarget'] ?? 0);
     int updatedCaloriesIntakeTarget = caloriesIntakeTarget != 0
         ? caloriesIntakeTarget
-        : existingData['caloriesIntakeTarget'];
+        : (existingData['caloriesIntakeTarget'] ?? 0);
     int updatedCaloriesBurnedTarget = caloriesBurnedTarget != 0
         ? caloriesBurnedTarget
-        : existingData['caloriesBurnedTarget'];
+        : (existingData['caloriesBurnedTarget'] ?? 0);
 
     // Update Firestore
     FirebaseFirestore.instance.collection('users').doc(uid).update({
