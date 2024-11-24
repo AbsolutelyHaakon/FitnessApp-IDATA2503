@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserHealthData {
   final String userHealthDataId;
   final String userId;
   final DateTime date;
   final int weight;
-  final int height;
-  final int calories;
-  final int waterIntake;
+  final int? height;
+  final int? calories;
+  final int? waterIntake;
 
   const UserHealthData({
     required this.userHealthDataId,
@@ -33,7 +35,9 @@ class UserHealthData {
     return UserHealthData(
       userHealthDataId: map['userHealthDataId'],
       userId: map['userId'],
-      date: DateTime.parse(map['date']),
+      date: map['date'] is Timestamp
+          ? (map['date'] as Timestamp).toDate()
+          : DateTime.parse(map['date']),
       weight: map['weight'],
       height: map['height'],
       calories: map['calories'],
