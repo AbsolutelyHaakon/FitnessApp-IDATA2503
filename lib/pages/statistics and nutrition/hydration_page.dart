@@ -93,6 +93,78 @@ class _HydrationPageState extends State<HydrationPage> {
     }
   }
 
+  Future<void> _addData() async {
+  int waterIntake = 0;
+
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Add Water Intake'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.local_drink, size: 50, color: Colors.blue),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        setState(() {
+                          if (waterIntake > 0) waterIntake -= 100;
+                        });
+                      },
+                    ),
+                    Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          waterIntake += 100;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Save the water intake data
+                  if (FirebaseAuth.instance.currentUser?.uid != null) {
+                    await UserHealthDataDao().fireBaseCreateUserHealthData(
+                      FirebaseAuth.instance.currentUser!.uid,
+                      null,
+                      null,
+                      DateTime.now(),
+                      null,
+                      waterIntake,
+                    );
+                    fetchHydrationData();
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     double maxY = dailyIntake.values.isNotEmpty
@@ -126,7 +198,9 @@ class _HydrationPageState extends State<HydrationPage> {
         actions: [
           if (FirebaseAuth.instance.currentUser != null)
             TextButton(
-              onPressed: () async {},
+              onPressed: () async {
+                _addData();
+              },
               child: const Text('Add Data',
                   style: TextStyle(color: Color(0xFF468CF6))),
             ),

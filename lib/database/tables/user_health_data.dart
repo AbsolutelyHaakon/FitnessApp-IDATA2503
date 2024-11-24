@@ -32,16 +32,16 @@ class UserHealthData {
   }
 
   factory UserHealthData.fromMap(Map<String, dynamic> map) {
-    return UserHealthData(
-      userHealthDataId: map['userHealthDataId'],
-      userId: map['userId'],
-      date: map['date'] is Timestamp
-          ? (map['date'] as Timestamp).toDate()
-          : DateTime.parse(map['date']),
-      weight: map['weight'],
-      height: map['height'],
-      calories: map['calories'],
-      waterIntake: map['waterIntake'],
-    );
-  }
+  return UserHealthData(
+    userHealthDataId: map['userHealthDataId'],
+    userId: map['userId'],
+    date: map['date'] is Timestamp
+        ? (map['date'] as Timestamp).toDate()
+        : DateTime.parse(map['date']),
+    weight: map['weight'] ?? 0,
+    height: map['height'] ?? 0,
+    calories: map['calories'] ?? 0,
+    waterIntake: map['waterIntake'] ?? 0,
+  );
+}
 }

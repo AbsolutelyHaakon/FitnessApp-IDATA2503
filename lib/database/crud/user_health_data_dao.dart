@@ -62,40 +62,6 @@ class UserHealthDataDao {
 
   Future<void> fireBaseCreateUserHealthData(String userId, int? height,
       int? weight, DateTime date, int? calories, int? waterIntake) async {
-    // See if there already exists a document with the same userId and date
-    DateTime startOfDay = DateTime(date.year, date.month, date.day);
-    DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
-
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('userHealthData')
-        .where('userId', isEqualTo: userId)
-        .where('date', isGreaterThanOrEqualTo: startOfDay)
-        .where('date', isLessThanOrEqualTo: endOfDay)
-        .get();
-    // If it does not exist, create a new document
-    if (querySnapshot.docs.isEmpty) {
-      // Get data from the previous entry
-      QuerySnapshot querySnapshot2 = await FirebaseFirestore.instance
-          .collection('userHealthData')
-          .where('userId', isEqualTo: userId)
-          .orderBy('date', descending: true)
-          .limit(1)
-          .get();
-
-      if (querySnapshot2.docs.isNotEmpty) {
-        final previousData =
-            querySnapshot2.docs.first.data() as Map<String, dynamic>;
-        final previousWeight = previousData['weight'];
-        final previousHeight = previousData['height'];
-        final previousCalories = previousData['calories'];
-        final previousWaterIntake = previousData['waterIntake'];
-        // If the user did not enter a value, use the previous value
-        weight ??= previousWeight;
-        height ??= previousHeight;
-        calories ??= previousCalories;
-        waterIntake ??= previousWaterIntake;
-      }
-
       await FirebaseFirestore.instance.collection('userHealthData').add({
         'userId': userId,
         'date': date,
@@ -104,26 +70,6 @@ class UserHealthDataDao {
         'calories': calories ?? 0,
         'waterIntake': waterIntake ?? 0,
       });
-    } else {
-      // If it does exist, update the existing document
-      final docId = querySnapshot.docs.first.id;
-      final existingData =
-          querySnapshot.docs.first.data() as Map<String, dynamic>;
-
-      final updatedCalories = (existingData['calories'] ?? 0) + (calories ?? 0);
-      final updatedWaterIntake =
-          (existingData['waterIntake'] ?? 0) + (waterIntake ?? 0);
-
-      await FirebaseFirestore.instance
-          .collection('userHealthData')
-          .doc(docId)
-          .update({
-        'weight': weight,
-        'height': height,
-        'calories': updatedCalories,
-        'waterIntake': updatedWaterIntake,
-      });
-    }
   }
 
   Future<Map<String, dynamic>> fireBaseFetchUserHealthData(
