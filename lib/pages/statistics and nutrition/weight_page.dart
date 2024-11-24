@@ -19,7 +19,8 @@ class WeightPage extends StatefulWidget {
 class _WeightPageState extends State<WeightPage>
     with SingleTickerProviderStateMixin {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
-  double goal = 0; // Example goal in kilograms
+  double goal = 0;
+  int weightInitial = 0;
   bool isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -58,6 +59,7 @@ class _WeightPageState extends State<WeightPage>
       var userGoalsMap = await UserDao()
           .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
       var goalInt = userGoalsMap?["weightTarget"] ?? 1;
+      weightInitial = userGoalsMap?["weightInitial"] ?? 1;
       setState(() {
         goal = goalInt.toDouble();
       });
@@ -175,12 +177,14 @@ class _WeightPageState extends State<WeightPage>
         ? (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
                     dailyIntake.values.length) >
                 goal
-            ? goal /
-                (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                    dailyIntake.values.length)
-            : (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
-                    dailyIntake.values.length) /
-                goal
+            ? (weightInitial -
+                    (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
+                        dailyIntake.values.length)) /
+                (weightInitial - goal)
+            : (weightInitial - goal) /
+                (weightInitial -
+                    (dailyIntake.values.reduce((a, b) => a + b).toDouble() /
+                        dailyIntake.values.length))
         : 0.0;
 
     double minY = dailyIntake.values.isNotEmpty
@@ -268,7 +272,7 @@ class _WeightPageState extends State<WeightPage>
                                                   .toDouble() /
                                               dailyIntake.values.length) >
                                           goal
-                                      ? 'Weight Goal: ${(goal / (dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length) * 100).toStringAsFixed(1)}%'
+                                      ? 'Weight Goal: ${((weightInitial - (dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length)) / (weightInitial - goal) * 100).toStringAsFixed(1)}%'
                                       : 'Weight Goal: ${((dailyIntake.values.reduce((a, b) => a + b).toDouble() / dailyIntake.values.length) / goal * 100).toStringAsFixed(1)}%'
                                   : 'Weight Goal: 0%',
                               style: const TextStyle(

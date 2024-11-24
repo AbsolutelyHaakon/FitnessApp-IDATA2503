@@ -42,6 +42,7 @@ class _RingsModuleState extends State<RingsModule>
   int calorieGoal = 2000;
   int weightGoal = 70;
   int calorieBurnGoal = 2000;
+  int weightInitial = 0;
 
   @override
   void initState() {
@@ -75,18 +76,11 @@ class _RingsModuleState extends State<RingsModule>
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userGoalsMap = await UserDao()
           .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      waterGoal = (userGoalsMap?["waterTarget"] ?? 1) == 0
-          ? 1
-          : userGoalsMap?["waterTarget"] ?? 1;
-      calorieGoal = (userGoalsMap?["caloriesTarget"] ?? 1) == 0
-          ? 1
-          : userGoalsMap?["caloriesTarget"] ?? 1;
-      weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0
-          ? 1
-          : userGoalsMap?["weightTarget"] ?? 1;
-      calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
-          ? 1
-          : userGoalsMap?["caloriesBurnedTarget"] ?? 1;
+      waterGoal = userGoalsMap?["waterTarget"] ?? 1;
+      calorieGoal = userGoalsMap?["caloriesTarget"] ?? 1;
+      calorieBurnGoal = userGoalsMap?["caloriesBurnedTarget"] ?? 1;
+      weightGoal = userGoalsMap?["weightTarget"] ?? 1;
+      weightInitial = userGoalsMap?["weightInitial"] ?? 1;
     }
 
     fetchAllRingData();
@@ -129,10 +123,13 @@ class _RingsModuleState extends State<RingsModule>
         calorieBurnPercentage = todaycb / calorieBurnGoal;
         caloriePercentage = todayc / calorieGoal;
         if (todayWeight < weightGoal) {
-          weightPercentage = todayWeight / weightGoal;
+          weightPercentage =
+              (weightInitial - todayWeight) / (weightInitial - weightGoal);
         } else {
-          weightPercentage = weightGoal / todayWeight;
+          weightPercentage =
+              (todayWeight - weightInitial) / (weightGoal - weightInitial);
         }
+
       });
     }
   }
