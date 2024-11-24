@@ -4,6 +4,7 @@ class LocalUser {
   final String email;
   final int? weight;
   final int? weightTarget;
+  final int? weightInitial;
   final double? height;
   final String? imageURL;
   final String? bannerURL;
@@ -17,6 +18,7 @@ class LocalUser {
     required this.email,
     this.weight,
     this.weightTarget,
+    this.weightInitial,
     this.height,
     this.imageURL,
     this.bannerURL,
@@ -33,6 +35,7 @@ class LocalUser {
       'email': email,
       'weight': weight,
       'targetWeight': weightTarget,
+      'weightInitial': weightInitial,
       'height': height,
       'imageURL': imageURL,
       'bannerURL': bannerURL,
@@ -50,6 +53,7 @@ class LocalUser {
       email: map['email'] ?? '',
       weight: map['weight'],
       weightTarget: map['weightTarget'],
+      weightInitial: map['weightInitial'],
       height: map['height'],
       imageURL: map['imageURL'],
       bannerURL: map['bannerURL'],
@@ -67,6 +71,7 @@ class LocalUser {
       email: map['email'] ?? '',
       weight: map['weight']?.toDouble(),
       weightTarget: map['weightTarget']?.toDouble(),
+      weightInitial: map['weightInitial']?.toDouble(),
       height: map['height']?.toDouble(),
       imageURL: map['imageURL'],
       bannerURL: map['bannerURL'],

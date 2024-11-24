@@ -37,9 +37,10 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
       UserDao().fireBaseUpdateUserData(
         FirebaseAuth.instance.currentUser?.uid ?? '',
         _nameController.text,
-        double.tryParse(_heightController.text) ?? 0.0,
-        double.tryParse(_weightController.text) ?? 0.0,
-        double.tryParse(_weightGoalController.text) ?? 0.0,
+        double.tryParse(_heightController.text) ?? 0,
+        int.tryParse(_weightController.text) ?? 0,
+        int.tryParse(_weightGoalController.text) ?? 0,
+        int.tryParse(_weightController.text) ?? 0,
         _image,
         null,
         null,

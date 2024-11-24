@@ -8,6 +8,7 @@ class FitnessAppDB {
       email STRING NOT NULL,
       weight INTEGER,
       weightTarget INTEGER,
+      weightInitial INTEGER,
       waterTarget INTEGER,
       caloriesIntakeTarget INTEGER,
       caloriesBurnedTarget INTEGER,

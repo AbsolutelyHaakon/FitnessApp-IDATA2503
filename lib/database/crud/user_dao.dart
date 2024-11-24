@@ -134,8 +134,9 @@ class UserDao {
       String uid,
       String? name,
       double? height,
-      double? weight,
-      double? weightTarget,
+      int? weight,
+      int? weightTarget,
+      int? weightInitial,
       XFile? profileImage,
       XFile? bannerImage,
       int? waterTarget,
@@ -163,6 +164,8 @@ class UserDao {
     int updatedWeight = weight != 0 ? weight : existingData['weight'];
     int updatedweightTarget =
         weightTarget != 0 ? weightTarget : existingData['weightTarget'];
+    int updatedweightInitial =
+        weightInitial != 0 ? weightInitial : existingData['weightInitial'];
     String updatedImageURL =
         imageURL?.isNotEmpty == true ? imageURL! : existingData['imageURL'];
     String updatedBannerURL = bannerImage != null
@@ -183,6 +186,7 @@ class UserDao {
       'height': updatedHeight,
       'weight': updatedWeight,
       'weightTarget': updatedweightTarget,
+      'weightInitial': updatedweightInitial,
       'imageURL': updatedImageURL,
       'bannerURL': updatedBannerURL,
       'waterTarget': updatedWaterTarget,
@@ -198,6 +202,7 @@ class UserDao {
       weight: updatedWeight,
       height: updatedHeight,
       weightTarget: updatedweightTarget,
+      weightInitial: updatedweightInitial,
       imageURL: updatedImageURL,
       bannerURL: updatedBannerURL,
       waterTarget: updatedWaterTarget,
