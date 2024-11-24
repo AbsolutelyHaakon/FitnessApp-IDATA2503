@@ -341,7 +341,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
               double maxY = ((limitedData
                                   .map((entry) => entry.value)
                                   .reduce((a, b) => a > b ? a : b) +
-                              10) /
+                              5) /
                           10)
                       .ceil() *
                   10.0;
@@ -386,7 +386,9 @@ class _WeightBarChartState extends State<WeightBarChart> {
                           ),
                           rangeAnnotations: RangeAnnotations(
                             horizontalRangeAnnotations: [
-                              if (goalWeight != 0)
+                              if (goalWeight != 0 &&
+                                  goalWeight.toDouble() >= minY &&
+                                  goalWeight.toDouble() <= maxY)
                                 HorizontalRangeAnnotation(
                                   y1: goalWeight.toDouble(),
                                   y2: goalWeight.toDouble() - 1,
