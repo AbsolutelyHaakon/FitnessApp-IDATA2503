@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/pages/statistics%20and%20nutrition/calorie_burn_page.dart';
+import 'package:fitnessapp_idata2503/pages/statistics%20and%20nutrition/weight_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,23 +36,27 @@ class _RingsModuleState extends State<RingsModule> {
   double weightPercentage = 0.01;
   double calorieBurnPercentage = 0.01;
 
-  double waterGoal = 2000;
-  double calorieGoal = 2000;
-  double weightGoal = 2000;
-  double calorieBurnGoal = 2000;
+  int waterGoal = 2000;
+  int calorieGoal = 2000;
+  int weightGoal = 70;
+  int calorieBurnGoal = 2000;
 
   @override
   void initState() {
     super.initState();
-    fetchAllRingData();
+    fetchAllUserGoals();
   }
 
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userGoalsMap = await UserHealthDataDao()
-          .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
-      //TODO: Implement fetching user goals
+      var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+      waterGoal = userGoalsMap?["waterTarget"] ?? 1;
+      calorieGoal = userGoalsMap?["caloriesTarget"] ?? 1;
+      weightGoal = userGoalsMap?["weightTarget"] ?? 1;
+      calorieBurnGoal = userGoalsMap?["caloriesBurnedTarget"] ?? 1;
     }
+
+    fetchAllRingData();
   }
 
   Future<void> fetchAllRingData() async {
@@ -67,21 +73,23 @@ class _RingsModuleState extends State<RingsModule> {
       int todayWeight = 0;
 
       for (var entry in userData) {
-        DateTime date = DateTime(entry.date.year, entry.date.month, entry.date.day);
+        DateTime date = DateTime(
+            entry.date.year, entry.date.month, entry.date.day);
         if (date == todayDate && entry.waterIntake != null) {
           todayIntakew += entry.waterIntake!;
-          //todaycb += entry.caloriesBurned!;
-          //todayc += entry.caloriesIntake!;
+          todaycb += entry.caloriesBurned!;
+          todayc += entry.caloriesIntake!;
           todayWeight += entry.weight!;
         }
       }
 
       setState(() {
         waterPercentage = todayIntakew / waterGoal;
-        calorieBurnPercentage = 0.01 / calorieBurnGoal;
-        caloriePercentage = 0.01 / calorieGoal;
+        calorieBurnPercentage = todaycb / calorieBurnGoal;
+        caloriePercentage = todayc / calorieGoal;
         weightPercentage = todayWeight / weightGoal;
       });
+
     }
   }
 
@@ -102,7 +110,28 @@ class _RingsModuleState extends State<RingsModule> {
             CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                // Define the action when the button is pressed
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        WeightPage(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
               },
               child: SizedBox(
                 width: 70,
@@ -177,7 +206,7 @@ class _RingsModuleState extends State<RingsModule> {
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
                         valueColor:
-                            const AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF)),
+                        const AlwaysStoppedAnimation<Color>(Color(0xFFFFFFFF)),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),
@@ -235,7 +264,7 @@ class _RingsModuleState extends State<RingsModule> {
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
                         valueColor:
-                            const AlwaysStoppedAnimation<Color>(Color(0xFF11ABFF)),
+                        const AlwaysStoppedAnimation<Color>(Color(0xFF11ABFF)),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),
@@ -294,7 +323,7 @@ class _RingsModuleState extends State<RingsModule> {
                         strokeWidth: 8.0,
                         strokeCap: StrokeCap.round,
                         valueColor:
-                            const AlwaysStoppedAnimation<Color>(Color(0xFFCC4848)),
+                        const AlwaysStoppedAnimation<Color>(Color(0xFFCC4848)),
                         backgroundColor: AppColors.fitnessModuleColor,
                       ),
                     ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
+import '../../database/crud/user_dao.dart';
 import '../../database/tables/user_health_data.dart';
 import '../../styles.dart';
 
@@ -18,13 +19,24 @@ class HydrationPage extends StatefulWidget {
 class _HydrationPageState extends State<HydrationPage> {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   List<MapEntry<DateTime, int>> hourlyIntake = [];
-  final double goal = 2000.0; // Example goal in milliliters
+  double goal = 0; // Example goal in milliliters
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    fetchAllUserGoals();
     fetchHydrationData();
+  }
+
+  Future<void> fetchAllUserGoals() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+      var goalInt = userGoalsMap?["waterTarget"] ?? 1;
+      setState(() {
+        goal = goalInt.toDouble();
+      });
+    }
   }
 
   Future<void> fetchHydrationData() async {
