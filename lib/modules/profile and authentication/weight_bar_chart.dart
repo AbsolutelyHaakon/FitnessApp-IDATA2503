@@ -51,7 +51,9 @@ class _WeightBarChartState extends State<WeightBarChart> {
   void setWeightGoal(int weight) {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       UserDao().fireBaseUpdateUserData(FirebaseAuth.instance.currentUser!.uid,
-          '', 0, 0, weight.toDouble(), null, null);
+          '', 0, 0, weight.toDouble(), null, null,null,
+        null,
+        null,);
     }
     Navigator.of(context).pop();
     setState(() {});
@@ -67,6 +69,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
           null,
           weight,
           date,
+          null,
           null,
           null);
       weightController.clear();

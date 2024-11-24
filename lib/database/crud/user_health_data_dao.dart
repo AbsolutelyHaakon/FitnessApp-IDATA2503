@@ -79,13 +79,14 @@ class UserHealthDataDao {
 ////////////////////////////////////////////////////////////
 
   Future<void> fireBaseCreateUserHealthData(String userId, int? height,
-      int? weight, DateTime date, int? calories, int? waterIntake) async {
+      int? weight, DateTime date, int? caloriesIntake, int? caloriesBurned, int? waterIntake) async {
       await FirebaseFirestore.instance.collection('userHealthData').add({
         'userId': userId,
         'date': date,
         'weight': weight ?? 0,
         'height': height ?? 0,
-        'calories': calories ?? 0,
+        'caloriesIntake': caloriesIntake ?? 0,
+        'caloriesBurned': caloriesBurned ?? 0,
         'waterIntake': waterIntake ?? 0,
       });
   }
@@ -102,7 +103,6 @@ class UserHealthDataDao {
       data['userHealthDataId'] = doc.id;
       return UserHealthData.fromMap(data);
     }).toList();
-    print('Tiss tass3');
     return {'userHealthData': userHealthData};
   }
 }

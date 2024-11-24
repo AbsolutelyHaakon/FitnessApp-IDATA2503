@@ -7,6 +7,9 @@ class LocalUser {
   final double? height;
   final String? imageURL;
   final String? bannerURL;
+  final int? waterTarget;
+  final int? caloriesIntakeTarget;
+  final int? caloriesBurnedTarget;
 
   const LocalUser({
     required this.userId,
@@ -16,7 +19,10 @@ class LocalUser {
     this.targetWeight,
     this.height,
     this.imageURL,
-    this.bannerURL
+    this.bannerURL,
+    this.waterTarget,
+    this.caloriesIntakeTarget,
+    this.caloriesBurnedTarget,
   });
 
   // Convert a User object into a Map object
@@ -30,6 +36,9 @@ class LocalUser {
       'height': height,
       'imageURL': imageURL,
       'bannerURL': bannerURL,
+      'waterTarget': waterTarget,
+      'caloriesIntakeTarget': caloriesIntakeTarget,
+      'caloriesBurnedTarget': caloriesBurnedTarget,
     };
   }
 
@@ -44,6 +53,9 @@ class LocalUser {
       height: map['height'],
       imageURL: map['imageURL'],
       bannerURL: map['bannerURL'],
+      waterTarget: map['waterTarget'],
+      caloriesIntakeTarget: map['caloriesIntakeTarget'],
+      caloriesBurnedTarget: map['caloriesBurnedTarget'],
     );
   }
 
@@ -58,6 +70,9 @@ class LocalUser {
       height: map['height']?.toDouble(),
       imageURL: map['imageURL'],
       bannerURL: map['bannerURL'],
+      waterTarget: map['waterTarget'],
+      caloriesIntakeTarget: map['caloriesIntakeTarget'],
+      caloriesBurnedTarget: map['caloriesBurnedTarget'],
     );
   }
 

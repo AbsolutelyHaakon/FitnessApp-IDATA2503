@@ -135,6 +135,7 @@ class _HydrationPageState extends State<HydrationPage> {
                         null,
                         DateTime.now(),
                         null,
+                        null,
                         // if the current day has an entry, add the new intake to the largest existing intake
                         waterIntake,
                       );

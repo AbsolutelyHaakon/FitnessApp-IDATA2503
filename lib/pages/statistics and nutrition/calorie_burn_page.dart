@@ -149,6 +149,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage> {
                         null,
                         DateTime.now(),
                         null,
+                        null,
                         // if the current day has an entry, add the new intake to the largest existing intake
                         waterIntake,
                       );

@@ -6,7 +6,8 @@ class UserHealthData {
   final DateTime date;
   final int weight;
   final int? height;
-  final int? calories;
+  final int? caloriesIntake;
+  final int? caloriesBurned;
   final int? waterIntake;
 
   const UserHealthData({
@@ -15,7 +16,8 @@ class UserHealthData {
     required this.date,
     this.weight = 0,
     this.height = 0,
-    this.calories = 0,
+    this.caloriesIntake = 0,
+    this.caloriesBurned = 0,
     this.waterIntake = 0,
   });
 
@@ -26,7 +28,8 @@ class UserHealthData {
       'date': date.toIso8601String(),
       'weight': weight,
       'height': height,
-      'calories': calories,
+      'caloriesIntake': caloriesIntake,
+      'caloriesBurned': caloriesBurned,
       'waterIntake': waterIntake,
     };
   }
@@ -40,7 +43,8 @@ class UserHealthData {
         : DateTime.parse(map['date']),
     weight: map['weight'] ?? 0,
     height: map['height'] ?? 0,
-    calories: map['calories'] ?? 0,
+    caloriesIntake: map['caloriesIntake'] ?? 0,
+    caloriesBurned: map['caloriesBurned'] ?? 0,
     waterIntake: map['waterIntake'] ?? 0,
   );
 }

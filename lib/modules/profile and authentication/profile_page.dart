@@ -152,6 +152,9 @@ class _ProfilePageState extends State<ProfilePage> {
         0.0,
         _profileImage,
         _bannerImage,
+        null,
+        null,
+        null,
       );
     }
 

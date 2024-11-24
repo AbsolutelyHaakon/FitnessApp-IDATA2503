@@ -8,6 +8,9 @@ class FitnessAppDB {
       email STRING NOT NULL,
       weight DOUBLE,
       targetWeight DOUBLE,
+      waterTarget INTEGER,
+      caloriesIntakeTarget INTEGER,
+      caloriesBurnedTarget INTEGER,
       height DOUBLE,
       imageURL STRING,
       bannerURL STRING
@@ -19,7 +22,8 @@ class FitnessAppDB {
       weight INTEGER,
       height INTEGER,
       date DATE NOT NULL,
-      calories INTEGER,
+      caloriesIntake INTEGER,
+      caloriesBurned INTEGER,
       waterIntake INTEGER,
       FOREIGN KEY (userId) REFERENCES users (id)
     );''');
