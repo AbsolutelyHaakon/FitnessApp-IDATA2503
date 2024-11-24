@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:fitnessapp_idata2503/modules/floating_button_component.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/weight_bar_chart.dart';
@@ -57,7 +59,16 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
           null,
           null);
       Navigator.of(context).pop();
+      setState(() {});
     }
+  }
+
+  void setWeightGoal(int weight) {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      UserDao().fireBaseUpdateUserData(FirebaseAuth.instance.currentUser!.uid,
+          '', 0, 0, weight.toDouble(), null, null);
+    }
+    setState(() {});
   }
 
   void _onLoginSuccess(User? user) {
@@ -149,29 +160,53 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                         context: context,
                         builder: (BuildContext builder) {
                           return AlertDialog(
+                            backgroundColor: AppColors.fitnessModuleColor,
                             title: const Text('Insert Weight'),
-                            content: Column(
-                              children: [
-                                TextFormField(
-                                  controller: weightController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Weight',
-                                    hintText: 'Enter your weight',
+                            content: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextFormField(
+                                    cursorColor: Colors.white,
+                                    controller: weightController,
+                                    decoration: const InputDecoration(
+                                      hintStyle: TextStyle(color: Colors.white),
+                                      labelStyle: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                      suffixStyle:
+                                          TextStyle(color: Colors.white),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColors.fitnessMainColor),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColors.fitnessMainColor),
+                                      ),
+                                      labelText: 'Weight',
+                                      hintText: 'Enter your weight',
+                                    ),
+                                    keyboardType: TextInputType.number,
                                   ),
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Cancel'),
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                               TextButton(
                                 onPressed: onSave,
-                                child: const Text('Save'),
+                                child: const Text(
+                                  'Save',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ],
                           );
@@ -185,7 +220,7 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      'Update Calories',
+                      'Add Weight',
                       style: TextStyle(
                           fontSize: 16,
                           color: AppColors.fitnessBackgroundColor,
@@ -202,8 +237,66 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                 scale: _buttonAnimation,
                 child: GestureDetector(
                   onTap: () {
-                    // Redirect to another page (not created yet)
                     _toggleOptions();
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext builder) {
+                          return AlertDialog(
+                            backgroundColor: AppColors.fitnessModuleColor,
+                            title: const Text('Set Weight Goal'),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextFormField(
+                                    cursorColor: Colors.white,
+                                    controller: weightController,
+                                    decoration: const InputDecoration(
+                                      hintStyle: TextStyle(color: Colors.white),
+                                      labelStyle: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                      suffixStyle:
+                                          TextStyle(color: Colors.white),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColors.fitnessMainColor),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColors.fitnessMainColor),
+                                      ),
+                                      labelText: 'Weight',
+                                      hintText: 'Enter your weight goal',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setWeightGoal(int.parse(
+                                      weightController.text.toString()));
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  'Save',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          );
+                        });
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -213,7 +306,7 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      'Choose Preset',
+                      'Set Weight Goal',
                       style: TextStyle(
                           fontSize: 16,
                           color: Colors.black,
