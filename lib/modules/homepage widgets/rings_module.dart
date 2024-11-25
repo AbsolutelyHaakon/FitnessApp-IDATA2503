@@ -28,10 +28,10 @@ class RingsModule extends StatefulWidget {
   _RingsModuleState createState() => _RingsModuleState();
 }
 
-class _RingsModuleState extends State<RingsModule>
-    with SingleTickerProviderStateMixin {
+class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  bool _isDisposed = false;
 
   double waterPercentage = 0.01;
   double caloriePercentage = 0.01;
@@ -60,7 +60,9 @@ class _RingsModuleState extends State<RingsModule>
     );
 
     _animationController.addListener(() {
-      setState(() {});
+      if (!_isDisposed) {
+        setState(() {});
+      }
     });
 
     _animationController.forward();
@@ -68,6 +70,7 @@ class _RingsModuleState extends State<RingsModule>
 
   @override
   void dispose() {
+    _isDisposed = true;
     _animationController.dispose();
     super.dispose();
   }
@@ -128,21 +131,23 @@ class _RingsModuleState extends State<RingsModule>
         }
       }
 
-      setState(() {
-        waterPercentage = todayIntakew / waterGoal;
-        calorieBurnPercentage = todaycb / calorieBurnGoal;
-        caloriePercentage = todayc / calorieGoal;
-        if (todayWeight < weightGoal) {
-          weightPercentage =
-              (weightInitial - todayWeight) / (weightInitial - weightGoal);
-        } else {
-          weightPercentage =
-              (todayWeight - weightInitial) / (weightGoal - weightInitial);
-        }
-        if (weightPercentage.isInfinite) {
-          weightPercentage = 1;
-        }
-      });
+      if (!_isDisposed) {
+        setState(() {
+          waterPercentage = todayIntakew / waterGoal;
+          calorieBurnPercentage = todaycb / calorieBurnGoal;
+          caloriePercentage = todayc / calorieGoal;
+          if (todayWeight < weightGoal) {
+            weightPercentage =
+                (weightInitial - todayWeight) / (weightInitial - weightGoal);
+          } else {
+            weightPercentage =
+                (todayWeight - weightInitial) / (weightGoal - weightInitial);
+          }
+          if (weightPercentage.isInfinite) {
+            weightPercentage = 1;
+          }
+        });
+      }
     }
   }
 
