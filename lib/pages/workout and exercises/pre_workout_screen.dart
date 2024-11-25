@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
@@ -32,6 +33,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   late TextEditingController descriptionController;
   List<Exercises> exercises = [];
   Map<Exercises, WorkoutExercises> exerciseMap = {};
+  bool isAdmin = false;
 
   final WorkoutDao _workoutDao = WorkoutDao();
   Workouts workouts = const Workouts(
@@ -69,6 +71,13 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           TextEditingController(text: workouts.description);
       fetchExercises();
     }
+
+    await UserDao().getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
+        .then((value) {
+      setState(() {
+        isAdmin = value;
+      });
+    });
   }
 
   Future<void> fetchExercises() async {
@@ -90,6 +99,13 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     } catch (e) {
       print('Error fetching exercises: $e');
     }
+
+    await UserDao().getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
+        .then((value) {
+      setState(() {
+        isAdmin = value;
+      });
+    });
   }
 
   @override
@@ -124,7 +140,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           },
         ),
         actions: [
-          if (FirebaseAuth.instance.currentUser != null)
+          if (FirebaseAuth.instance.currentUser != null &&
+          (FirebaseAuth.instance.currentUser!.uid == workouts.userId || isAdmin))
             TextButton(
               onPressed: () async {
                 final result = await Navigator.push(

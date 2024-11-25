@@ -225,6 +225,17 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
+  Future<UserWorkouts> fireBaseFetchUserWorkoutById(String userWorkoutId) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('userWorkouts')
+        .doc(userWorkoutId)
+        .get();
+
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    data['userWorkoutId'] = doc.id;
+    return UserWorkouts.fromMap(data);
+  }
+
   Future<String?> fireBaseCreateUserWorkout(
       String userId, String workoutId, DateTime date) async {
     DocumentReference docRef =
