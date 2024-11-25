@@ -11,32 +11,31 @@ import '../tables/workout.dart';
 class UserWorkoutsDao {
   final tableName = 'userWorkouts';
 
+  Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
+    final database = await DatabaseService().database;
 
+    // Check if userWorkoutId is "1" and generate a unique ID if necessary
+    if (userWorkout.userWorkoutId == "1") {
+      userWorkout = UserWorkouts(
+        userWorkoutId:
+            '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(1000)}',
+        userId: userWorkout.userId,
+        workoutId: userWorkout.workoutId,
+        date: userWorkout.date,
+        duration: userWorkout.duration,
+        statistics: userWorkout.statistics,
+        isActive: userWorkout.isActive,
+      );
+    }
 
-Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
-  final database = await DatabaseService().database;
-
-  // Check if userWorkoutId is "1" and generate a unique ID if necessary
-  if (userWorkout.userWorkoutId == "1") {
-    userWorkout = UserWorkouts(
-      userWorkoutId: '${DateTime.now().millisecondsSinceEpoch}${Random().nextInt(1000)}',
-      userId: userWorkout.userId,
-      workoutId: userWorkout.workoutId,
-      date: userWorkout.date,
-      duration: userWorkout.duration,
-      statistics: userWorkout.statistics,
-      isActive: userWorkout.isActive,
+    await database.insert(
+      tableName,
+      userWorkout.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    return userWorkout;
   }
-
-  await database.insert(
-    tableName,
-    userWorkout.toMap(),
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
-
-  return userWorkout;
-}
 
   Future<int> localUpdate(UserWorkouts userWorkout) async {
     final database = await DatabaseService().database;
@@ -178,7 +177,8 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
     );
   }
 
-  Future<void> localSetActive(String workoutId, DateTime date, bool isActive) async {
+  Future<void> localSetActive(
+      String workoutId, DateTime date, bool isActive) async {
     final database = await DatabaseService().database;
     await database.update(
       tableName,
@@ -188,7 +188,8 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
     );
   }
 
-  Future<void> localUpdateActive(UserWorkouts userWorkout, bool isActive) async {
+  Future<void> localUpdateActive(
+      UserWorkouts userWorkout, bool isActive) async {
     final database = await DatabaseService().database;
     await database.update(
       tableName,
@@ -248,8 +249,8 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
     return newDocId;
   }
 
-  bool fireBaseUpdateUserWorkout(String userId, String workoutId,
-      DateTime date, String? workoutStats, int duration) {
+  bool fireBaseUpdateUserWorkout(String userId, String workoutId, DateTime date,
+      String? workoutStats, int duration) {
     DateTime startOfDay = DateTime(date.year, date.month, date.day);
     DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
@@ -283,10 +284,13 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
   }
 
   Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {
+    DateTime startOfDay =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
     QuerySnapshot upcomingWorkoutsQuery = await FirebaseFirestore.instance
         .collection('userWorkouts')
         .where('userId', isEqualTo: uid)
-        .where('date', isGreaterThanOrEqualTo: DateTime.now())
+        .where('date', isGreaterThanOrEqualTo: startOfDay)
         .get();
 
     List<UserWorkouts> upcomingWorkouts = upcomingWorkoutsQuery.docs.map((doc) {
@@ -322,7 +326,7 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
     return false;
   }
 
-  Future<Map<String, dynamic>> fireBaseFetchPreviousWorkouts (String uid) async {
+  Future<Map<String, dynamic>> fireBaseFetchPreviousWorkouts(String uid) async {
     QuerySnapshot previousWorkoutsQuery = await FirebaseFirestore.instance
         .collection('userWorkouts')
         .where('userId', isEqualTo: uid)
