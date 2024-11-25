@@ -41,7 +41,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
   void fetchAllWorkouts(String category) async {
     List<Workouts> workoutsData = await _workoutDao
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid,true);
     if (!mounted) return;
 
     // Filter workouts based on _previousWorkouts
@@ -54,8 +54,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
       _workouts.clear();
       _workouts = filteredWorkouts;
     });
-    // Print filtered workouts
-    print(_workouts);
+
     addWorkoutDetails();
   }
 

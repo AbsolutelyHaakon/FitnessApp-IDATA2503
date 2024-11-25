@@ -47,6 +47,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
     duration: 30,
     isPrivate: false,
     userId: '1',
+    isDeleted: false,
   );
 
   Duration countdownDuration = Duration(minutes: 3);

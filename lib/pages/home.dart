@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
 Map<Workouts, DateTime> workoutMap = {
-  const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123'): DateTime(1970, 1, 1),
+  const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123', isDeleted: false): DateTime(1970, 1, 1),
 };
 
   @override

@@ -11,6 +11,7 @@ class Workouts {
   final bool isPrivate;
   final String userId;
   final bool isActive = false;
+  final bool isDeleted;
 
   const Workouts({
     required this.workoutId,
@@ -24,6 +25,7 @@ class Workouts {
     this.videoUrl,
     required this.isPrivate,
     required this.userId,
+    required this.isDeleted,
   });
 
   // Convert a Workout object into a Map object
@@ -40,6 +42,7 @@ class Workouts {
       'videoUrl': videoUrl,
       'isPrivate': isPrivate ? 1 : 0,
       'userId': userId,
+      'isDeleted': isDeleted ? 1 : 0,
     };
   }
 
@@ -57,6 +60,7 @@ class Workouts {
       videoUrl: map['videoUrl'],
       isPrivate: map['isPrivate'] == 1,
       userId: map['userId'],
+      isDeleted: map['isDeleted'] == 1,
     );
   }
 
@@ -74,6 +78,7 @@ class Workouts {
       videoUrl: map['videoUrl'],
       isPrivate: map['isPrivate'] == 1,
       userId: map['userId'],
+      isDeleted: map['isDeleted'] == 1,
     );
   }
 

@@ -41,6 +41,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     duration: 30,
     isPrivate: false,
     userId: '1',
+    isDeleted: false,
   );
 
   @override

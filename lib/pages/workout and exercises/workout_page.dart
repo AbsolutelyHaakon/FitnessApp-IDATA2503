@@ -76,7 +76,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     workoutsMap.clear();
     fetchFavorites();
     workouts = await WorkoutDao()
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid ?? 'localUser', false);
     if (category != "All" && category != "Starred") {
       workouts =
           workouts.where((element) => element.category == category).toList();

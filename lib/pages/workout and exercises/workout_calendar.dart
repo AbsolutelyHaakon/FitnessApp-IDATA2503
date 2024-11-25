@@ -20,11 +20,12 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  Workouts _selectedWorkout = Workouts(
+  Workouts _selectedWorkout = const Workouts(
     userId: 'exampleUserId',
     workoutId: 'exampleId',
     name: 'exampleName',
     isPrivate: false,
+    isDeleted: false,
   );
   List<Workouts> _workouts = [];
   List<Workouts> _filteredWorkouts = [];
@@ -55,7 +56,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   void fetchAllWorkouts(String category) async {
     List<Workouts> wourkoutsData = await WorkoutDao()
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid,false);
     if (!mounted) return;
     setState(() {
       _workouts.clear();
