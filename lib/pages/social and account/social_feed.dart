@@ -55,8 +55,7 @@ class _SocialFeedState extends State<SocialFeed>
   }
 
   Future<void> _refreshFeed() async {
-    // TODO: Implement refresh logic here
-    await Future.delayed(const Duration(seconds: 2));
+    await getFeed();
   }
 
   Future<void> getFeed() async {
