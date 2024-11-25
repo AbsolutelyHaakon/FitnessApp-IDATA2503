@@ -1,32 +1,31 @@
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'workout_log.dart';
 
-// Last edited: 04.11.2024
+// Last edited: 25.11.2024
 // Last edited by: Di Xie
 
 class DetailedWorkoutLog extends StatelessWidget {
-  final String title;
-  final String category;
-  final DateTime date;
-  final String duration;
+  final MapEntry<UserWorkouts, Workouts> workoutMapEntry;
 
   const DetailedWorkoutLog({
     Key? key,
-    required this.title,
-    required this.category,
-    required this.date,
-    required this.duration,
+    required this.workoutMapEntry,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final userWorkout = workoutMapEntry.key;
+    final workout = workoutMapEntry.value;
+
     // Format the date to be displayed in the app bar
-    String appBarTitle = DateFormat('dd MMMM yyyy').format(date);
+    String appBarTitle = DateFormat('dd MMMM yyyy').format(userWorkout.date);
     // Format the date to exclude the time part
-    String formattedDate = DateFormat('dd.MM.yyyy').format(date);
+    String formattedDate = DateFormat('dd.MM.yyyy').format(userWorkout.date);
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +46,7 @@ class DetailedWorkoutLog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Title: $title',
+              'Title: ${workout.name}',
               style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -55,7 +54,7 @@ class DetailedWorkoutLog extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Category/Type/IDFK XD: $category',
+              'Category: ${workout.category}',
               style: const TextStyle(
                   fontSize: 18, color: AppColors.fitnessSecondaryTextColor),
             ),
@@ -67,7 +66,7 @@ class DetailedWorkoutLog extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Duration: $duration',
+              'Duration: ${userWorkout.duration} minutes',
               style: const TextStyle(
                   fontSize: 18, color: AppColors.fitnessPrimaryTextColor),
             ),

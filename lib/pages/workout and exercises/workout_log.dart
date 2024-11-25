@@ -281,10 +281,7 @@ Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkou
       } else {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => DetailedWorkoutLog(
-            title: workout.name,
-            category: workout.description ?? '',
-            date: userWorkout.date,
-            duration: workout.duration.toString(),
+            workoutMapEntry: workoutMapEntry,
           ),
         ));
       }
