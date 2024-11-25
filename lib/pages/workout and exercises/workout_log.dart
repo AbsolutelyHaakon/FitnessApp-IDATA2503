@@ -1,3 +1,7 @@
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/detailed_workout_log.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -9,19 +13,92 @@ class WorkoutLog extends StatefulWidget {
   const WorkoutLog({super.key});
 
   @override
-  State<WorkoutLog> createState() {
-    return _WorkoutLogState();
-  }
+  _WorkoutLogState createState() => _WorkoutLogState();
 }
 
 class _WorkoutLogState extends State<WorkoutLog> {
-
   bool isAscending = false;
   String _selectedFilter = 'All';
-  final List<String> _filterOptions = ['Day','Week', 'Month', 'Year', 'All',];
+  final List<String> _filterOptions = [
+    'Day',
+    'Week',
+    'Month',
+    'Year',
+    'All',
+  ];
+  List<Workouts> _workouts = [];
+  List<UserWorkouts> _previousWorkouts = [];
+  final WorkoutDao _workoutDao = WorkoutDao();
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPreviousWorkouts();
+  }
+
+  void fetchAllWorkouts(String category) async {
+    List<Workouts> workoutsData = await _workoutDao
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+    if (!mounted) return;
+
+    // Filter workouts based on _previousWorkouts
+    List<Workouts> filteredWorkouts = workoutsData.where((workout) {
+      return _previousWorkouts.any((value) => value.workoutId == workout.workoutId);
+    }).toList();
+
+    setState(() {
+      _workouts.clear();
+      _workouts = filteredWorkouts;
+    });
+    // Print filtered workouts
+    print(_workouts);
+    addWorkoutDetails();
+  }
+
+  Future<void> fetchPreviousWorkouts() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      final result = await _userWorkoutsDao.fireBaseFetchPreviousWorkouts(
+          FirebaseAuth.instance.currentUser!.uid);
+      setState(() {
+        _previousWorkouts = result['previousWorkouts'];
+      });
+      fetchAllWorkouts('All');
+      print(_previousWorkouts);
+    }
+  }
+
+
+  void printPreviousWorkoutDate() {
+    for (var workout in _previousWorkouts) {
+      print(workout.date);
+    }
+  }
+
+  void addWorkoutDetails() {
+    _dummyWorkout.clear();
+    for (var workout in _workouts) {
+      DateTime prevWorkout = _previousWorkouts.where((value) =>
+      value.workoutId == workout.workoutId).first.date;
+      print(formatDate(prevWorkout));
+
+      _dummyWorkout.add({
+        'title': workout.name,
+        'subtitle': workout.description,
+        'duration': workout.duration.toString(),
+        'date': formatDate(prevWorkout),
+        'icon': Icons.fitness_center, //Default icon, should we add storage of icons?
+      });
+    }
+  }
+
+  //For formatting the date to a string format dd/mm/yyyy
+  String formatDate(DateTime date) {
+    return DateFormat('dd.MM.yyyy').format(date);
+  }
 
   // Dummy data for workouts
-  final List<Map<String, dynamic>> _workouts = [
+  final List<Map<String, dynamic>> _dummyWorkout = [
     {
       'title': 'Legs',
       'subtitle': 'Try to move challenge',
@@ -29,69 +106,23 @@ class _WorkoutLogState extends State<WorkoutLog> {
       'date': '01.11.2024',
       'icon': Icons.assist_walker,
     },
-    {
-      'title': 'Hike',
-      'subtitle': '0.10 km',
-      'duration': '00:30:20',
-      'date': '01.11.2024',
-      'icon': Icons.hiking,
-    },
-    {
-      'title': 'Arms & Chest',
-      'subtitle': 'Push',
-      'duration': '01:39:41',
-      'date': '31.10.2024',
-      'icon': Icons.fitness_center,
-    },
-    {
-      'title': 'Arms',
-      'subtitle': 'Pull',
-      'duration': '01:00:00',
-      'date': '15.07.2024',
-      'icon': Icons.personal_injury,
-    },
-    {
-      'title': 'Arms',
-      'subtitle': 'Pull',
-      'duration': '01:00:00',
-      'date': '15.06.2024',
-      'icon': Icons.personal_injury,
-    },
-    {
-      'title': 'Arms',
-      'subtitle': 'Pull',
-      'duration': '01:00:00',
-      'date': '15.07.2023',
-      'icon': Icons.personal_injury,
-    },
-    {
-      'title': 'Arms',
-      'subtitle': 'Pull',
-      'duration': '01:00:00',
-      'date': '15.08.1999',
-      'icon': Icons.personal_injury,
-    },
-    {
-      'title': 'Arms',
-      'subtitle': 'Pull',
-      'duration': '01:00:00',
-      'date': '15.08.1964',
-      'icon': Icons.personal_injury,
-    },
-    {
-      'title': 'Arms',
-      'subtitle': 'Pull',
-      'duration': '01:00:00',
-      'date': '15.08.2002',
-      'icon': Icons.personal_injury,
-    },
   ];
 
   // Function to map month number to month name
   String _getMonthName(String monthNumber) {
     const List<String> monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     int monthIndex = int.parse(monthNumber) - 1;
     return monthNames[monthIndex];
@@ -105,7 +136,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
         backgroundColor: AppColors.fitnessBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -119,7 +151,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
                 items: _filterOptions.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+                    child: Text(value,
+                        style: Theme.of(context).textTheme.bodyMedium),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -129,7 +162,11 @@ class _WorkoutLogState extends State<WorkoutLog> {
                 },
               ),
               IconButton(
-                icon: Icon(isAscending ? Icons.arrow_upward : Icons.arrow_downward, color: isAscending ? AppColors.fitnessPrimaryTextColor : AppColors.fitnessMainColor),
+                icon: Icon(
+                    isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                    color: isAscending
+                        ? AppColors.fitnessPrimaryTextColor
+                        : AppColors.fitnessMainColor),
                 onPressed: () {
                   setState(() {
                     isAscending = !isAscending; // Toggle sorting order
@@ -144,7 +181,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Padding(
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Workout log',
@@ -167,7 +204,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
     );
   }
 
-
   // Filters the workout based on the selected filter
   List<Map<String, dynamic>> _filterWorkouts() {
     final DateTime now = DateTime.now();
@@ -189,12 +225,14 @@ class _WorkoutLogState extends State<WorkoutLog> {
         break;
       case 'All':
       default:
-        return _workouts; // Return all
+        return _dummyWorkout; // Return all
     }
     // Filter the workouts based on the selected date range
-    return _workouts.where((workout) {
-      final DateTime workoutDate = DateFormat('dd.MM.yyyy').parse(workout['date']);
-      return workoutDate.isAfter(startDate) && workoutDate.isBefore(now.add(const Duration(days: 1)));
+    return _dummyWorkout.where((workout) {
+      final DateTime workoutDate =
+      DateFormat('dd.MM.yyyy').parse(workout['date']);
+      return workoutDate.isAfter(startDate) &&
+          workoutDate.isBefore(now.add(const Duration(days: 1)));
     }).toList();
   }
 
@@ -265,7 +303,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
         required String duration,
         required String date,
         required IconData icon}) {
-    return InkWell( // Box that likes touching.
+    return InkWell(
+      // Box that likes touching.
       onTap: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => DetailedWorkoutLog(
@@ -315,7 +354,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
                   ),
                   Text(
                     _isToday(date) ? 'Today' : date,
-                      style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
