@@ -261,38 +261,40 @@ class UserWorkoutsDao {
   }
 
   bool fireBaseUpdateUserWorkout(String userId, String workoutId, DateTime date,
-      String? workoutStats, int duration) {
-    DateTime startOfDay = DateTime(date.year, date.month, date.day);
-    DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+    String? workoutStats, int duration) {
+  DateTime startOfDay = DateTime(date.year, date.month, date.day);
+  DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-    FirebaseFirestore.instance
-        .collection('userWorkouts')
-        .where('userId', isEqualTo: userId)
-        .where('workoutId', isEqualTo: workoutId)
-        .where('date', isGreaterThanOrEqualTo: startOfDay)
-        .where('date', isLessThanOrEqualTo: endOfDay)
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        element.reference.update({
-          'statistics': workoutStats,
-          'duration': duration,
-        });
+  FirebaseFirestore.instance
+      .collection('userWorkouts')
+      .where('userId', isEqualTo: userId)
+      .where('workoutId', isEqualTo: workoutId)
+      .where('date', isGreaterThanOrEqualTo: startOfDay)
+      .where('date', isLessThanOrEqualTo: endOfDay)
+      .orderBy('date', descending: true)
+      .limit(1)
+      .get()
+      .then((value) {
+    if (value.docs.isNotEmpty) {
+      value.docs.first.reference.update({
+        'statistics': workoutStats,
+        'duration': duration,
       });
-    });
+    }
+  });
 
-    localUpdate(UserWorkouts(
-      userWorkoutId: '',
-      userId: userId,
-      workoutId: workoutId,
-      date: date,
-      duration: duration.toDouble(),
-      statistics: workoutStats,
-      isActive: false,
-    ));
+  localUpdate(UserWorkouts(
+    userWorkoutId: '',
+    userId: userId,
+    workoutId: workoutId,
+    date: date,
+    duration: duration.toDouble(),
+    statistics: workoutStats,
+    isActive: false,
+  ));
 
-    return true;
-  }
+  return true;
+}
 
   Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {
     DateTime startOfDay =
