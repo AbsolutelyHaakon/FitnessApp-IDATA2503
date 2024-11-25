@@ -80,6 +80,21 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
     }
   }
 
+  Future<UserWorkouts?> localFetchByUserWorkoutsId(String userWorkoutId) async {
+    final database = await DatabaseService().database;
+    final List<Map<String, dynamic>> maps = await database.query(
+      tableName,
+      where: 'userWorkoutId = ?',
+      whereArgs: [userWorkoutId],
+    );
+
+    if (maps.isNotEmpty) {
+      return UserWorkouts.fromMap(maps.first);
+    } else {
+      return null;
+    }
+  }
+
   Future<void> localDelete(String userId, String workoutId) async {
     final database = await DatabaseService().database;
     await database.delete(
