@@ -242,13 +242,10 @@ Future<void> fireBaseFirstTimeStartup() async {
 
     // if there exists userWorkouts with that workoutId we dont want to delete them, just set them as inactive
     if (querySnapshot.docs.isNotEmpty) {
-      print("Setting userWorkouts as inactive");
-      querySnapshot.docs.forEach((doc) async {
-        await FirebaseFirestore.instance
-            .collection('userWorkouts')
-            .doc(doc.id)
-            .update({'isDeleted': true});
-      });
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(WorkoutId)
+          .update({'isDeleted': false});
       localSetDeleted(WorkoutId);
     } else {
       await FirebaseFirestore.instance
