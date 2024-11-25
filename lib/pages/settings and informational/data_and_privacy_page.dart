@@ -51,7 +51,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage> with SingleTick
 }
 
   Future<void> _fetchWorkoutData() async {
-    final temp = await _workoutDao.localFetchAllById(FirebaseAuth.instance.currentUser!.uid,true);
+    final temp = await _workoutDao.localFetchAllById(FirebaseAuth.instance.currentUser!.uid);
   }
 
 

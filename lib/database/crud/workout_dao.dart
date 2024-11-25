@@ -85,43 +85,46 @@ class WorkoutDao {
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
 
-  // TODO CREATE A PUBLIC WORKOUT FETCH
-  Future<List<Workouts>> localFetchAllById(String? id, bool isLog) async {
-    final database = await DatabaseService().database;
-    if (id != null && id.isNotEmpty) {
-      final privateData = await database.query(
-        tableName,
-        where: 'userId = ? AND isDeleted = ?',
-        whereArgs: [id,isLog],
-      );
-      final publicData = await database.query(
-        tableName,
-        where: 'isPrivate = ? AND userId = ? AND isDeleted = ?',
-        whereArgs: [0, '',isLog],
-      );
-      return [...privateData, ...publicData]
-          .map((entry) => Workouts.fromMap(entry))
-          .toList();
-    } else {
-      final data = await database.query(
-        tableName,
-        where:
-            '(isPrivate = ? AND userId = ? AND isDeleted = ?) OR (isPrivate = ? AND userId = ? AND isDeleted = ?)',
-        whereArgs: [0, '',isLog, 1, '',isLog],
-      );
-      return data.map((entry) => Workouts.fromMap(entry)).toList();
-    }
-  }
 
-  Future<Workouts> localFetchByWorkoutId(String workoutId) async {
-    final database = await DatabaseService().database;
+  Future<List<Workouts>> localFetchAllById(String? id) async {
+  final database = await DatabaseService().database;
+  if (id != null && id.isNotEmpty) {
+    final privateData = await database.query(
+      tableName,
+      where: 'userId = ? AND isDeleted = ?',
+      whereArgs: [id, 0],
+    );
+    final publicData = await database.query(
+      tableName,
+      where: 'isPrivate = ? AND userId = ? AND isDeleted = ?',
+      whereArgs: [0, '', 0],
+    );
+    return [...privateData, ...publicData]
+        .map((entry) => Workouts.fromMap(entry))
+        .toList();
+  } else {
     final data = await database.query(
       tableName,
-      where: 'workoutId = ?',
-      whereArgs: [workoutId],
+      where: '(isPrivate = ? AND userId = ? AND isDeleted = ?) OR (isPrivate = ? AND userId = ? AND isDeleted = ?)',
+      whereArgs: [0, '', 0, 1, '', 0],
     );
-    return Workouts.fromMap(data.first);
+    return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
+}
+
+  Future<Workouts?> localFetchByWorkoutId(String workoutId) async {
+  final database = await DatabaseService().database;
+  final data = await database.query(
+    tableName,
+    where: 'workoutId = ?',
+    whereArgs: [workoutId],
+  );
+  if (data.isNotEmpty) {
+    return Workouts.fromMap(data.first);
+  } else {
+    return null;
+  }
+}
 
   Future<void> localDelete(String id) async {
     final database = await DatabaseService().database;
@@ -245,7 +248,7 @@ Future<void> fireBaseFirstTimeStartup() async {
       await FirebaseFirestore.instance
           .collection('workouts')
           .doc(WorkoutId)
-          .update({'isDeleted': false});
+          .update({'isDeleted': true});
       localSetDeleted(WorkoutId);
     } else {
       await FirebaseFirestore.instance
@@ -304,7 +307,8 @@ Future<void> fireBaseFirstTimeStartup() async {
     if (userId ==null) {return;}
 
     // Update it locally
-    Workouts previousWorkout = await localFetchByWorkoutId(workoutId);
+    Workouts? previousWorkout = await localFetchByWorkoutId(workoutId);
+    if (previousWorkout == null) {return;}
     Workouts updatedWorkout = Workouts(
       workoutId: workoutId,
       category: category ?? previousWorkout.category,

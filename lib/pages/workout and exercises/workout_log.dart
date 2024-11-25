@@ -40,8 +40,14 @@ class _WorkoutLogState extends State<WorkoutLog> {
   }
 
   void fetchAllWorkouts(String category) async {
-    List<Workouts> workoutsData = await _workoutDao
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid,true);
+    List<Workouts> workoutsData = [];
+    for (var userWorkout in _previousWorkouts) {
+      Workouts? temp =
+          await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
+      if (temp != null) {
+        workoutsData.add(temp);
+      }
+    }
     if (!mounted) return;
 
     // Filter workouts based on _previousWorkouts
@@ -103,6 +109,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
         'date': formatDate(prevWorkout),
         'icon': _getIconForCategory(workout.category!),
       });
+
+      print("dummyWorkout: $_dummyWorkout");
     }
   }
 

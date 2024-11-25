@@ -46,6 +46,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   Future<void> fetchWorkoutNames() async {
     _upcomingWorkouts.forEach((workout) {
       _workoutDao.localFetchByWorkoutId(workout.workoutId).then((value) {
+        if (value == null) return;
         setState(() {
           _userWorkoutsMap[workout] = '${value.name} - ${value.description}';
         });
@@ -56,7 +57,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   void fetchAllWorkouts(String category) async {
     List<Workouts> wourkoutsData = await WorkoutDao()
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid,false);
+        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
     if (!mounted) return;
     setState(() {
       _workouts.clear();

@@ -59,7 +59,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   }
 
   _getWorkoutData() async {
-    workouts = await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+    Workouts? temp = await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+    workouts = temp ?? workouts;
     if (workouts.workoutId != '0'){
       nameController = TextEditingController(text: workouts.name);
       categoryController = TextEditingController(text: workouts.category);
