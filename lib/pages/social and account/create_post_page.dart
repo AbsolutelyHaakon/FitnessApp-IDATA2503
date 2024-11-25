@@ -60,7 +60,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     final result = await _postsDao.fireBaseCreatePost(
       _message,
       _selectedImage,
-      "", // TODO: implement workout
+      _workoutId,
       _location,
       _workoutStats,
       FirebaseAuth.instance.currentUser!.uid,
@@ -158,7 +158,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                               ),
                             );
                             if (result != null) {
-                              print('Selected userWorkoutId: $result');
+                              _workoutId = result;
+                          
                             }
                           },
                           style: TextButton.styleFrom(

@@ -320,7 +320,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                       ?.uid ?? '',
                                   workoutId: widget.workouts!.workoutId,
                                   date: DateTime.now(),
-                                  duration: 0,
+                                  duration: 0.0,
                                   statistics: '',
                                   isActive: true,
                                 ));

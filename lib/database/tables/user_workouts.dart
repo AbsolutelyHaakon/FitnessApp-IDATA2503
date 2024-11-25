@@ -40,9 +40,8 @@ class UserWorkouts {
       date: map['date'] is Timestamp
           ? (map['date'] as Timestamp).toDate()
           : DateTime.parse(map['date']),
-      duration: map['duration'],
-      statistics:
-          map['statistics'] != null ? jsonDecode(map['statistics']) : null,
+      duration: map['duration'] != null ? (map['duration'] as num).toDouble() : null,
+      statistics: map['statistics'] is String ? map['statistics'] : jsonEncode(map['statistics']),
       isActive: map['isActive'] == 1,
     );
   }

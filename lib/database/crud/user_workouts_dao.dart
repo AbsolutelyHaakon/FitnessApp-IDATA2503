@@ -240,7 +240,7 @@ Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
       userId: userId,
       workoutId: workoutId,
       date: date,
-      duration: 0,
+      duration: 0.0,
       statistics: '',
       isActive: false,
     ));
