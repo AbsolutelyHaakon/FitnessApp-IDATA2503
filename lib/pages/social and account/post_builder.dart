@@ -95,17 +95,20 @@ class _PostBuilderState extends State<PostBuilder> {
           padding: const EdgeInsets.only(left: 10.0),
           child: Row(
             children: [
-              if(!widget.isProfile)
-              CircleAvatar(
-                backgroundImage: NetworkImage(profileImageUrl),
-              ),
+              if (!widget.isProfile)
+                CircleAvatar(
+                  backgroundImage: profileImageUrl.isNotEmpty
+                      ? NetworkImage(profileImageUrl)
+                      : const AssetImage('assets/images/placeholder.png')
+                          as ImageProvider,
+                ),
               SizedBox(width: 10.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if(!widget.isProfile)
-                  Text(name,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  if (!widget.isProfile)
+                    Text(name,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                     DateFormat('d\'th\' of MMMM').format(date),
                     style: const TextStyle(
