@@ -110,8 +110,8 @@ class _WeightBarChartState extends State<WeightBarChart> {
         var userDataMap = await UserDao()
             .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
 
-        if (userDataMap != null && userDataMap.containsKey('targetWeight')) {
-          return (userDataMap['targetWeight'] as double).toInt();
+        if (userDataMap != null && userDataMap.containsKey('weightTarget')) {
+          return userDataMap['weightTarget'];
         }
       } catch (e) {
         print('Error fetching goal weight: $e');
