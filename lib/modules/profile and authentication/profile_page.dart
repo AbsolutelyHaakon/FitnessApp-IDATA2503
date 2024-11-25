@@ -55,12 +55,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadUserPosts() async {
-    final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
+  final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
 
-    setState(() {
-      _posts = postsData["posts"];
-    });
-  }
+  setState(() {
+    _posts = postsData["posts"];
+    _posts.sort((a, b) => b.date.compareTo(a.date));
+  });
+}
 
   Future<void> _loadUserData() async {
     final user = await _userDao.fireBaseGetUserData(widget.userId);
@@ -71,10 +72,6 @@ class _ProfilePageState extends State<ProfilePage> {
       bannerURL = user?["bannerURL"] ?? "";
     });
 
-    print(name);
-    print(widget.userId);
-    print(imageURL);
-    print(bannerURL);
   }
 
   Future<void> _loadFollowerData() async {
