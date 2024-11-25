@@ -115,12 +115,13 @@ class _WeightPageState extends State<WeightPage>
             dailyIntake[date] = entry.weight!;
           }
         }
-        if ((weightInitial - todayWeight).abs() < (weightInitial - weightGoal).abs()) {
-          weightPercentage =
-              (weightInitial - todayWeight).abs() / (weightInitial - weightGoal).abs();
+        if ((weightInitial - todayWeight).abs() <
+            (weightInitial - weightGoal).abs()) {
+          weightPercentage = (weightInitial - todayWeight).abs() /
+              (weightInitial - weightGoal).abs();
         } else {
-          weightPercentage =
-              (todayWeight - weightInitial).abs() / (weightGoal - weightInitial).abs();
+          weightPercentage = (todayWeight - weightInitial).abs() /
+              (weightGoal - weightInitial).abs();
         }
       });
     }
@@ -235,55 +236,74 @@ class _WeightPageState extends State<WeightPage>
                         children: [
                           SizedBox(
                             height: 200,
-                            child: SizedBox(
-                              width: 210,
-                              height: 210,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 180.0,
-                                    height: 180.0,
-                                    child: CircularProgressIndicator(
-                                      value: _animation.value * weightPercentage,
-                                      strokeWidth: 18.0,
-                                      strokeCap: StrokeCap.round,
-                                      valueColor: const AlwaysStoppedAnimation<Color>(
-                                          AppColors.fitnessMainColor),
-                                      backgroundColor: AppColors.fitnessModuleColor,
-                                    ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 210,
+                                  height: 210,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 180.0,
+                                        height: 180.0,
+                                        child: CircularProgressIndicator(
+                                          value: _animation.value *
+                                              weightPercentage,
+                                          strokeWidth: 18.0,
+                                          strokeCap: StrokeCap.round,
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                      Color>(
+                                                  AppColors.fitnessMainColor),
+                                          backgroundColor:
+                                              AppColors.fitnessModuleColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        weightInitial > weightGoal
+                                            ? '${(weightInitial - weightGoal - (weightInitial - todayWeight)).abs().toStringAsFixed(1)} Kg'
+                                            : '${(weightGoal - weightInitial - (todayWeight - weightInitial)).abs().toStringAsFixed(1)} Kg',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                      Text(
+                                        weightInitial > weightGoal
+                                            ? 'Lose\n\n\n'
+                                            : 'Gain\n\n\n',
+                                        style: const TextStyle(
+                                          color: AppColors
+                                              .fitnessSecondaryTextColor,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      )
+                                    ],
                                   ),
-
-                                  Text(
-                                    weightInitial > weightGoal
-                                        ? '${(weightInitial - weightGoal - (weightInitial - todayWeight)).abs().toStringAsFixed(1)} Kg'
-                                        : '${(weightGoal - weightInitial - (todayWeight - weightInitial)).abs().toStringAsFixed(1)} Kg',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
+                                ),
+                                const SizedBox(width: 20),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      weightPercentage >= 1
+                                          ? 'Congratulations! Goal Reached!'
+                                          : 'Current: ${todayWeight.toStringAsFixed(1)} Kg \nGoal: ${goal.toStringAsFixed(1)} Kg',
+                                      style: const TextStyle(
+                                        color:
+                                            AppColors.fitnessSecondaryTextColor,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                      textAlign: TextAlign.left,
                                     ),
-                                  ),
-                                  Text(
-                                    weightInitial > weightGoal
-                                        ? '\n\n\nTo Lose'
-                                        : '\n\n\nTo Gain',
-                                    style: TextStyle(
-                                      color: AppColors.fitnessSecondaryTextColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Goal: ${goal.toStringAsFixed(1)} Kg',
-                            style: const TextStyle(
-                              color: AppColors.fitnessSecondaryTextColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w900,
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 46),
@@ -293,10 +313,14 @@ class _WeightPageState extends State<WeightPage>
                               BarChartData(
                                 alignment: BarChartAlignment.spaceAround,
                                 minY: dailyIntake.values.isNotEmpty
-                                    ? dailyIntake.values.reduce((a, b) => a < b ? a : b).toDouble()
+                                    ? dailyIntake.values
+                                        .reduce((a, b) => a < b ? a : b)
+                                        .toDouble()
                                     : 0.0,
                                 maxY: dailyIntake.values.isNotEmpty
-                                    ? dailyIntake.values.reduce((a, b) => a > b ? a : b).toDouble()
+                                    ? dailyIntake.values
+                                        .reduce((a, b) => a > b ? a : b)
+                                        .toDouble()
                                     : 3.0,
                                 barTouchData: BarTouchData(enabled: false),
                                 titlesData: FlTitlesData(
@@ -375,25 +399,29 @@ class _WeightPageState extends State<WeightPage>
                               String formattedDate =
                                   DateFormat('MMM dd, yyyy').format(date);
                               return Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
                                 padding: const EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
                                   color: AppColors.fitnessModuleColor,
                                   borderRadius: BorderRadius.circular(16.0),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(formattedDate,
-                                        style:
-                                            Theme.of(context).textTheme.bodyMedium),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium),
                                     Text(
                                       '${intake.toStringAsFixed(1)} Kg / ${goal.toStringAsFixed(1)} Kg',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium
                                           ?.copyWith(
-                                              color: AppColors.fitnessMainColor),
+                                              color:
+                                                  AppColors.fitnessMainColor),
                                     ),
                                   ],
                                 ),
