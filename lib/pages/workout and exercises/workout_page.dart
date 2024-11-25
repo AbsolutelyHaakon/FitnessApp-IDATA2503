@@ -5,6 +5,7 @@ import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/modules/floating_button_component.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_calendar.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -255,37 +256,11 @@ class _WorkoutPageState extends State<WorkoutPage>
                 scale: _buttonAnimation,
                 child: GestureDetector(
                   onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      isDismissible: true,
-                      enableDrag: true,
-                      builder: (context) {
-                        return Container(
-                          decoration: const BoxDecoration(
-                            color: AppColors.fitnessBackgroundColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                            ),
-                          ),
-                          child: FractionallySizedBox(
-                            heightFactor: 0.6,
-                            widthFactor: 1,
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 20),
-                                Text(
-                                  'Select a date',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                // Add more widgets as needed
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WorkoutCalendar(),
+                      ),
                     );
                     _toggleOptions();
                   },
