@@ -84,7 +84,7 @@ class _RingsModuleState extends State<RingsModule>
           : userGoalsMap?["caloriesTarget"] ?? 2200;
       weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0
           ? 10
-          : userGoalsMap?["weightTarget"] ?? 1;
+          : userGoalsMap?["weightTarget"] ?? 10;
       calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
           ? 400
           : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
@@ -138,6 +138,9 @@ class _RingsModuleState extends State<RingsModule>
         } else {
           weightPercentage =
               (todayWeight - weightInitial) / (weightGoal - weightInitial);
+        }
+        if (weightPercentage.isInfinite) {
+          weightPercentage = 1;
         }
       });
     }
