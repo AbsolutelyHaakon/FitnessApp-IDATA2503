@@ -21,7 +21,7 @@ class WorkoutLogModule extends StatelessWidget {
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => WorkoutLog(), //TODO: Change to workout log            )
+              builder: (context) => const WorkoutLog(isCreatingPost: false,),
             ),
           );
         },

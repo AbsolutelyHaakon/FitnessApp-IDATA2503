@@ -30,16 +30,13 @@ class DetailedWorkoutLog extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(appBarTitle, style: const TextStyle(
-            color: AppColors.fitnessPrimaryTextColor)
-        ),
+        title: Text(appBarTitle,
+            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.fitnessMainColor),
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => const WorkoutLog(), // Ensure WorkoutLog is the correct widget
-            ));
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -51,36 +48,28 @@ class DetailedWorkoutLog extends StatelessWidget {
           children: [
             Text(
               'Title: $title',
-              style: const TextStyle(fontSize: 24,
+              style: const TextStyle(
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.fitnessPrimaryTextColor),
             ),
-            const SizedBox(
-                height: 10
-            ),
+            const SizedBox(height: 10),
             Text(
               'Category/Type/IDFK XD: $category',
               style: const TextStyle(
-                  fontSize: 18,
-                  color: AppColors.fitnessSecondaryTextColor),
+                  fontSize: 18, color: AppColors.fitnessSecondaryTextColor),
             ),
-            const SizedBox(
-                height: 10
-            ),
+            const SizedBox(height: 10),
             Text(
               'Date: $formattedDate',
               style: const TextStyle(
-                  fontSize: 18,
-                  color: AppColors.fitnessSecondaryTextColor),
+                  fontSize: 18, color: AppColors.fitnessSecondaryTextColor),
             ),
-            const SizedBox(
-                height: 10
-            ),
+            const SizedBox(height: 10),
             Text(
               'Duration: $duration',
               style: const TextStyle(
-                  fontSize: 18,
-                  color: AppColors.fitnessPrimaryTextColor),
+                  fontSize: 18, color: AppColors.fitnessPrimaryTextColor),
             ),
             // Add more detailed information here
           ],

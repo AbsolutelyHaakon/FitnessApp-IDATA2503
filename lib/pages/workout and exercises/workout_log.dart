@@ -12,7 +12,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutLog extends StatefulWidget {
-  const WorkoutLog({super.key});
+  final bool isCreatingPost;
+
+  const WorkoutLog({super.key, required this.isCreatingPost});
 
   @override
   _WorkoutLogState createState() => _WorkoutLogState();
@@ -48,7 +50,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
         workoutsData.add(temp);
       }
     }
-
 
     setState(() {
       _workouts.clear();
@@ -314,7 +315,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
     return InkWell(
       // Box that likes touching.
       onTap: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
+        Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => DetailedWorkoutLog(
             title: title,
             category: subtitle, // Subtitle? Category? :D
