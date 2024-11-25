@@ -83,13 +83,13 @@ class _RingsModuleState extends State<RingsModule>
           ? 2200
           : userGoalsMap?["caloriesTarget"] ?? 2200;
       weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0
-          ? 1
+          ? 10
           : userGoalsMap?["weightTarget"] ?? 1;
       calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
           ? 400
           : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
       weightInitial = (userGoalsMap?["weightInitial"] ?? 1) == 0
-          ? 1
+          ? 10
           : userGoalsMap?["weightInitial"] ?? 1;
     }
 
