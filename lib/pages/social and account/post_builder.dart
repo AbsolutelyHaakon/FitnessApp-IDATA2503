@@ -99,7 +99,7 @@ class _PostBuilderState extends State<PostBuilder> {
                 CircleAvatar(
                   backgroundImage: profileImageUrl.isNotEmpty
                       ? NetworkImage(profileImageUrl)
-                      : const AssetImage('assets/images/placeholder.png')
+                      : const AssetImage('assets/images/placeholder_icon.png')
                           as ImageProvider,
                 ),
               SizedBox(width: 10.0),

@@ -123,116 +123,129 @@ class UserDao {
       'weight': 0,
     });
     localCreate(LocalUser(
-        userId: uid!, name: 'John Doe', email: email, weight: 0, height: 0.0));
+        userId: uid!,
+        name: 'John Doe',
+        email: email,
+        weight: 0,
+        height: 0.0));
   }
 
-void fireBaseUpdateUserData(
-    String uid,
-    String? name,
-    double? height,
-    int? weight,
-    int? weightTarget,
-    int? weightInitial,
-    XFile? profileImage,
-    XFile? bannerImage,
-    int? waterTarget,
-    int? caloriesIntakeTarget,
-    int? caloriesBurnedTarget) async {
-  if (uid == "") return;
+  void fireBaseUpdateUserData(
+      String uid,
+      String? name,
+      double? height,
+      int? weight,
+      int? weightTarget,
+      int? weightInitial,
+      XFile? profileImage,
+      XFile? bannerImage,
+      int? waterTarget,
+      int? caloriesIntakeTarget,
+      int? caloriesBurnedTarget) async {
+    if (uid == "") return;
 
-  // Fetch existing user data
-  DocumentSnapshot documentSnapshot =
-      await FirebaseFirestore.instance.collection('users').doc(uid).get();
-  Map<String, dynamic>? existingData =
-      documentSnapshot.data() as Map<String, dynamic>?;
-
-  if (existingData == null) return;
-
-  String imageURL = '';
-  if (profileImage != null) {
-    imageURL = await uploadImage(profileImage);
-  }
-
-  print(existingData['weight']);
-
-  // Replace empty values with existing values
-  String updatedName =
-    name?.isNotEmpty == true ? name! : existingData['name'];
-double updatedHeight = height != null && height != 0.0 ? height : existingData['height'];
-int updatedWeight = weight != null && weight != 0 ? weight : (existingData['weight'] as double).toInt();
-int updatedWeightTarget =
-    weightTarget != null && weightTarget != 0 ? weightTarget : (existingData['weightTarget'] ?? 0);
-int updatedWeightInitial = weightInitial != null && weightInitial != 0
-    ? weightInitial
-    : (existingData['weightInitial'] ?? 0);
-String updatedImageURL = imageURL.isNotEmpty
-    ? imageURL
-    : (existingData['imageURL'] ?? '');
-String updatedBannerURL = bannerImage != null
-    ? await uploadImage(bannerImage)
-    : (existingData['bannerURL'] ?? '');
-int updatedWaterTarget =
-    waterTarget != null && waterTarget != 0 ? waterTarget : (existingData['waterTarget'] ?? 0);
-int updatedCaloriesIntakeTarget = caloriesIntakeTarget != null && caloriesIntakeTarget != 0
-    ? caloriesIntakeTarget
-    : (existingData['caloriesIntakeTarget'] ?? 0);
-int updatedCaloriesBurnedTarget = caloriesBurnedTarget != null && caloriesBurnedTarget != 0
-    ? caloriesBurnedTarget
-    : (existingData['caloriesBurnedTarget'] ?? 0);
-
-  // Update Firestore
-  FirebaseFirestore.instance.collection('users').doc(uid).update({
-    'name': updatedName,
-    'height': updatedHeight,
-    'weight': updatedWeight,
-    'weightTarget': updatedWeightTarget,
-    'weightInitial': updatedWeightInitial,
-    'imageURL': updatedImageURL,
-    'bannerURL': updatedBannerURL,
-    'waterTarget': updatedWaterTarget,
-    'caloriesIntakeTarget': updatedCaloriesIntakeTarget,
-    'caloriesBurnedTarget': updatedCaloriesBurnedTarget,
-  });
-
-  // Update local database
-  localUpdate(LocalUser(
-    userId: uid,
-    name: updatedName,
-    email: existingData['email'],
-    weight: updatedWeight,
-    height: updatedHeight,
-    weightTarget: updatedWeightTarget,
-    weightInitial: updatedWeightInitial,
-    imageURL: updatedImageURL,
-    bannerURL: updatedBannerURL,
-    waterTarget: updatedWaterTarget,
-    caloriesIntakeTarget: updatedCaloriesIntakeTarget,
-    caloriesBurnedTarget: updatedCaloriesBurnedTarget,
-  ));
-}
-
-  Future<Map<String, dynamic>?> fireBaseGetUserData(String uid) async {
-  try {
+    // Fetch existing user data
     DocumentSnapshot documentSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+    Map<String, dynamic>? existingData =
+        documentSnapshot.data() as Map<String, dynamic>?;
 
-    if (data != null) {
-      // Ensure that fields expected to be int? are properly converted
-      data['weight'] = (data['weight'] as num?)?.toInt();
-      data['weightTarget'] = (data['weightTarget'] as num?)?.toInt();
-      data['weightInitial'] = (data['weightInitial'] as num?)?.toInt();
-      data['waterTarget'] = (data['waterTarget'] as num?)?.toInt();
-      data['caloriesIntakeTarget'] = (data['caloriesIntakeTarget'] as num?)?.toInt();
-      data['caloriesBurnedTarget'] = (data['caloriesBurnedTarget'] as num?)?.toInt();
+    if (existingData == null) return;
+
+    String imageURL = '';
+    if (profileImage != null) {
+      imageURL = await uploadImage(profileImage);
     }
 
-    return data;
-  } catch (e) {
-    print('Error fetching users: $e');
-    return null;
+    print(existingData['weight']);
+
+    // Replace empty values with existing values
+    String updatedName =
+        name?.isNotEmpty == true ? name! : existingData['name'];
+    double updatedHeight =
+        height != null && height != 0.0 ? height : existingData['height'];
+    int updatedWeight = weight != null && weight != 0
+        ? weight
+        : (existingData['weight'] as double).toInt();
+    int updatedWeightTarget = weightTarget != null && weightTarget != 0
+        ? weightTarget
+        : (existingData['weightTarget'] ?? 0);
+    int updatedWeightInitial = weightInitial != null && weightInitial != 0
+        ? weightInitial
+        : (existingData['weightInitial'] ?? 0);
+    String updatedImageURL =
+        imageURL.isNotEmpty ? imageURL : (existingData['imageURL'] ?? '');
+    String updatedBannerURL = bannerImage != null
+        ? await uploadImage(bannerImage)
+        : (existingData['bannerURL'] ?? '');
+    int updatedWaterTarget = waterTarget != null && waterTarget != 0
+        ? waterTarget
+        : (existingData['waterTarget'] ?? 0);
+    int updatedCaloriesIntakeTarget =
+        caloriesIntakeTarget != null && caloriesIntakeTarget != 0
+            ? caloriesIntakeTarget
+            : (existingData['caloriesIntakeTarget'] ?? 0);
+    int updatedCaloriesBurnedTarget =
+        caloriesBurnedTarget != null && caloriesBurnedTarget != 0
+            ? caloriesBurnedTarget
+            : (existingData['caloriesBurnedTarget'] ?? 0);
+
+    // Update Firestore
+    FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'name': updatedName,
+      'height': updatedHeight,
+      'weight': updatedWeight,
+      'weightTarget': updatedWeightTarget,
+      'weightInitial': updatedWeightInitial,
+      'imageURL': updatedImageURL,
+      'bannerURL': updatedBannerURL,
+      'waterTarget': updatedWaterTarget,
+      'caloriesIntakeTarget': updatedCaloriesIntakeTarget,
+      'caloriesBurnedTarget': updatedCaloriesBurnedTarget,
+    });
+
+    // Update local database
+    localUpdate(LocalUser(
+      userId: uid,
+      name: updatedName,
+      email: existingData['email'],
+      weight: updatedWeight,
+      height: updatedHeight,
+      weightTarget: updatedWeightTarget,
+      weightInitial: updatedWeightInitial,
+      imageURL: updatedImageURL,
+      bannerURL: updatedBannerURL,
+      waterTarget: updatedWaterTarget,
+      caloriesIntakeTarget: updatedCaloriesIntakeTarget,
+      caloriesBurnedTarget: updatedCaloriesBurnedTarget,
+    ));
   }
-}
+
+  Future<Map<String, dynamic>?> fireBaseGetUserData(String uid) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      Map<String, dynamic>? data =
+          documentSnapshot.data() as Map<String, dynamic>?;
+
+      if (data != null) {
+        // Ensure that fields expected to be int? are properly converted
+        data['weight'] = (data['weight'] as num?)?.toInt();
+        data['weightTarget'] = (data['weightTarget'] as num?)?.toInt();
+        data['weightInitial'] = (data['weightInitial'] as num?)?.toInt();
+        data['waterTarget'] = (data['waterTarget'] as num?)?.toInt();
+        data['caloriesIntakeTarget'] =
+            (data['caloriesIntakeTarget'] as num?)?.toInt();
+        data['caloriesBurnedTarget'] =
+            (data['caloriesBurnedTarget'] as num?)?.toInt();
+      }
+
+      return data;
+    } catch (e) {
+      print('Error fetching users: $e');
+      return null;
+    }
+  }
 
   Future<Map<String, dynamic>> fireBaseLoginWithEmailAndPassword(
       String email, String password) async {

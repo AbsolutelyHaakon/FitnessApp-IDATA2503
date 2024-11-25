@@ -5,6 +5,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -69,6 +70,11 @@ class _ProfilePageState extends State<ProfilePage> {
       imageURL = user?["imageURL"] ?? "";
       bannerURL = user?["bannerURL"] ?? "";
     });
+
+    print(name);
+    print(widget.userId);
+    print(imageURL);
+    print(bannerURL);
   }
 
   Future<void> _loadFollowerData() async {
@@ -165,205 +171,224 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isReady
-        ? SingleChildScrollView(
-            child: Column(
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
+    return Scaffold(
+      appBar: FirebaseAuth.instance.currentUser?.uid != widget.userId
+          ? AppBar(
+              leading: IconButton(
+                icon: const Icon(CupertinoIcons.back,
+                    color: AppColors.fitnessMainColor),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              backgroundColor: AppColors.fitnessBackgroundColor,
+            )
+          : null,
+      body: _isReady
+          ? SingleChildScrollView(
+              child: DefaultTextStyle(
+                style:
+                    const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: _isEditing
-                          ? () => _pickImage(ImageSource.gallery, true)
-                          : null,
-                      child: Container(
-                        height: 150,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: _bannerImage != null
-                                ? FileImage(File(_bannerImage!.path))
-                                : (bannerURL.isNotEmpty
-                                        ? NetworkImage(bannerURL)
-                                        : AssetImage(
-                                            'assets/images/placeholder.png'))
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                            onError: (exception, stackTrace) {
-                              setState(() {
-                                bannerURL = 'assets/images/placeholder.png';
-                              });
-                            },
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        GestureDetector(
+                          onTap: _isEditing
+                              ? () => _pickImage(ImageSource.gallery, true)
+                              : null,
+                          child: Container(
+                            height: 150,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: _bannerImage != null
+                                    ? FileImage(File(_bannerImage!.path))
+                                    : (bannerURL.isNotEmpty
+                                            ? NetworkImage(bannerURL)
+                                            : const AssetImage(
+                                                'assets/images/placeholder_banner.png'))
+                                        as ImageProvider,
+                                fit: BoxFit.cover,
+                                onError: (exception, stackTrace) {
+                                  setState(() {
+                                    bannerURL = 'assets/images/placeholder.png';
+                                  });
+                                },
+                              ),
+                            ),
+                            child: _isEditing && _bannerImage == null
+                                ? Center(
+                                    child: Icon(
+                                      Icons.image,
+                                      color: AppColors.fitnessMainColor
+                                          .withOpacity(0.7),
+                                      size: 50,
+                                    ),
+                                  )
+                                : null,
                           ),
                         ),
-                        child: _isEditing && _bannerImage == null
-                            ? Center(
-                                child: Icon(
-                                  Icons.image,
-                                  color: AppColors.fitnessMainColor
-                                      .withOpacity(0.7),
-                                  size: 50,
-                                ),
-                              )
-                            : null,
+                        Positioned(
+                          left: 20,
+                          bottom: -45,
+                          child: GestureDetector(
+                            onTap: _isEditing
+                                ? () => _pickImage(ImageSource.gallery, false)
+                                : null,
+                            child: CircleAvatar(
+                              backgroundImage: _profileImage != null
+                                  ? FileImage(File(_profileImage!.path))
+                                  : (imageURL.isNotEmpty
+                                          ? NetworkImage(imageURL)
+                                          : const AssetImage(
+                                              'assets/images/placeholder_icon.png'))
+                                      as ImageProvider,
+                              onBackgroundImageError: (_, __) {
+                                setState(() {
+                                  imageURL = 'assets/images/placeholder.png';
+                                });
+                              },
+                              radius: 50.0,
+                              backgroundColor: Colors.white,
+                              child: _isEditing && _profileImage == null
+                                  ? Icon(
+                                      Icons.image,
+                                      color: AppColors.fitnessMainColor
+                                          .withOpacity(0.7),
+                                      size: 30,
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 110),
+                          Expanded(
+                            child: Text(
+                              name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Positioned(
-                      left: 20,
-                      bottom: -45,
-                      child: GestureDetector(
-                        onTap: _isEditing
-                            ? () => _pickImage(ImageSource.gallery, false)
-                            : null,
-                        child: CircleAvatar(
-                          backgroundImage: _profileImage != null
-                              ? FileImage(File(_profileImage!.path))
-                              : (imageURL.isNotEmpty
-                                      ? NetworkImage(imageURL)
-                                      : AssetImage(
-                                          'assets/images/placeholder.png'))
-                                  as ImageProvider,
-                          onBackgroundImageError: (_, __) {
-                            setState(() {
-                              imageURL = 'assets/images/placeholder.png';
-                            });
-                          },
-                          radius: 50.0,
-                          backgroundColor: Colors.white,
-                          child: _isEditing && _profileImage == null
-                              ? Icon(
-                                  Icons.image,
-                                  color: AppColors.fitnessMainColor
-                                      .withOpacity(0.7),
-                                  size: 30,
-                                )
-                              : null,
-                        ),
+                    const SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              const Text(
+                                'Followers',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 14),
+                              ),
+                              Text(
+                                followers.toString(),
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 20),
+                          Column(
+                            children: [
+                              const Text(
+                                'Following',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 14),
+                              ),
+                              Text(
+                                following.toString(),
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          if (FirebaseAuth.instance.currentUser?.uid !=
+                              widget.userId)
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              child: SizedBox(
+                                width: 120,
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: _toggleFollow,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: _isFollowing
+                                        ? AppColors.fitnessSecondaryModuleColor
+                                        : AppColors.fitnessMainColor,
+                                  ),
+                                  child: Text(
+                                    _isFollowing ? 'Following' : 'Follow',
+                                    style: const TextStyle(
+                                        color:
+                                            AppColors.fitnessPrimaryTextColor),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (FirebaseAuth.instance.currentUser?.uid ==
+                              widget.userId)
+                            SizedBox(
+                              height: 40,
+                              child: ElevatedButton(
+                                onPressed: _toggleEdit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.fitnessMainColor,
+                                ),
+                                child: Text(
+                                  _isEditing ? 'Save Changes' : 'Edit Profile',
+                                  style: const TextStyle(
+                                      color: AppColors.fitnessPrimaryTextColor),
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _posts.length,
+                        itemBuilder: (context, index) {
+                          final post = _posts[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 40.0),
+                            child: PostBuilder(
+                              post: post,
+                              isProfile: true,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 110),
-                      Expanded(
-                        child: Text(
-                          name,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                          softWrap: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          const Text(
-                            'Followers',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 14),
-                          ),
-                          Text(
-                            followers.toString(),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 20),
-                      Column(
-                        children: [
-                          const Text(
-                            'Following',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 14),
-                          ),
-                          Text(
-                            following.toString(),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      if (FirebaseAuth.instance.currentUser?.uid !=
-                          widget.userId)
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          child: SizedBox(
-                            width: 120,
-                            height: 40,
-                            child: ElevatedButton(
-                              onPressed: _toggleFollow,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _isFollowing
-                                    ? AppColors.fitnessSecondaryModuleColor
-                                    : AppColors.fitnessMainColor,
-                              ),
-                              child: Text(
-                                _isFollowing ? 'Following' : 'Follow',
-                                style: const TextStyle(
-                                    color: AppColors.fitnessPrimaryTextColor),
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (FirebaseAuth.instance.currentUser?.uid ==
-                          widget.userId)
-                        SizedBox(
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: _toggleEdit,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.fitnessMainColor,
-                            ),
-                            child: Text(
-                                _isEditing ? 'Save Changes' : 'Edit Profile',
-                                style: const TextStyle(
-                                  color: AppColors.fitnessPrimaryTextColor,
-                                ),
-                              ),
-                          ),
-                        )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _posts.length,
-                    itemBuilder: (context, index) {
-                      final post = _posts[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 40.0),
-                        child: PostBuilder(
-                          post: post,
-                          isProfile: true,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+              ),
+            )
+          : const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.fitnessMainColor,
+              ),
             ),
-          )
-        : const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.fitnessMainColor,
-            ),
-          );
+      backgroundColor: AppColors.fitnessBackgroundColor,
+    );
   }
 }
