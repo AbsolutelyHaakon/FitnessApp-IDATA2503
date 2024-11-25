@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/about_us.dart';
+import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/account_settings.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/admin_panel.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/data_and_privacy_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -20,11 +21,11 @@ class SettingsPage extends StatelessWidget {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
   final UserDao _userDao = UserDao();
 
-
   // TODO: Implement proper feedback logic on the sync function
   void _synchronizeCloud(BuildContext context) async {
     try {
-      await _getDataFromServer.syncData(FirebaseAuth.instance.currentUser?.uid ?? '');
+      await _getDataFromServer
+          .syncData(FirebaseAuth.instance.currentUser?.uid ?? '');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
@@ -96,7 +97,12 @@ class SettingsPage extends StatelessWidget {
                         icon: Icons.account_circle,
                         text: 'Account settings',
                         onTap: () {
-                          // Navigate to Account settings page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AccountSettingsPage(),
+                            ),
+                          );
                         },
                       ),
                       if (isAdmin)
@@ -107,7 +113,8 @@ class SettingsPage extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => AdminPanel()),
+                              MaterialPageRoute(
+                                  builder: (context) => AdminPanel()),
                             );
                           },
                         ),
@@ -126,7 +133,8 @@ class SettingsPage extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => DataAndPrivacyPage()),
+                            MaterialPageRoute(
+                                builder: (context) => DataAndPrivacyPage()),
                           );
                         },
                       ),
@@ -145,7 +153,8 @@ class SettingsPage extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AboutUsPage()),
+                            MaterialPageRoute(
+                                builder: (context) => AboutUsPage()),
                           );
                         },
                       ),
