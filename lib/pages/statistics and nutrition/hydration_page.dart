@@ -16,17 +16,40 @@ class HydrationPage extends StatefulWidget {
   _HydrationPageState createState() => _HydrationPageState();
 }
 
-class _HydrationPageState extends State<HydrationPage> {
+class _HydrationPageState extends State<HydrationPage>
+    with SingleTickerProviderStateMixin {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   List<MapEntry<DateTime, int>> hourlyIntake = [];
-  double goal = 0; // Example goal in milliliters
+  double goal = 2500; // Example goal in milliliters
   bool isLoading = false;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  late Future<void> _fetchDataFuture;
+  DateTime today = DateTime.now();
+  double todayIntakew = 0;
+  double waterPercentage = 0.0;
 
   @override
   void initState() {
     super.initState();
     fetchAllUserGoals();
-    fetchHydrationData();
+    _fetchDataFuture = fetchHydrationData();
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+
+    _animationController.addListener(() {
+      setState(() {});
+    });
+
+    _animationController.forward();
   }
 
   Future<void> fetchAllUserGoals() async {
@@ -35,6 +58,7 @@ class _HydrationPageState extends State<HydrationPage> {
       var goalInt = userGoalsMap?["waterTarget"] ?? 2500;
       setState(() {
         goal = goalInt.toDouble();
+
       });
     }
   }
@@ -44,7 +68,8 @@ class _HydrationPageState extends State<HydrationPage> {
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
-
+      DateTime today = DateTime.now();
+      DateTime todayDate = DateTime(today.year, today.month, today.day);
       Map<DateTime, int> aggregatedData = {};
       for (var entry in userData) {
         DateTime date =
@@ -57,26 +82,19 @@ class _HydrationPageState extends State<HydrationPage> {
         } else {
           aggregatedData[date] = entry.waterIntake!;
         }
-      }
-      setState(() {
-        dailyIntake = {};
-        for (var entry in userData) {
-          if (entry.waterIntake == null || entry.waterIntake! <= 0) {
-            continue;
-          }
-          DateTime date =
-              DateTime(entry.date.year, entry.date.month, entry.date.day);
-          if (dailyIntake.containsKey(date)) {
-            dailyIntake[date] = entry.waterIntake! > dailyIntake[date]!
-                ? entry.waterIntake!
-                : dailyIntake[date]!;
-          } else {
-            dailyIntake[date] = entry.waterIntake!;
+        if (date == todayDate) {
+          if (entry.waterIntake != null) {
+            todayIntakew += entry.waterIntake!;
           }
         }
 
-        DateTime today = DateTime.now();
-        DateTime startOfDay = DateTime(today.year, today.month, today.day);
+      }
+      setState(() {
+        dailyIntake = aggregatedData;
+        waterPercentage = todayIntakew / goal;
+
+        DateTime now = DateTime.now();
+        today = DateTime(now.year, now.month, now.day);
 
 
         hourlyIntake = userData
@@ -84,86 +102,83 @@ class _HydrationPageState extends State<HydrationPage> {
             .map((e) => MapEntry(e.date, e.waterIntake!))
             .toList();
 
-        hourlyIntake.insert(0, MapEntry(startOfDay, 0));
+        hourlyIntake.insert(0, MapEntry(today, 0));
       });
-
-      print(hourlyIntake);
     }
   }
 
   Future<void> _addData() async {
-    int waterIntake = 0;
+  int waterIntake = 0;
 
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text('Add Water Intake'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.local_drink, size: 50, color: Colors.blue),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          setState(() {
-                            if (waterIntake > 0) waterIntake -= 100;
-                          });
-                        },
-                      ),
-                      Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          setState(() {
-                            waterIntake += 100;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    // Save the water intake data
-                    if (FirebaseAuth.instance.currentUser?.uid != null) {
-                      await UserHealthDataDao().fireBaseCreateUserHealthData(
-                        FirebaseAuth.instance.currentUser!.uid,
-                        null,
-                        null,
-                        DateTime.now(),
-                        null,
-                        null,
-                        // if the current day has an entry, add the new intake to the largest existing intake
-                        waterIntake,
-                      );
-                      fetchHydrationData();
-                    }
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Add Water Intake'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.local_drink, size: 50, color: Colors.blue),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        setState(() {
+                          if (waterIntake > 0) waterIntake -= 100;
+                        });
+                      },
+                    ),
+                    Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          waterIntake += 100;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ],
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Save the water intake data
+                  if (FirebaseAuth.instance.currentUser?.uid != null) {
+                    await UserHealthDataDao().fireBaseCreateUserHealthData(
+                      FirebaseAuth.instance.currentUser!.uid,
+                      null,
+                      null,
+                      DateTime.now(),
+                      null,
+                      null,
+                      waterIntake,
+                    );
+                    fetchHydrationData();
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +228,66 @@ class _HydrationPageState extends State<HydrationPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 200,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 210,
+                            height: 210,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 180.0,
+                                  height: 180.0,
+                                  child: CircularProgressIndicator(
+                                    value: _animation.value *
+                                        (todayIntakew / goal),
+                                    strokeWidth: 18.0,
+                                    strokeCap: StrokeCap.round,
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                            Color(0xFF468CF6)),
+                                    backgroundColor:
+                                        AppColors.fitnessModuleColor,
+                                  ),
+                                ),
+                                Text(
+                                  goal - todayIntakew >= 0
+                                      ?  '${(goal - todayIntakew).abs()} mL'
+                                      : '0.0 mL',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                waterPercentage >= goal
+                                    ? 'Congratulations! Goal Reached!'
+                                    : 'Current: ${todayIntakew.toStringAsFixed(1)} mL \nGoal: ${goal.toStringAsFixed(1)} mL',
+                                style: const TextStyle(
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 46),
                     SizedBox(
                       height: 200,
                       child: LineChart(
