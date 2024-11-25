@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/imgur_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
@@ -59,7 +62,11 @@ class UserDao {
       where: 'id = ?',
       whereArgs: [id],
     );
-    return LocalUser.fromMap(user.first);
+    if (user.isNotEmpty) {
+      return LocalUser.fromMap(user.first);
+    } else {
+      throw StateError('No element');
+    }
   }
 
   Future<void> localDelete(int id) async {
@@ -123,11 +130,91 @@ class UserDao {
       'weight': 0,
     });
     localCreate(LocalUser(
-        userId: uid!,
-        name: 'John Doe',
-        email: email,
-        weight: 0,
-        height: 0.0));
+        userId: uid!, name: 'John Doe', email: email, weight: 0, height: 0.0));
+  }
+
+  void fireBaseUpdateUserEmail(
+      String uid, String newEmail, String password) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null && user.uid == uid) {
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: password,
+        );
+        await user.reauthenticateWithCredential(credential);
+
+        await user.verifyBeforeUpdateEmail(newEmail);
+        print(
+            'Verification email sent to $newEmail. Please verify to complete the update.');
+
+        int checkCount = 0;
+        const int maxChecks = 4;
+
+        Timer.periodic(Duration(seconds: 30), (timer) async {
+          checkCount++;
+          await user.reload();
+          if (user.emailVerified) {
+            await updateEmailInFirestore(uid, newEmail);
+            timer.cancel();
+          } else if (checkCount >= maxChecks) {
+            print('Email not verified after $maxChecks checks.');
+            timer.cancel();
+          } else {
+            print('Email not verified yet.');
+          }
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      print('Error updating email: $e');
+      throw e;
+    } catch (e) {
+      print('Error updating email: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateEmailInFirestore(String uid, String newEmail) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'email': newEmail,
+        });
+
+        DocumentSnapshot documentSnapshot =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        Map<String, dynamic>? userData =
+            documentSnapshot.data() as Map<String, dynamic>?;
+
+        if (userData != null) {
+          LocalUser updatedLocalUser = LocalUser(
+            userId: uid,
+            name: userData['name'] ?? 'Unknown',
+            email: newEmail,
+            weight: userData['weight'] ?? 0,
+            height: userData['height'] ?? 0.0,
+            weightTarget: userData['weightTarget'] ?? 0,
+            weightInitial: userData['weightInitial'] ?? 0,
+            imageURL: userData['imageURL'] ?? '',
+            bannerURL: userData['bannerURL'] ?? '',
+            waterTarget: userData['waterTarget'] ?? 0,
+            caloriesIntakeTarget: userData['caloriesIntakeTarget'] ?? 0,
+            caloriesBurnedTarget: userData['caloriesBurnedTarget'] ?? 0,
+          );
+
+          await localUpdate(updatedLocalUser);
+          print('Email updated successfully');
+        } else {
+          print('Local user not found');
+        }
+      } else {
+        throw Exception('Email not verified or does not match the new email');
+      }
+    } catch (e) {
+      print('Error updating email in Firestore: $e');
+      throw e;
+    }
   }
 
   void fireBaseUpdateUserData(
@@ -162,8 +249,9 @@ class UserDao {
     // Replace empty values with existing values
     String updatedName =
         name?.isNotEmpty == true ? name! : existingData['name'];
-    double updatedHeight =
-        height != null && height != 0.0 ? height : (existingData['height'] as num).toDouble();
+    double updatedHeight = height != null && height != 0.0
+        ? height
+        : (existingData['height'] as num).toDouble();
     int updatedWeight = weight != null && weight != 0
         ? weight
         : (existingData['weight'] as num).toInt();
