@@ -1,3 +1,6 @@
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/account_setup.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +46,20 @@ class _LoginModuleState extends State<LoginModule> {
         widget.passwordController.text.trim(),
       );
       if (result['user'] != null) {
+        final WorkoutDao _workoutDao = WorkoutDao();
+        final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
+
+        setState(() {
+          activeWorkoutIndex = 0;
+          activeWorkoutName.value = '';
+          activeUserWorkoutId.value = '';
+          activeWorkoutId.value = '';
+          hasActiveWorkout.value = false;
+        });
+
+        await _workoutDao.localSetAllInactive();
+        await _userWorkoutsDao.localSetAllInactive();
+
         widget.onLoginSuccess(result['user']);
       } else {
         setState(() {
