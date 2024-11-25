@@ -269,14 +269,18 @@ Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkou
 
   return InkWell(
     onTap: () {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => DetailedWorkoutLog(
-          title: workout.name,
-          category: workout.description ?? '',
-          date: userWorkout.date,
-          duration: workout.duration.toString(),
-        ),
-      ));
+      if (widget.isCreatingPost) {
+        Navigator.of(context).pop(userWorkout.userWorkoutId);
+      } else {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => DetailedWorkoutLog(
+            title: workout.name,
+            category: workout.description ?? '',
+            date: userWorkout.date,
+            duration: workout.duration.toString(),
+          ),
+        ));
+      }
     },
     child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),

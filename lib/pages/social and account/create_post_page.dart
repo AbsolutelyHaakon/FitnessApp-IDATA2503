@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -90,7 +91,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -148,8 +150,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {
-                            // TODO: Handle attach exercise logic
+                          onPressed: () async {
+                            final result = await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const WorkoutLog(isCreatingPost: true),
+                              ),
+                            );
+                            if (result != null) {
+                              print('Selected userWorkoutId: $result');
+                            }
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.fitnessMainColor,
@@ -201,10 +211,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                         child: Container(
                                           width: 220,
                                           height: 120,
-                                          color: AppColors.fitnessSecondaryModuleColor,
+                                          color: AppColors
+                                              .fitnessSecondaryModuleColor,
                                           child: const Icon(
                                             Icons.image,
-                                            color: AppColors.fitnessPrimaryTextColor,
+                                            color: AppColors
+                                                .fitnessPrimaryTextColor,
                                             size: 50,
                                           ),
                                         ),
@@ -225,7 +237,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         children: [
                           Transform.scale(
                             scale: 0.7,
-                            child: const Icon(Icons.location_on, color: AppColors.fitnessMainColor),
+                            child: const Icon(Icons.location_on,
+                                color: AppColors.fitnessMainColor),
                           ),
                           Expanded(
                             child: TextFormField(
@@ -260,7 +273,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                               _isLocationFieldVisible = true;
                             });
                             Future.delayed(Duration(milliseconds: 100), () {
-                              FocusScope.of(context).requestFocus(_locationFocusNode);
+                              FocusScope.of(context)
+                                  .requestFocus(_locationFocusNode);
                             });
                           },
                           child: const Text(
@@ -288,7 +302,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 },
           child: _isSubmitting
               ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.fitnessPrimaryTextColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.fitnessPrimaryTextColor),
                 )
               : const Text(
                   'Create Post',
