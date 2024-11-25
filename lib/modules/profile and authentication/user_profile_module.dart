@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,7 +44,20 @@ class UserProfileModule extends StatelessWidget {
               children: [
                 _buildProfileHeader(context),
                 const SizedBox(height: 20),
-                _buildProfileDetails(),
+                FutureBuilder<Padding>(
+                  future: getUserData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (snapshot.hasData) {
+                      return snapshot.data!;
+                    } else {
+                      return const Text('No data available');
+                    }
+                  },
+                ),
                 const SizedBox(height: 16),
               ],
             ),
@@ -80,7 +94,8 @@ class UserProfileModule extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SettingsPage(onLogout: onLogout)),
+              MaterialPageRoute(
+                  builder: (context) => SettingsPage(onLogout: onLogout)),
             );
           },
         ),
@@ -88,7 +103,54 @@ class UserProfileModule extends StatelessWidget {
     );
   }
 
-  Padding _buildProfileDetails() {
+  Future<Padding> getUserData() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      var userDataMap = await UserDao()
+          .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+
+      if (userDataMap != null &&
+          userDataMap.containsKey('weight') &&
+          userDataMap.containsKey('height')) {
+        var weightValue = userDataMap['weight'];
+        var heightValue = userDataMap['height'];
+
+        int weight;
+        int height;
+
+        if (weightValue is int) {
+          weight = weightValue;
+        } else if (weightValue is double) {
+          weight = weightValue.toInt();
+        } else {
+          weight = int.parse(weightValue.toString());
+        }
+
+        // Check if heightValue is int or double and convert accordingly
+        if (heightValue is int) {
+          height = heightValue;
+        } else if (heightValue is double) {
+          height = heightValue.toInt();
+        } else {
+          height = int.parse(heightValue.toString());
+        }
+
+        return _buildProfileDetails(weight, height);
+      }
+    }
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Text(
+        'No user data found',
+        style: TextStyle(
+          color: Colors.white70,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Padding _buildProfileDetails(int weight, int height) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -99,8 +161,8 @@ class UserProfileModule extends StatelessWidget {
           // _buildProfileDetailText('Height: ${user.height.toStringAsFixed(2)} m'),
           // _buildProfileDetailText('Weight: ${weight.toStringAsFixed(2)} kg'),
           _buildProfileDetailText('Email: ${user.email}'),
-          _buildProfileDetailText('Height: 170cm'),
-          _buildProfileDetailText('Weight: 90 kg'),
+          _buildProfileDetailText('Height: ${height}cm'),
+          _buildProfileDetailText('Weight: ${weight}kg'),
         ],
       ),
     );

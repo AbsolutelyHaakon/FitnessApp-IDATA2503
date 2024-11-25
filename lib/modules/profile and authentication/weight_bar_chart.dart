@@ -85,6 +85,19 @@ class _WeightBarChartState extends State<WeightBarChart> {
           null,
           null,
           null);
+      UserDao().fireBaseUpdateUserData(
+        FirebaseAuth.instance.currentUser!.uid,
+        '',
+        0,
+        weight,
+        0,
+        0,
+        null,
+        null,
+        0,
+        0,
+        0,
+      );
       weightController.clear();
       Navigator.of(context).pop();
       setState(() {});

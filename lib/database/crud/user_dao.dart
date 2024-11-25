@@ -123,11 +123,7 @@ class UserDao {
       'weight': 0.0,
     });
     localCreate(LocalUser(
-        userId: uid!,
-        name: 'John Doe',
-        email: email,
-        weight: 0,
-        height: 0.0));
+        userId: uid!, name: 'John Doe', email: email, weight: 0, height: 0.0));
   }
 
   void fireBaseUpdateUserData(
@@ -163,14 +159,16 @@ class UserDao {
     double updatedHeight = height != 0.0 ? height : existingData['height'];
     int updatedWeight = weight != 0 ? weight : existingData['weight'];
     int updatedweightTarget =
-        weightTarget != 0 ? weightTarget : existingData['weightTarget'];
-    int updatedweightInitial =
-        weightInitial != 0 ? weightInitial : existingData['weightInitial'];
-    String updatedImageURL =
-        imageURL?.isNotEmpty == true ? imageURL! : existingData['imageURL'];
+        weightTarget != 0 ? weightTarget : (existingData['weightTarget'] ?? 0);
+    int updatedweightInitial = weightInitial != 0
+        ? weightInitial
+        : (existingData['weightInitial'] ?? 0);
+    String updatedImageURL = imageURL?.isNotEmpty == true
+        ? imageURL!
+        : (existingData['imageURL'] ?? '');
     String updatedBannerURL = bannerImage != null
         ? await uploadImage(bannerImage)
-        : existingData['bannerURL'];
+        : (existingData['bannerURL'] ?? '');
     int updatedWaterTarget =
         waterTarget != 0 ? waterTarget : (existingData['waterTarget'] ?? 0);
     int updatedCaloriesIntakeTarget = caloriesIntakeTarget != 0
@@ -260,7 +258,9 @@ class UserDao {
   // Check if user is admin
   // Admin status can only be given on the Firebase console and is not present within the app
   Future<bool> getAdminStatus(String? uid) async {
-    if (uid == null || uid!.isEmpty) {return false;}
+    if (uid == null || uid!.isEmpty) {
+      return false;
+    }
     DocumentSnapshot documentSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
     Map<String, dynamic>? data =
