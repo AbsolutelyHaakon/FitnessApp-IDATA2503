@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
+import '../../database/crud/user_dao.dart';
 import '../../database/tables/user_health_data.dart';
 import '../../styles.dart';
 
@@ -15,86 +16,96 @@ class CalorieIntakePage extends StatefulWidget {
   _CalorieIntakePageState createState() => _CalorieIntakePageState();
 }
 
-class _CalorieIntakePageState extends State<CalorieIntakePage> {
+class _CalorieIntakePageState extends State<CalorieIntakePage>
+    with SingleTickerProviderStateMixin {
   Map<DateTime, int> dailyIntake = <DateTime, int>{};
   List<MapEntry<DateTime, int>> hourlyIntake = [];
-  final double goal = 2200.0; // Example goal in liters
+  double goal = 2000; // Example goal in calories
   bool isLoading = false;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  late Future<void> _fetchDataFuture;
+  DateTime today = DateTime.now();
+  double todayIntake = 0;
+  double intakePercentage = 0.0;
 
   @override
   void initState() {
     super.initState();
-    fetchHydrationData();
+    fetchAllUserGoals();
+    _fetchDataFuture = fetchIntakeData();
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+
+    _animationController.addListener(() {
+      setState(() {});
+    });
+
+    _animationController.forward();
   }
 
-  Future<void> fetchHydrationData() async {
+  Future<void> fetchAllUserGoals() async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+      var goalInt = userGoalsMap?["calorieIntakeTarget"] ?? 2000;
+      setState(() {
+        goal = goalInt.toDouble();
+      });
+    }
+  }
+
+  Future<void> fetchIntakeData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
-
+      DateTime today = DateTime.now();
+      DateTime todayDate = DateTime(today.year, today.month, today.day);
       Map<DateTime, int> aggregatedData = {};
       for (var entry in userData) {
         DateTime date =
         DateTime(entry.date.year, entry.date.month, entry.date.day);
-        if (entry.waterIntake == null) {
+        if (entry.caloriesIntake == null || entry.caloriesIntake! <= 0) {
           continue;
         }
         if (aggregatedData.containsKey(date)) {
-          aggregatedData[date] = aggregatedData[date]! + entry.waterIntake!;
+          aggregatedData[date] = aggregatedData[date]! + entry.caloriesIntake!;
         } else {
-          aggregatedData[date] = entry.waterIntake!;
+          aggregatedData[date] = entry.caloriesIntake!;
+        }
+        if (date == todayDate) {
+          if (entry.caloriesIntake != null) {
+            todayIntake += entry.caloriesIntake!;
+          }
         }
       }
       setState(() {
-        dailyIntake = {};
-        for (var entry in userData) {
-          if (entry.waterIntake == null) {
-            continue;
-          }
-          DateTime date =
-          DateTime(entry.date.year, entry.date.month, entry.date.day);
-          if (dailyIntake.containsKey(date)) {
-            dailyIntake[date] = entry.waterIntake! > dailyIntake[date]!
-                ? entry.waterIntake!
-                : dailyIntake[date]!;
-          } else {
-            dailyIntake[date] = entry.waterIntake!;
-          }
-        }
-        hourlyIntake =
-            userData.map((e) => MapEntry(e.date, e.waterIntake!)).toList();
-      });
-    } else {
-      // Example data
-      hourlyIntake = [
-        MapEntry(DateTime.now().subtract(Duration(hours: 72)), 4),
-        MapEntry(DateTime.now().subtract(Duration(hours: 48)), 3),
-        MapEntry(DateTime.now().subtract(Duration(hours: 24)), 5),
-        MapEntry(DateTime.now().subtract(Duration(hours: 8)), 1),
-        MapEntry(DateTime.now().subtract(Duration(hours: 7)), 2),
-        MapEntry(DateTime.now().subtract(Duration(hours: 6)), 3),
-        MapEntry(DateTime.now().subtract(Duration(hours: 3)), 4),
-        MapEntry(DateTime.now().subtract(Duration(hours: 1)), 5),
-      ];
+        dailyIntake = aggregatedData;
+        intakePercentage = todayIntake / goal;
 
-      dailyIntake = {};
-      for (var entry in hourlyIntake) {
-        DateTime date =
-        DateTime(entry.key.year, entry.key.month, entry.key.day);
-        if (dailyIntake.containsKey(date)) {
-          dailyIntake[date] = entry.value > dailyIntake[date]!
-              ? entry.value
-              : dailyIntake[date]!;
-        } else {
-          dailyIntake[date] = entry.value;
-        }
-      }
+        DateTime now = DateTime.now();
+        today = DateTime(now.year, now.month, now.day);
+
+        hourlyIntake = userData
+            .where((e) => e.caloriesIntake != null && e.caloriesIntake! >= 1)
+            .map((e) => MapEntry(e.date, e.caloriesIntake!))
+            .toList();
+
+        hourlyIntake.insert(0, MapEntry(today, 0));
+      });
     }
   }
 
   Future<void> _addData() async {
-    int waterIntake = 0;
+    int calorieIntake = 0;
 
     await showDialog(
       context: context,
@@ -102,11 +113,11 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Add Calorie Intake'),
+              title: Text('Calorie Intake'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.local_drink, size: 50, color: Colors.blue),
+                  Icon(Icons.fastfood, size: 50, color: Colors.orange),
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -115,16 +126,16 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                         icon: Icon(Icons.remove),
                         onPressed: () {
                           setState(() {
-                            if (waterIntake > 0) waterIntake -= 100;
+                            if (calorieIntake > 0) calorieIntake -= 100;
                           });
                         },
                       ),
-                      Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
+                      Text('$calorieIntake cal', style: TextStyle(fontSize: 20)),
                       IconButton(
                         icon: Icon(Icons.add),
                         onPressed: () {
                           setState(() {
-                            waterIntake += 100;
+                            calorieIntake += 100;
                           });
                         },
                       ),
@@ -141,19 +152,18 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    // Save the water intake data
+                    // Save the calorie intake data
                     if (FirebaseAuth.instance.currentUser?.uid != null) {
                       await UserHealthDataDao().fireBaseCreateUserHealthData(
                         FirebaseAuth.instance.currentUser!.uid,
                         null,
                         null,
                         DateTime.now(),
+                        calorieIntake,
                         null,
                         null,
-                        // if the current day has an entry, add the new intake to the largest existing intake
-                        waterIntake,
                       );
-                      fetchHydrationData();
+                      fetchIntakeData();
                     }
                     Navigator.of(context).pop();
                   },
@@ -175,7 +185,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
 
     // Filter hourlyIntake to only include entries from today
     DateTime today = DateTime.now();
-    List<MapEntry<DateTime, int>> todayIntake = hourlyIntake.where((entry) {
+    List<MapEntry<DateTime, int>> todayIntakeEntries = hourlyIntake.where((entry) {
       return entry.key.year == today.year &&
           entry.key.month == today.month &&
           entry.key.day == today.day;
@@ -192,7 +202,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Color(0xFFFFFFFF)),
+          icon: const Icon(CupertinoIcons.back, color: Color(0xFFCC7F48)),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -204,7 +214,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                 _addData();
               },
               child: const Text('Add Data',
-                  style: TextStyle(color: Color(0xFFFFFFFF))),
+                  style: TextStyle(color: Color(0xFFCC7F48))),
             ),
         ],
       ),
@@ -217,6 +227,66 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
             children: [
               SizedBox(
                 height: 200,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 210,
+                      height: 210,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 180.0,
+                            height: 180.0,
+                            child: CircularProgressIndicator(
+                              value: _animation.value *
+                                  (todayIntake / goal),
+                              strokeWidth: 18.0,
+                              strokeCap: StrokeCap.round,
+                              valueColor:
+                              const AlwaysStoppedAnimation<Color>(
+                                  Color(0xFFCC7F48)),
+                              backgroundColor:
+                              AppColors.fitnessModuleColor,
+                            ),
+                          ),
+                          Text(
+                            goal - todayIntake >= 0
+                                ?  '${(goal - todayIntake).abs()} cal'
+                                : '0.0 cal',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          intakePercentage >= goal
+                              ? 'Congratulations! Goal Reached!'
+                              : 'Current: ${todayIntake.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal',
+                          style: const TextStyle(
+                            color: AppColors.fitnessSecondaryTextColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 46),
+              SizedBox(
+                height: 200,
                 child: LineChart(
                   LineChartData(
                     gridData: FlGridData(show: true),
@@ -224,18 +294,37 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                     borderData: FlBorderData(show: true),
                     lineBarsData: [
                       LineChartBarData(
-                        spots: todayIntake
+                        spots: todayIntakeEntries
                             .map((e) => FlSpot(e.key.hour.toDouble(),
                             e.value.toDouble()))
                             .toList(),
                         isCurved: false,
-                        color: const Color(0xFFFFFFFF),
+                        color: const Color(0xFFCC7F48),
                         barWidth: 4,
                         belowBarData: BarAreaData(
                             show: true,
-                            color: Color(0xFFFFFFFF).withOpacity(0.3)),
+                            color: Color(0xFFCC7F48).withOpacity(0.3)),
                       ),
                     ],
+                    extraLinesData: ExtraLinesData(
+                      horizontalLines: [
+                        HorizontalLine(
+                          y: goal,
+                          color: Colors.red,
+                          strokeWidth: 2,
+                          dashArray: [5, 5],
+                          label: HorizontalLineLabel(
+                            show: true,
+                            alignment: Alignment.topRight,
+                            labelResolver: (line) => 'Goal',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -261,7 +350,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                               child: Text(
                                 DateFormat('MM/dd').format(date),
                                 style: const TextStyle(
-                                  color: Color(0xFFFFFFFF),
+                                  color: Color(0xFFCC7F48),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -286,7 +375,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                         barRods: [
                           BarChartRodData(
                             toY: intake.toDouble(),
-                            color: Color(0xFFFFFFFF),
+                            color: Color(0xFFCC7F48),
                             width: 16,
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -317,11 +406,11 @@ class _CalorieIntakePageState extends State<CalorieIntakePage> {
                             style:
                             Theme.of(context).textTheme.bodyMedium),
                         Text(
-                          '${intake.toStringAsFixed(1)} mL / ${goal.toStringAsFixed(1)} mL',
+                          '${intake.toStringAsFixed(1)} cal / ${goal.toStringAsFixed(1)} cal',
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
-                              ?.copyWith(color: Color(0xFFFFFFFF)),
+                              ?.copyWith(color: Color(0xFFCC7F48)),
                         ),
                       ],
                     ),

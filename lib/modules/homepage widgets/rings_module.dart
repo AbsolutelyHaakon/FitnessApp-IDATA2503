@@ -89,7 +89,7 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
           ? 10
           : userGoalsMap?["weightTarget"] ?? 10;
       calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
-          ? 400
+          ? 2500
           : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
       weightInitial = (userGoalsMap?["weightInitial"] ?? 1) == 0
           ? 10
@@ -176,7 +176,7 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
               context,
               'Cal',
               caloriePercentage,
-              const Color(0xFFFFFFFF),
+              const Color(0xFFCC7F48),
               CalorieIntakePage(),
             ),
             const SizedBox(width: 10),
