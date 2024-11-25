@@ -235,6 +235,13 @@ class _WorkoutLogState extends State<WorkoutLog> {
         ),
       ));
 
+      // Sort workouts within the month-year group by date. Example: sort the date in a month group
+      workoutsByMonth[monthYearKey]!.sort((a, b) {
+        DateTime dateA = a.key.date;
+        DateTime dateB = b.key.date;
+        return isAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
+      });
+
       for (var workoutMap in workoutsByMonth[monthYearKey]!) {
         sections.add(_buildWorkoutLogEntry(
           context,

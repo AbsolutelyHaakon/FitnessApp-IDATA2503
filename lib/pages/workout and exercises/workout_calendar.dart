@@ -136,9 +136,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        //If all conditions are met (true), restrict user to add a workokut.
         bool canAddWorkout = !_upcomingWorkouts.any((workout) =>
-            workout.date.year == selectedDay.year &&
+        workout.date.year == selectedDay.year &&
             workout.date.month == selectedDay.month &&
             workout.date.day == selectedDay.day &&
             workoutExist(workout.workoutId));
@@ -186,49 +185,49 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 Text(
                   workoutDescription,
                   style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontSize: 14, color: AppColors.fitnessSecondaryTextColor),
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 14, color: AppColors.fitnessSecondaryTextColor),
                 ),
                 const SizedBox(height: 20),
-                //Check if workout can be added, true = add workout, false = replace workout
-                if (canAddWorkout)
-                  InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        //Show add workout modal
-                        _showSecondModal(true);
-                      },
-                      child: Container(
+                if (!selectedDay.isBefore(DateTime.now().subtract(Duration(days: 1)))) ...[
+                  if (canAddWorkout)
+                    InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showSecondModal(true);
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 24.0),
+                            decoration: BoxDecoration(
+                              color: AppColors.fitnessMainColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              'Add workout',
+                              style: TextStyle(color: Colors.white),
+                            )))
+                  else
+                    InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showSecondModal(false);
+                        },
+                        child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 12.0, horizontal: 24.0),
                           decoration: BoxDecoration(
-                            color: AppColors.fitnessMainColor,
+                            color: Colors.red,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Text(
-                            'Add workout',
-                            style: TextStyle(color: Colors.white),
-                          )))
-                else
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showSecondModal(false);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 24.0),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'Replace workout',
-                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
-                      ),
+                            'Replace workout',
+                            style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                          ),
+                        )
                     )
-                  )
+                ]
               ],
             ),
           ),
