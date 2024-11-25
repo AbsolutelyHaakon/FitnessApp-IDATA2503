@@ -22,6 +22,7 @@ class _WeightPageState extends State<WeightPage>
   double goal = 0;
   int weightGoal = 0;
   int weightInitial = 0;
+  int todayWeight = 0;
   double weightPercentage = 0;
   bool isLoading = false;
   late AnimationController _animationController;
@@ -80,7 +81,7 @@ class _WeightPageState extends State<WeightPage>
       DateTime todayDate = DateTime(today.year, today.month, today.day);
 
       Map<DateTime, int> aggregatedData = {};
-      int todayWeight = 0;
+      todayWeight = 0;
       for (var entry in userData) {
         DateTime date =
             DateTime(entry.date.year, entry.date.month, entry.date.day);
@@ -252,16 +253,37 @@ class _WeightPageState extends State<WeightPage>
                                       backgroundColor: AppColors.fitnessModuleColor,
                                     ),
                                   ),
+
                                   Text(
-                                    'Weight Goal: ${(weightPercentage * 100).clamp(0.0, 100.0).toStringAsFixed(1)}%',
+                                    weightInitial > weightGoal
+                                        ? '${(weightInitial - weightGoal - (weightInitial - todayWeight)).abs().toStringAsFixed(1)} Kg'
+                                        : '${(weightGoal - weightInitial - (todayWeight - weightInitial)).abs().toStringAsFixed(1)} Kg',
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
                                     ),
                                   ),
+                                  Text(
+                                    weightInitial > weightGoal
+                                        ? '\n\n\nTo Lose'
+                                        : '\n\n\nTo Gain',
+                                    style: TextStyle(
+                                      color: AppColors.fitnessSecondaryTextColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  )
                                 ],
                               ),
+                            ),
+                          ),
+                          Text(
+                            'Goal: ${goal.toStringAsFixed(1)} Kg',
+                            style: const TextStyle(
+                              color: AppColors.fitnessSecondaryTextColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
                           const SizedBox(height: 46),
