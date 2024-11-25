@@ -2,11 +2,13 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/detailed_workout_log.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutLog extends StatefulWidget {
@@ -44,7 +46,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
     // Filter workouts based on _previousWorkouts
     List<Workouts> filteredWorkouts = workoutsData.where((workout) {
-      return _previousWorkouts.any((value) => value.workoutId == workout.workoutId);
+      return _previousWorkouts
+          .any((value) => value.workoutId == workout.workoutId);
     }).toList();
 
     setState(() {
@@ -68,7 +71,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
     }
   }
 
-
   void printPreviousWorkoutDate() {
     for (var workout in _previousWorkouts) {
       print(workout.date);
@@ -78,16 +80,29 @@ class _WorkoutLogState extends State<WorkoutLog> {
   void addWorkoutDetails() {
     _dummyWorkout.clear();
     for (var workout in _workouts) {
-      DateTime prevWorkout = _previousWorkouts.where((value) =>
-      value.workoutId == workout.workoutId).first.date;
-      print(formatDate(prevWorkout));
+      DateTime prevWorkout = _previousWorkouts
+          .where((value) => value.workoutId == workout.workoutId)
+          .first
+          .date;
 
+      // Function to map workout category to the corresponding icon
+      SvgPicture _getIconForCategory(String category) {
+        int index = officialWorkoutCategories.indexOf(category);
+        if (index != -1) {
+          return officialFilterCategoryIcons[
+              index + 2]; // +2 to skip 'All' and 'Starred'
+        }
+        return SvgPicture.asset('assets/icons/defaultIcon.svg',
+            width: 40, height: 40);
+      }
+
+// Adding a workout to _dummyWorkout with the correct icon
       _dummyWorkout.add({
         'title': workout.name,
         'subtitle': workout.description,
         'duration': workout.duration.toString(),
         'date': formatDate(prevWorkout),
-        'icon': Icons.fitness_center, //Default icon, should we add storage of icons?
+        'icon': _getIconForCategory(workout.category!),
       });
     }
   }
@@ -230,7 +245,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
     // Filter the workouts based on the selected date range
     return _dummyWorkout.where((workout) {
       final DateTime workoutDate =
-      DateFormat('dd.MM.yyyy').parse(workout['date']);
+          DateFormat('dd.MM.yyyy').parse(workout['date']);
       return workoutDate.isAfter(startDate) &&
           workoutDate.isBefore(now.add(const Duration(days: 1)));
     }).toList();
@@ -299,10 +314,10 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
   Widget _buildWorkoutLogEntry(BuildContext context,
       {required String title,
-        required String subtitle,
-        required String duration,
-        required String date,
-        required IconData icon}) {
+      required String subtitle,
+      required String duration,
+      required String date,
+      required IconData icon}) {
     return InkWell(
       // Box that likes touching.
       onTap: () {

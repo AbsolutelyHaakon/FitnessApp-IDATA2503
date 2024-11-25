@@ -163,10 +163,10 @@ class UserDao {
     String updatedName =
         name?.isNotEmpty == true ? name! : existingData['name'];
     double updatedHeight =
-        height != null && height != 0.0 ? height : existingData['height'];
+        height != null && height != 0.0 ? height : (existingData['height'] as num).toDouble();
     int updatedWeight = weight != null && weight != 0
         ? weight
-        : (existingData['weight'] as double).toInt();
+        : (existingData['weight'] as num).toInt();
     int updatedWeightTarget = weightTarget != null && weightTarget != 0
         ? weightTarget
         : (existingData['weightTarget'] ?? 0);

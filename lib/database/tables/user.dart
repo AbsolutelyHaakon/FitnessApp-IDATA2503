@@ -34,7 +34,7 @@ class LocalUser {
       'name': name,
       'email': email,
       'weight': weight,
-      'targetWeight': weightTarget,
+      'weightTarget': weightTarget,
       'weightInitial': weightInitial,
       'height': height,
       'imageURL': imageURL,

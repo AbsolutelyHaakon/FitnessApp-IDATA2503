@@ -154,7 +154,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.fitnessMainColor,
                           ),
-                          child: const Text('Attach Exercise >'),
+                          child: const Text('Attach Workout >'),
                         ),
                       ),
                     ),
