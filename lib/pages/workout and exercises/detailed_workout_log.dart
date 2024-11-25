@@ -29,8 +29,10 @@ class DetailedWorkoutLog extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(appBarTitle,
-            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+        title: Text(
+          appBarTitle,
+          style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+        ),
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.fitnessMainColor),
@@ -42,38 +44,77 @@ class DetailedWorkoutLog extends StatelessWidget {
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            Text(
-              'Title: ${workout.name}',
-              style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.fitnessPrimaryTextColor),
-            ),
+            _buildSectionTitle('Workout Details'),
             const SizedBox(height: 10),
-            Text(
-              'Category: ${workout.category}',
-              style: const TextStyle(
-                  fontSize: 18, color: AppColors.fitnessSecondaryTextColor),
+            _buildCard(
+              children: [
+                _buildInfoRow('Title', workout.name),
+                const Divider(),
+                _buildInfoRow('Category', workout.category ?? 'Unknown'),
+                const Divider(),
+                _buildInfoRow('Date', formattedDate),
+                const Divider(),
+                _buildInfoRow('Duration', '${userWorkout.duration} minutes'),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Date: $formattedDate',
-              style: const TextStyle(
-                  fontSize: 18, color: AppColors.fitnessSecondaryTextColor),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Duration: ${userWorkout.duration} minutes',
-              style: const TextStyle(
-                  fontSize: 18, color: AppColors.fitnessPrimaryTextColor),
-            ),
-            // Add more detailed information here
+            const SizedBox(height: 20),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Center(
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.fitnessMainColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard({required List<Widget> children}) {
+    return Card(
+      color: AppColors.fitnessBackgroundColor,
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.fitnessSecondaryTextColor,
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.fitnessPrimaryTextColor,
+          ),
+        ),
+      ],
     );
   }
 }
