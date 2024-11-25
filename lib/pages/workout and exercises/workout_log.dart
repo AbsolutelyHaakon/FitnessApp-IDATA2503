@@ -48,17 +48,11 @@ class _WorkoutLogState extends State<WorkoutLog> {
         workoutsData.add(temp);
       }
     }
-    if (!mounted) return;
 
-    // Filter workouts based on _previousWorkouts
-    List<Workouts> filteredWorkouts = workoutsData.where((workout) {
-      return _previousWorkouts
-          .any((value) => value.workoutId == workout.workoutId);
-    }).toList();
 
     setState(() {
       _workouts.clear();
-      _workouts = filteredWorkouts;
+      _workouts = workoutsData;
     });
 
     addWorkoutDetails();
@@ -72,13 +66,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
         _previousWorkouts = result['previousWorkouts'];
       });
       fetchAllWorkouts('All');
-      print(_previousWorkouts);
-    }
-  }
-
-  void printPreviousWorkoutDate() {
-    for (var workout in _previousWorkouts) {
-      print(workout.date);
     }
   }
 
@@ -109,8 +96,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
         'date': formatDate(prevWorkout),
         'icon': _getIconForCategory(workout.category!),
       });
-
-      print("dummyWorkout: $_dummyWorkout");
     }
   }
 
