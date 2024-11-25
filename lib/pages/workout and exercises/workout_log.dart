@@ -96,7 +96,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
             width: 40, height: 40);
       }
 
-// Adding a workout to _dummyWorkout with the correct icon
+      // Adding a workout to _dummyWorkout with the correct icon
       _dummyWorkout.add({
         'title': workout.name,
         'subtitle': workout.description,
@@ -119,7 +119,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
       'subtitle': 'Try to move challenge',
       'duration': '01:01:27',
       'date': '01.11.2024',
-      'icon': Icons.assist_walker,
+      'icon': Icon(Icons.assist_walker,
+          color: AppColors.fitnessMainColor, size: 30),
     },
   ];
 
@@ -317,7 +318,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
       required String subtitle,
       required String duration,
       required String date,
-      required IconData icon}) {
+      required Widget icon}) {
     return InkWell(
       // Box that likes touching.
       onTap: () {
@@ -341,7 +342,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
           child: Row(
             children: [
               // Workout Icon
-              Icon(icon, color: AppColors.fitnessMainColor, size: 30),
+              icon,
               const SizedBox(width: 16),
               // Workout Title & Subtitle
               Expanded(
