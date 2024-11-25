@@ -63,8 +63,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
   }
 
   _getWorkoutData() async {
-    workouts =
-        await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+    workouts = await _workoutDao.localFetchByWorkoutId(widget.userWorkouts.workoutId);
     if (workouts.workoutId != '0') {
       WidgetsBinding.instance.addObserver(this);
       _userWorkoutsDao.localSetAllInactive();
@@ -73,9 +72,12 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
         activeWorkoutStartTime = DateTime.now();
       }
       hasActiveWorkout.value = true;
-      activeUserWorkoutId.value = widget.userWorkouts!.userWorkoutId;
+      activeUserWorkoutId.value = widget.userWorkouts.userWorkoutId.toString();
+      print('Active workout id: ${activeUserWorkoutId.value}');
       activeWorkoutId.value = workouts.workoutId;
+      print('Active workout id: ${activeWorkoutId.value}');
       activeWorkoutName.value = workouts.name;
+      print('Active workout name: ${activeWorkoutName.value}');
     }
     // TODO: MAYBE ADD A CHECK HERE OR SOME ERROR HANDLING ON THE FRONTEND SIDE
   }

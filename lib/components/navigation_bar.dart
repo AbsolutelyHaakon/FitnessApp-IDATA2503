@@ -33,9 +33,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   void initState() {
     super.initState();
     _checkForActiveWorkouts();
-
-    print("Active workout: ${hasActiveWorkout.value}");
-    print(localHasActiveWorkout);
   }
 
   void _onItemTapped(int index) {
@@ -50,7 +47,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   Future<void> _checkForActiveWorkouts() async {
       final temp = await _userWorkoutsDao.fetchActiveUserWorkout();
       if (temp != null) {
-        print("Active workout found");
         hasActiveWorkout.value = true;
         activeUserWorkoutId.value = temp.userId;
         activeWorkoutId.value = temp.workoutId;
@@ -61,7 +57,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       } else {
         final temp2 = await _workoutDao.fetchActiveWorkout();
         if (temp2 != null) {
-          print("Active workout found");
           hasActiveWorkout.value = true;
           activeWorkoutId.value = temp2.workoutId;
           activeWorkoutName.value = temp2.name;
@@ -148,7 +143,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                       ),
                     ),
                   ).then((result) {
-                    print("checking for active workouts");
                     _checkForActiveWorkouts();
                   });
                   ;

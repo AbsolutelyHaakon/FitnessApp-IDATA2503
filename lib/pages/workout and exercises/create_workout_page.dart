@@ -171,7 +171,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         exercises.length, // Number of exercises / sets
       );
 
-      print("Heo9!");
       await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(
           selectedExercises, widget.preWorkout!.workoutId!);
 

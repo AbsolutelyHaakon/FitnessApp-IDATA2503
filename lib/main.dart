@@ -44,7 +44,6 @@ void main() async {
 
   var userWorkout = await _userWorkoutsDao.fetchActiveUserWorkout();
   if (userWorkout != null) {
-    print("Active User workout found");
     hasActiveWorkout.value = true;
     activeUserWorkoutId.value = userWorkout.userId;
     activeWorkoutId.value = userWorkout.workoutId;
@@ -52,12 +51,10 @@ void main() async {
   } else {
     var workout = await _workoutDao.fetchActiveWorkout();
     if (workout != null) {
-      print("Active non-user workout found");
       hasActiveWorkout.value = true;
       activeWorkoutId.value = workout.workoutId;
       activeWorkoutName.value = workout.name;
     } else {
-      print("No active workout found");
       hasActiveWorkout.value = false;
       activeWorkoutId.value = '';
       activeWorkoutName.value = '';

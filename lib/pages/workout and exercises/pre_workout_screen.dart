@@ -278,7 +278,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                               }
                             }
                             if (widget.userWorkouts == null && widget.workouts != null){
-                              widget.userWorkouts = UserWorkouts(
+                              final newUserWorkout = await UserWorkoutsDao().localCreate(UserWorkouts(
                                 userWorkoutId: '1',
                                 userId: FirebaseAuth.instance.currentUser?.uid ?? '',
                                 workoutId: widget.workouts!.workoutId,
@@ -286,9 +286,11 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                 duration: 0,
                                 statistics: '',
                                 isActive: true,
-                              );
-                              await UserWorkoutsDao().localCreate(widget.userWorkouts!);
+                              ));
+
+                              widget.userWorkouts = newUserWorkout;
                             }
+
                             exerciseStats = {};
                             Navigator.pushReplacement(
                               context,

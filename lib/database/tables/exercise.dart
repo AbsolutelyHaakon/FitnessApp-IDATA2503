@@ -75,4 +75,14 @@ class Exercises {
   String toString() {
     return name;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Exercises &&
+              runtimeType == other.runtimeType &&
+              name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
 }

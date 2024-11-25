@@ -115,7 +115,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       if (success) {
         await fetchUpcomingWorkouts();
         await fetchWorkoutNames();
-        print("SUCCESS!");
       } else {
         // Handle the failure case
         print('Failed to replace workout');

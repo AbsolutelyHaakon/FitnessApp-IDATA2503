@@ -120,7 +120,6 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _isReady = true;
       });
-      print("is ready: $_isReady");
     }
   }
 

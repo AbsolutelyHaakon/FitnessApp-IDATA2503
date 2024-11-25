@@ -31,8 +31,6 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
     for (Exercises exercise in widget.selectedExercises) {
       _selectedExercisesMap[exercise.exerciseId!] = exercise;
     }
-    print("selected exercises: ${_selectedExercisesMap.values.toList()}");
-
     _fetchExercises();
   }
 
