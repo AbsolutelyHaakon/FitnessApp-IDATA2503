@@ -35,87 +35,35 @@ class _WorkoutLogState extends State<WorkoutLog> {
   final WorkoutDao _workoutDao = WorkoutDao();
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
 
+  Map<UserWorkouts, Workouts> _workoutMap = {};
+
   @override
   void initState() {
     super.initState();
-    fetchPreviousWorkouts();
+    fetchData();
   }
 
-  void fetchAllWorkouts(String category) async {
-    List<Workouts> workoutsData = [];
-    for (var userWorkout in _previousWorkouts) {
-      Workouts? temp =
-          await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
-      if (temp != null) {
-        workoutsData.add(temp);
-      }
-    }
-
-    setState(() {
-      _workouts.clear();
-      _workouts = workoutsData;
-    });
-
-    addWorkoutDetails();
-  }
-
-  Future<void> fetchPreviousWorkouts() async {
+  Future<void> fetchData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       final result = await _userWorkoutsDao.fireBaseFetchPreviousWorkouts(
           FirebaseAuth.instance.currentUser!.uid);
-      setState(() {
-        _previousWorkouts = result['previousWorkouts'];
-      });
-      fetchAllWorkouts('All');
-    }
-  }
 
-  void addWorkoutDetails() {
-    _dummyWorkout.clear();
-    for (var workout in _workouts) {
-      DateTime prevWorkout = _previousWorkouts
-          .where((value) => value.workoutId == workout.workoutId)
-          .first
-          .date;
-
-      // Function to map workout category to the corresponding icon
-      SvgPicture _getIconForCategory(String category) {
-        int index = officialWorkoutCategories.indexOf(category);
-        if (index != -1) {
-          return officialFilterCategoryIcons[
-              index + 2]; // +2 to skip 'All' and 'Starred'
+      for (var userWorkout in result['previousWorkouts']) {
+        Workouts? temp =
+            await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
+        if (temp != null) {
+          setState(() {
+            _workoutMap[userWorkout] = temp;
+          });
         }
-        return SvgPicture.asset('assets/icons/defaultIcon.svg',
-            width: 40, height: 40);
       }
-
-      // Adding a workout to _dummyWorkout with the correct icon
-      _dummyWorkout.add({
-        'title': workout.name,
-        'subtitle': workout.description,
-        'duration': workout.duration.toString(),
-        'date': formatDate(prevWorkout),
-        'icon': _getIconForCategory(workout.category!),
-      });
     }
   }
-
+  
   //For formatting the date to a string format dd/mm/yyyy
   String formatDate(DateTime date) {
     return DateFormat('dd.MM.yyyy').format(date);
   }
-
-  // Dummy data for workouts
-  final List<Map<String, dynamic>> _dummyWorkout = [
-    {
-      'title': 'Legs',
-      'subtitle': 'Try to move challenge',
-      'duration': '01:01:27',
-      'date': '01.11.2024',
-      'icon': Icon(Icons.assist_walker,
-          color: AppColors.fitnessMainColor, size: 30),
-    },
-  ];
 
   // Function to map month number to month name
   String _getMonthName(String monthNumber) {
@@ -214,7 +162,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
   }
 
   // Filters the workout based on the selected filter
-  List<Map<String, dynamic>> _filterWorkouts() {
+  Map<UserWorkouts, Workouts> _filterWorkouts() {
     final DateTime now = DateTime.now();
     DateTime startDate;
 
@@ -234,34 +182,38 @@ class _WorkoutLogState extends State<WorkoutLog> {
         break;
       case 'All':
       default:
-        return _dummyWorkout; // Return all
+        return _workoutMap; // Return all
     }
+
     // Filter the workouts based on the selected date range
-    return _dummyWorkout.where((workout) {
-      final DateTime workoutDate =
-          DateFormat('dd.MM.yyyy').parse(workout['date']);
-      return workoutDate.isAfter(startDate) &&
-          workoutDate.isBefore(now.add(const Duration(days: 1)));
-    }).toList();
+    return Map.fromEntries(
+      _workoutMap.entries.where((entry) {
+        final DateTime workoutDate = entry.key.date;
+        return workoutDate.isAfter(startDate) &&
+            workoutDate.isBefore(now.add(const Duration(days: 1)));
+      }),
+    );
   }
 
   List<Widget> _buildWorkoutSections() {
     final filteredWorkouts = _filterWorkouts();
 
     // Group workouts by month and year
-    Map<String, List<Map<String, dynamic>>> workoutsByMonth = {};
+    Map<String, List<MapEntry<UserWorkouts, Workouts>>> workoutsByMonth = {};
 
-    for (var workout in filteredWorkouts) {
-      String date = workout['date'];
-      String month = date.substring(3, 5);
-      String year = date.substring(6, 10);
+    for (var entry in filteredWorkouts.entries) {
+      String date = entry.key.date.toString();
+      String month =
+          date.substring(5, 7); // Adjusted to get the correct month
+      String year =
+          date.substring(0, 4); // Adjusted to get the correct year
 
       String monthYearKey = "$year-$month";
 
       if (workoutsByMonth[monthYearKey] == null) {
         workoutsByMonth[monthYearKey] = [];
       }
-      workoutsByMonth[monthYearKey]!.add(workout);
+      workoutsByMonth[monthYearKey]!.add(entry);
     }
 
     // Sort the "keys" (month-year) based on isAscending = true/false
@@ -282,14 +234,11 @@ class _WorkoutLogState extends State<WorkoutLog> {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ));
-      for (var workout in workoutsByMonth[monthYearKey]!) {
+
+      for (var workoutMap in workoutsByMonth[monthYearKey]!) {
         sections.add(_buildWorkoutLogEntry(
           context,
-          title: workout['title'],
-          subtitle: workout['subtitle'],
-          duration: workout['duration'],
-          date: workout['date'],
-          icon: workout['icon'],
+          workoutMapEntry: workoutMap,
         ));
       }
     }
@@ -306,71 +255,75 @@ class _WorkoutLogState extends State<WorkoutLog> {
         today.day == workoutDate.day;
   }
 
-  Widget _buildWorkoutLogEntry(BuildContext context,
-      {required String title,
-      required String subtitle,
-      required String duration,
-      required String date,
-      required Widget icon}) {
-    return InkWell(
-      // Box that likes touching.
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => DetailedWorkoutLog(
-            title: title,
-            category: subtitle, // Subtitle? Category? :D
-            date: DateFormat('dd.MM.yyyy').parse(date),
-            duration: duration,
-          ),
-        ));
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: AppColors.fitnessModuleColor,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Row(
-            children: [
-              // Workout Icon
-              icon,
-              const SizedBox(width: 16),
-              // Workout Title & Subtitle
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-              // Workout Duration & Date
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+SvgPicture _getIconForCategory(String category) {
+  int index = officialWorkoutCategories.indexOf(category);
+  if (index != -1) {
+    return officialFilterCategoryIcons[index + 2]; // +2 to skip 'All' and 'Starred'
+  }
+  return SvgPicture.asset('assets/icons/defaultIcon.svg', width: 40, height: 40);
+}
+
+Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkouts, Workouts> workoutMapEntry}) {
+  final UserWorkouts userWorkout = workoutMapEntry.key;
+  final Workouts workout = workoutMapEntry.value;
+
+  return InkWell(
+    onTap: () {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => DetailedWorkoutLog(
+          title: workout.name,
+          category: workout.description ?? '',
+          date: userWorkout.date,
+          duration: workout.duration.toString(),
+        ),
+      ));
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: AppColors.fitnessModuleColor,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          children: [
+            // Workout Icon
+            _getIconForCategory(workout.category ?? ''),
+            const SizedBox(width: 16),
+            // Workout Title & Subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    duration,
-                    style: Theme.of(context).textTheme.labelSmall,
+                    workout.name,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Text(
-                    _isToday(date) ? 'Today' : date,
+                    workout.description ?? '',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            // Workout Duration & Date
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  workout.duration.toString(),
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                Text(
+                  _isToday(formatDate(userWorkout.date)) ? 'Today' : formatDate(userWorkout.date),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-    );
-  }
-}
+    ),
+  );
+}}
