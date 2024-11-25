@@ -14,13 +14,22 @@ import '../tables/user.dart';
 class SocialFeedData {
 
   // TODO: Change this to search for people with @ tags in their name when they are implemented
-  Future <Map<String, dynamic>> fireBaseFetchUsersForSearch() async {
+  Future<Map<String, dynamic>> fireBaseFetchUsersForSearch() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users').get();
 
     List<LocalUser> users = querySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['userId'] = doc.id;
+
+      // Ensure that fields expected to be int? are properly converted
+      data['weight'] = (data['weight'] as num?)?.toInt();
+      data['weightTarget'] = (data['weightTarget'] as num?)?.toInt();
+      data['weightInitial'] = (data['weightInitial'] as num?)?.toInt();
+      data['waterTarget'] = (data['waterTarget'] as num?)?.toInt();
+      data['caloriesIntakeTarget'] = (data['caloriesIntakeTarget'] as num?)?.toInt();
+      data['caloriesBurnedTarget'] = (data['caloriesBurnedTarget'] as num?)?.toInt();
+
       return LocalUser.fromMap(data);
     }).toList();
 

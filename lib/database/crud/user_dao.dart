@@ -120,7 +120,7 @@ class UserDao {
       'email': email,
       'name': 'Not Set',
       'height': 0.0,
-      'weight': 0.0,
+      'weight': 0,
     });
     localCreate(LocalUser(
         userId: uid!, name: 'John Doe', email: email, weight: 0, height: 0.0));
@@ -212,15 +212,27 @@ int updatedCaloriesBurnedTarget = caloriesBurnedTarget != null && caloriesBurned
 }
 
   Future<Map<String, dynamic>?> fireBaseGetUserData(String uid) async {
-    try {
-      DocumentSnapshot documentSnapshot =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      return documentSnapshot.data() as Map<String, dynamic>?;
-    } catch (e) {
-      print(e);
-      return null;
+  try {
+    DocumentSnapshot documentSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+
+    if (data != null) {
+      // Ensure that fields expected to be int? are properly converted
+      data['weight'] = (data['weight'] as num?)?.toInt();
+      data['weightTarget'] = (data['weightTarget'] as num?)?.toInt();
+      data['weightInitial'] = (data['weightInitial'] as num?)?.toInt();
+      data['waterTarget'] = (data['waterTarget'] as num?)?.toInt();
+      data['caloriesIntakeTarget'] = (data['caloriesIntakeTarget'] as num?)?.toInt();
+      data['caloriesBurnedTarget'] = (data['caloriesBurnedTarget'] as num?)?.toInt();
     }
+
+    return data;
+  } catch (e) {
+    print('Error fetching users: $e');
+    return null;
   }
+}
 
   Future<Map<String, dynamic>> fireBaseLoginWithEmailAndPassword(
       String email, String password) async {
@@ -243,13 +255,10 @@ int updatedCaloriesBurnedTarget = caloriesBurnedTarget != null && caloriesBurned
   }
 
   Future<String> uploadImage(XFile image) async {
-    print("Uploading image to Imgur...");
     String? imgurUrl = await imgurService.saveImageToImgur(image);
     if (imgurUrl != null) {
-      print('Image uploaded to Imgur: $imgurUrl');
       return imgurUrl;
     } else {
-      print('Failed to upload to Imgur.');
       return "";
     }
   }
