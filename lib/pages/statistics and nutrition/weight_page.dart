@@ -123,6 +123,10 @@ class _WeightPageState extends State<WeightPage>
           weightPercentage = (todayWeight - weightInitial).abs() /
               (weightGoal - weightInitial).abs();
         }
+        if (weightPercentage.isInfinite) {
+          weightPercentage = 1;
+
+        }
       });
     }
   }
@@ -262,6 +266,9 @@ class _WeightPageState extends State<WeightPage>
                                         ),
                                       ),
                                       Text(
+                                        weightInitial == weightGoal
+                                            ? '0 Kg'
+                                            :
                                         weightInitial > weightGoal
                                             ? '${(weightInitial - weightGoal - (weightInitial - todayWeight)).abs().toStringAsFixed(1)} Kg'
                                             : '${(weightGoal - weightInitial - (todayWeight - weightInitial)).abs().toStringAsFixed(1)} Kg',
@@ -291,7 +298,7 @@ class _WeightPageState extends State<WeightPage>
                                   children: [
                                     Text(
                                       weightPercentage >= 1
-                                          ? 'Congratulations! Goal Reached!'
+                                          ? 'Congratulations!\n Goal Reached!'
                                           : 'Current: ${todayWeight.toStringAsFixed(1)} Kg \nGoal: ${goal.toStringAsFixed(1)} Kg',
                                       style: const TextStyle(
                                         color:
