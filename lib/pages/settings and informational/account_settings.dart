@@ -122,6 +122,7 @@ class AccountSettingsPage extends StatelessWidget {
                     fontSize: 16, fontWeight: FontWeight.normal),
                 cursorColor: Colors.white,
                 controller: passwordController,
+                obscureText: true,
                 decoration: const InputDecoration(
                   hintStyle: TextStyle(color: Colors.white),
                   labelStyle: TextStyle(fontSize: 16, color: Colors.white),

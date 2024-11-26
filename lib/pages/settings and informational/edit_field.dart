@@ -74,8 +74,6 @@ class EditFieldPage extends StatelessWidget {
                   onPressed: () {
                     onSave(_controller.text);
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
                   },
                   child: const Text(
                     'Save',

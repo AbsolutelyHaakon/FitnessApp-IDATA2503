@@ -50,7 +50,7 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
                   CupertinoButton(
                     onPressed: () async {
                       await _endWorkout();
-                      Navigator.pop(context, true);
+                      Navigator.pop(context);
                     },
                     child: Container(
                       width: 410,

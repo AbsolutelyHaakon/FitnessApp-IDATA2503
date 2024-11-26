@@ -19,9 +19,14 @@ import '../../styles.dart';
 class DwCurrentExercise extends StatefulWidget {
   final Map<Exercises, WorkoutExercises> exerciseMap;
   final UserWorkouts userWorkouts;
+  final VoidCallback onEndWorkout;
 
-  const DwCurrentExercise(
-      {super.key, required this.exerciseMap, required this.userWorkouts});
+  const DwCurrentExercise({
+    super.key,
+    required this.exerciseMap,
+    required this.userWorkouts,
+    required this.onEndWorkout,
+  });
 
   @override
   _DwCurrentExerciseState createState() => _DwCurrentExerciseState();
@@ -36,6 +41,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   Duration workoutDuration = Duration.zero;
   int finalTime = 0;
   int workoutProgressIndex = 0;
+  bool exerciseEnded = false;
 
   @override
   void initState() {
@@ -194,11 +200,74 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     });
   }
 
+  String getWorkoutDuration() {
+    final duration = Duration(
+      hours: workoutDuration.inHours,
+      minutes: workoutDuration.inMinutes.remainder(60),
+      seconds: workoutDuration.inSeconds.remainder(60),
+    );
+
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${duration.inHours}:$twoDigitMinutes:$twoDigitSeconds";
+  }
+
   @override
   Widget build(BuildContext context) {
     if (exercises.isEmpty || exerciseStats.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(),
+      );
+    }
+
+    if (exerciseEnded) {
+      return Padding(
+        padding: EdgeInsets.only(top: 40),
+        child: Center(
+            child: Column(
+          children: [
+            DwProgressBar(value: (workoutProgressIndex) / exercises.length),
+            const SizedBox(height: 10),
+            const Text(
+              'Workout Ended!',
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 15),
+            Text('You worked out for: ${getWorkoutDuration()}'),
+            //Add poop here Haak!
+            const SizedBox(height: 420),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                CupertinoButton(
+                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                  color: AppColors.fitnessModuleColor,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    "Continue",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                CupertinoButton(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  color: AppColors.fitnessMainColor,
+                  onPressed: () {},
+                  child: const Icon(
+                    CupertinoIcons.share,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        )),
       );
     }
 
@@ -509,7 +578,10 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                         activeWorkoutIndex = 0;
                       });
                       await _endWorkout();
-                      Navigator.of(context).pop();
+                      setState(() {
+                        exerciseEnded = true;
+                      });
+                      widget.onEndWorkout();
                     },
                     child: Container(
                       width: 410,
