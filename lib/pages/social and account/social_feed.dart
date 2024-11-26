@@ -56,70 +56,80 @@ class _SocialFeedState extends State<SocialFeed> {
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  final appBarHeight = MediaQuery.of(context).size.height * 0.1;
+  @override
+  Widget build(BuildContext context) {
+    final appBarHeight = MediaQuery.of(context).size.height * 0.1;
 
-  return Scaffold(
-    appBar: PreferredSize(
-      preferredSize: Size.fromHeight(appBarHeight),
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: AppColors.fitnessModuleColor, // Set the border color
-              width: 1.0, // Adjust the border width as needed
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(appBarHeight),
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.fitnessModuleColor, // Set the border color
+                width: 1.0, // Adjust the border width as needed
+              ),
             ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0,),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Social feed',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ],
-                ),
-                Text(
-                  'Explore posts from other users',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 20.0,
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Social feed',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                  Text(
+                    'Explore posts from other users',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-    body: _isReady
-        ? _buildFeedSection()
-        : const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.fitnessMainColor,
+      body: Stack(
+        children: [
+          _isReady
+              ? _buildFeedSection()
+              : const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.fitnessMainColor,
+                  ),
+                ),
+          Positioned(
+            bottom: 35,
+            right: 10,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreatePostPage()),
+                );
+              },
+              backgroundColor: AppColors.fitnessMainColor,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add,
+                  color: AppColors.fitnessBackgroundColor),
             ),
           ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CreatePostPage()),
-        );
-      },
-      backgroundColor: AppColors.fitnessMainColor,
-      shape: const CircleBorder(),
-      child: const Icon(Icons.add,
-          color: AppColors.fitnessPrimaryTextColor),
-    ),
-    backgroundColor: AppColors.fitnessBackgroundColor,
-  );
-}
+        ],
+      ),
+      backgroundColor: AppColors.fitnessBackgroundColor,
+    );
+  }
 
   Widget _buildFeedSection() {
     return RefreshIndicator(

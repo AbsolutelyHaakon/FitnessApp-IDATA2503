@@ -51,7 +51,6 @@ class _WorkoutPageState extends State<WorkoutPage>
 
     fetchAllWorkouts("All");
 
-    // Animation controllers for floating button widget
     _addIconController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
