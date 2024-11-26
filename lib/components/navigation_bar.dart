@@ -187,56 +187,56 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.house_fill,
-    size: 25.0,
-    color: _selectedIndex == 0
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.news_solid,
-    size: 25.0,
-    color: _selectedIndex == 1
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: SvgPicture.asset(
-    'assets/icons/workout.svg',
-    width: 30.0,
-    height: 30.0,
-    color: _selectedIndex == 2
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.search,
-    size: 25.0,
-    color: _selectedIndex == 3
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.person_fill,
-    size: 25.0,
-    color: _selectedIndex == 4
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
+                icon: Icon(
+                  CupertinoIcons.house_fill,
+                  size: 25.0,
+                  color: _selectedIndex == 0
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  CupertinoIcons.news_solid,
+                  size: 25.0,
+                  color: _selectedIndex == 1
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/workout.svg',
+                  width: 30.0,
+                  height: 30.0,
+                  color: _selectedIndex == 2
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  CupertinoIcons.search,
+                  size: 25.0,
+                  color: _selectedIndex == 3
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  CupertinoIcons.person_fill,
+                  size: 25.0,
+                  color: _selectedIndex == 4
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
             ],
             currentIndex: _selectedIndex,
             selectedItemColor: AppColors.fitnessMainColor,

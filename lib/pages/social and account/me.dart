@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:ui' as ui;
 
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:fitnessapp_idata2503/modules/floating_button_component.dart';
@@ -47,6 +48,34 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: ui.Size.fromHeight(40.0), // Adjust the height as needed
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.fitnessModuleColor, // Set the border color
+                width: 1.0, // Adjust the border width as needed
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Me',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           Column(
