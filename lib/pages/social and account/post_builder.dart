@@ -1,5 +1,6 @@
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -38,9 +39,10 @@ class _PostBuilderState extends State<PostBuilder> {
     _getUserInformation();
   }
 
-  Future<void> _getUserInformation() async {
-    final userData = await _userDao.fireBaseGetUserData(widget.post.userId);
+ Future<void> _getUserInformation() async {
+  final userData = await _userDao.fireBaseGetUserData(widget.post.userId);
 
+  if (mounted) {
     setState(() {
       profileImageUrl = userData?['imageURL'] ?? '';
       name = userData?['name'] ?? '';
@@ -59,6 +61,7 @@ class _PostBuilderState extends State<PostBuilder> {
       _isReady = true;
     });
   }
+}
 
   Widget statBuilder(Map<String, String> stat) {
     IconData icon;
@@ -104,11 +107,22 @@ class _PostBuilderState extends State<PostBuilder> {
           child: Row(
             children: [
               if (!widget.isProfile)
-                CircleAvatar(
-                  backgroundImage: profileImageUrl.isNotEmpty
-                      ? NetworkImage(profileImageUrl)
-                      : const AssetImage('assets/images/placeholder_icon.png')
-                          as ImageProvider,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfilePage(userId: widget.post.userId),
+                      ),
+                    );
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: profileImageUrl.isNotEmpty
+                        ? NetworkImage(profileImageUrl)
+                        : const AssetImage('assets/images/placeholder_icon.png')
+                    as ImageProvider,
+                  ),
                 ),
               const SizedBox(width: 10.0),
               Column(
@@ -197,7 +211,7 @@ class _PostBuilderState extends State<PostBuilder> {
                             // Button text color
                             shape: RoundedRectangleBorder(
                               borderRadius:
-                                  BorderRadius.circular(10), // Rounded corners
+                              BorderRadius.circular(10), // Rounded corners
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 10), // Padding
