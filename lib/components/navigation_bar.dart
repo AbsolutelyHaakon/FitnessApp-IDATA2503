@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/community_module.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/searchUsers.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
@@ -187,56 +188,56 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.house_fill,
-    size: 25.0,
-    color: _selectedIndex == 0
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.news_solid,
-    size: 25.0,
-    color: _selectedIndex == 1
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: SvgPicture.asset(
-    'assets/icons/workout.svg',
-    width: 30.0,
-    height: 30.0,
-    color: _selectedIndex == 2
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.search,
-    size: 25.0,
-    color: _selectedIndex == 3
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
-BottomNavigationBarItem(
-  icon: Icon(
-    CupertinoIcons.person_fill,
-    size: 25.0,
-    color: _selectedIndex == 4
-        ? AppColors.fitnessMainColor
-        : AppColors.fitnessSecondaryTextColor,
-  ),
-  label: '',
-),
+                icon: Icon(
+                  CupertinoIcons.house_fill,
+                  size: 25.0,
+                  color: _selectedIndex == 0
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  CupertinoIcons.news_solid,
+                  size: 25.0,
+                  color: _selectedIndex == 1
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/workout.svg',
+                  width: 30.0,
+                  height: 30.0,
+                  color: _selectedIndex == 2
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  CupertinoIcons.search,
+                  size: 25.0,
+                  color: _selectedIndex == 3
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  CupertinoIcons.person_fill,
+                  size: 25.0,
+                  color: _selectedIndex == 4
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
             ],
             currentIndex: _selectedIndex,
             selectedItemColor: AppColors.fitnessMainColor,
@@ -264,7 +265,9 @@ BottomNavigationBarItem(
       case 3:
         return const SearchUsers();
       case 4:
-        return const Me();
+        return FirebaseAuth.instance.currentUser?.uid != null
+            ? ProfilePage(userId: FirebaseAuth.instance.currentUser!.uid)
+            : const Me();
       default:
         return const Home();
     }
