@@ -85,7 +85,7 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
         widget.exercise.name = _nameController.text;
         widget.exercise.description = _descriptionController.text;
         widget.exercise.category = _categoryController.text;
-        widget.exercise.isPrivate = _isPublic;
+        widget.exercise.isPrivate = !_isPublic;
         _isEditing = false;
       });
       _showSnackBar('Exercise saved', Icons.check);
