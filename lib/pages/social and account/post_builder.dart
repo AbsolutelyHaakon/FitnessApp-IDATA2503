@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 
 import '../../styles.dart';
 
-// TODO: Implement likes and comments, get rid of shareCount
-
 class PostBuilder extends StatefulWidget {
   final Posts post;
   final bool isProfile;
@@ -63,16 +61,24 @@ class _PostBuilderState extends State<PostBuilder> {
   }
 
   Widget statBuilder(Map<String, String> stat) {
+    IconData icon;
+    switch (stat['name']) {
+      case 'Weight':
+        icon = Icons.fitness_center;
+        break;
+      case 'Duration':
+        icon = Icons.timer;
+        break;
+      default:
+        icon = Icons.fitness_center;
+    }
     return Row(
       children: [
+        Icon(icon, size: 16, color: AppColors.fitnessMainColor),
+        const SizedBox(width: 5),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(stat['name'] ?? '',
-                style: const TextStyle(
-                    fontSize: 12.0,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400)),
             Text(stat['value'] ?? '', style: const TextStyle(fontSize: 16.0)),
           ],
         ),
@@ -126,8 +132,8 @@ class _PostBuilderState extends State<PostBuilder> {
         const SizedBox(height: 10.0),
         Card(
           color: AppColors.fitnessModuleColor,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,16 +186,28 @@ class _PostBuilderState extends State<PostBuilder> {
                         ),
                       ),
                       if (workoutId != null)
-                        TextButton(
+                        ElevatedButton(
                           onPressed: () {
                             // Navigate to workout details
                           },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.fitnessMainColor,
+                            // Button background color
+                            foregroundColor: AppColors.fitnessBackgroundColor,
+                            // Button text color
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(10), // Rounded corners
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10), // Padding
                           ),
                           child: const Text(
-                            'View Workout >',
-                            style: TextStyle(color: AppColors.fitnessMainColor),
+                            'View Workout',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                     ],
@@ -202,6 +220,10 @@ class _PostBuilderState extends State<PostBuilder> {
                   height: 300,
                   child: Container(
                     decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(15),
+                        bottomRight: Radius.circular(15),
+                      ),
                       image: DecorationImage(
                         image: NetworkImage(imageUrl!),
                         fit: BoxFit.cover,
