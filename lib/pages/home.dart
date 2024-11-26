@@ -35,10 +35,11 @@ Map<Workouts, DateTime> workoutMap = {
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
+    final appBarHeight = MediaQuery.of(context).size.height * 0.08;
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40.0), // Adjust the height as needed
+        preferredSize: Size.fromHeight(appBarHeight),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Align(

@@ -116,9 +116,11 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   @override
   Widget build(BuildContext context) {
+    final appBarHeight = MediaQuery.of(context).size.height * 0.08;
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40.0), // Adjust the height as needed
+        preferredSize: Size.fromHeight(appBarHeight),
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: Align(
