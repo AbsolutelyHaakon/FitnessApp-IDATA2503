@@ -261,6 +261,15 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                               fontWeight: FontWeight.w900,
                             ),
                           ),
+                          const Text(
+                            'Burn\n\n\n',
+                            style: TextStyle(
+                              color: AppColors
+                                  .fitnessSecondaryTextColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          )
                         ],
                       ),
                     ),

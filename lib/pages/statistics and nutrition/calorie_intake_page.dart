@@ -261,6 +261,15 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                               fontWeight: FontWeight.w900,
                             ),
                           ),
+                          const Text(
+                            'Consume\n\n\n',
+                            style: TextStyle(
+                              color: AppColors
+                                  .fitnessSecondaryTextColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          )
                         ],
                       ),
                     ),

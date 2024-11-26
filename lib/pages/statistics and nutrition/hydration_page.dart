@@ -264,6 +264,15 @@ class _HydrationPageState extends State<HydrationPage>
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
+                                const Text(
+                                  'Consume\n\n\n',
+                                  style: TextStyle(
+                                    color: AppColors
+                                        .fitnessSecondaryTextColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -306,7 +315,7 @@ class _HydrationPageState extends State<HydrationPage>
                               barWidth: 4,
                               belowBarData: BarAreaData(
                                   show: true,
-                                  color: Color(0xFF468CF6).withOpacity(0.3)),
+                                  color: const Color(0xFF468CF6).withOpacity(0.3)),
                             ),
                           ],
                           extraLinesData: ExtraLinesData(
@@ -320,7 +329,7 @@ class _HydrationPageState extends State<HydrationPage>
                                   show: true,
                                   alignment: Alignment.topRight,
                                   labelResolver: (line) => 'Goal',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.red,
                                     fontWeight: FontWeight.bold,
                                   ),
