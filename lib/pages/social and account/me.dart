@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:fitnessapp_idata2503/modules/floating_button_component.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/weight_bar_chart.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/user_profile_module.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -97,7 +98,9 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                                 onLogout: _onLogout,
                               ),
                               const SizedBox(height: 20),
-                              WeightBarChart(),
+                              ProfilePage(
+                                userId: FirebaseAuth.instance.currentUser!.uid,
+                              ),
                             ] else ...[
                               LoginModule(
                                 formKey: _formKey,

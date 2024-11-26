@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/community_module.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/searchUsers.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
@@ -264,7 +265,9 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       case 3:
         return const SearchUsers();
       case 4:
-        return const Me();
+        return FirebaseAuth.instance.currentUser?.uid != null
+            ? ProfilePage(userId: FirebaseAuth.instance.currentUser!.uid)
+            : const Me();
       default:
         return const Home();
     }

@@ -4,6 +4,7 @@ import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
+import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/settings.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,8 @@ class _ProfilePageState extends State<ProfilePage> {
   final UserDao _userDao = UserDao();
   final UserFollowsDao _userFollowsDao = UserFollowsDao();
   final PostsDao _postsDao = PostsDao();
+
+  User? _currentUser;
 
   String name = " ";
   String imageURL = " ";
@@ -55,13 +58,19 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadUserPosts() async {
-  final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
+    final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
 
-  setState(() {
-    _posts = postsData["posts"];
-    _posts.sort((a, b) => b.date.compareTo(a.date));
-  });
-}
+    setState(() {
+      _posts = postsData["posts"];
+      _posts.sort((a, b) => b.date.compareTo(a.date));
+    });
+  }
+
+  void _onLogout() {
+    setState(() {
+      _currentUser = null;
+    });
+  }
 
   Future<void> _loadUserData() async {
     final user = await _userDao.fireBaseGetUserData(widget.userId);
@@ -71,7 +80,6 @@ class _ProfilePageState extends State<ProfilePage> {
       imageURL = user?["imageURL"] ?? "";
       bannerURL = user?["bannerURL"] ?? "";
     });
-
   }
 
   Future<void> _loadFollowerData() async {
@@ -169,18 +177,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: FirebaseAuth.instance.currentUser?.uid != widget.userId
-          ? AppBar(
-              leading: IconButton(
-                icon: const Icon(CupertinoIcons.back,
-                    color: AppColors.fitnessMainColor),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              backgroundColor: AppColors.fitnessBackgroundColor,
-            )
-          : null,
       body: _isReady
           ? SingleChildScrollView(
               child: DefaultTextStyle(
@@ -353,7 +349,22 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: AppColors.fitnessPrimaryTextColor),
                                 ),
                               ),
-                            )
+                            ),
+                          if (FirebaseAuth.instance.currentUser?.uid ==
+                              widget.userId)
+                            IconButton(
+                              icon: const Icon(Icons.settings,
+                                  color: AppColors.fitnessMainColor),
+                              color: Colors.grey,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SettingsPage(onLogout: _onLogout)),
+                                );
+                              },
+                            ),
                         ],
                       ),
                     ),

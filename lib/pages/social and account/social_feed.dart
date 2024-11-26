@@ -56,68 +56,70 @@ class _SocialFeedState extends State<SocialFeed> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-  preferredSize: const Size.fromHeight(40.0), // Adjust the height as needed
-  child: Container(
-    decoration: const BoxDecoration(
-      border: Border(
-        bottom: BorderSide(
-          color: AppColors.fitnessModuleColor, // Set the border color
-          width: 1.0, // Adjust the border width as needed
+@override
+Widget build(BuildContext context) {
+  final appBarHeight = MediaQuery.of(context).size.height * 0.1;
+
+  return Scaffold(
+    appBar: PreferredSize(
+      preferredSize: Size.fromHeight(appBarHeight),
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: AppColors.fitnessModuleColor, // Set the border color
+              width: 1.0, // Adjust the border width as needed
+            ),
+          ),
         ),
-      ),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.only(left: 20.0),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0,),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Social feed',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
                 Text(
-                  'Social feed',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  'Explore posts from other users',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
-            Text(
-              'Explore posts from other users',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+          ),
         ),
       ),
     ),
-  ),
-),
-      body: _isReady
-          ? _buildFeedSection()
-          : const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.fitnessMainColor,
-              ),
+    body: _isReady
+        ? _buildFeedSection()
+        : const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.fitnessMainColor,
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreatePostPage()),
-          );
-        },
-        backgroundColor: AppColors.fitnessMainColor,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add,
-            color: AppColors.fitnessPrimaryTextColor),
-      ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
-    );
-  }
+          ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CreatePostPage()),
+        );
+      },
+      backgroundColor: AppColors.fitnessMainColor,
+      shape: const CircleBorder(),
+      child: const Icon(Icons.add,
+          color: AppColors.fitnessPrimaryTextColor),
+    ),
+    backgroundColor: AppColors.fitnessBackgroundColor,
+  );
+}
 
   Widget _buildFeedSection() {
     return RefreshIndicator(
@@ -125,7 +127,7 @@ class _SocialFeedState extends State<SocialFeed> {
       color: AppColors.fitnessMainColor,
       backgroundColor: AppColors.fitnessBackgroundColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: ListView.builder(
           itemCount: _posts.length,
           itemBuilder: (context, index) {
