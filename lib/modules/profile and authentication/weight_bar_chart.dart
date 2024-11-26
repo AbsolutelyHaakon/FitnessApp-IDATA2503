@@ -157,7 +157,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                                 borderSide: BorderSide(
                                     color: AppColors.fitnessMainColor),
                               ),
-                              labelText: 'Weight',
+                              labelText: 'Weight (kg)',
                               hintText: 'Enter your weight',
                             ),
                             keyboardType: TextInputType.number,
@@ -219,7 +219,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                                 borderSide: BorderSide(
                                     color: AppColors.fitnessMainColor),
                               ),
-                              labelText: 'Weight',
+                              labelText: 'Weight (kg)',
                               hintText: 'Enter your weight goal',
                             ),
                             keyboardType: TextInputType.number,

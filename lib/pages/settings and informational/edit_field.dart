@@ -44,6 +44,7 @@ class EditFieldPage extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
+                style: const TextStyle(fontSize: 20),
                 cursorColor: Colors.white,
                 controller: _controller,
                 keyboardType: keyboardType,

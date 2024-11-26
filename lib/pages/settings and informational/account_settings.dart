@@ -261,6 +261,74 @@ class AccountSettingsPage extends StatelessWidget {
     );
   }
 
+  void showUpdateHeightDialog(BuildContext context) {
+    final TextEditingController heightController = TextEditingController();
+    heightController.text = height.toString();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.fitnessModuleColor,
+          title: const Text('Update Height'),
+          content: TextFormField(
+            cursorColor: Colors.white,
+            controller: heightController,
+            decoration: const InputDecoration(
+              hintStyle: TextStyle(color: Colors.white),
+              labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+              suffixStyle: TextStyle(color: Colors.white),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.fitnessMainColor),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.fitnessMainColor),
+              ),
+              labelText: 'Height (cm)',
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.fitnessMainColor),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String newHeight = heightController.text;
+                height = int.parse(newHeight);
+                UserDao().fireBaseUpdateUserData(
+                  FirebaseAuth.instance.currentUser!.uid,
+                  '',
+                  double.parse(newHeight),
+                  0,
+                  0,
+                  0,
+                  null,
+                  null,
+                  0,
+                  0,
+                  0,
+                );
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Update',
+                style: TextStyle(color: AppColors.fitnessMainColor),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -463,22 +531,7 @@ class AccountSettingsPage extends StatelessWidget {
                         color: AppColors.fitnessMainColor),
                   ),
                   onTap: () {
-                    navigateToEditField(
-                        context, 'Height (cm)', height.toString(), (newValue) {
-                      height = int.parse(newValue);
-                      UserDao().fireBaseUpdateUserData(
-                          FirebaseAuth.instance.currentUser!.uid,
-                          '',
-                          double.parse(newValue),
-                          0,
-                          0,
-                          0,
-                          null,
-                          null,
-                          0,
-                          0,
-                          0);
-                    }, TextInputType.number);
+                    showUpdateHeightDialog(context);
                   },
                 ),
               ],
