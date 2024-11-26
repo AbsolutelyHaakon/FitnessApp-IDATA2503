@@ -4,7 +4,7 @@ import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
-import 'package:fitnessapp_idata2503/pages/social%20and%20account/searchUsers.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/search_users.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';

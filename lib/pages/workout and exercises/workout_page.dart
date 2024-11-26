@@ -84,7 +84,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     } else if (category == "Starred") {
       workouts = workouts
           .where((element) => favoriteWorkouts
-          .any((favorite) => favorite.workoutId == element.workoutId))
+              .any((favorite) => favorite.workoutId == element.workoutId))
           .toList();
     }
     if (!mounted) return;
@@ -134,17 +134,17 @@ class _WorkoutPageState extends State<WorkoutPage>
                       'Workout',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    IconButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                            const WorkoutLog(isCreatingPost: false),
+                                const WorkoutLog(isCreatingPost: false),
                           ),
                         );
                       },
-                      icon: const Icon(
+                      child: const Icon(
                         Icons.history_rounded,
                         size: 30.0,
                         color: AppColors.fitnessMainColor,
@@ -171,7 +171,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children:
-                  List.generate(officialFilterCategories.length, (index) {
+                      List.generate(officialFilterCategories.length, (index) {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -183,7 +183,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
                           color: _selectedCategory ==
-                              officialFilterCategories[index]
+                                  officialFilterCategories[index]
                               ? AppColors.fitnessPrimaryTextColor
                               : AppColors.fitnessModuleColor,
                           shape: BoxShape.circle,
@@ -192,7 +192,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           width: 60,
                           height: 60,
                           child:
-                          Center(child: officialFilterCategoryIcons[index]),
+                              Center(child: officialFilterCategoryIcons[index]),
                         ),
                       ),
                     );
@@ -224,8 +224,8 @@ class _WorkoutPageState extends State<WorkoutPage>
                           Center(
                             child: Text(
                               workoutsMap.entries
-                                  .where((entry) => entry.key.userId == '')
-                                  .isNotEmpty
+                                      .where((entry) => entry.key.userId == '')
+                                      .isNotEmpty
                                   ? 'Premade Workouts'
                                   : '',
                               style: Theme.of(context).textTheme.headlineLarge,

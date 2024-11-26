@@ -26,16 +26,16 @@ class _SearchUsersState extends State<SearchUsers> {
   }
 
   Future<void> getUsers() async {
-    try {
-      final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch();
-      setState(() {
-        _allUsers = fetchedUsers["users"] ?? [];
-        _filteredUsers = _allUsers;
-      });
-    } catch (e) {
-      print("Error fetching users: $e");
-    }
+  try {
+    final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch();
+    setState(() {
+      _allUsers = fetchedUsers["users"]?.where((user) => user.userId != FirebaseAuth.instance.currentUser?.uid).toList() ?? [];
+      _filteredUsers = _allUsers;
+    }); 
+  } catch (e) {
+    print("Error fetching users: $e");
   }
+}
 
   void _filterUsers(String query) {
     setState(() {
