@@ -14,7 +14,6 @@ import 'package:image_picker/image_picker.dart';
 // Last edited: 31/10/2024
 // Last edited by: Håkon Svensen Karlsen
 class AccountSetupPage extends StatefulWidget {
-
   const AccountSetupPage({super.key});
 
   @override
@@ -31,7 +30,9 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   XFile? _image;
 
   void _updateUserData() {
-    if (FirebaseAuth.instance.currentUser == null) { return; }
+    if (FirebaseAuth.instance.currentUser == null) {
+      return;
+    }
 
     if (_formKey.currentState!.validate()) {
       UserDao().fireBaseUpdateUserData(
@@ -57,22 +58,13 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.fitnessBackgroundColor,
-      appBar: AppBar(
-        centerTitle: false,
-        titleSpacing: 40,
-        backgroundColor: AppColors.fitnessBackgroundColor,
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: AppColors.fitnessBackgroundColor,
+    body: Padding(
+      padding: const EdgeInsets.only(top: 40.0),
+      child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -105,10 +97,15 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                       onTap: _pickImage,
                       child: CircleAvatar(
                         radius: 30,
-                        backgroundColor: _image == null ? AppColors.fitnessMainColor : null,
-                        backgroundImage: _image != null ? FileImage(File(_image!.path)) : null,
+                        backgroundColor:
+                            _image == null ? AppColors.fitnessMainColor : null,
+                        backgroundImage: _image != null
+                            ? FileImage(File(_image!.path))
+                            : null,
                         child: _image == null
-                            ? const Icon(Icons.camera_alt, size: 30, color: AppColors.fitnessPrimaryTextColor)
+                            ? const Icon(Icons.camera_alt,
+                                size: 30,
+                                color: AppColors.fitnessPrimaryTextColor)
                             : null,
                       ),
                     ),
@@ -156,7 +153,8 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                         height: 50,
                         child: CupertinoPicker(
                           itemExtent: 32.0,
-                          scrollController: FixedExtentScrollController(initialItem: 70),
+                          scrollController:
+                              FixedExtentScrollController(initialItem: 70),
                           onSelectedItemChanged: (int index) {
                             _heightController.text = (index + 100).toString();
                           },
@@ -185,14 +183,18 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                       child: Container(
                         height: 50,
                         child: CupertinoPicker(
-                          scrollController: FixedExtentScrollController(initialItem: 40),
+                          scrollController:
+                              FixedExtentScrollController(initialItem: 40),
                           itemExtent: 32.0,
                           onSelectedItemChanged: (int index) {
                             _weightController.text = (index + 30).toString();
                           },
                           children: List<Widget>.generate(270, (int index) {
                             return Center(
-                              child: Text('${index + 30}', style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                              child: Text('${index + 30}',
+                                  style: const TextStyle(
+                                      color:
+                                          AppColors.fitnessPrimaryTextColor)),
                             );
                           }),
                         ),
@@ -212,14 +214,19 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                       child: Container(
                         height: 50,
                         child: CupertinoPicker(
-                          scrollController: FixedExtentScrollController(initialItem: 40),
+                          scrollController:
+                              FixedExtentScrollController(initialItem: 40),
                           itemExtent: 32.0,
                           onSelectedItemChanged: (int index) {
-                            _weightGoalController.text = (index + 30).toString();
+                            _weightGoalController.text =
+                                (index + 30).toString();
                           },
                           children: List<Widget>.generate(270, (int index) {
                             return Center(
-                              child: Text('${index + 30}', style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                              child: Text('${index + 30}',
+                                  style: const TextStyle(
+                                      color:
+                                          AppColors.fitnessPrimaryTextColor)),
                             );
                           }),
                         ),
@@ -232,24 +239,34 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SizedBox(
-          width: double.infinity,
-          child: FloatingActionButton(
-            onPressed: () {
+    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    floatingActionButton: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: SizedBox(
+        width: double.infinity,
+        child: FloatingActionButton(
+          onPressed: () {
+            if (_nameController.text.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Please enter your name'),
+                  backgroundColor: AppColors.fitnessWarningColor,
+                ),
+              );
+            } else {
               _updateUserData();
               Navigator.of(context).pop();
-            },
-            backgroundColor: AppColors.fitnessMainColor,
-            child: const Text(
-              "Create Profile",
-              style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
-            ),
+            }
+          },
+          backgroundColor: AppColors.fitnessMainColor,
+          child: const Text(
+            "Create Profile",
+            style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
