@@ -37,15 +37,44 @@ Map<Workouts, DateTime> workoutMap = {
     String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
 
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(40.0), // Adjust the height as needed
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        formattedDate,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      Text(
+                        'Home',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
+                _buildProfileAvatar(),
+              ],
+            ),
+          ),
+        ),
+      ),
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
-              _buildHeader(formattedDate),
+              //_buildHeader(formattedDate),
 
               Container(
-                margin: const EdgeInsets.all(20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: AppColors.fitnessModuleColor,
