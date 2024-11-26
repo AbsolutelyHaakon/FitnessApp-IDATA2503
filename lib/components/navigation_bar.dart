@@ -3,6 +3,8 @@ import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/community_module.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/searchUsers.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -256,11 +258,11 @@ BottomNavigationBarItem(
       case 0:
         return const Home();
       case 1:
-        return const CommunityModule();
+        return const SocialFeed();
       case 2:
         return const WorkoutPage();
       case 3:
-        return const CommunityModule();
+        return const SearchUsers();
       case 4:
         return const Me();
       default:
