@@ -5,11 +5,9 @@ import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/post_builder.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// SocialFeed page which contains a feed and a profile tab
-/// Shows posts by other users
+/// SocialFeed page displaying a feed of posts from other users.
 ///
 /// Last edited: 26.11.2024
 /// Last edited by: Håkon Karlsen
@@ -31,29 +29,36 @@ class _SocialFeedState extends State<SocialFeed> {
   @override
   void initState() {
     super.initState();
-    getFeed();
+    _fetchFeed();
   }
 
-  Future<void> _refreshFeed() async {
-    await getFeed();
-  }
+  /// Fetches the social feed data for the current user.
+  Future<void> _fetchFeed() async {
+    final user = FirebaseAuth.instance.currentUser;
 
-  Future<void> getFeed() async {
-    if (FirebaseAuth.instance.currentUser == null) {
-      return;
+    if (user == null) return;
+
+    setState(() => _isReady = false);
+
+    try {
+      final fetchedPosts = await _postsDao.fireBaseFetchFeed(user.uid);
+
+      if (fetchedPosts != null && fetchedPosts["posts"] != null) {
+        setState(() {
+          _posts = fetchedPosts["posts"];
+          _isReady = true;
+        });
+      }
+    } catch (e) {
+      // Log error or show a message to the user
+      setState(() => _isReady = true);
+      debugPrint("Error fetching feed: $e");
     }
+  }
 
-    setState(() {
-      _isReady = false;
-    });
-
-    final fetchedPosts = await _postsDao
-        .fireBaseFetchFeed(FirebaseAuth.instance.currentUser!.uid);
-
-    setState(() {
-      _posts = fetchedPosts["posts"];
-      _isReady = true;
-    });
+  /// Refreshes the social feed.
+  Future<void> _refreshFeed() async {
+    await _fetchFeed();
   }
 
   @override
@@ -63,74 +68,56 @@ class _SocialFeedState extends State<SocialFeed> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.fitnessModuleColor, // Set the border color
-                width: 1.0, // Adjust the border width as needed
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 20.0,
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Social feed',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                  Text(
-                    'Explore posts from other users',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: _buildAppBar(context),
       ),
       body: Stack(
         children: [
           _isReady
               ? _buildFeedSection()
               : const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.fitnessMainColor,
-                  ),
-                ),
-          Positioned(
-            bottom: 35,
-            right: 10,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CreatePostPage()),
-                );
-              },
-              backgroundColor: AppColors.fitnessMainColor,
-              shape: const CircleBorder(),
-              child: const Icon(Icons.add,
-                  color: AppColors.fitnessBackgroundColor),
+            child: CircularProgressIndicator(
+              color: AppColors.fitnessMainColor,
             ),
           ),
+          _buildFloatingActionButton(context),
         ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 
+  /// Builds the app bar with a title and subtitle.
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.fitnessModuleColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Social Feed',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            Text(
+              'Explore posts from other users',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds the feed section with a refreshable list of posts.
   Widget _buildFeedSection() {
     return RefreshIndicator(
       onRefresh: _refreshFeed,
@@ -141,15 +128,36 @@ class _SocialFeedState extends State<SocialFeed> {
         child: ListView.builder(
           itemCount: _posts.length,
           itemBuilder: (context, index) {
-            final post = _posts[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 40.0),
               child: PostBuilder(
-                post: post,
+                post: _posts[index],
                 isProfile: false,
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  /// Builds the floating action button for creating new posts.
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return Positioned(
+      bottom: 35,
+      right: 10,
+      child: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreatePostPage()),
+          );
+        },
+        backgroundColor: AppColors.fitnessMainColor,
+        shape: const CircleBorder(),
+        child: const Icon(
+          Icons.add,
+          color: AppColors.fitnessBackgroundColor,
         ),
       ),
     );
