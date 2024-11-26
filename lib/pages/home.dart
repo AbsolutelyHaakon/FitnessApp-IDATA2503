@@ -65,10 +65,6 @@ Map<Workouts, DateTime> workoutMap = {
 
 
               _buildModuleRow(
-                leftChild: WorkoutLogModule(),
-                rightChild: WipModule(),
-              ),
-              _buildModuleRow(
                 leftChild: CommunityModule(),
                 rightChild: WipModule(),
               ),

@@ -6,6 +6,7 @@ import 'package:fitnessapp_idata2503/modules/floating_button_component.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_calendar.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_log.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -65,8 +66,8 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   void fetchFavorites() async {
     favoriteWorkouts.clear();
-    final favoriteWorkoutsData = await FavoriteWorkoutsDao()
-        .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+    final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(
+        FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
     if (!mounted) return;
     setState(() {
       favoriteWorkouts = favoriteWorkoutsData;
@@ -76,8 +77,8 @@ class _WorkoutPageState extends State<WorkoutPage>
   void fetchAllWorkouts(String category) async {
     workoutsMap.clear();
     fetchFavorites();
-    workouts = await WorkoutDao()
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+    workouts = await WorkoutDao().localFetchAllById(
+        FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
     if (category != "All" && category != "Starred") {
       workouts =
           workouts.where((element) => element.category == category).toList();
@@ -127,9 +128,30 @@ class _WorkoutPageState extends State<WorkoutPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Workout',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Workout',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const WorkoutLog(isCreatingPost: false),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.history_rounded,
+                              size: 30.0,
+                              color: AppColors.fitnessMainColor,
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
                         'Select a workout to begin',
@@ -177,7 +199,8 @@ class _WorkoutPageState extends State<WorkoutPage>
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -187,15 +210,23 @@ class _WorkoutPageState extends State<WorkoutPage>
                                 .where((entry) => entry.key.userId != ''),
                           ),
                         ),
-                        if (workoutsMap.entries.where((entry) => entry.key.userId != '').isNotEmpty)
-                        const SizedBox(height: 40),
-                       if (workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty)
-                        Center(
-                          child: Text( workoutsMap.entries.where((entry) => entry.key.userId == '').isNotEmpty ? 'Premade Workouts' :
-                            '',
-                            style: Theme.of(context).textTheme.headlineLarge,
+                        if (workoutsMap.entries
+                            .where((entry) => entry.key.userId != '')
+                            .isNotEmpty)
+                          const SizedBox(height: 40),
+                        if (workoutsMap.entries
+                            .where((entry) => entry.key.userId == '')
+                            .isNotEmpty)
+                          Center(
+                            child: Text(
+                              workoutsMap.entries
+                                      .where((entry) => entry.key.userId == '')
+                                      .isNotEmpty
+                                  ? 'Premade Workouts'
+                                  : '',
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
                           ),
-                        ),
                         const SizedBox(height: 10),
                         WorkoutsBox(
                           workoutMap: Map.fromEntries(
