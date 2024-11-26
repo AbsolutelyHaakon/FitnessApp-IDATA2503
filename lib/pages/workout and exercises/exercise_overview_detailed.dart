@@ -88,21 +88,21 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
         widget.exercise.isPrivate = !_isPublic;
         _isEditing = false;
       });
-      _showSnackBar('Exercise saved', Icons.check);
+      _showSnackBar('Exercise saved', Icons.check,AppColors.fitnessMainColor);
     }
   }
 
-  void _showSnackBar(String message, IconData icon) {
+  void _showSnackBar(String message, IconData icon, Color backgroundColor) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
             Icon(icon, color: Colors.white),
             const SizedBox(width: 8),
-            Text(message),
+            Text(message, style: const TextStyle(color: Colors.white)),
           ],
         ),
-        backgroundColor: AppColors.fitnessMainColor,
+        backgroundColor: backgroundColor,
       ),
     );
   }
@@ -116,46 +116,81 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        titleSpacing: 40,
-        backgroundColor: AppColors.fitnessBackgroundColor,
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back,
-              color: AppColors.fitnessMainColor),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          if (widget.exercise.userId == FirebaseAuth.instance.currentUser?.uid || isAdmin)
-            IconButton(
-              icon: Icon(
-                _isEditing ? Icons.cancel_outlined : Icons.edit,
-                color: AppColors.fitnessMainColor,
-              ),
-              onPressed: _toggleEdit,
-            ),
-        ],
-      ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      centerTitle: false,
+      titleSpacing: 40,
       backgroundColor: AppColors.fitnessBackgroundColor,
-      body: _buildBody(),
-      bottomNavigationBar: _isEditing
-          ? Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _saveChanges,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.fitnessMainColor,
-                ),
-                child: const Text('Save',
-                    style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+      leading: IconButton(
+        icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      actions: [
+        if (_isEditing)
+          IconButton(
+            icon: const Icon(Icons.delete, color: AppColors.fitnessWarningColor),
+            onPressed: _deleteExercise,
+          ),
+        if (widget.exercise.userId == FirebaseAuth.instance.currentUser?.uid || isAdmin)
+          IconButton(
+            icon: Icon(
+              _isEditing ? Icons.cancel_outlined : Icons.edit,
+              color: AppColors.fitnessMainColor,
+            ),
+            onPressed: _toggleEdit,
+          ),
+      ],
+    ),
+    backgroundColor: AppColors.fitnessBackgroundColor,
+    body: _buildBody(),
+    bottomNavigationBar: _isEditing
+        ? Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: _saveChanges,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.fitnessMainColor,
               ),
-            )
-          : null,
-    );
+              child: const Text('Save',
+                  style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+            ),
+          )
+        : null,
+  );
+}
+
+Future<void> _deleteExercise() async {
+  final shouldDelete = await showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: AppColors.fitnessModuleColor,
+        title: const Text('Confirm Deletion', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+        content: const Text('Are you sure you want to delete this exercise?', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('OK', style: TextStyle(color: AppColors.fitnessWarningColor)),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (shouldDelete == true) {
+    final result = await _exerciseDao.fireBaseDeleteExercise(widget.exercise.exerciseId);
+    if (result) {
+      _showSnackBar('Exercise deleted', Icons.delete, AppColors.fitnessWarningColor);
+      Navigator.of(context).pop();
+    }
   }
+}
 
   Widget _buildBody() {
     return SingleChildScrollView(

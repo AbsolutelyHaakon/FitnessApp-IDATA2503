@@ -26,7 +26,6 @@ class ExerciseSelectorPage extends StatefulWidget {
   _ExerciseSelectorPageState createState() => _ExerciseSelectorPageState();
 }
 
-
 class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   final TextEditingController _searchController = TextEditingController();
   final ExerciseDao exerciseDao = ExerciseDao();
@@ -44,6 +43,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   }
 
   Future<void> _fetchExercises() async {
+    _allUserExercises = [];
+    _allPublicExercises = [];
     final result = await exerciseDao
         .localFetchAllExercises(FirebaseAuth.instance.currentUser?.uid);
     setState(() {
@@ -112,7 +113,8 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 100.0),
+            padding: const EdgeInsets.only(
+                left: 16.0, right: 16.0, top: 16.0, bottom: 100.0),
             child: Column(
               children: [
                 TextField(
@@ -241,7 +243,9 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                                 ExerciseOverviewPage(
                                                     exercise: exercise),
                                           ),
-                                        );
+                                        ).then((_) {
+                                          _fetchExercises();
+                                        });
                                       },
                                       child: Row(
                                         mainAxisAlignment:

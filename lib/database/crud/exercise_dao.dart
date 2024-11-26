@@ -47,7 +47,7 @@ class ExerciseDao {
     return Exercises.fromMap(data.first);
   }
 
-  Future<void> localDelete(int exerciseId) async {
+  Future<void> localDelete(String exerciseId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
@@ -115,8 +115,21 @@ class ExerciseDao {
     }
   }
 
-  Future<Map<String, dynamic>> fireBaseDeleteExercise() async {
-    return {'error': 'Not implemented'};
+  Future<bool> fireBaseDeleteExercise(String exerciseId) async {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('exercises')
+        .doc(exerciseId)
+        .get();
+    if (documentSnapshot.exists) {
+      await FirebaseFirestore.instance
+          .collection('exercises')
+          .doc(exerciseId)
+          .delete();
+      await localDelete(exerciseId);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<Map<String, dynamic>> fireBaseFetchAllExercisesFromFireBase(
