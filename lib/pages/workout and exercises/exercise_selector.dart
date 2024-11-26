@@ -6,7 +6,16 @@ import 'package:flutter/material.dart';
 import '../../database/crud/exercise_dao.dart';
 import '../../database/tables/exercise.dart';
 import 'create_exercise_page.dart';
-import 'exercise_overview_detailed.dart'; // Import the detailed overview page
+import 'exercise_overview_detailed.dart';
+
+/// Page to select exercises to add to a workout
+/// The user can select exercises from their own exercises and public exercises
+/// The user can also create a new exercise
+/// The user can view an overview of an exercise by clicking on it
+/// The user can add or remove exercises from the workout
+///
+/// Last Edited: 26/11/2024
+/// Last Edited by: Håkon Svensen Karlsen
 
 class ExerciseSelectorPage extends StatefulWidget {
   final List<Exercises> selectedExercises;

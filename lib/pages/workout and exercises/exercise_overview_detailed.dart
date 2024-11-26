@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../database/tables/exercise.dart';
 import '../../styles.dart';
 
@@ -22,13 +27,8 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
   late final TextEditingController _videoUrlController;
   late final TextEditingController _categoryController;
   late bool _isPublic;
-
-  final List<String> _categories = [
-    'Strength',
-    'Cardio',
-    'Flexibility',
-    'Balance',
-  ];
+  bool isAdmin = false;
+  XFile? _imageFile;
 
   final ExerciseDao _exerciseDao = ExerciseDao();
 
@@ -40,7 +40,8 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
         TextEditingController(text: widget.exercise.description);
     _videoUrlController = TextEditingController(text: widget.exercise.videoUrl);
     _categoryController = TextEditingController(text: widget.exercise.category);
-    _isPublic = !widget.exercise.isPrivate; // Improved for clarity
+    _isPublic = !widget.exercise.isPrivate;
+    checkAdminStatus();
   }
 
   @override
@@ -54,6 +55,18 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
 
   void _toggleEdit() => setState(() => _isEditing = !_isEditing);
 
+  void checkAdminStatus() async {
+    if (await UserDao().getAdminStatus(FirebaseAuth.instance.currentUser?.uid)) {
+      setState(() {
+        isAdmin = true;
+      });
+    } else {
+      setState(() {
+        widget.exercise.userId == FirebaseAuth.instance.currentUser?.uid;
+      });
+    }
+  }
+
   Future<void> _saveChanges() async {
     final result = await _exerciseDao.fireBaseUpdateExercise(
         widget.exercise.exerciseId,
@@ -63,9 +76,10 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
         widget.exercise.videoUrl,
         // Implement videoUrl editing
         widget.exercise.imageURL,
+        _imageFile,
         // Implement image editing
-        _isPublic,
-        FirebaseAuth.instance.currentUser?.uid);
+        !_isPublic,
+        widget.exercise.userId);
     if (result.containsKey('exerciseId')) {
       setState(() {
         widget.exercise.name = _nameController.text;
@@ -93,6 +107,15 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
     );
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +129,7 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          if (widget.exercise.userId == FirebaseAuth.instance.currentUser?.uid)
+          if (widget.exercise.userId == FirebaseAuth.instance.currentUser?.uid || isAdmin)
             IconButton(
               icon: Icon(
                 _isEditing ? Icons.cancel_outlined : Icons.edit,
@@ -159,35 +182,44 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
                   ),
           ),
           const SizedBox(height: 10),
-          if (widget.exercise.imageURL != null &&
-              widget.exercise.imageURL!.isNotEmpty)
-            Image.network(
-              widget.exercise.imageURL!,
-              width: MediaQuery.of(context).size.width,
-              height: 200,
-              fit: BoxFit.cover,
-            )
-          else
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 200,
-              color: AppColors.fitnessSecondaryModuleColor,
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.image,
-                      size: 100, color: AppColors.fitnessMainColor),
-                  Text(
-                    'No Image',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.fitnessPrimaryTextColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          GestureDetector(
+            onTap: _isEditing ? _pickImage : null,
+            child: _imageFile != null
+                ? Image.file(
+                    File(_imageFile!.path),
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  )
+                : widget.exercise.imageURL != null &&
+                        widget.exercise.imageURL!.isNotEmpty
+                    ? Image.network(
+                        widget.exercise.imageURL!,
+                        width: MediaQuery.of(context).size.width,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 200,
+                        color: AppColors.fitnessSecondaryModuleColor,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.image,
+                                size: 100, color: AppColors.fitnessMainColor),
+                            Text(
+                              'No Image',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.fitnessPrimaryTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -223,8 +255,7 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.fitnessSecondaryTextColor,
-                                fontWeight: FontWeight.w400,
-                              ),
+                                fontWeight: FontWeight.w400),
                             ),
                           ),
               ],
@@ -243,8 +274,10 @@ class _ExerciseOverviewPageState extends State<ExerciseOverviewPage> {
             ? SizedBox(
                 width: 150,
                 child: DropdownButtonFormField<String>(
-                  value: _categoryController.text,
-                  items: _categories
+                  value: officialWorkoutCategories.contains(_categoryController.text)
+                      ? _categoryController.text
+                      : null,
+                  items: officialWorkoutCategories
                       .map((category) => DropdownMenuItem(
                           value: category,
                           child: Text(category,

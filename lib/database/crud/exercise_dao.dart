@@ -163,14 +163,17 @@ class ExerciseDao {
       String? category,
       String? videoUrl,
       String? imageURL,
+      XFile? image,
       bool? isPrivate,
       String? userId) async {
-    if (userId == null || userId.isEmpty) {
+    if (userId == null) {
+      print("pepepepe");
       return {'error': 'You need to log in to edit an exercise'};
     }
     // See if the person editing the exercise is the owner
     bool isOwner = false;
     bool isPrivateBefore = false;
+
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
         .collection('exercises')
         .doc(exerciseId)
@@ -197,6 +200,11 @@ class ExerciseDao {
             userId ?? data['userId']);
       }
 
+      print("it should get here");
+      if (image != null) {
+        imageURL = await uploadImage(image);
+      }
+
       await FirebaseFirestore.instance
           .collection('exercises')
           .doc(exerciseId)
@@ -205,6 +213,7 @@ class ExerciseDao {
         'description': description ?? data['description'],
         'category': category ?? data['category'],
         'video_url': videoUrl ?? data['video_url'],
+        'imageURL': imageURL ?? data['imageURL'],
         'isPrivate': isPrivate ?? data['isPrivate'],
         'userId': userId ?? data['userId'],
       });

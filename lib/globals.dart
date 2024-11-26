@@ -12,8 +12,8 @@ Map<Exercises, List<SetStats>> exerciseStats = {};
 int activeWorkoutIndex = 0;
 DateTime activeWorkoutStartTime = DateTime.now();
 
-List<String> officialFilterCategories = ['All', 'Starred', 'Legs', 'Core', 'Upper Body', 'Cardio', 'Outdoors'];
-List<String> officialWorkoutCategories = ['Legs', 'Core', 'Upper Body', 'Cardio', 'Outdoors'];
+List<String> officialWorkoutCategories = ['Legs', 'Core', 'Upper Body', 'Cardio', 'Outdoors', 'Arms','Custom'];
+List<String> officialFilterCategories = ['All', 'Starred'] + officialWorkoutCategories;
 
 List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/allIcon.svg', width: 40, height: 40),
@@ -23,6 +23,8 @@ List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/upperBodyIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/runnerIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/hikerIcon.svg', width: 40, height: 40),
+  SvgPicture.asset('assets/icons/armsIcon.svg', width: 40, height: 40),
+  SvgPicture.asset('assets/icons/customIcon.svg', width: 10, height: 10),
 ];
 
 class SetStats {
