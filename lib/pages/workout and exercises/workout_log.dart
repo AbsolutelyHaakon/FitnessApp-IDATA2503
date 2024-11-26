@@ -49,6 +49,9 @@ class _WorkoutLogState extends State<WorkoutLog> {
           FirebaseAuth.instance.currentUser!.uid);
 
       for (var userWorkout in result['previousWorkouts']) {
+        if (userWorkout.statistics == "null") {
+          continue;
+        }
         Workouts? temp =
             await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
         if (temp != null) {
