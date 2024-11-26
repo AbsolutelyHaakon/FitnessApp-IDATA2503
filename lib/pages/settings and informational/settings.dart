@@ -95,7 +95,7 @@ class SettingsPage extends StatelessWidget {
                       _buildSettingsItem(
                         context,
                         icon: Icons.account_circle,
-                        text: 'Account settings',
+                        text: 'Account Settings & Goals',
                         onTap: () {
                           Navigator.push(
                             context,

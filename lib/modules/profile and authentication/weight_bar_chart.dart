@@ -52,26 +52,6 @@ class _WeightBarChartState extends State<WeightBarChart> {
     return {};
   }
 
-  void setWeightGoal(int weight) {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
-      UserDao().fireBaseUpdateUserData(
-        FirebaseAuth.instance.currentUser!.uid,
-        '',
-        0,
-        0,
-        weight,
-        0,
-        null,
-        null,
-        0,
-        0,
-        0,
-      );
-    }
-    Navigator.of(context).pop();
-    setState(() {});
-  }
-
   void onAddWeightSave() async {
     int weight = int.parse(weightController.text);
     DateTime date = DateTime.now();
@@ -121,139 +101,67 @@ class _WeightBarChartState extends State<WeightBarChart> {
   }
 
   Widget addWeightAndGoalDialog() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: const Text(
-            'Add Weight',
-            style: TextStyle(color: AppColors.fitnessMainColor),
-          ),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext builder) {
-                  return AlertDialog(
-                    backgroundColor: AppColors.fitnessModuleColor,
-                    title: const Text('Insert Weight'),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextFormField(
-                            cursorColor: Colors.white,
-                            controller: weightController,
-                            decoration: const InputDecoration(
-                              hintStyle: TextStyle(color: Colors.white),
-                              labelStyle:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                              suffixStyle: TextStyle(color: Colors.white),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.fitnessMainColor),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.fitnessMainColor),
-                              ),
-                              labelText: 'Weight (kg)',
-                              hintText: 'Enter your weight',
-                            ),
-                            keyboardType: TextInputType.number,
+    return CupertinoButton(
+      child: const Text(
+        'Add Weight',
+        style: TextStyle(color: AppColors.fitnessMainColor),
+      ),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext builder) {
+              return AlertDialog(
+                backgroundColor: AppColors.fitnessModuleColor,
+                title: const Text('Insert Weight'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        cursorColor: Colors.white,
+                        controller: weightController,
+                        decoration: const InputDecoration(
+                          hintStyle: TextStyle(color: Colors.white),
+                          labelStyle:
+                              TextStyle(fontSize: 20, color: Colors.white),
+                          suffixStyle: TextStyle(color: Colors.white),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.fitnessMainColor),
                           ),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.fitnessMainColor),
+                          ),
+                          labelText: 'Weight (kg)',
+                          hintText: 'Enter your weight',
                         ),
-                      ),
-                      TextButton(
-                        onPressed: onAddWeightSave,
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        keyboardType: TextInputType.number,
                       ),
                     ],
-                  );
-                });
-          },
-        ),
-        CupertinoButton(
-          child: const Text(
-            'Set Weight Goal',
-            style: TextStyle(color: AppColors.fitnessMainColor),
-          ),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext builder) {
-                  return AlertDialog(
-                    backgroundColor: AppColors.fitnessModuleColor,
-                    title: const Text('Set Weight Goal'),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextFormField(
-                            cursorColor: Colors.white,
-                            controller: weightController,
-                            decoration: const InputDecoration(
-                              hintStyle: TextStyle(color: Colors.white),
-                              labelStyle:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                              suffixStyle: TextStyle(color: Colors.white),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.fitnessMainColor),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.fitnessMainColor),
-                              ),
-                              labelText: 'Weight (kg)',
-                              hintText: 'Enter your weight goal',
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setWeightGoal(
-                              int.parse(weightController.text.toString()));
-                          weightController.clear();
-                        },
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  );
-                });
-          },
-        ),
-      ],
+                  ),
+                  TextButton(
+                    onPressed: onAddWeightSave,
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            });
+      },
     );
   }
 
@@ -282,21 +190,23 @@ class _WeightBarChartState extends State<WeightBarChart> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Column(children: [
-                Container(
-                  child: addWeightAndGoalDialog(),
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AppColors.fitnessModuleColor,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: const Color(0xFF262626),
-                      width: 1.0,
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: AppColors.fitnessModuleColor,
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: const Color(0xFF262626),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: addWeightAndGoalDialog(),
                     ),
-                  ),
-                ),
-                const Center(child: Text('No weight data available'))
-              ]);
+                    const Center(child: Text('No weight data available'))
+                  ]);
             } else {
               List<MapEntry<DateTime, int>> limitedData =
                   snapshot.data!.entries.toList();
@@ -379,7 +289,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                   ),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     addWeightAndGoalDialog(),
                     AspectRatio(
