@@ -5,6 +5,7 @@ import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fitnessapp_idata2503/pages/home.dart';
@@ -178,65 +179,62 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(top: 10.0), // Adjust the value as needed
+          padding: const EdgeInsets.only(top: 10.0),
+          // Adjust the value as needed
           child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/home.svg',
-                  width: 25.0,
-                  height: 25.0,
-                  color: _selectedIndex == 0
-                      ? AppColors.fitnessMainColor
-                      : AppColors.fitnessSecondaryTextColor,
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/placeholder_icon.svg',
-                  width: 25.0,
-                  height: 25.0,
-                  color: _selectedIndex == 1
-                      ? AppColors.fitnessMainColor
-                      : AppColors.fitnessSecondaryTextColor,
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/workout.svg',
-                  width: 30.0,
-                  height: 30.0,
-                  color: _selectedIndex == 2
-                      ? AppColors.fitnessMainColor
-                      : AppColors.fitnessSecondaryTextColor,
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/placeholder_icon.svg',
-                  width: 25.0,
-                  height: 25.0,
-                  color: _selectedIndex == 3
-                      ? AppColors.fitnessMainColor
-                      : AppColors.fitnessSecondaryTextColor,
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/me.svg',
-                  width: 25.0,
-                  height: 25.0,
-                  color: _selectedIndex == 4
-                      ? AppColors.fitnessMainColor
-                      : AppColors.fitnessSecondaryTextColor,
-                ),
-                label: '',
-              ),
+  icon: Icon(
+    CupertinoIcons.house_fill,
+    size: 25.0,
+    color: _selectedIndex == 0
+        ? AppColors.fitnessMainColor
+        : AppColors.fitnessSecondaryTextColor,
+  ),
+  label: '',
+),
+BottomNavigationBarItem(
+  icon: Icon(
+    CupertinoIcons.news_solid,
+    size: 25.0,
+    color: _selectedIndex == 1
+        ? AppColors.fitnessMainColor
+        : AppColors.fitnessSecondaryTextColor,
+  ),
+  label: '',
+),
+BottomNavigationBarItem(
+  icon: SvgPicture.asset(
+    'assets/icons/workout.svg',
+    width: 30.0,
+    height: 30.0,
+    color: _selectedIndex == 2
+        ? AppColors.fitnessMainColor
+        : AppColors.fitnessSecondaryTextColor,
+  ),
+  label: '',
+),
+BottomNavigationBarItem(
+  icon: Icon(
+    CupertinoIcons.search,
+    size: 25.0,
+    color: _selectedIndex == 3
+        ? AppColors.fitnessMainColor
+        : AppColors.fitnessSecondaryTextColor,
+  ),
+  label: '',
+),
+BottomNavigationBarItem(
+  icon: Icon(
+    CupertinoIcons.person_fill,
+    size: 25.0,
+    color: _selectedIndex == 4
+        ? AppColors.fitnessMainColor
+        : AppColors.fitnessSecondaryTextColor,
+  ),
+  label: '',
+),
             ],
             currentIndex: _selectedIndex,
             selectedItemColor: AppColors.fitnessMainColor,
