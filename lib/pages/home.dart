@@ -89,15 +89,6 @@ Map<Workouts, DateTime> workoutMap = {
                   ],
                 ),
               ),
-
-              // Add the social feed module
-
-
-
-              _buildModuleRow(
-                leftChild: CommunityModule(),
-                rightChild: WipModule(),
-              ),
             ],
           ),
         ),
