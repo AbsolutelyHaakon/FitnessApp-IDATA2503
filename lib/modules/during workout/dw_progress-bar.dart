@@ -2,9 +2,9 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
 class DwProgressBar extends StatefulWidget {
-  double value;
+  final double value;
 
-  DwProgressBar({super.key, required this.value});
+  const DwProgressBar({super.key, required this.value});
 
   @override
   State<DwProgressBar> createState() => _DwProgressBarState();
@@ -26,35 +26,38 @@ class _DwProgressBarState extends State<DwProgressBar> {
             ),
           ),
           const SizedBox(height: 5),
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                  child: LinearProgressIndicator(
-                    value: widget.value,
-                    backgroundColor: AppColors.fitnessSecondaryModuleColor,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.fitnessMainColor),
-                    minHeight: 30,
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: widget.value),
+            duration: const Duration(seconds: 1),
+            curve: Curves.easeInOut,
+            builder: (context, value, child) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: LinearProgressIndicator(
+                      value: value,
+                      backgroundColor: AppColors.fitnessSecondaryModuleColor,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppColors.fitnessMainColor),
+                      minHeight: 30,
+                    ),
                   ),
-                ),
-              ),
-              Positioned.fill(
-                left: 10,
-                top: 5,
-                child: Text(
-                  textAlign: TextAlign.left,
-                  '${(widget.value * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  Positioned.fill(
+                    left: 10,
+                    top: 5,
+                    child: Text(
+                      textAlign: TextAlign.left,
+                      '${(value * 100).toStringAsFixed(0)}%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
+                ],
+              );
+            },
           ),
         ],
       ),
