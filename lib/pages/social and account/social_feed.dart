@@ -171,7 +171,9 @@ class _SocialFeedState extends State<SocialFeed>
                       ],
                     )
               : const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    color: AppColors.fitnessMainColor,
+                  ),
                 ),
           floatingActionButton: !_isSearching
               ? FloatingActionButton(
