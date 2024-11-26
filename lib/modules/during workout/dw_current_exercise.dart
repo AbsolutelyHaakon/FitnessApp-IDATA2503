@@ -9,6 +9,7 @@ import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dar
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../database/tables/exercise.dart';
 import '../../database/tables/workout_exercises.dart';
@@ -34,6 +35,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   final ScrollController _scrollController = ScrollController();
   Duration workoutDuration = Duration.zero;
   int finalTime = 0;
+  int workoutProgressIndex = 0;
 
   @override
   void initState() {
@@ -59,6 +61,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
         exerciseStats[key] = stats;
       });
     }
+    workoutProgressIndex = activeWorkoutIndex;
   }
 
   Future<void> _endWorkout() async {
@@ -187,6 +190,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   void _nextExercise() {
     setState(() {
       activeWorkoutIndex = (activeWorkoutIndex + 1) % exercises.length;
+      workoutProgressIndex++;
     });
   }
 
@@ -201,7 +205,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     return Center(
       child: Column(
         children: [
-          DwProgressBar(value: (activeWorkoutIndex) / exercises.length),
+          DwProgressBar(value: (workoutProgressIndex) / exercises.length),
           const SizedBox(height: 10),
           IntrinsicHeight(
             child: Container(
@@ -500,8 +504,12 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                 children: [
                   CupertinoButton(
                     onPressed: () async {
+                      workoutProgressIndex = exercises.length;
+                      setState(() {
+                        activeWorkoutIndex = 0;
+                      });
                       await _endWorkout();
-                      Navigator.pop(context, true);
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       width: 410,
