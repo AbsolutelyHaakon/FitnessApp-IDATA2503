@@ -149,7 +149,8 @@ class UserDao {
             'Verification email sent to $newEmail. Please verify to complete the update.');
 
         int checkCount = 0;
-        const int maxChecks = 4;
+        const int maxChecks = 20;
+        await FirebaseAuth.instance.signOut();
 
         Timer.periodic(Duration(seconds: 30), (timer) async {
           checkCount++;
@@ -361,6 +362,28 @@ class UserDao {
       return imgurUrl;
     } else {
       return "";
+    }
+  }
+
+  Future<Map<String, dynamic>> fireBaseUpdateUserPassword(
+      String uid, String currentPassword, String newPassword) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null && user.uid == uid) {
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: currentPassword,
+        );
+        await user.reauthenticateWithCredential(credential);
+        await user.updatePassword(newPassword);
+        return {'success': true, 'error': null};
+      } else {
+        return {'success': false, 'error': 'User not found'};
+      }
+    } on FirebaseAuthException catch (e) {
+      return {'success': false, 'error': e.message};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
     }
   }
 

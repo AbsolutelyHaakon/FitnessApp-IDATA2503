@@ -45,34 +45,34 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   }
 
   Future<void> _checkForActiveWorkouts() async {
-      final temp = await _userWorkoutsDao.fetchActiveUserWorkout();
-      if (temp != null) {
+    final temp = await _userWorkoutsDao.fetchActiveUserWorkout();
+    if (temp != null) {
+      hasActiveWorkout.value = true;
+      activeUserWorkoutId.value = temp.userId;
+      activeWorkoutId.value = temp.workoutId;
+      activeWorkoutName.value = temp.name;
+      setState(() {
+        localHasActiveWorkout = true;
+      });
+    } else {
+      final temp2 = await _workoutDao.fetchActiveWorkout();
+      if (temp2 != null) {
         hasActiveWorkout.value = true;
-        activeUserWorkoutId.value = temp.userId;
-        activeWorkoutId.value = temp.workoutId;
-        activeWorkoutName.value = temp.name;
+        activeWorkoutId.value = temp2.workoutId;
+        activeWorkoutName.value = temp2.name;
+        setState(() {
+          localHasActiveWorkout = true;
+        });
+      } else if (hasActiveWorkout.value) {
         setState(() {
           localHasActiveWorkout = true;
         });
       } else {
-        final temp2 = await _workoutDao.fetchActiveWorkout();
-        if (temp2 != null) {
-          hasActiveWorkout.value = true;
-          activeWorkoutId.value = temp2.workoutId;
-          activeWorkoutName.value = temp2.name;
-          setState(() {
-            localHasActiveWorkout = true;
-          });
-        } else if (hasActiveWorkout.value) {
-          setState(() {
-            localHasActiveWorkout = true;
-          });
-        } else {
-          setState(() {
-            localHasActiveWorkout = false;
-          });
-        }
+        setState(() {
+          localHasActiveWorkout = false;
+        });
       }
+    }
   }
 
   Future<Map<Exercises, WorkoutExercises>> fetchExercises() async {
@@ -119,20 +119,20 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                   Map<Exercises, WorkoutExercises> exerciseMap =
                       await fetchExercises();
 
-                    var userWorkout = await _userWorkoutsDao.localFetchById(
-                        FirebaseAuth.instance.currentUser?.uid ?? '',
-                        activeWorkoutId.value);
+                  var userWorkout = await _userWorkoutsDao.localFetchById(
+                      FirebaseAuth.instance.currentUser?.uid ?? '',
+                      activeWorkoutId.value);
 
-                    if (userWorkout == null) {
-                      userWorkout = UserWorkouts(
-                        userWorkoutId: '1',
-                        userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-                        workoutId: activeWorkoutId.value,
-                        date: DateTime.now(),
-                        isActive: true,
-                      );
-                      await _userWorkoutsDao.localCreate(userWorkout);
-                    }
+                  if (userWorkout == null) {
+                    userWorkout = UserWorkouts(
+                      userWorkoutId: '1',
+                      userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      workoutId: activeWorkoutId.value,
+                      date: DateTime.now(),
+                      isActive: true,
+                    );
+                    await _userWorkoutsDao.localCreate(userWorkout);
+                  }
 
                   Navigator.push(
                     context,

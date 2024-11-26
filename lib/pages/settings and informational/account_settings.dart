@@ -32,14 +32,19 @@ class AccountSettingsPage extends StatelessWidget {
     }
   }
 
-  void navigateToEditField(BuildContext context, String title,
-      String initialValue, ValueChanged<String> onSave) {
+  void navigateToEditField(
+      BuildContext context,
+      String title,
+      String initialValue,
+      ValueChanged<String> onSave,
+      TextInputType keyboardType) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EditFieldPage(
           title: title,
           initialValue: initialValue,
           onSave: onSave,
+          keyboardType: keyboardType,
         ),
       ),
     );
@@ -52,6 +57,7 @@ class AccountSettingsPage extends StatelessWidget {
         builder: (context) => EditFieldPage(
           title: title,
           initialValue: initialValue,
+          keyboardType: TextInputType.emailAddress,
           onSave: (newValue) async {
             onSave(newValue);
             UserDao().fireBaseUpdateUserEmail(
@@ -74,22 +80,44 @@ class AccountSettingsPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: AppColors.fitnessModuleColor,
           title: const Text('Re-authenticate'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
+              TextFormField(
+                cursorColor: Colors.white,
                 controller: emailController,
                 decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                  suffixStyle: TextStyle(color: Colors.white),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
                   labelText: 'Email',
                 ),
+                keyboardType: TextInputType.number,
               ),
-              TextField(
+              TextFormField(
+                cursorColor: Colors.white,
                 controller: passwordController,
                 decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                  suffixStyle: TextStyle(color: Colors.white),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
                   labelText: 'Password',
                 ),
-                obscureText: true,
+                keyboardType: TextInputType.number,
               ),
             ],
           ),
@@ -98,7 +126,10 @@ class AccountSettingsPage extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.fitnessMainColor),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -121,7 +152,108 @@ class AccountSettingsPage extends StatelessWidget {
                   print('Error re-authenticating: $e');
                 }
               },
-              child: const Text('Authenticate'),
+              child: const Text('Authenticate',
+                  style: TextStyle(color: AppColors.fitnessMainColor)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showUpdatePasswordDialog(BuildContext context) {
+    final TextEditingController currentPasswordController =
+        TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.fitnessModuleColor,
+          title: const Text('Update Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                cursorColor: Colors.white,
+                controller: currentPasswordController,
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                  suffixStyle: TextStyle(color: Colors.white),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
+                  labelText: 'Current Password',
+                ),
+                obscureText: true,
+              ),
+              TextFormField(
+                cursorColor: Colors.white,
+                controller: newPasswordController,
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                  suffixStyle: TextStyle(color: Colors.white),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                  ),
+                  labelText: 'New Password',
+                ),
+                obscureText: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.fitnessMainColor),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String currentPassword = currentPasswordController.text;
+                String newPassword = newPasswordController.text;
+
+                try {
+                  var result = await UserDao().fireBaseUpdateUserPassword(
+                    FirebaseAuth.instance.currentUser!.uid,
+                    currentPassword,
+                    newPassword,
+                  );
+                  if (result['success']) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password updated successfully!'),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: ${result['error']}'),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  print('Error updating password: $e');
+                }
+              },
+              child: const Text(
+                'Update',
+                style: TextStyle(color: AppColors.fitnessMainColor),
+              ),
             ),
           ],
         );
@@ -207,7 +339,7 @@ class AccountSettingsPage extends StatelessWidget {
                           0,
                           0,
                           0);
-                    });
+                    }, TextInputType.text);
                   },
                 ),
                 ListTile(
@@ -291,7 +423,9 @@ class AccountSettingsPage extends StatelessWidget {
                     child: const Icon(CupertinoIcons.right_chevron,
                         color: AppColors.fitnessMainColor),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    showUpdatePasswordDialog(context);
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.height_outlined,
@@ -328,7 +462,24 @@ class AccountSettingsPage extends StatelessWidget {
                     child: const Icon(CupertinoIcons.right_chevron,
                         color: AppColors.fitnessMainColor),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    navigateToEditField(
+                        context, 'Height (cm)', height.toString(), (newValue) {
+                      height = int.parse(newValue);
+                      UserDao().fireBaseUpdateUserData(
+                          FirebaseAuth.instance.currentUser!.uid,
+                          '',
+                          double.parse(newValue),
+                          0,
+                          0,
+                          0,
+                          null,
+                          null,
+                          0,
+                          0,
+                          0);
+                    }, TextInputType.number);
+                  },
                 ),
               ],
             ),
