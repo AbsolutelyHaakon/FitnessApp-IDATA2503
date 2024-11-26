@@ -59,16 +59,22 @@ class _SocialFeedState extends State<SocialFeed>
   }
 
   Future<void> getFeed() async {
-    if (FirebaseAuth.instance.currentUser == null) {
-      return;
-    }
-    final fetchedPosts = await _postsDao
-        .fireBaseFetchFeed(FirebaseAuth.instance.currentUser!.uid);
-    setState(() {
-      _posts = fetchedPosts["posts"];
-      _isReady = true;
-    });
+  if (FirebaseAuth.instance.currentUser == null) {
+    return;
   }
+
+  setState(() {
+    _isReady = false;
+  });
+
+  final fetchedPosts = await _postsDao
+      .fireBaseFetchFeed(FirebaseAuth.instance.currentUser!.uid);
+
+  setState(() {
+    _posts = fetchedPosts["posts"];
+    _isReady = true;
+  });
+}
 
   Future<void> getUsers() async {
     try {
@@ -199,7 +205,7 @@ class _SocialFeedState extends State<SocialFeed>
           itemBuilder: (context, index) {
             final post = _posts[index];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 60.0),
+              padding: const EdgeInsets.only(bottom: 40.0),
               child: PostBuilder(
                 post: post,
                 isProfile: false,

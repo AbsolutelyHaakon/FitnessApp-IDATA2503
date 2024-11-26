@@ -65,7 +65,7 @@ class PostsDao {
       XFile? image,
       String? workoutId,
       String? location,
-      Map<String,String>? visibleStats,
+      Map<String, String>? visibleStats,
       String userId) async {
     // A post cant be made if there is no content, image or workout
     if ((content == null || content.isEmpty) &&
@@ -108,16 +108,20 @@ class PostsDao {
   }
 
   Future<Map<String, dynamic>> fireBaseFetchFeed(String userId) async {
+    // First we find out who the person is following
     Map<String, dynamic> followingMap =
         await _userFollowsDao.fetchFollowing(userId);
 
+    // Then we convert it to a list of user ids
     List<String> following =
         (followingMap['following'] as List<dynamic>).map((userFollows) {
       return userFollows.followsId as String;
     }).toList();
 
+    // Temporary list of all posts
     List<Posts> allPosts = [];
 
+    // For every user you are following, get their posts
     for (String followedUserId in following) {
       Map<String, dynamic> userPostsResult =
           await fireBaseFetchUserPosts(followedUserId);
@@ -125,12 +129,16 @@ class PostsDao {
       allPosts.addAll(userPosts);
     }
 
+    // Sort posts by newest date
+    allPosts.sort((a, b) => b.date.compareTo(a.date));
+
     return {
       'posts': allPosts,
     };
   }
 
   Future<Map<String, dynamic>> fireBaseFetchUserPosts(String? userId) async {
+    // If the user has no posts, return an empty list
     if (userId == null) {
       return {
         'posts': [],
@@ -171,9 +179,8 @@ class PostsDao {
 //////////////////////////////////////////////////////////////////////////////
 
   Future<int> getPostsCount() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .get();
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('posts').get();
     return querySnapshot.docs.length;
   }
 }
