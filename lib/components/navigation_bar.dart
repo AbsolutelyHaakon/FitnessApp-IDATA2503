@@ -2,6 +2,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
+import 'package:fitnessapp_idata2503/modules/homepage%20widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
@@ -167,49 +168,86 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
             ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/icons/home.svg',
-              width: 20.0,
-              height: 20.0,
-              color: _selectedIndex == 0
-                  ? AppColors.fitnessMainColor
-                  : AppColors.fitnessSecondaryTextColor,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: AppColors.fitnessModuleColor, // Adjust the color as needed
+              width: 1.0, // Adjust the width as needed
             ),
-            label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/icons/workout.svg',
-              width: 30.0,
-              height: 30.0,
-              color: _selectedIndex == 1
-                  ? AppColors.fitnessMainColor
-                  : AppColors.fitnessSecondaryTextColor,
-            ),
-            label: 'Workout',
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10.0), // Adjust the value as needed
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/home.svg',
+                  width: 25.0,
+                  height: 25.0,
+                  color: _selectedIndex == 0
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/placeholder_icon.svg',
+                  width: 25.0,
+                  height: 25.0,
+                  color: _selectedIndex == 1
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/workout.svg',
+                  width: 30.0,
+                  height: 30.0,
+                  color: _selectedIndex == 2
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/placeholder_icon.svg',
+                  width: 25.0,
+                  height: 25.0,
+                  color: _selectedIndex == 3
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/icons/me.svg',
+                  width: 25.0,
+                  height: 25.0,
+                  color: _selectedIndex == 4
+                      ? AppColors.fitnessMainColor
+                      : AppColors.fitnessSecondaryTextColor,
+                ),
+                label: '',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: AppColors.fitnessMainColor,
+            unselectedItemColor: AppColors.fitnessSecondaryTextColor,
+            backgroundColor: Colors.black,
+            onTap: _onItemTapped,
+            iconSize: 20.0,
+            selectedFontSize: 12.0,
+            unselectedFontSize: 10.0,
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/icons/me.svg',
-              width: 25.0,
-              height: 25.0,
-              color: _selectedIndex == 2
-                  ? AppColors.fitnessMainColor
-                  : AppColors.fitnessSecondaryTextColor,
-            ),
-            label: 'Me',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: AppColors.fitnessMainColor,
-        unselectedItemColor: AppColors.fitnessSecondaryTextColor,
-        backgroundColor: AppColors.fitnessBackgroundColor,
-        onTap: _onItemTapped,
-        iconSize: 30.0,
-        unselectedFontSize: 14.0,
+        ),
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
     );
@@ -220,8 +258,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       case 0:
         return const Home();
       case 1:
-        return const WorkoutPage();
+        return const CommunityModule();
       case 2:
+        return const WorkoutPage();
+      case 3:
+        return const CommunityModule();
+      case 4:
         return const Me();
       default:
         return const Home();
