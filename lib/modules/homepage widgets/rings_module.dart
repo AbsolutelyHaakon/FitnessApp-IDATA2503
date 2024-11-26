@@ -201,62 +201,62 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildRingButton(BuildContext context, String label, double percentage,
-      Color color, Widget page) {
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      onPressed: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => page,
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0);
-              const end = Offset.zero;
-              const curve = Curves.ease;
+Widget _buildRingButton(BuildContext context, String label, double percentage, Color color, Widget page) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  double ringSize = screenWidth * 0.16;
 
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              var offsetAnimation = animation.drive(tween);
+  return CupertinoButton(
+    padding: EdgeInsets.zero,
+    onPressed: () {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
 
-              return SlideTransition(
-                position: offsetAnimation,
-                child: child,
-              );
-            },
-          ),
-        );
-      },
-      child: SizedBox(
-        width: 70,
-        height: 70,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 60.0,
-              height: 60.0,
-              child: CircularProgressIndicator(
-                value: _animation.value * percentage,
-                strokeWidth: 8.0,
-                strokeCap: StrokeCap.round,
-                valueColor: AlwaysStoppedAnimation<Color>(color),
-                backgroundColor: AppColors.fitnessModuleColor,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
         ),
+      );
+    },
+    child: SizedBox(
+      width: ringSize,
+      height: ringSize,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: ringSize * 0.85,
+            height: ringSize * 0.85,
+            child: CircularProgressIndicator(
+              value: _animation.value * percentage,
+              strokeWidth: 8.0,
+              strokeCap: StrokeCap.round,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+              backgroundColor: AppColors.fitnessModuleColor,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

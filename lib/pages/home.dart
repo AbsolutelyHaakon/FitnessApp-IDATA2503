@@ -85,7 +85,7 @@ Map<Workouts, DateTime> workoutMap = {
                   children: [
                     WorkoutsBoxHome(workoutMap: workoutMap),
                     const SizedBox(height: 20),
-                    RingsModule(),
+                    const RingsModule(),
                   ],
                 ),
               ),
