@@ -8,6 +8,7 @@ class Posts {
   final DateTime date;
   final String? workoutId;
   final String? location;
+  final Map<String, String>? visibleStats;
 
   const Posts({
     required this.postId,
@@ -17,6 +18,7 @@ class Posts {
     required this.date,
     this.workoutId,
     this.location,
+    this.visibleStats,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,6 +30,7 @@ class Posts {
       'date': date.toIso8601String(),
       'workoutId': workoutId,
       'location': location,
+      'visibleStats': visibleStats,
     };
   }
 
@@ -40,6 +43,8 @@ class Posts {
       date: map['date'] is Timestamp ? (map['date'] as Timestamp).toDate() : DateTime.parse(map['date']),
       workoutId: map['workoutId'],
       location: map['location'],
+      visibleStats: (map['visibleStats'] as Map<String, dynamic>?)
+          ?.map((key, value) => MapEntry(key, value as String)),
     );
   }
 }

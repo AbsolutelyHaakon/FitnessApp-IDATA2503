@@ -65,7 +65,7 @@ class PostsDao {
       XFile? image,
       String? workoutId,
       String? location,
-      List<String>? visibleStats,
+      Map<String,String>? visibleStats,
       String userId) async {
     // A post cant be made if there is no content, image or workout
     if ((content == null || content.isEmpty) &&
@@ -90,6 +90,7 @@ class PostsDao {
       'date': DateTime.now(),
       'workoutId': workoutId ?? '',
       'location': location ?? '',
+      'visibleStats': visibleStats ?? {},
     });
 
     String newPostId = docRef.id;

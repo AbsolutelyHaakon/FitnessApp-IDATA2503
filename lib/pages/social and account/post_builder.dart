@@ -25,7 +25,7 @@ class _PostBuilderState extends State<PostBuilder> {
   late DateTime date;
   late String? message;
   late String? workoutId;
-  late List<Map<String, String>>? workoutStats;
+  late List<Map<String, String>>? visibleStats;
   late String? imageUrl;
   late String? location;
   late int commentCount;
@@ -49,7 +49,9 @@ class _PostBuilderState extends State<PostBuilder> {
       date = widget.post.date;
       message = widget.post.content;
       workoutId = widget.post.workoutId;
-      workoutStats = [];
+      visibleStats = widget.post.visibleStats?.entries
+          .map((entry) => {'name': entry.key, 'value': entry.value})
+          .toList();
       imageUrl = widget.post.imageURL;
       location = widget.post.location;
       commentCount = 0;
@@ -102,7 +104,7 @@ class _PostBuilderState extends State<PostBuilder> {
                       : const AssetImage('assets/images/placeholder_icon.png')
                           as ImageProvider,
                 ),
-              SizedBox(width: 10.0),
+              const SizedBox(width: 10.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -121,17 +123,17 @@ class _PostBuilderState extends State<PostBuilder> {
             ],
           ),
         ),
-        SizedBox(height: 10.0),
+        const SizedBox(height: 10.0),
         Card(
           color: AppColors.fitnessModuleColor,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if ((message != null && message!.isNotEmpty) ||
-                  (workoutStats != null && workoutStats!.isNotEmpty))
+                  (visibleStats != null && visibleStats!.isNotEmpty))
                 const SizedBox(height: 10.0),
               if (message != null && message!.isNotEmpty)
                 Padding(
@@ -140,7 +142,7 @@ class _PostBuilderState extends State<PostBuilder> {
                     children: [
                       Transform.scale(
                         scale: 0.8,
-                        child: Icon(Icons.message,
+                        child: const Icon(Icons.message,
                             color: AppColors.fitnessMainColor),
                       ),
                       const SizedBox(width: 10.0),
@@ -154,9 +156,17 @@ class _PostBuilderState extends State<PostBuilder> {
                 ),
               if (message != null && message!.isNotEmpty)
                 const SizedBox(height: 5.0),
-              if (workoutStats != null && workoutStats!.isNotEmpty)
+              if (visibleStats != null && visibleStats!.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Divider(
+                    color: AppColors.fitnessMainColor,
+                    thickness: 1.0,
+                  ),
+                ),
+              if (visibleStats != null && visibleStats!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -164,7 +174,7 @@ class _PostBuilderState extends State<PostBuilder> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: workoutStats!
+                          children: visibleStats!
                               .map((stat) => statBuilder(stat))
                               .toList(),
                         ),
