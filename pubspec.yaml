@@ -50,6 +50,8 @@ dependencies:
   table_calendar: ^3.1.2
   flutter_local_notifications: ^18.0.1
   fl_chart: ^0.69.2
+  google_maps_flutter: ^2.10.0
+  location: ^7.0.1
 
 dev_dependencies:
   flutter_test:
