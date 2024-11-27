@@ -22,7 +22,9 @@ import '../../styles.dart';
 /// TODO: Implement attach exercise logic
 
 class CreatePostPage extends StatefulWidget {
-  const CreatePostPage({super.key});
+  final UserWorkouts? userWorkout;
+
+  const CreatePostPage({super.key, this.userWorkout});
 
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
@@ -33,7 +35,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   String? _message;
   Map<String, String> _workoutStats = {};
   Map<String, String> displayedStats = {};
-  String? _workoutId;
+  String? _userWorkoutId;
   String? _location;
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
@@ -42,6 +44,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
   bool _isSubmitting = false;
 
   final PostsDao _postsDao = PostsDao();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.userWorkout != null) {
+      _userWorkoutId = widget.userWorkout!.userWorkoutId;
+      _buildWorkoutStats();
+    }
+  }
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -64,7 +75,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     final result = await _postsDao.fireBaseCreatePost(
       _message,
       _selectedImage,
-      _workoutId,
+      _userWorkoutId,
       _location,
       displayedStats,
       FirebaseAuth.instance.currentUser!.uid,
@@ -91,12 +102,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> _buildWorkoutStats() async {
-    if (_workoutId == null) {
+    if (_userWorkoutId == null) {
       return;
     }
 
     await UserWorkoutsDao()
-        .fireBaseFetchUserWorkoutById(_workoutId!)
+        .fireBaseFetchUserWorkoutById(_userWorkoutId!)
         .then((userWorkout) {
       if (userWorkout != null) {
         if (userWorkout.statistics == null) {
@@ -224,7 +235,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       if (result != null) {
                         setState(() {
                           _workoutStats.clear();
-                          _workoutId = result;
+                          _userWorkoutId = result;
                         });
                         await _buildWorkoutStats();
                         await _showStatsSelectionDialog();
@@ -363,7 +374,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                             if (displayedStats.isEmpty) const Spacer(),
                             TextButton(
                               onPressed: () async {
-                                if (_workoutId != null) {
+                                if (_userWorkoutId != null) {
                                   await _showStatsSelectionDialog();
                                 } else {
                                   final result =
@@ -377,7 +388,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                     setState(() {
                                       displayedStats.clear();
                                       _workoutStats.clear();
-                                      _workoutId = result;
+                                      _userWorkoutId = result;
                                     });
                                     await _buildWorkoutStats();
                                     await _showStatsSelectionDialog();
@@ -385,7 +396,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                 }
                               },
                               child: Text(
-                                _workoutId != null
+                                _userWorkoutId != null
                                     ? 'Edit Stats'
                                     : 'Attach Workout >',
                                 style: const TextStyle(

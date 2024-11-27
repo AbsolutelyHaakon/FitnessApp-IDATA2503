@@ -8,6 +8,7 @@ import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -107,6 +108,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
 
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       _userWorkoutsDao.fireBaseUpdateUserWorkout(
+          widget.userWorkouts.userWorkoutId,
           FirebaseAuth.instance.currentUser!.uid,
           widget.userWorkouts.workoutId,
           widget.userWorkouts.date ?? DateTime.now(),
@@ -282,7 +284,20 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 15),
                         color: AppColors.fitnessMainColor,
-                        onPressed: () {},
+                        onPressed: () async {
+                          final pushedUserWorkout =
+                              await _userWorkoutsDao.localFetchByUserWorkoutsId(
+                                  widget.userWorkouts.userWorkoutId);
+                          print(pushedUserWorkout);
+                          if (pushedUserWorkout != null) {
+                            await Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => CreatePostPage(
+                                    userWorkout: pushedUserWorkout),
+                              ),
+                            );
+                          }
+                        },
                         child: const Icon(
                           CupertinoIcons.share,
                           color: Colors.white,
@@ -618,8 +633,6 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       workoutProgressIndex = exercises.length;
                       setState(() {
                         activeWorkoutIndex = 0;
-                      });
-                      setState(() {
                         exerciseEnded = true;
                       });
                       widget.onEndWorkout();

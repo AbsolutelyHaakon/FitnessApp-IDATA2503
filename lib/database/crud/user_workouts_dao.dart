@@ -225,7 +225,8 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
-  Future<UserWorkouts> fireBaseFetchUserWorkoutById(String userWorkoutId) async {
+  Future<UserWorkouts> fireBaseFetchUserWorkoutById(
+      String userWorkoutId) async {
     DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('userWorkouts')
         .doc(userWorkoutId)
@@ -260,41 +261,42 @@ class UserWorkoutsDao {
     return newDocId;
   }
 
-  bool fireBaseUpdateUserWorkout(String userId, String workoutId, DateTime date,
-    String? workoutStats, int duration) {
-  DateTime startOfDay = DateTime(date.year, date.month, date.day);
-  DateTime endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+  Future<String> fireBaseUpdateUserWorkout(
+      String userWorkoutId,
+      String userId,
+      String workoutId,
+      DateTime date,
+      String? workoutStats,
+      int duration) async {
 
-  FirebaseFirestore.instance
-      .collection('userWorkouts')
-      .where('userId', isEqualTo: userId)
-      .where('workoutId', isEqualTo: workoutId)
-      .where('date', isGreaterThanOrEqualTo: startOfDay)
-      .where('date', isLessThanOrEqualTo: endOfDay)
-      .orderBy('date', descending: true)
-      .limit(1)
-      .get()
-      .then((value) {
-    if (value.docs.isNotEmpty) {
-      value.docs.first.reference.update({
+    print('Updating user workout with id: $userWorkoutId');
+
+    DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+        .collection('userWorkouts')
+        .doc(userWorkoutId)
+        .get();
+
+    if (docSnapshot.exists) {
+      await docSnapshot.reference.update({
         'statistics': workoutStats,
         'duration': duration,
       });
+
+      await localUpdate(UserWorkouts(
+        userWorkoutId: userWorkoutId,
+        userId: userId,
+        workoutId: workoutId,
+        date: date,
+        duration: duration.toDouble(),
+        statistics: workoutStats,
+        isActive: false,
+      ));
+
+      return userWorkoutId;
+    } else {
+      throw Exception('No matching user workout found');
     }
-  });
-
-  localUpdate(UserWorkouts(
-    userWorkoutId: '',
-    userId: userId,
-    workoutId: workoutId,
-    date: date,
-    duration: duration.toDouble(),
-    statistics: workoutStats,
-    isActive: false,
-  ));
-
-  return true;
-}
+  }
 
   Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {
     DateTime startOfDay =
