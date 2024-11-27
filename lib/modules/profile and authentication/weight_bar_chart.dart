@@ -118,6 +118,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextFormField(
+                        style: const TextStyle(fontSize: 18),
                         cursorColor: Colors.white,
                         controller: weightController,
                         decoration: const InputDecoration(
@@ -328,6 +329,15 @@ class _WeightBarChartState extends State<WeightBarChart> {
                           groupsSpace: 2,
                           barGroups: barGroups,
                           titlesData: FlTitlesData(
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 60,
+                                getTitlesWidget: (value, meta) {
+                                  return Text('${value.toInt()} kg');
+                                },
+                              ),
+                            ),
                             rightTitles: const AxisTitles(
                               axisNameWidget: Text(''),
                               axisNameSize: 40,
