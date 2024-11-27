@@ -28,9 +28,6 @@ class PreWorkoutScreen extends StatefulWidget {
 }
 
 class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
-  late TextEditingController nameController;
-  late TextEditingController categoryController;
-  late TextEditingController descriptionController;
   List<Exercises> exercises = [];
   Map<Exercises, WorkoutExercises> exerciseMap = {};
   bool isAdmin = false;
@@ -50,29 +47,41 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   void initState() {
     super.initState();
     if (widget.workouts != null) {
-      workouts = widget.workouts!;
-      nameController = TextEditingController(text: workouts.name);
-      categoryController = TextEditingController(text: workouts.category);
-      descriptionController = TextEditingController(text: workouts.description);
-      fetchExercises();
+      _getWorkoutData(false);
     } else {
-      _getWorkoutData();
+      _getUserWorkoutData();
     }
   }
 
-  _getWorkoutData() async {
-    Workouts? temp = await _workoutDao.localFetchByWorkoutId(
-        widget.userWorkouts!.workoutId);
+  _getWorkoutData(bool isUpdate) async {
+    if (isUpdate) {
+      if (widget.workouts == null) {
+        return;
+      }
+      widget.workouts =
+          await WorkoutDao().localFetchByWorkoutId(widget.workouts!.workoutId);
+    }
+
+    setState(() {
+      workouts = widget.workouts!;
+    });
+    fetchExercises();
+  }
+
+  _getUserWorkoutData() async {
+    if (widget.userWorkouts == null) {
+      return;
+    }
+    Workouts? temp =
+        await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
     workouts = temp ?? workouts;
     if (workouts.workoutId != '0') {
-      nameController = TextEditingController(text: workouts.name);
-      categoryController = TextEditingController(text: workouts.category);
-      descriptionController =
-          TextEditingController(text: workouts.description);
+      setState(() {});
       fetchExercises();
     }
 
-    await UserDao().getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
+    await UserDao()
+        .getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
         .then((value) {
       setState(() {
         isAdmin = value;
@@ -81,40 +90,50 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   }
 
   Future<void> fetchExercises() async {
-    try {
-      final tempExercises = await WorkoutDao()
-          .localFetchExercisesForWorkout(workouts.workoutId);
-      Map<Exercises, WorkoutExercises> newExerciseMap = {};
-      for (final exercise in tempExercises) {
-        final workoutExercise = await WorkoutExercisesDao()
-            .localFetchById(workouts.workoutId, exercise.exerciseId);
-        if (workoutExercise != null) {
-          newExerciseMap[exercise] = workoutExercise;
-        }
+  try {
+    final tempExercises =
+        await WorkoutDao().localFetchExercisesForWorkout(workouts.workoutId);
+    Map<Exercises, WorkoutExercises> newExerciseMap = {};
+    for (final exercise in tempExercises) {
+      final workoutExercise = await WorkoutExercisesDao()
+          .localFetchById(workouts.workoutId, exercise.exerciseId);
+      if (workoutExercise != null) {
+        newExerciseMap[exercise] = workoutExercise;
       }
-      setState(() {
-        exercises = tempExercises;
-        exerciseMap = newExerciseMap;
-      });
-    } catch (e) {
-      print('Error fetching exercises: $e');
     }
 
-    await UserDao().getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
-        .then((value) {
-      setState(() {
-        isAdmin = value;
-      });
+    // Update the exerciseMap before sorting
+    setState(() {
+      exerciseMap = newExerciseMap;
     });
+
+    // Sort exercises based on exerciseOrder
+    tempExercises.sort((a, b) {
+      final orderA = exerciseMap[a]?.exerciseOrder ?? 0;
+      final orderB = exerciseMap[b]?.exerciseOrder ?? 0;
+      return orderA.compareTo(orderB);
+    });
+
+    setState(() {
+      exercises = tempExercises;
+    });
+
+    exerciseMap.forEach((exercise, workoutExercise) {
+      print(
+          'Exercise Name: ${exercise.name}, Order: ${workoutExercise.exerciseOrder}');
+    });
+  } catch (e) {
+    print('Error fetching exercises: $e');
   }
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    categoryController.dispose();
-    descriptionController.dispose();
-    super.dispose();
-  }
+  await UserDao()
+      .getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
+      .then((value) {
+    setState(() {
+      isAdmin = value;
+    });
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -122,41 +141,38 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       appBar: AppBar(
         title: Text(
           'Workout Plan',
-          style: Theme
-              .of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(
-            color: AppColors.fitnessPrimaryTextColor,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppColors.fitnessPrimaryTextColor,
+              ),
         ),
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(
-              CupertinoIcons.back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         actions: [
           if (FirebaseAuth.instance.currentUser != null &&
-          (FirebaseAuth.instance.currentUser!.uid == workouts.userId || isAdmin))
+              (FirebaseAuth.instance.currentUser!.uid == workouts.userId ||
+                  isAdmin))
             TextButton(
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
-                  // TODO: FIX THIS SO IT EDITS IT PROPERLY
                   MaterialPageRoute(
-                    builder: (context) =>
-                        CreateWorkoutPage(
-                          isAdmin: false,
-                          preWorkout: workouts,
-                        ),
+                    builder: (context) => CreateWorkoutPage(
+                      isAdmin: false,
+                      preWorkout: workouts,
+                    ),
                   ),
                 );
-                if (result == true) {
-                  await fetchExercises();
+                if (result != null && result is Workouts) {
+                  setState(() {
+                    _getWorkoutData(true);
+                  });
                 }
               },
               child: const Text('Edit Workout',
@@ -175,26 +191,17 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                 children: [
                   Text(
                     workouts.name ?? '',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     workouts.category ?? '',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .headlineLarge,
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     workouts.description ?? '',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 20),
                   Center(
@@ -204,74 +211,72 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(30),
                           child: Container(
-                            width: 400,
-                            height: 400,
-                            decoration: BoxDecoration(
-                              color: AppColors.fitnessModuleColor,
-                            ),
-                            child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: exercises.length,
-                              itemBuilder: (context, index) {
-                                final exercise = exercises[index];
-                                return ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  tileColor: Colors.white.withOpacity(0.1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  leading: CircleAvatar(
-                                    backgroundImage:
-                                    exercise.imageURL != null &&
-                                        exercise.imageURL!.isNotEmpty
-                                        ? NetworkImage(exercise.imageURL!)
-                                        : null,
-                                    backgroundColor:
-                                    exercise.imageURL == null ||
-                                        exercise.imageURL!.isEmpty
-                                        ? Colors.green
-                                        : null,
-                                    child: exercise.imageURL == null ||
-                                        exercise.imageURL!.isEmpty
-                                        ? Text(
-                                      exercise.name[0],
+                              width: 400,
+                              height: 400,
+                              decoration: BoxDecoration(
+                                color: AppColors.fitnessModuleColor,
+                              ),
+                              child: ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: exercises.length,
+                                itemBuilder: (context, index) {
+                                  final exercise = exercises[index];
+                                  return ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
+                                    tileColor: Colors.white.withOpacity(0.1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    leading: CircleAvatar(
+                                      backgroundImage:
+                                          exercise.imageURL != null &&
+                                                  exercise.imageURL!.isNotEmpty
+                                              ? NetworkImage(exercise.imageURL!)
+                                              : null,
+                                      backgroundColor:
+                                          exercise.imageURL == null ||
+                                                  exercise.imageURL!.isEmpty
+                                              ? Colors.green
+                                              : null,
+                                      child: exercise.imageURL == null ||
+                                              exercise.imageURL!.isEmpty
+                                          ? Text(
+                                              exercise.name[0],
+                                              style: const TextStyle(
+                                                color: AppColors
+                                                    .fitnessPrimaryTextColor,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 24.0,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    title: Text(
+                                      exercise.name,
                                       style: const TextStyle(
-                                        color: AppColors
-                                            .fitnessPrimaryTextColor,
+                                        color:
+                                            AppColors.fitnessPrimaryTextColor,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 24.0,
+                                        fontSize: 18.0,
                                       ),
-                                    )
+                                    ),
+                                    subtitle: Text(
+                                      'Reps: ${exerciseMap[exercise]?.reps}, Sets: ${exerciseMap[exercise]?.sets}',
+                                      style: const TextStyle(
+                                        color:
+                                            AppColors.fitnessSecondaryTextColor,
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                    trailing: exercise.videoUrl != null &&
+                                            exercise.videoUrl!.isNotEmpty
+                                        ? const Icon(Icons.tv,
+                                            color: AppColors.fitnessMainColor)
                                         : null,
-                                  ),
-                                  title: Text(
-                                    exercise.name,
-                                    style: const TextStyle(
-                                      color: AppColors.fitnessPrimaryTextColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    'Reps: ${exerciseMap[exercise]
-                                        ?.reps}, Sets: ${exerciseMap[exercise]
-                                        ?.sets}',
-                                    style: const TextStyle(
-                                      color:
-                                      AppColors.fitnessSecondaryTextColor,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  trailing: exercise.videoUrl != null &&
-                                      exercise.videoUrl!.isNotEmpty
-                                      ? const Icon(Icons.tv,
-                                      color: AppColors.fitnessMainColor)
-                                      : null,
-                                );
-                              },
-                            ),
-                          ),
+                                  );
+                                },
+                              )),
                         ),
                         const SizedBox(height: 40),
                         CupertinoButton(
@@ -279,38 +284,36 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                             if (hasActiveWorkout.value) {
                               bool shouldStartNewWorkout = await showDialog(
                                 context: context,
-                                builder: (context) =>
-                                    AlertDialog(
-                                      title: const Text('Active Workout',
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Active Workout',
+                                      style: TextStyle(
+                                          color: AppColors
+                                              .fitnessPrimaryTextColor)),
+                                  content: const Text(
+                                      'Starting a new workout will end the one currently active. Are you sure?',
+                                      style: TextStyle(
+                                          color: AppColors
+                                              .fitnessPrimaryTextColor)),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text('No',
                                           style: TextStyle(
                                               color: AppColors
                                                   .fitnessPrimaryTextColor)),
-                                      content: const Text(
-                                          'Starting a new workout will end the one currently active. Are you sure?',
-                                          style: TextStyle(
-                                              color: AppColors
-                                                  .fitnessPrimaryTextColor)),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: const Text('No',
-                                              style: TextStyle(
-                                                  color: AppColors
-                                                      .fitnessPrimaryTextColor)),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: const Text('Yes',
-                                              style: TextStyle(
-                                                  color:
-                                                  AppColors.fitnessMainColor)),
-                                        ),
-                                      ],
-                                      backgroundColor: AppColors
-                                          .fitnessModuleColor,
                                     ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: const Text('Yes',
+                                          style: TextStyle(
+                                              color:
+                                                  AppColors.fitnessMainColor)),
+                                    ),
+                                  ],
+                                  backgroundColor: AppColors.fitnessModuleColor,
+                                ),
                               );
                               if (!shouldStartNewWorkout) {
                                 return;
@@ -320,21 +323,25 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                 widget.workouts != null) {
                               if (FirebaseAuth.instance.currentUser?.uid !=
                                   null) {
-                                 final newDocId = await UserWorkoutsDao()
+                                final newDocId = await UserWorkoutsDao()
                                     .fireBaseCreateUserWorkout(
-                                    FirebaseAuth.instance.currentUser!.uid,
-                                    widget.workouts!.workoutId
-                                    , DateTime.now());
-                                 if (newDocId == null) {return;}
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                        widget.workouts!.workoutId,
+                                        DateTime.now());
+                                if (newDocId == null) {
+                                  return;
+                                }
 
-                                 final newUserWorkout = await UserWorkoutsDao().localFetchByUserWorkoutsId(newDocId);
-                                 widget.userWorkouts = newUserWorkout;
+                                final newUserWorkout = await UserWorkoutsDao()
+                                    .localFetchByUserWorkoutsId(newDocId);
+                                widget.userWorkouts = newUserWorkout;
                               } else {
                                 final newUserWorkout = await UserWorkoutsDao()
                                     .localCreate(UserWorkouts(
                                   userWorkoutId: '1',
-                                  userId: FirebaseAuth.instance.currentUser
-                                      ?.uid ?? '',
+                                  userId:
+                                      FirebaseAuth.instance.currentUser?.uid ??
+                                          '',
                                   workoutId: widget.workouts!.workoutId,
                                   date: DateTime.now(),
                                   duration: 0.0,
@@ -349,18 +356,14 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    DuringWorkoutScreen(
-                                        userWorkouts: widget.userWorkouts!,
-                                        exerciseMap: exerciseMap),
+                                builder: (context) => DuringWorkoutScreen(
+                                    userWorkouts: widget.userWorkouts!,
+                                    exerciseMap: exerciseMap),
                               ),
                             );
                           },
                           child: Container(
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width * 0.9,
+                            width: MediaQuery.of(context).size.width * 0.9,
                             height: 60,
                             decoration: BoxDecoration(
                               color: AppColors.fitnessMainColor,

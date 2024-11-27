@@ -171,10 +171,16 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         exercises.length, // Number of exercises / sets
       );
 
+      print("step 1");
+
+      if (widget.preWorkout!.workoutId == null) {return;}
       await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(
           selectedExercises, widget.preWorkout!.workoutId!);
 
+      print("step 2");
       for (var exercise in exercises) {
+        print("exercise: ${exercise.exerciseId}");
+        print("exercise index: ${exercises.indexOf(exercise)}");
         final reps = int.tryParse(exercise.repsController.text) ?? 0;
         final sets = int.tryParse(exercise.setsController.text) ?? 0;
         await workoutExercisesDao.fireBaseCreateWorkoutExercise(
@@ -186,7 +192,9 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         );
       }
 
-      Navigator.pop(context, true);
+      print("step 3");
+
+      Navigator.pop(context, widget.preWorkout);
     }
   }
 
@@ -564,7 +572,12 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                               exercises.insert(newIndex, item);
                             });
                           },
-                          children: exercises,
+                          children: exercises.map((exercise) {
+                            return Container(
+                              key: ValueKey(exercise.exerciseId),
+                              child: exercise,
+                            );
+                          }).toList(),
                         ),
                 ),
                 const SizedBox(height: 100),

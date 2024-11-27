@@ -139,28 +139,40 @@ Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, Strin
 
     // If the workoutExercise already exists, return
     if (querySnapshot.docs.isNotEmpty) {
-      return;
+      DocumentSnapshot doc = querySnapshot.docs.first;
+      await doc.reference.update({
+        'exerciseOrder': exerciseOrder,
+      });
+
+      localUpdate(WorkoutExercises(
+        workoutExercisesId: doc.id,
+        workoutId: workoutId,
+        exerciseId: exerciseId,
+        reps: reps,
+        sets: sets,
+        exerciseOrder: exerciseOrder,
+      ));
+    } else {
+      DocumentReference docRef =
+      await FirebaseFirestore.instance.collection('workoutExercises').add({
+        'workoutId': workoutId,
+        'exerciseId': exerciseId,
+        'reps': reps,
+        'sets': sets,
+        'exerciseOrder': exerciseOrder,
+      });
+
+      String newDocId = docRef.id;
+
+      localCreate(WorkoutExercises(
+        workoutExercisesId: newDocId,
+        workoutId: workoutId,
+        exerciseId: exerciseId,
+        reps: reps,
+        sets: sets,
+        exerciseOrder: exerciseOrder,
+      ));
     }
-
-    DocumentReference docRef =
-        await FirebaseFirestore.instance.collection('workoutExercises').add({
-      'workoutId': workoutId,
-      'exerciseId': exerciseId,
-      'reps': reps,
-      'sets': sets,
-      'exerciseOrder': exerciseOrder,
-    });
-
-    String newDocId = docRef.id;
-
-    localCreate(WorkoutExercises(
-      workoutExercisesId: newDocId,
-      workoutId: workoutId,
-      exerciseId: exerciseId,
-      reps: reps,
-      sets: sets,
-      exerciseOrder: exerciseOrder,
-    ));
   }
 
   Future<Map<String, dynamic>> fireBaseDeleteInactiveWorkoutExercises(
