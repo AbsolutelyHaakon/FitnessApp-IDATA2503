@@ -5,6 +5,7 @@ import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -110,10 +111,12 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     }
   }
 
-  Future<void> replaceExisting(String toBeDeletedId, String workoutId, DateTime date) async {
+  Future<void> replaceExisting(
+      String toBeDeletedId, String workoutId, DateTime date) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
-      final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(toBeDeletedId, userId, workoutId, date);
+      final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(
+          toBeDeletedId, userId, workoutId, date);
       if (success) {
         await fetchUpcomingWorkouts();
         await fetchWorkoutNames();
@@ -135,23 +138,28 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       isDismissible: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
       builder: (context) {
         bool canAddWorkout = !_upcomingWorkouts.any((workout) =>
-        workout.date.year == selectedDay.year &&
+            workout.date.year == selectedDay.year &&
             workout.date.month == selectedDay.month &&
             workout.date.day == selectedDay.day &&
             workoutExist(workout.workoutId));
         String workoutName = 'No workout scheduled';
-        String workoutDescription = 'No description available';
+        String workoutDescription = '';
         for (var workout in _upcomingWorkouts) {
           if (workout.date.year == selectedDay.year &&
               workout.date.month == selectedDay.month &&
               workout.date.day == selectedDay.day) {
-            workoutName = _userWorkoutsMap[workout]?.split(' - ')[0] ?? 'No workout scheduled';
-            workoutDescription = _userWorkoutsMap[workout]?.split(' - ')[1] ?? 'No description available';
+            workoutName = _userWorkoutsMap[workout]?.split(' - ')[0] ??
+                'No workout scheduled';
+            workoutDescription =
+                _userWorkoutsMap[workout]?.split(' - ')[1] ?? '';
             break;
           }
         }
+
+        String formattedDate = DateFormat.yMMMMd().format(selectedDay);
         return Container(
           decoration: const BoxDecoration(
             color: AppColors.fitnessBackgroundColor,
@@ -167,7 +175,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${selectedDay.toLocal().toString().split(' ')[0]}',
+                  formattedDate,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -176,21 +184,18 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 const SizedBox(height: 20),
                 Text(
                   workoutName,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 16, color: AppColors.fitnessPrimaryTextColor),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 16, color: AppColors.fitnessPrimaryTextColor),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   workoutDescription,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontSize: 14, color: AppColors.fitnessSecondaryTextColor),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14, color: AppColors.fitnessSecondaryTextColor),
                 ),
                 const SizedBox(height: 20),
-                if (!selectedDay.isBefore(DateTime.now().subtract(Duration(days: 1)))) ...[
+                if (!selectedDay
+                    .isBefore(DateTime.now().subtract(Duration(days: 1)))) ...[
                   if (canAddWorkout)
                     InkWell(
                         onTap: () {
@@ -223,10 +228,10 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                           ),
                           child: const Text(
                             'Replace workout',
-                            style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                            style: TextStyle(
+                                color: AppColors.fitnessPrimaryTextColor),
                           ),
-                        )
-                    )
+                        ))
                 ]
               ],
             ),
@@ -296,14 +301,18 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                                 String? toBeDeletedId;
                                 for (var workout in _upcomingWorkouts) {
                                   if (workout.date.year == _selectedDay!.year &&
-                                      workout.date.month == _selectedDay!.month &&
+                                      workout.date.month ==
+                                          _selectedDay!.month &&
                                       workout.date.day == _selectedDay!.day) {
                                     toBeDeletedId = workout.workoutId;
                                     break;
                                   }
                                 }
                                 if (toBeDeletedId != null) {
-                                  replaceExisting(toBeDeletedId, _selectedWorkout.workoutId, _selectedDay!);
+                                  replaceExisting(
+                                      toBeDeletedId,
+                                      _selectedWorkout.workoutId,
+                                      _selectedDay!);
                                 }
                               }
                             });
@@ -385,14 +394,28 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                       //Day number, if there is a existing date, make the text red, if not primarycolor
                       child: Text(
                         '${day.day}',
-                        style: TextStyle(
-                          color: isSpecificDate
-                              ? Colors.red
-                              : AppColors.fitnessPrimaryTextColor,
+                        style: const TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor,
                           fontSize: 12,
                         ),
                       ),
                     ),
+                    if (isSpecificDate)
+                      Positioned(
+                        top: 5,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 );
               },
@@ -404,12 +427,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               weekendTextStyle: TextStyle(fontSize: 12),
               selectedTextStyle: TextStyle(
                 fontSize: 12,
-                color: _selectedDay != null && !_upcomingWorkouts.any((workout) =>
-                workout.date.year == _selectedDay!.year &&
-                    workout.date.month == _selectedDay!.month &&
-                    workout.date.day == _selectedDay!.day &&
-                    workoutExist(workout.workoutId)
-                ) ? AppColors.fitnessMainColor : Colors.red,
+                color: AppColors.fitnessMainColor,
               ),
               todayTextStyle:
                   TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
@@ -437,7 +455,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             ),
             headerStyle: const HeaderStyle(
               titleTextStyle: TextStyle(
-                  fontSize: 12, color: AppColors.fitnessPrimaryTextColor),
+                  fontSize: 24, color: AppColors.fitnessPrimaryTextColor),
               leftChevronIcon: Icon(
                 Icons.chevron_left,
                 color: AppColors.fitnessPrimaryTextColor,
@@ -450,8 +468,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             daysOfWeekStyle: DaysOfWeekStyle(
               weekdayStyle: TextStyle(
                   fontSize: 9, color: AppColors.fitnessPrimaryTextColor),
-              weekendStyle:
-                  TextStyle(fontSize: 9, color: AppColors.fitnessMainColor),
+              weekendStyle: TextStyle(fontSize: 9, color: Colors.red),
             ),
           ),
         ),

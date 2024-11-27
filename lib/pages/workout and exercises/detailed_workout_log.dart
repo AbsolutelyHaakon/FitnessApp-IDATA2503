@@ -30,7 +30,7 @@ class DetailedWorkoutLog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          appBarTitle,
+          workout.name,
           style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
         ),
         backgroundColor: AppColors.fitnessBackgroundColor,
