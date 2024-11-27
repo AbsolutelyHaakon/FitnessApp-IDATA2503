@@ -38,6 +38,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
   double totalExercises = 0;
   double currentExercise = 0;
   bool endWorkout = false;
+  ValueNotifier<String> activeWorkoutName = ValueNotifier<String>('');
 
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   final WorkoutDao _workoutDao = WorkoutDao();
@@ -73,6 +74,11 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
   _getWorkoutData() async {
     Workouts? temp =
         await _workoutDao.localFetchByWorkoutId(widget.userWorkouts.workoutId);
+    if (temp == null) {
+      print('No workout found for workoutId: ${widget.userWorkouts.workoutId}');
+    } else {
+      print('Workout found: ${temp.name}');
+    }
     workouts = temp ?? workouts;
     if (workouts.workoutId != '0') {
       WidgetsBinding.instance.addObserver(this);
@@ -185,29 +191,29 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
     }
 
     return Scaffold(
-      appBar: endWorkout
-          ? null
-          : AppBar(
-              centerTitle: false,
-              titleSpacing: 40,
-              backgroundColor: AppColors.fitnessBackgroundColor,
-              leading: IconButton(
-                icon: const Icon(CupertinoIcons.back,
-                    color: AppColors.fitnessMainColor),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              actions: [
+      appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 40,
+        backgroundColor: AppColors.fitnessBackgroundColor,
+        leading: IconButton(
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        actions: endWorkout
+            ? null
+            : [
                 if (remainingTime != countdownDuration)
                   Center(
                     child: Text(
                       '${remainingTime.inMinutes}:${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 IconButton(
-                  icon: Icon(CupertinoIcons.pencil,
+                  icon: const Icon(CupertinoIcons.pencil,
                       color: AppColors.fitnessPrimaryTextColor),
                   onPressed: () {
                     showCupertinoModalPopup(
@@ -247,20 +253,24 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
                   onPressed: isRunning ? pauseTimer : startTimer,
                 ),
               ],
-            ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                if (!endWorkout)
-                  Text(
-                    workouts.name,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+                ValueListenableBuilder<String>(
+                  valueListenable: activeWorkoutName,
+                  builder: (context, value, child) {
+                    return Text(
+                      value,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    );
+                  },
+                ),
                 DwCurrentExercise(
                   exerciseMap: widget.exerciseMap,
                   userWorkouts: widget.userWorkouts,

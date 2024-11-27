@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:confetti/confetti.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
@@ -33,6 +34,7 @@ class DwCurrentExercise extends StatefulWidget {
 }
 
 class _DwCurrentExerciseState extends State<DwCurrentExercise> {
+  late ConfettiController _confettiController;
   List<Exercises> exercises = [];
   List<WorkoutExercises> workoutExercises = [];
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
@@ -48,6 +50,23 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     super.initState();
     fetchExercises();
     populateExerciseStats();
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 3));
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
+
+  void _endWorkoutWithConfetti() async {
+    setState(() {
+      exerciseEnded = true;
+    });
+    _confettiController.play();
+    await _endWorkout();
+    widget.onEndWorkout();
   }
 
   void fetchExercises() {
@@ -222,52 +241,75 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     }
 
     if (exerciseEnded) {
-      return Padding(
-        padding: EdgeInsets.only(top: 40),
-        child: Center(
-            child: Column(
-          children: [
-            DwProgressBar(value: (workoutProgressIndex) / exercises.length),
-            const SizedBox(height: 10),
-            const Text(
-              'Workout Ended!',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900),
+      return Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  DwProgressBar(
+                      value: (workoutProgressIndex) / exercises.length),
+                  const SizedBox(height: 100),
+                  const Text(
+                    'Workout Ended!',
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900),
+                  ),
+                  Text('You worked out for: ${getWorkoutDuration()}'),
+                  const SizedBox(height: 200),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CupertinoButton(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 100, vertical: 15),
+                        color: AppColors.fitnessModuleColor,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Continue",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      CupertinoButton(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 15),
+                        color: AppColors.fitnessMainColor,
+                        onPressed: () {},
+                        child: const Icon(
+                          CupertinoIcons.share,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 15),
-            Text('You worked out for: ${getWorkoutDuration()}'),
-            //Add poop here Haak!
-            const SizedBox(height: 420),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CupertinoButton(
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                  color: AppColors.fitnessModuleColor,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                CupertinoButton(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  color: AppColors.fitnessMainColor,
-                  onPressed: () {},
-                  child: const Icon(
-                    CupertinoIcons.share,
-                    color: Colors.white,
-                  ),
-                ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              colors: const [
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+                Colors.orange,
+                Colors.purple
               ],
             ),
-          ],
-        )),
+          ),
+        ],
       );
     }
 
@@ -577,11 +619,12 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       setState(() {
                         activeWorkoutIndex = 0;
                       });
-                      await _endWorkout();
                       setState(() {
                         exerciseEnded = true;
                       });
                       widget.onEndWorkout();
+                      await _endWorkout();
+                      _endWorkoutWithConfetti();
                     },
                     child: Container(
                       width: 410,
