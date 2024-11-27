@@ -277,6 +277,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Create Post',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.fitnessPrimaryTextColor,
+          ),
+        ),
+        titleSpacing: 40,
+        backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back,
               color: AppColors.fitnessMainColor),
@@ -284,7 +292,36 @@ class _CreatePostPageState extends State<CreatePostPage> {
             Navigator.of(context).pop();
           },
         ),
-        backgroundColor: AppColors.fitnessBackgroundColor,
+        actions: [
+          TextButton(
+            onPressed: () async {
+              if (_userWorkoutId != null) {
+                await _showStatsSelectionDialog();
+              } else {
+                final result =
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WorkoutLog(
+                        isCreatingPost: true),
+                  ),
+                );
+                if (result != null) {
+                  setState(() {
+                    displayedStats.clear();
+                    _workoutStats.clear();
+                    _userWorkoutId = result;
+                  });
+                  await _buildWorkoutStats();
+                  await _showStatsSelectionDialog();
+                }
+              }
+            },
+            child: Text(_userWorkoutId != null
+                ? 'Edit Stats'
+                : 'Attach Workout >',
+                style: const TextStyle(color: AppColors.fitnessMainColor)),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -371,35 +408,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                   );
                                 }).toList(),
                               ),
-                            if (displayedStats.isEmpty) const Spacer(),
+                            if (displayedStats.isNotEmpty)
                             TextButton(
                               onPressed: () async {
-                                if (_userWorkoutId != null) {
-                                  await _showStatsSelectionDialog();
-                                } else {
-                                  final result =
-                                      await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const WorkoutLog(
-                                          isCreatingPost: true),
-                                    ),
-                                  );
-                                  if (result != null) {
-                                    setState(() {
-                                      displayedStats.clear();
-                                      _workoutStats.clear();
-                                      _userWorkoutId = result;
-                                    });
-                                    await _buildWorkoutStats();
-                                    await _showStatsSelectionDialog();
-                                  }
-                                }
+                                // TODO: MAKE THIS NAVIGATE TO THE WORKOUT ITSELF
                               },
-                              child: Text(
-                                _userWorkoutId != null
-                                    ? 'Edit Stats'
-                                    : 'Attach Workout >',
-                                style: const TextStyle(
+                              child: const Text(
+                                'View >',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                   color: AppColors.fitnessMainColor,
                                 ),
                               ),

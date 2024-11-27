@@ -13,7 +13,8 @@ class PostBuilder extends StatefulWidget {
   final bool isProfile;
   final VoidCallback onDelete;
 
-  const PostBuilder({required this.post, required this.isProfile, required this.onDelete});
+  const PostBuilder(
+      {required this.post, required this.isProfile, required this.onDelete});
 
   @override
   State<PostBuilder> createState() => _PostBuilderState();
@@ -67,25 +68,22 @@ class _PostBuilderState extends State<PostBuilder> {
   }
 
   Widget statBuilder(Map<String, String> stat) {
-    IconData icon;
-    switch (stat['name']) {
-      case 'Weight':
-        icon = Icons.fitness_center;
-        break;
-      case 'Duration':
-        icon = Icons.timer;
-        break;
-      default:
-        icon = Icons.fitness_center;
-    }
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.fitnessMainColor),
         const SizedBox(width: 5),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(stat['value'] ?? '', style: const TextStyle(fontSize: 16.0)),
+            Text(stat['name'] ?? '',
+                style: const TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.fitnessSecondaryTextColor)),
+            Text(stat['value'] ?? '',
+                style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.fitnessPrimaryTextColor)),
           ],
         ),
       ],
@@ -189,9 +187,9 @@ class _PostBuilderState extends State<PostBuilder> {
                 ),
               if (visibleStats != null && visibleStats!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Row(
@@ -208,22 +206,20 @@ class _PostBuilderState extends State<PostBuilder> {
                             // Navigate to workout details
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.fitnessMainColor,
-                            // Button background color
+                            backgroundColor: AppColors.fitnessModuleColor,
                             foregroundColor: AppColors.fitnessBackgroundColor,
-                            // Button text color
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10), // Rounded corners
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10), // Padding
+                                horizontal: 5, vertical: 10),
                           ),
                           child: const Text(
-                            'View Workout',
+                            'View >',
                             style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.fitnessMainColor,
                             ),
                           ),
                         ),
@@ -277,26 +273,31 @@ class _PostBuilderState extends State<PostBuilder> {
                         backgroundColor: AppColors.fitnessModuleColor,
                         title: const Text(
                           'Confirm Delete',
-                          style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                          style: TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor),
                         ),
                         content: const Text(
                           'Are you sure you want to delete this post?',
-                          style: TextStyle(color: AppColors.fitnessPrimaryTextColor,
-                          fontWeight: FontWeight.w400),
+                          style: TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor,
+                              fontWeight: FontWeight.w400),
                         ),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('Cancel',
-                                style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                                style: TextStyle(
+                                    color: AppColors.fitnessPrimaryTextColor)),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           TextButton(
                             child: const Text('Delete',
-                                style: TextStyle(color: AppColors.fitnessWarningColor)),
+                                style: TextStyle(
+                                    color: AppColors.fitnessWarningColor)),
                             onPressed: () async {
-                              await PostsDao().fireBaseDeletePost(widget.post.postId);
+                              await PostsDao()
+                                  .fireBaseDeletePost(widget.post.postId);
                               widget.onDelete();
                               Navigator.of(context).pop();
                             },
