@@ -133,6 +133,7 @@ class _SocialFeedState extends State<SocialFeed> {
               child: PostBuilder(
                 post: _posts[index],
                 isProfile: false,
+                onDelete: _refreshFeed,
               ),
             );
           },

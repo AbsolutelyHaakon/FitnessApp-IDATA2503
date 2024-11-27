@@ -393,6 +393,7 @@ Widget build(BuildContext context) {
                           child: PostBuilder(
                             post: post,
                             isProfile: true,
+                            onDelete: _loadUserPosts,
                           ),
                         );
                       },

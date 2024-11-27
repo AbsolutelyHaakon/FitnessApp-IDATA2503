@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
@@ -9,8 +11,9 @@ import '../../styles.dart';
 class PostBuilder extends StatefulWidget {
   final Posts post;
   final bool isProfile;
+  final VoidCallback onDelete;
 
-  const PostBuilder({required this.post, required this.isProfile});
+  const PostBuilder({required this.post, required this.isProfile, required this.onDelete});
 
   @override
   State<PostBuilder> createState() => _PostBuilderState();
@@ -39,29 +42,29 @@ class _PostBuilderState extends State<PostBuilder> {
     _getUserInformation();
   }
 
- Future<void> _getUserInformation() async {
-  final userData = await _userDao.fireBaseGetUserData(widget.post.userId);
+  Future<void> _getUserInformation() async {
+    final userData = await _userDao.fireBaseGetUserData(widget.post.userId);
 
-  if (mounted) {
-    setState(() {
-      profileImageUrl = userData?['imageURL'] ?? '';
-      name = userData?['name'] ?? '';
-      date = widget.post.date;
-      message = widget.post.content;
-      workoutId = widget.post.workoutId;
-      visibleStats = widget.post.visibleStats?.entries
-          .map((entry) => {'name': entry.key, 'value': entry.value})
-          .toList();
-      imageUrl = widget.post.imageURL;
-      location = widget.post.location;
-      commentCount = 0;
-      shareCount = 0;
-      heartCount = 0;
+    if (mounted) {
+      setState(() {
+        profileImageUrl = userData?['imageURL'] ?? '';
+        name = userData?['name'] ?? '';
+        date = widget.post.date;
+        message = widget.post.content;
+        workoutId = widget.post.workoutId;
+        visibleStats = widget.post.visibleStats?.entries
+            .map((entry) => {'name': entry.key, 'value': entry.value})
+            .toList();
+        imageUrl = widget.post.imageURL;
+        location = widget.post.location;
+        commentCount = 0;
+        shareCount = 0;
+        heartCount = 0;
 
-      _isReady = true;
-    });
+        _isReady = true;
+      });
+    }
   }
-}
 
   Widget statBuilder(Map<String, String> stat) {
     IconData icon;
@@ -121,7 +124,7 @@ class _PostBuilderState extends State<PostBuilder> {
                     backgroundImage: profileImageUrl.isNotEmpty
                         ? NetworkImage(profileImageUrl)
                         : const AssetImage('assets/images/placeholder_icon.png')
-                    as ImageProvider,
+                            as ImageProvider,
                   ),
                 ),
               const SizedBox(width: 10.0),
@@ -211,7 +214,7 @@ class _PostBuilderState extends State<PostBuilder> {
                             // Button text color
                             shape: RoundedRectangleBorder(
                               borderRadius:
-                              BorderRadius.circular(10), // Rounded corners
+                                  BorderRadius.circular(10), // Rounded corners
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 10), // Padding
@@ -264,25 +267,48 @@ class _PostBuilderState extends State<PostBuilder> {
                 ],
               ),
             const Spacer(),
-            Row(
-              children: [
-                const Icon(Icons.comment,
-                    color: AppColors.fitnessMainColor, size: 16),
-                const SizedBox(width: 2.0),
-                Text('$commentCount', style: const TextStyle(fontSize: 12.0)),
-                const SizedBox(width: 10.0),
-                const Icon(Icons.share,
-                    color: AppColors.fitnessMainColor, size: 16),
-                const SizedBox(width: 2.0),
-                Text('$shareCount', style: const TextStyle(fontSize: 12.0)),
-                const SizedBox(width: 10.0),
-                const Icon(Icons.favorite,
-                    color: AppColors.fitnessMainColor, size: 16),
-                const SizedBox(width: 2.0),
-                Text('$heartCount', style: const TextStyle(fontSize: 12.0)),
-                const SizedBox(width: 10.0),
-              ],
-            ),
+            if (widget.post.userId == FirebaseAuth.instance.currentUser?.uid)
+              IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: AppColors.fitnessModuleColor,
+                        title: const Text(
+                          'Confirm Delete',
+                          style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                        ),
+                        content: const Text(
+                          'Are you sure you want to delete this post?',
+                          style: TextStyle(color: AppColors.fitnessPrimaryTextColor,
+                          fontWeight: FontWeight.w400),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Cancel',
+                                style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Delete',
+                                style: TextStyle(color: AppColors.fitnessWarningColor)),
+                            onPressed: () async {
+                              await PostsDao().fireBaseDeletePost(widget.post.postId);
+                              widget.onDelete();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.more_horiz,
+                    color: AppColors.fitnessMainColor),
+              ),
           ],
         ),
       ],

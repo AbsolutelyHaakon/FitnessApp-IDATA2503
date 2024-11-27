@@ -60,6 +60,16 @@ class PostsDao {
 ////////////////// FIREBASE FUNCTIONS ///////////////////
 /////////////////////////////////////////////////////////
 
+  Future<bool> fireBaseDeletePost(String postId) async {
+    try {
+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
+      return true;
+    } catch (e) {
+      print('Error deleting post: $e');
+      return false;
+    }
+  }
+
   Future<Map<String, dynamic>> fireBaseCreatePost(
       String? content,
       XFile? image,
