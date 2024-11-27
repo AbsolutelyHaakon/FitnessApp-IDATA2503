@@ -6,6 +6,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
+import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -24,7 +25,6 @@ class WorkoutsBox extends StatefulWidget {
   WorkoutsBox({super.key, required this.workoutMap, required this.isHome});
 
   final Map<Workouts, DateTime> workoutMap;
-
 
   @override
   State<StatefulWidget> createState() {
@@ -62,6 +62,23 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
       });
     });
   }
+
+  SizedBox _getIconForCategory(String category) {
+  int index = officialWorkoutCategories.indexOf(category);
+  double size = 85;
+  if (index != -1) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: officialFilterCategoryIcons[index + 2], // +2 to skip 'All' and 'Starred'
+    );
+  }
+  return SizedBox(
+    width: size,
+    height: size,
+    child: SvgPicture.asset('assets/icons/defaultIcon.svg'),
+  );
+}
 
   Future<bool?> _confirmDelete(BuildContext context) {
     return showDialog<bool>(
@@ -135,8 +152,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
             key: Key(workout.workoutId.toString()),
             direction:
                 // Only allow deletion if the user is the owner of the workout or an admin AND it is not one the home page
-            (workout.userId == FirebaseAuth.instance.currentUser?.uid ||
-                        isAdmin) && !widget.isHome
+                (workout.userId == FirebaseAuth.instance.currentUser?.uid ||
+                            isAdmin) &&
+                        !widget.isHome
                     ? DismissDirection.endToStart
                     : DismissDirection.none,
             confirmDismiss: (direction) => _confirmDelete(context),
@@ -164,7 +182,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     constraints: const BoxConstraints(minHeight: 80),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: widget.isHome ? AppColors.fitnessSecondaryModuleColor : AppColors.fitnessModuleColor,
+                      color: widget.isHome
+                          ? AppColors.fitnessSecondaryModuleColor
+                          : AppColors.fitnessModuleColor,
                       borderRadius: BorderRadius.circular(30),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
@@ -199,16 +219,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                           ),
                         ),
                         const SizedBox(width: 5),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            double size = 90;
-                            return SvgPicture.asset(
-                              'assets/icons/stick_figure.svg',
-                              height: size,
-                              width: size,
-                            );
-                          },
-                        ),
+                        _getIconForCategory(workout.category ?? 'No category'),
                         const SizedBox(width: 10),
                       ],
                     ),
@@ -223,7 +234,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     );
                   },
                 ),
-                  if(!widget.isHome)
+                if (!widget.isHome)
                   Positioned(
                     top: 10,
                     right: 10,
