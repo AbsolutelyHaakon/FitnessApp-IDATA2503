@@ -121,7 +121,7 @@ class _WorkoutPageState extends State<WorkoutPage>
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
         child: Padding(
-          padding: const EdgeInsets.only(left: 20.0),
+          padding: const EdgeInsets.only(left: 20.0,right: 10.0),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Column(
