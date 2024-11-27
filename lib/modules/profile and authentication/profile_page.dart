@@ -429,13 +429,10 @@ class _ProfilePageState extends State<ProfilePage>
                       itemCount: _posts.length,
                       itemBuilder: (context, index) {
                         final post = _posts[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 40.0),
-                          child: PostBuilder(
-                            post: post,
-                            isProfile: true,
-                            onDelete: _loadUserPosts,
-                          ),
+                        return PostBuilder(
+                          post: post,
+                          isProfile: true,
+                          onDelete: _loadUserPosts,
                         );
                       },
                     ),
