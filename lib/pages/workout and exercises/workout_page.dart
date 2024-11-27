@@ -213,6 +213,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                             workoutsMap.entries
                                 .where((entry) => entry.key.userId != ''),
                           ),
+                          isHome: false,
                         ),
                         if (workoutsMap.entries
                             .where((entry) => entry.key.userId != '')
@@ -237,6 +238,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                             workoutsMap.entries
                                 .where((entry) => entry.key.userId == ''),
                           ),
+                          isHome: false,
                         ),
                       ],
                     ),

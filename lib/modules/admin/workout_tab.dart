@@ -136,6 +136,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                       workoutMap: Map.fromEntries(
                         workoutsMap.entries.where((entry) => entry.key.userId == ''),
                       ),
+                      isHome: false,
                     ),
                     const SizedBox(height: 40),
                     const Align(
@@ -147,6 +148,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                       workoutMap: Map.fromEntries(
                         workoutsMap.entries.where((entry) => entry.key.userId != ''),
                       ),
+                      isHome: false,
                     ),
                   ],
                 ),

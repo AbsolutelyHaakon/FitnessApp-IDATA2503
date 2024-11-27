@@ -12,7 +12,6 @@ import '../database/tables/workout.dart';
 import '../modules/date_picker.dart';
 import '../modules/homepage widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
-import '../modules/workouts_box_home.dart';
 import 'social and account/me.dart';
 
 class Home extends StatefulWidget {
@@ -83,7 +82,7 @@ Map<Workouts, DateTime> workoutMap = {
                 ),
                 child: Column(
                   children: [
-                    WorkoutsBoxHome(workoutMap: workoutMap),
+                    WorkoutsBox(workoutMap: workoutMap, isHome: true,),
                     const SizedBox(height: 20),
                     const RingsModule(),
                   ],

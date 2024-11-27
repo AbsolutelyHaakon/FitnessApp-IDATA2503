@@ -17,38 +17,14 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 
 /// Last edited 07/11/2024
 /// Last edited by Håkon Svensen Karlsen
-///
-/// TODO: Remove scheduling elements a make a calendar friendly version of the workouts box
 
 class WorkoutsBox extends StatefulWidget {
-  const WorkoutsBox({super.key, required this.workoutMap});
+  bool isHome = false;
+
+  WorkoutsBox({super.key, required this.workoutMap, required this.isHome});
 
   final Map<Workouts, DateTime> workoutMap;
 
-  String getFormattedDate(DateTime date) {
-    String formattedMonth = DateFormat.MMMM().format(date);
-    String day = date.day.toString();
-
-    String dayWithSuffix = '$day${getDaySuffix(date.day)}';
-
-    return '$formattedMonth, $dayWithSuffix';
-  }
-
-  String getDaySuffix(int day) {
-    if (day >= 11 && day <= 13) {
-      return 'th';
-    }
-    switch (day % 10) {
-      case 1:
-        return 'st';
-      case 2:
-        return 'nd';
-      case 3:
-        return 'rd';
-      default:
-        return 'th';
-    }
-  }
 
   @override
   State<StatefulWidget> createState() {
@@ -151,7 +127,6 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widget.workoutMap.entries.map((entry) {
         final workout = entry.key;
-        final date = entry.value;
         final isFavorite = _favorites[workout.workoutId] ?? false;
 
         return Padding(
@@ -159,8 +134,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
             direction:
-                workout.userId == FirebaseAuth.instance.currentUser?.uid ||
-                        isAdmin
+                // Only allow deletion if the user is the owner of the workout or an admin AND it is not one the home page
+            (workout.userId == FirebaseAuth.instance.currentUser?.uid ||
+                        isAdmin) && !widget.isHome
                     ? DismissDirection.endToStart
                     : DismissDirection.none,
             confirmDismiss: (direction) => _confirmDelete(context),
@@ -188,7 +164,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     constraints: const BoxConstraints(minHeight: 80),
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: AppColors.fitnessModuleColor,
+                      color: widget.isHome ? AppColors.fitnessSecondaryModuleColor : AppColors.fitnessModuleColor,
                       borderRadius: BorderRadius.circular(30),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
@@ -247,7 +223,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     );
                   },
                 ),
-                if (date == DateTime(1970, 1, 1))
+                  if(!widget.isHome)
                   Positioned(
                     top: 10,
                     right: 10,
