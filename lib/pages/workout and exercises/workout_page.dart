@@ -134,7 +134,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       'Workout',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
