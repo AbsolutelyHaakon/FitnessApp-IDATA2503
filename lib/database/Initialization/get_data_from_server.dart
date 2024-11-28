@@ -1,8 +1,10 @@
 import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/favorite_workouts.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 
 import '../crud/workout_exercises_dao.dart';
@@ -13,6 +15,7 @@ class GetDataFromServer {
   final WorkoutDao workoutsDao = WorkoutDao();
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
   final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
+  final UserWorkoutsDao userWorkoutsDao = UserWorkoutsDao();
 
   Future<void> syncData(String? userId) async {
     await syncExercises(userId);
@@ -89,4 +92,23 @@ class GetDataFromServer {
     }
   }
 
-}
+  Future<void> SyncUserWorkouts(String? userId) async {
+    if (userId == null) {
+      return;
+    }
+    // First delete all the local data
+    await userWorkoutsDao.localTruncate();
+
+    // Fetch all user workouts from Firebase
+    final prevWork = await userWorkoutsDao.fireBaseFetchPreviousWorkouts(userId);
+    final upcomingWork = await userWorkoutsDao.fireBaseFetchUpcomingWorkouts(userId);
+
+    List<UserWorkouts> allUserWorkouts = prevWork["previousWorkouts"];
+    allUserWorkouts.addAll(upcomingWork["upcomingWorkouts"]);
+
+    // Add all fetched user workouts to the local database
+    for (UserWorkouts userWorkouts in allUserWorkouts) {
+      await userWorkoutsDao.localCreate(userWorkouts);
+    }
+    }
+  }
