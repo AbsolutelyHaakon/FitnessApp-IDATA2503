@@ -4,6 +4,7 @@ import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_best_module.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/weight_bar_chart.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/settings.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -412,7 +413,7 @@ class _ProfilePageState extends State<ProfilePage>
                           controller: _tabController,
                           tabs: const [
                             Tab(text: "My Posts"),
-                            Tab(text: 'My Health'),
+                            Tab(text: 'My Stats'),
                           ],
                         ),
                       ],
@@ -439,11 +440,11 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   const SingleChildScrollView(
                     child: Column(children: [
-                      SizedBox(height: 40),
+                      SizedBox(height: 20),
+                      PersonalBestModule(),
+                      SizedBox(height: 20),
                       WeightBarChart(),
-                      SizedBox(
-                        height: 1,
-                      )
+                      SizedBox(height: 20),
                     ]),
                   ),
                 ],

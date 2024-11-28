@@ -350,16 +350,18 @@ class UserWorkoutsDao {
     return {'previousWorkouts': previousWorkouts};
   }
 
-  Future<bool> fireBaseReplaceUserWorkout(UserWorkouts userWorkout, Workouts newWorkout) async {
+  Future<bool> fireBaseReplaceUserWorkout(
+      UserWorkouts userWorkout, Workouts newWorkout) async {
     final deleted = await fireBaseDeleteUserWorkout(userWorkout);
     if (deleted) {
-      fireBaseCreateUserWorkout(newWorkout.userId, newWorkout.workoutId, userWorkout.date);
+      fireBaseCreateUserWorkout(
+          newWorkout.userId, newWorkout.workoutId, userWorkout.date);
       return true;
     }
     return false;
   }
 
-  Future<void> fireBaseGetPersonalBests(String uid) async {
+  Future<void> fireBaseSetPersonalBests(String uid) async {
     if (uid == '') return;
     final result = await fireBaseFetchPreviousWorkouts(uid);
 
@@ -396,7 +398,7 @@ class UserWorkoutsDao {
         .where('userId', isEqualTo: uid)
         .get();
 
-    if (personalBestsQuery.docs.isNotEmpty) {
+    if (personalBestsQuery.docs.length <= 0) {
       await FirebaseFirestore.instance.collection('userPersonalBests').add({
         'userId': uid,
         'personalBestMap': personalBests,
@@ -406,5 +408,22 @@ class UserWorkoutsDao {
         'personalBestMap': personalBests,
       });
     }
+  }
+
+  Future<Map<String, dynamic>> fireBaseGetPersonalBests(String uid) async {
+    if (uid == '') return {};
+
+    QuerySnapshot personalBestsQuery = await FirebaseFirestore.instance
+        .collection('userPersonalBests')
+        .where('userId', isEqualTo: uid)
+        .get();
+
+    if (personalBestsQuery.docs.isNotEmpty) {
+      final doc = personalBestsQuery.docs.first;
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return data['personalBestMap'];
+    }
+
+    return {};
   }
 }
