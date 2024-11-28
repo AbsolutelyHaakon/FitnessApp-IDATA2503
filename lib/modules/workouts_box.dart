@@ -21,8 +21,9 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 
 class WorkoutsBox extends StatefulWidget {
   bool isHome = false;
+  bool isSearch = false;
 
-  WorkoutsBox({super.key, required this.workouts, required this.isHome});
+  WorkoutsBox({super.key, required this.workouts, required this.isHome, required this.isSearch});
 
   final List<Workouts> workouts;
 
@@ -227,7 +228,7 @@ Widget build(BuildContext context) {
                     context,
                     CupertinoPageRoute(
                       builder: (context) =>
-                          PreWorkoutScreen(workouts: workout),
+                          PreWorkoutScreen(workouts: workout, isSearch: widget.isSearch,),
                     ),
                   );
                 },

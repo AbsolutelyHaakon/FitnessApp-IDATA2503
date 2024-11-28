@@ -175,6 +175,30 @@ Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, Strin
     }
   }
 
+  Future<WorkoutExercises?> fireBaseFetchById(String workoutId, String exerciseId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workoutExercises')
+        .where('workoutId', isEqualTo: workoutId)
+        .where('exerciseId', isEqualTo: exerciseId)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return null;
+    }
+
+    DocumentSnapshot doc = querySnapshot.docs.first;
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    return WorkoutExercises(
+      workoutExercisesId: doc.id,
+      workoutId: data['workoutId'],
+      exerciseId: data['exerciseId'],
+      reps: data['reps'],
+      sets: data['sets'],
+      exerciseOrder: data['exerciseOrder'],
+    );
+  }
+
   Future<Map<String, dynamic>> fireBaseDeleteInactiveWorkoutExercises(
       List<String> activeWorkoutIds) async {
     if (activeWorkoutIds.isEmpty) {

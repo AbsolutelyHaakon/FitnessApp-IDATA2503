@@ -14,19 +14,26 @@ import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_serve
 import 'social and account/me.dart';
 
 class Home extends StatefulWidget {
-
   const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
 }
+
 const double commonPadding = 16.0;
 const double rowSpacing = 28.0;
 
 class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
-List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123', isDeleted: false)];
+  List<Workouts> workouts = [
+    const Workouts(
+        workoutId: 'sanjdsadnaslkdnaksl',
+        name: 'Leg day',
+        isPrivate: true,
+        userId: 'user123',
+        isDeleted: false)
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +86,11 @@ List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name
                 ),
                 child: Column(
                   children: [
-                    WorkoutsBox(workouts: [...workouts], isHome: true,),
+                    WorkoutsBox(
+                      workouts: [...workouts],
+                      isHome: true,
+                      isSearch: false,
+                    ),
                     const SizedBox(height: 20),
                     const RingsModule(),
                   ],
@@ -89,7 +100,6 @@ List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name
           ),
         ),
       ),
-
     );
   }
 
@@ -140,7 +150,8 @@ List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name
           const begin = Offset(0.0, 1.0);
           const end = Offset.zero;
           const curve = Curves.ease;
-          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          final tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
           final offsetAnimation = animation.drive(tween);
           return SlideTransition(position: offsetAnimation, child: child);
         },
@@ -148,15 +159,14 @@ List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name
     );
   }
 
-
-
   Widget _buildModuleRow({
     required Widget leftChild,
     required Widget rightChild,
     double topPadding = rowSpacing,
   }) {
     return Padding(
-      padding: EdgeInsets.only(left: commonPadding, right: commonPadding, top: topPadding),
+      padding: EdgeInsets.only(
+          left: commonPadding, right: commonPadding, top: topPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -167,7 +177,6 @@ List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name
       ),
     );
   }
-
 
   Widget _buildModuleRowInDashboard({
     required Widget leftChild,

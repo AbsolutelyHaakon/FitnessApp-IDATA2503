@@ -216,6 +216,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           workouts: workouts.where((workout) =>
                           workout.userId == (FirebaseAuth.instance.currentUser?.uid)).toList(),
                           isHome: false,
+                          isSearch: false,
                         ),
                         if (workouts
                             .where((workout) => workout.userId != '')
@@ -242,6 +243,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           workouts: workouts.where((workout) =>
                           workout.userId == '').toList(),
                           isHome: false,
+                          isSearch: false,
                         ),
                       ],
                     ),

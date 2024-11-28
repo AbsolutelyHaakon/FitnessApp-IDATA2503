@@ -87,6 +87,7 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
                 child: WorkoutsBox(
                   workouts: _filteredWorkouts,
                   isHome: false,
+                  isSearch: true,
                 ),
               ),
             )

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:sqflite/sqflite.dart';
@@ -292,6 +293,20 @@ class WorkoutDao {
     return {'workouts': allWorkouts};
   }
 
+  Future<Workouts?> fireBaseFetchWorkout(String workoutId) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .get();
+    if (doc.exists) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['workoutId'] = doc.id;
+      return Workouts.fromMap(data);
+    } else {
+      return null;
+    }
+  }
+
   Future<void> firebaseUpdateWorkout(
       String workoutId,
       String? category,
@@ -448,6 +463,19 @@ class WorkoutDao {
     workouts.addAll(publicWorkouts);
 
     return {'workouts': workouts};
+  }
+
+  Future<List<Exercises>> fireBaseFetchExercisesForWorkout(String workoutId) async{
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('workoutExercises').where('workoutId', isEqualTo: workoutId).get();
+    List exerciseIds = querySnapshot.docs.map((doc) => doc['exerciseId']).toList();
+    List<Exercises> exercises = [];
+    for (String exerciseId in exerciseIds) {
+      Exercises? exercise = await ExerciseDao().fireBaseFetchExercise(exerciseId);
+      if (exercise != null) {
+        exercises.add(exercise);
+      }
+    }
+    return exercises;
   }
 
 //////////////////////////////////////////////////////////////////////////////

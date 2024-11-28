@@ -169,6 +169,20 @@ class ExerciseDao {
     }
   }
 
+  Future<Exercises?> fireBaseFetchExercise(String exerciseId) async {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('exercises')
+        .doc(exerciseId)
+        .get();
+    if (documentSnapshot.exists) {
+      Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+      data['exerciseId'] = documentSnapshot.id;
+      return Exercises.fromMap(data);
+    } else {
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>> fireBaseUpdateExercise(
       String exerciseId,
       String? name,

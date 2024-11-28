@@ -18,8 +18,9 @@ import '../../database/crud/workout_dao.dart';
 class PreWorkoutScreen extends StatefulWidget {
   UserWorkouts? userWorkouts;
   Workouts? workouts;
+  bool isSearch;
 
-  PreWorkoutScreen({super.key, this.userWorkouts, this.workouts});
+  PreWorkoutScreen({super.key, this.userWorkouts, this.workouts, required this.isSearch});
 
   @override
   State<PreWorkoutScreen> createState() {
@@ -72,12 +73,20 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     if (widget.userWorkouts == null) {
       return;
     }
-    Workouts? temp =
-        await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
-    workouts = temp ?? workouts;
-    if (workouts.workoutId != '0') {
-      setState(() {});
-      fetchExercises();
+    if (widget.isSearch){
+      Workouts? temp = await _workoutDao.fireBaseFetchWorkout(widget.userWorkouts!.workoutId);
+      if (temp != null) {
+        workouts = temp;
+        fetchExercises();
+      }
+
+    } else {
+      Workouts? temp =
+      await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+      workouts = temp ?? workouts;
+      if (workouts.workoutId != '0') {
+        fetchExercises();
+      }
     }
 
     await UserDao()
@@ -91,15 +100,30 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
 
   Future<void> fetchExercises() async {
   try {
-    final tempExercises =
-        await WorkoutDao().localFetchExercisesForWorkout(workouts.workoutId);
+    List<Exercises> tempExercises = [];
     Map<Exercises, WorkoutExercises> newExerciseMap = {};
-    for (final exercise in tempExercises) {
-      final workoutExercise = await WorkoutExercisesDao()
-          .localFetchById(workouts.workoutId, exercise.exerciseId);
-      if (workoutExercise != null) {
-        newExerciseMap[exercise] = workoutExercise;
+    if (widget.isSearch){
+      tempExercises = await WorkoutDao().fireBaseFetchExercisesForWorkout(workouts.workoutId);
+      for (final exercise in tempExercises) {
+        final workoutExercise = await WorkoutExercisesDao().fireBaseFetchById(workouts.workoutId, exercise.exerciseId);
+        if (workoutExercise != null) {
+          newExerciseMap[exercise] = workoutExercise;
+        }
       }
+
+    } else {
+      tempExercises =
+      await WorkoutDao().localFetchExercisesForWorkout(workouts.workoutId);
+
+      for (final exercise in tempExercises) {
+        final workoutExercise = await WorkoutExercisesDao()
+            .localFetchById(workouts.workoutId, exercise.exerciseId);
+        if (workoutExercise != null) {
+          newExerciseMap[exercise] = workoutExercise;
+        }
+      }
+
+
     }
 
     // Update the exerciseMap before sorting

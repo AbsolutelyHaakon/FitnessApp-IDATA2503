@@ -131,6 +131,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     WorkoutsBox(
                       workouts: [...workouts],
                       isHome: false,
+                      isSearch: false,
                     ),
                     const SizedBox(height: 40),
                     const Align(
@@ -141,6 +142,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     WorkoutsBox(
                       workouts: [...workouts],
                       isHome: false,
+                      isSearch: false,
                     ),
                   ],
                 ),
