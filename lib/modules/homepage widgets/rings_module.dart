@@ -28,7 +28,8 @@ class RingsModule extends StatefulWidget {
   _RingsModuleState createState() => _RingsModuleState();
 }
 
-class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStateMixin {
+class _RingsModuleState extends State<RingsModule>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   bool _isDisposed = false;
@@ -111,6 +112,11 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
       int todaycb = 0;
       int todayc = 0;
       int todayWeight = 0;
+      DateTime comparisonDate = DateTime(
+        1970,
+        1,
+        1,
+      );
 
       for (var entry in userData) {
         DateTime date =
@@ -125,9 +131,12 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
           if (entry.caloriesIntake != null) {
             todayc += entry.caloriesIntake!;
           }
-          if (entry.weight < 300 && entry.weight > 30) {
-            todayWeight = entry.weight;
-          }
+        }
+        if (entry.weight != null &&
+            entry.weight != 0 &&
+            entry.date.isAfter(comparisonDate)) {
+          todayWeight = entry.weight;
+          comparisonDate = entry.date;
         }
       }
 
@@ -139,6 +148,9 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
           if (todayWeight < weightGoal) {
             weightPercentage =
                 (weightInitial - todayWeight) / (weightInitial - weightGoal);
+          } else if (weightInitial < todayWeight && todayWeight > weightGoal) {
+            weightPercentage =
+                2 - ( todayWeight / weightGoal);
           } else {
             weightPercentage =
                 (todayWeight - weightInitial) / (weightGoal - weightInitial);
@@ -201,62 +213,65 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
     );
   }
 
-Widget _buildRingButton(BuildContext context, String label, double percentage, Color color, Widget page) {
-  double screenWidth = MediaQuery.of(context).size.width;
-  double ringSize = screenWidth * 0.16;
+  Widget _buildRingButton(BuildContext context, String label, double percentage,
+      Color color, Widget page) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double ringSize = screenWidth * 0.16;
 
-  return CupertinoButton(
-    padding: EdgeInsets.zero,
-    onPressed: () {
-      Navigator.push(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => page,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.ease;
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: () {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => page,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
 
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var offsetAnimation = animation.drive(tween);
 
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );
-          },
+              return SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              );
+            },
+          ),
+        );
+      },
+      child: SizedBox(
+        width: ringSize,
+        height: ringSize,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(
+              width: ringSize * 0.85,
+              height: ringSize * 0.85,
+              child: CircularProgressIndicator(
+                value: _animation.value * percentage,
+                strokeWidth: 8.0,
+                strokeCap: StrokeCap.round,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                backgroundColor: AppColors.fitnessModuleColor,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-      );
-    },
-    child: SizedBox(
-      width: ringSize,
-      height: ringSize,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(
-            width: ringSize * 0.85,
-            height: ringSize * 0.85,
-            child: CircularProgressIndicator(
-              value: _animation.value * percentage,
-              strokeWidth: 8.0,
-              strokeCap: StrokeCap.round,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-              backgroundColor: AppColors.fitnessModuleColor,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ),
-    ),
-  );
-}
+    );
+  }
 }

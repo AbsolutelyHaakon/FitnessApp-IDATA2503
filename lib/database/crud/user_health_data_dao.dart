@@ -98,11 +98,13 @@ class UserHealthDataDao {
         .collection('userHealthData')
         .where('userId', isEqualTo: userId)
         .get();
+
     List<UserHealthData> userHealthData = userHealthDataQuery.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['userHealthDataId'] = doc.id;
       return UserHealthData.fromMap(data);
     }).toList();
+
     return {'userHealthData': userHealthData};
   }
 }
