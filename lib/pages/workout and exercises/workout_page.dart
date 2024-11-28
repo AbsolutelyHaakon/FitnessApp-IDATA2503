@@ -136,8 +136,6 @@ class _WorkoutPageState extends State<WorkoutPage>
                     ),
                     InkWell(
                       onTap: () {
-                        UserWorkoutsDao().fireBaseGetPersonalBests(
-                            FirebaseAuth.instance.currentUser?.uid ?? '');
                         Navigator.push(
                           context,
                           MaterialPageRoute(

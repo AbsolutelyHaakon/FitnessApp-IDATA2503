@@ -42,7 +42,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
   final WorkoutDao _workoutDao = WorkoutDao();
   final ScrollController _scrollController = ScrollController();
   Duration workoutDuration = Duration.zero;
-  int finalTime = 0;
+  double finalTime = 0;
   int workoutProgressIndex = 0;
   bool exerciseEnded = false;
 
@@ -104,9 +104,10 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
 
     DateTime endTime = DateTime.now();
     workoutDuration = endTime.difference(activeWorkoutStartTime);
-    finalTime = workoutDuration.inMinutes;
+    finalTime = workoutDuration.inMinutes.toDouble();
 
-    print("final Time: $finalTime");
+    print('Workout Duration: $workoutDuration');
+    print('Workout Duration in Minutes: $finalTime');
 
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       _userWorkoutsDao.fireBaseUpdateUserWorkout(

@@ -52,6 +52,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
         if (userWorkout.statistics == "null") {
           continue;
         }
+
         Workouts? temp =
             await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
         if (temp != null) {
@@ -323,7 +324,7 @@ Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkou
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${workout.duration} min',
+                  '${userWorkout.duration?.toStringAsFixed(0)} min',
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
                 Text(

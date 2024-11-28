@@ -43,8 +43,8 @@ class UserWorkoutsDao {
     return await database.update(
       tableName,
       userWorkout.toMap(),
-      where: 'userId = ? AND workoutId = ?',
-      whereArgs: [userWorkout.userId, userWorkout.workoutId],
+      where: 'userWorkoutId = ?',
+      whereArgs: [userWorkout.userWorkoutId],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -268,7 +268,7 @@ class UserWorkoutsDao {
       String workoutId,
       DateTime date,
       String? workoutStats,
-      int duration) async {
+      double duration) async {
     print('Updating user workout with id: $userWorkoutId');
 
     DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
@@ -287,7 +287,7 @@ class UserWorkoutsDao {
         userId: userId,
         workoutId: workoutId,
         date: date,
-        duration: duration.toDouble(),
+        duration: duration,
         statistics: workoutStats,
         isActive: false,
       ));

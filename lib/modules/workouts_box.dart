@@ -76,7 +76,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   return SizedBox(
     width: size,
     height: size,
-    child: SvgPicture.asset('assets/icons/defaultIcon.svg'),
+    child: SvgPicture.asset('assets/icons/allIcon.svg'),
   );
 }
 
