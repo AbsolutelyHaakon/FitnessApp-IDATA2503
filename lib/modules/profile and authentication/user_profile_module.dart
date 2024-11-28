@@ -156,10 +156,6 @@ class UserProfileModule extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TODO: Implement height and weight attributes for the user
-          // _buildProfileDetailText('Email: $email'),
-          // _buildProfileDetailText('Height: ${user.height.toStringAsFixed(2)} m'),
-          // _buildProfileDetailText('Weight: ${weight.toStringAsFixed(2)} kg'),
           _buildProfileDetailText('Email: ${user.email}'),
           _buildProfileDetailText('Height: ${height}cm'),
           _buildProfileDetailText('Weight: ${weight}kg'),
