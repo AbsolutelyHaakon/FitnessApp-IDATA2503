@@ -40,7 +40,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   @override
   void initState() {
     super.initState();
-    _filteredWorkouts = _workouts;
     fetchAllWorkouts("All");
   }
 
@@ -104,10 +103,12 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
           FirebaseAuth.instance.currentUser!.uid);
       setState(() {
         _upcomingWorkouts = result['upcomingWorkouts'];
+        for (var workout in _upcomingWorkouts) {
+          print(workout.date);
+        }
         workoutDates =
             _upcomingWorkouts.map((workout) => workout.date).toList();
       });
-      print(workoutDates);
     }
   }
 
@@ -115,13 +116,23 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
       final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(
-          userWorkout);
+          userWorkout, _selectedWorkout);
       if (success) {
         await fetchUpcomingWorkouts();
         await fetchWorkoutNames();
-      } else {
-        // Handle the failure case
-        print('Failed to replace workout');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check, color: AppColors.fitnessPrimaryTextColor),
+              SizedBox(width: 8),
+              Text(
+                'Workout replaced',
+                style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.fitnessMainColor,
+        ));
       }
     }
   }
@@ -295,6 +306,19 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                               _selectedWorkout = _filteredWorkouts[index];
                               if (isAddWorkout) {
                                 addToCalendar();
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Row(
+                                    children: [
+                                      Icon(Icons.check, color: AppColors.fitnessPrimaryTextColor),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Workout Added',
+                                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                                      ),
+                                    ],
+                                  ),
+                                  backgroundColor: AppColors.fitnessMainColor,
+                                ));
                               } else {
                                 // Find the workout to be deleted
                                 UserWorkouts toBeDeletedId;
@@ -305,8 +329,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                                       workout.date.day == _selectedDay!.day) {
                                     toBeDeletedId = workout;
                                     if (toBeDeletedId != null) {
-                                      replaceExisting(
-                                          toBeDeletedId);
+                                      replaceExisting(toBeDeletedId);
                                     }
                                     break;
                                   }

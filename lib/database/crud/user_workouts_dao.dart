@@ -350,11 +350,10 @@ class UserWorkoutsDao {
     return {'previousWorkouts': previousWorkouts};
   }
 
-  Future<bool> fireBaseReplaceUserWorkout(UserWorkouts userWorkout) async {
+  Future<bool> fireBaseReplaceUserWorkout(UserWorkouts userWorkout, Workouts newWorkout) async {
     final deleted = await fireBaseDeleteUserWorkout(userWorkout);
-
     if (deleted) {
-      fireBaseCreateUserWorkout(userWorkout.userId, userWorkout.userWorkoutId, userWorkout.date);
+      fireBaseCreateUserWorkout(newWorkout.userId, newWorkout.workoutId, userWorkout.date);
       return true;
     }
     return false;
