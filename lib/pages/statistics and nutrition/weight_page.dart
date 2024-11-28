@@ -151,12 +151,14 @@ class _WeightPageState extends State<WeightPage>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Set New Weight'),
+              title: const Text('Set New Weight',
+                  style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.line_weight, size: 50, color: Colors.blue),
-                  SizedBox(height: 20),
+                  const Icon(Icons.line_weight,
+                      size: 50, color: AppColors.fitnessMainColor),
+                  const SizedBox(height: 20),
                   SizedBox(
                     height: 150,
                     child: CupertinoPicker(
@@ -166,9 +168,13 @@ class _WeightPageState extends State<WeightPage>
                           newWeight = index;
                         });
                       },
-                      children: List<Widget>.generate(200, (int index) {
+                      scrollController:
+                          FixedExtentScrollController(initialItem: todayWeight),
+                      children: List<Widget>.generate(300, (int index) {
                         return Center(
-                          child: Text('$index Kg'),
+                          child: Text('$index Kg',
+                              style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor)),
                         );
                       }),
                     ),
@@ -180,7 +186,9 @@ class _WeightPageState extends State<WeightPage>
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancel'),
+                  child: const Text('Cancel',
+                      style:
+                          TextStyle(color: AppColors.fitnessPrimaryTextColor)),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -198,9 +206,11 @@ class _WeightPageState extends State<WeightPage>
                     }
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK',
+                      style: TextStyle(color: AppColors.fitnessMainColor)),
                 ),
               ],
+              backgroundColor: AppColors.fitnessModuleColor,
             );
           },
         );
@@ -353,14 +363,16 @@ class _WeightPageState extends State<WeightPage>
                                         showTitles: true,
                                         getTitlesWidget: (value, meta) {
                                           final date = DateTime.now().subtract(
-                                              Duration(days: 6 - value.toInt()));
+                                              Duration(
+                                                  days: 6 - value.toInt()));
                                           return SideTitleWidget(
                                             axisSide: meta.axisSide,
                                             space: 5,
                                             child: Text(
                                               DateFormat('MM/dd').format(date),
                                               style: const TextStyle(
-                                                color: AppColors.fitnessMainColor,
+                                                color:
+                                                    AppColors.fitnessMainColor,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 12,
                                               ),
@@ -387,7 +399,8 @@ class _WeightPageState extends State<WeightPage>
                                           toY: intake.toDouble(),
                                           color: AppColors.fitnessMainColor,
                                           width: 16,
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                       ],
                                     );
