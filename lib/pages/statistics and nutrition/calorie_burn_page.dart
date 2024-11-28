@@ -28,6 +28,8 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
   DateTime today = DateTime.now();
   double todayBurn = 0;
   double burnPercentage = 0.0;
+  List<FlSpot> cumulativeSpots = [];
+  double cumulativeSum = 0;
 
   @override
   void initState() {
@@ -55,7 +57,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      var goalInt = userGoalsMap?["calorieBurnTarget"] ?? 2500;
+      var goalInt = userGoalsMap?["calorieBurnTarget"] ?? 400;
       setState(() {
         goal = goalInt.toDouble();
       });
@@ -63,6 +65,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
   }
 
   Future<void> fetchBurnData() async {
+    todayBurn = 0;
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
@@ -191,6 +194,16 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
           entry.key.month == today.month &&
           entry.key.day == today.day;
     }).toList();
+
+    cumulativeSpots.clear();
+    cumulativeSum = 0;
+
+    todayBurnEntries.sort((a, b) => a.key.hour.compareTo(b.key.hour));
+
+    for (var entry in todayBurnEntries) {
+      cumulativeSum += entry.value;
+      cumulativeSpots.add(FlSpot(entry.key.hour.toDouble(), cumulativeSum));
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -323,10 +336,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                       borderData: FlBorderData(show: true),
                       lineBarsData: [
                         LineChartBarData(
-                          spots: todayBurnEntries
-                              .map((e) => FlSpot(e.key.hour.toDouble(),
-                              e.value.toDouble()))
-                              .toList(),
+                          spots: cumulativeSpots,
                           isCurved: false,
                           color: const Color(0xFFCC4848),
                           barWidth: 4,

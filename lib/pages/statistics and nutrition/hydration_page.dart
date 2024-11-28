@@ -28,6 +28,8 @@ class _HydrationPageState extends State<HydrationPage>
   DateTime today = DateTime.now();
   double todayIntakew = 0;
   double waterPercentage = 0.0;
+  List<FlSpot> cumulativeSpots = [];
+  double cumulativeSum = 0;
 
   @override
   void initState() {
@@ -64,6 +66,7 @@ class _HydrationPageState extends State<HydrationPage>
   }
 
   Future<void> fetchHydrationData() async {
+    todayIntakew = 0;
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
@@ -207,6 +210,16 @@ class _HydrationPageState extends State<HydrationPage>
           entry.key.day == today.day;
     }).toList();
 
+    cumulativeSpots.clear();
+    cumulativeSum = 0;
+
+    todayIntake.sort((a, b) => a.key.hour.compareTo(b.key.hour));
+
+    for (var entry in todayIntake) {
+      cumulativeSum += entry.value;
+      cumulativeSpots.add(FlSpot(entry.key.hour.toDouble(), cumulativeSum));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -340,10 +353,7 @@ class _HydrationPageState extends State<HydrationPage>
                             borderData: FlBorderData(show: true),
                             lineBarsData: [
                               LineChartBarData(
-                                spots: todayIntake
-                                    .map((e) => FlSpot(e.key.hour.toDouble(),
-                                        e.value.toDouble()))
-                                    .toList(),
+                                spots: cumulativeSpots,
                                 isCurved: false,
                                 color: const Color(0xFF468CF6),
                                 barWidth: 4,
