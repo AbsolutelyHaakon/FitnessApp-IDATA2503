@@ -91,8 +91,16 @@ class _HydrationPageState extends State<HydrationPage>
       }
       setState(() {
         dailyIntake = aggregatedData;
+        if (goal == 0) {
+          goal = 2500;
+        }
         waterPercentage = todayIntakew / goal;
-
+        if (waterPercentage > 1) {
+          waterPercentage = 1;
+        }
+        print(goal);
+        print(todayIntakew);
+        print(waterPercentage);
         DateTime now = DateTime.now();
         today = DateTime(now.year, now.month, now.day);
 
@@ -116,26 +124,28 @@ class _HydrationPageState extends State<HydrationPage>
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: Text('Add Water Intake'),
+            title: const Text('Add Water Intake',
+                style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.local_drink, size: 50, color: Colors.blue),
-                SizedBox(height: 20),
+                const Icon(Icons.local_drink, size: 50, color: Colors.blue),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.remove),
+                      icon: const Icon(Icons.remove, color: Colors.blue),
                       onPressed: () {
                         setState(() {
                           if (waterIntake > 0) waterIntake -= 100;
                         });
                       },
                     ),
-                    Text('$waterIntake ml', style: TextStyle(fontSize: 20)),
+                    Text('$waterIntake ml', style: const TextStyle(fontSize: 20,
+                        color: AppColors.fitnessPrimaryTextColor)),
                     IconButton(
-                      icon: Icon(Icons.add),
+                      icon: const Icon(Icons.add, color: Colors.blue),
                       onPressed: () {
                         setState(() {
                           waterIntake += 100;
@@ -151,7 +161,8 @@ class _HydrationPageState extends State<HydrationPage>
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel',
+                    style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
               ),
               TextButton(
                 onPressed: () async {
@@ -170,9 +181,11 @@ class _HydrationPageState extends State<HydrationPage>
                   }
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK',
+                    style: TextStyle(color: Colors.blue)),
               ),
             ],
+            backgroundColor: AppColors.fitnessModuleColor,
           );
         },
       );
@@ -225,7 +238,7 @@ class _HydrationPageState extends State<HydrationPage>
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Column(
                   children: [
                     SizedBox(
@@ -244,7 +257,9 @@ class _HydrationPageState extends State<HydrationPage>
                                   height: 180.0,
                                   child: CircularProgressIndicator(
                                     value: _animation.value *
-                                        (todayIntakew / goal),
+                                        (waterPercentage > 1
+                                            ? 1
+                                            : waterPercentage),
                                     strokeWidth: 18.0,
                                     strokeCap: StrokeCap.round,
                                     valueColor:
@@ -297,137 +312,163 @@ class _HydrationPageState extends State<HydrationPage>
                       ),
                     ),
                     const SizedBox(height: 46),
-                    SizedBox(
-                      height: 200,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(show: true),
-                          titlesData: FlTitlesData(show: true),
-                          borderData: FlBorderData(show: true),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: todayIntake
-                                  .map((e) => FlSpot(e.key.hour.toDouble(),
-                                      e.value.toDouble()))
-                                  .toList(),
-                              isCurved: false,
-                              color: const Color(0xFF468CF6),
-                              barWidth: 4,
-                              belowBarData: BarAreaData(
-                                  show: true,
-                                  color: const Color(0xFF468CF6).withOpacity(0.3)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                        height: 200,
+                        child: LineChart(
+                          LineChartData(
+                            gridData: FlGridData(show: true),
+                            titlesData: const FlTitlesData(
+                              show: true,
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: true,
+                                    reservedSize: 50),
+
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: true,
+                                    reservedSize: 30),
+                              ),
                             ),
-                          ],
-                          extraLinesData: ExtraLinesData(
-                            horizontalLines: [
-                              HorizontalLine(
-                                y: goal,
-                                color: Colors.red,
-                                strokeWidth: 2,
-                                dashArray: [5, 5],
-                                label: HorizontalLineLabel(
-                                  show: true,
-                                  alignment: Alignment.topRight,
-                                  labelResolver: (line) => 'Goal',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
+                            borderData: FlBorderData(show: true),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: todayIntake
+                                    .map((e) => FlSpot(e.key.hour.toDouble(),
+                                        e.value.toDouble()))
+                                    .toList(),
+                                isCurved: false,
+                                color: const Color(0xFF468CF6),
+                                barWidth: 4,
+                                belowBarData: BarAreaData(
+                                    show: true,
+                                    color: const Color(0xFF468CF6).withOpacity(0.3)),
+                              ),
+                            ],
+                            extraLinesData: ExtraLinesData(
+                              horizontalLines: [
+                                HorizontalLine(
+                                  y: goal,
+                                  color: Colors.red,
+                                  strokeWidth: 2,
+                                  dashArray: [5, 5],
+                                  label: HorizontalLineLabel(
+                                    show: true,
+                                    alignment: Alignment.topRight,
+                                    labelResolver: (line) => 'Goal',
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      height: 200,
-                      child: BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          maxY: maxY,
-                          barTouchData: BarTouchData(enabled: false),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  final date = DateTime.now().subtract(
-                                      Duration(days: 6 - value.toInt()));
-                                  return SideTitleWidget(
-                                    axisSide: meta.axisSide,
-                                    space: 5,
-                                    child: Text(
-                                      DateFormat('MM/dd').format(date),
-                                      style: const TextStyle(
-                                        color: Color(0xFF468CF6),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                        height: 200,
+                        child: BarChart(
+                          BarChartData(
+                            alignment: BarChartAlignment.spaceAround,
+                            maxY: maxY,
+                            barTouchData: BarTouchData(enabled: false),
+                            titlesData: FlTitlesData(
+                              show: true,
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    final date = DateTime.now().subtract(
+                                        Duration(days: 6 - value.toInt()));
+                                    return SideTitleWidget(
+                                      axisSide: meta.axisSide,
+                                      space: 5,
+                                      child: Text(
+                                        DateFormat('MM/dd').format(date),
+                                        style: const TextStyle(
+                                          color: Color(0xFF468CF6),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
+                              ),
+                              leftTitles: const AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
                               ),
                             ),
-                            leftTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
+                            borderData: FlBorderData(show: false),
+                            barGroups: List.generate(7, (index) {
+                              final date = DateTime.now()
+                                  .subtract(Duration(days: 6 - index));
+                              final intake = dailyIntake[DateTime(
+                                      date.year, date.month, date.day)] ??
+                                  0.0;
+                              return BarChartGroupData(
+                                x: index,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: intake.toDouble(),
+                                    color: Color(0xFF468CF6),
+                                    width: 16,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ],
+                              );
+                            }),
                           ),
-                          borderData: FlBorderData(show: false),
-                          barGroups: List.generate(7, (index) {
-                            final date = DateTime.now()
-                                .subtract(Duration(days: 6 - index));
-                            final intake = dailyIntake[DateTime(
-                                    date.year, date.month, date.day)] ??
-                                0.0;
-                            return BarChartGroupData(
-                              x: index,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: intake.toDouble(),
-                                  color: Color(0xFF468CF6),
-                                  width: 16,
-                                  borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: dailyIntake.entries.map((entry) {
+                          DateTime date = entry.key;
+                          double intake = entry.value.toDouble();
+                          String formattedDate =
+                              DateFormat('MMM dd, yyyy').format(date);
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4.0),
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: AppColors.fitnessModuleColor,
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(formattedDate,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
+                                Text(
+                                  '${intake.toStringAsFixed(1)} mL / ${goal.toStringAsFixed(1)} mL',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: Color(0xFF468CF6)),
                                 ),
                               ],
-                            );
-                          }),
-                        ),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: dailyIntake.entries.map((entry) {
-                        DateTime date = entry.key;
-                        double intake = entry.value.toDouble();
-                        String formattedDate =
-                            DateFormat('MMM dd, yyyy').format(date);
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: AppColors.fitnessModuleColor,
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(formattedDate,
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
-                              Text(
-                                '${intake.toStringAsFixed(1)} mL / ${goal.toStringAsFixed(1)} mL',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(color: Color(0xFF468CF6)),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
                     ),
                   ],
                 ),
