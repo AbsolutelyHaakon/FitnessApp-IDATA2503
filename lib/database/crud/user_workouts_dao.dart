@@ -104,6 +104,11 @@ class UserWorkoutsDao {
     );
   }
 
+  Future<void> localTruncate() async{
+    final database = await DatabaseService().database;
+    await database.delete(tableName);
+  }
+
   Future<List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 

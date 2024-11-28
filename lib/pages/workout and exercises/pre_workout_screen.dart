@@ -20,7 +20,8 @@ class PreWorkoutScreen extends StatefulWidget {
   Workouts? workouts;
   bool isSearch;
 
-  PreWorkoutScreen({super.key, this.userWorkouts, this.workouts, required this.isSearch});
+  PreWorkoutScreen(
+      {super.key, this.userWorkouts, this.workouts, required this.isSearch});
 
   @override
   State<PreWorkoutScreen> createState() {
@@ -73,16 +74,16 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     if (widget.userWorkouts == null) {
       return;
     }
-    if (widget.isSearch){
-      Workouts? temp = await _workoutDao.fireBaseFetchWorkout(widget.userWorkouts!.workoutId);
+    if (widget.isSearch) {
+      Workouts? temp = await _workoutDao
+          .fireBaseFetchWorkout(widget.userWorkouts!.workoutId);
       if (temp != null) {
         workouts = temp;
         fetchExercises();
       }
-
     } else {
-      Workouts? temp =
-      await _workoutDao.localFetchByWorkoutId(widget.userWorkouts!.workoutId);
+      Workouts? temp = await _workoutDao
+          .localFetchByWorkoutId(widget.userWorkouts!.workoutId);
       workouts = temp ?? workouts;
       if (workouts.workoutId != '0') {
         fetchExercises();
@@ -99,65 +100,64 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   }
 
   Future<void> fetchExercises() async {
-  try {
-    List<Exercises> tempExercises = [];
-    Map<Exercises, WorkoutExercises> newExerciseMap = {};
-    if (widget.isSearch){
-      tempExercises = await WorkoutDao().fireBaseFetchExercisesForWorkout(workouts.workoutId);
-      for (final exercise in tempExercises) {
-        final workoutExercise = await WorkoutExercisesDao().fireBaseFetchById(workouts.workoutId, exercise.exerciseId);
-        if (workoutExercise != null) {
-          newExerciseMap[exercise] = workoutExercise;
+    try {
+      List<Exercises> tempExercises = [];
+      Map<Exercises, WorkoutExercises> newExerciseMap = {};
+      if (widget.isSearch) {
+        tempExercises = await WorkoutDao()
+            .fireBaseFetchExercisesForWorkout(workouts.workoutId);
+        for (final exercise in tempExercises) {
+          final workoutExercise = await WorkoutExercisesDao()
+              .fireBaseFetchById(workouts.workoutId, exercise.exerciseId);
+          if (workoutExercise != null) {
+            newExerciseMap[exercise] = workoutExercise;
+          }
+        }
+      } else {
+        tempExercises = await WorkoutDao()
+            .localFetchExercisesForWorkout(workouts.workoutId);
+
+        for (final exercise in tempExercises) {
+          final workoutExercise = await WorkoutExercisesDao()
+              .localFetchById(workouts.workoutId, exercise.exerciseId);
+          if (workoutExercise != null) {
+            newExerciseMap[exercise] = workoutExercise;
+          }
         }
       }
 
-    } else {
-      tempExercises =
-      await WorkoutDao().localFetchExercisesForWorkout(workouts.workoutId);
+      // Update the exerciseMap before sorting
+      setState(() {
+        exerciseMap = newExerciseMap;
+      });
 
-      for (final exercise in tempExercises) {
-        final workoutExercise = await WorkoutExercisesDao()
-            .localFetchById(workouts.workoutId, exercise.exerciseId);
-        if (workoutExercise != null) {
-          newExerciseMap[exercise] = workoutExercise;
-        }
-      }
+      // Sort exercises based on exerciseOrder
+      tempExercises.sort((a, b) {
+        final orderA = exerciseMap[a]?.exerciseOrder ?? 0;
+        final orderB = exerciseMap[b]?.exerciseOrder ?? 0;
+        return orderA.compareTo(orderB);
+      });
 
+      setState(() {
+        exercises = tempExercises;
+      });
 
+      exerciseMap.forEach((exercise, workoutExercise) {
+        print(
+            'Exercise Name: ${exercise.name}, Order: ${workoutExercise.exerciseOrder}');
+      });
+    } catch (e) {
+      print('Error fetching exercises: $e');
     }
 
-    // Update the exerciseMap before sorting
-    setState(() {
-      exerciseMap = newExerciseMap;
+    await UserDao()
+        .getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
+        .then((value) {
+      setState(() {
+        isAdmin = value;
+      });
     });
-
-    // Sort exercises based on exerciseOrder
-    tempExercises.sort((a, b) {
-      final orderA = exerciseMap[a]?.exerciseOrder ?? 0;
-      final orderB = exerciseMap[b]?.exerciseOrder ?? 0;
-      return orderA.compareTo(orderB);
-    });
-
-    setState(() {
-      exercises = tempExercises;
-    });
-
-    exerciseMap.forEach((exercise, workoutExercise) {
-      print(
-          'Exercise Name: ${exercise.name}, Order: ${workoutExercise.exerciseOrder}');
-    });
-  } catch (e) {
-    print('Error fetching exercises: $e');
   }
-
-  await UserDao()
-      .getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
-      .then((value) {
-    setState(() {
-      isAdmin = value;
-    });
-  });
-}
 
   @override
   Widget build(BuildContext context) {
@@ -303,107 +303,144 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                               )),
                         ),
                         const SizedBox(height: 40),
-                        CupertinoButton(
-                          onPressed: () async {
-                            if (hasActiveWorkout.value) {
-                              bool shouldStartNewWorkout = await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Active Workout',
-                                      style: TextStyle(
-                                          color: AppColors
-                                              .fitnessPrimaryTextColor)),
-                                  content: const Text(
-                                      'Starting a new workout will end the one currently active. Are you sure?',
-                                      style: TextStyle(
-                                          color: AppColors
-                                              .fitnessPrimaryTextColor)),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text('No',
-                                          style: TextStyle(
-                                              color: AppColors
-                                                  .fitnessPrimaryTextColor)),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: widget.isSearch ? 8 : 9,
+                              child: CupertinoButton(
+                                onPressed: () async {
+                                  if (hasActiveWorkout.value) {
+                                    bool shouldStartNewWorkout =
+                                        await showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Active Workout',
+                                            style: TextStyle(
+                                                color: AppColors
+                                                    .fitnessPrimaryTextColor)),
+                                        content: const Text(
+                                            'Starting a new workout will end the one currently active. Are you sure?',
+                                            style: TextStyle(
+                                                color: AppColors
+                                                    .fitnessPrimaryTextColor)),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(context)
+                                                    .pop(false),
+                                            child: const Text('No',
+                                                style: TextStyle(
+                                                    color: AppColors
+                                                        .fitnessPrimaryTextColor)),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(true),
+                                            child: const Text('Yes',
+                                                style: TextStyle(
+                                                    color: AppColors
+                                                        .fitnessMainColor)),
+                                          ),
+                                        ],
+                                        backgroundColor:
+                                            AppColors.fitnessModuleColor,
+                                      ),
+                                    );
+                                    if (!shouldStartNewWorkout) {
+                                      return;
+                                    }
+                                  }
+                                  if (widget.userWorkouts == null &&
+                                      widget.workouts != null) {
+                                    if (FirebaseAuth
+                                            .instance.currentUser?.uid !=
+                                        null) {
+                                      final newDocId = await UserWorkoutsDao()
+                                          .fireBaseCreateUserWorkout(
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                              widget.workouts!.workoutId,
+                                              DateTime.now());
+                                      if (newDocId == null) {
+                                        return;
+                                      }
+
+                                      final newUserWorkout =
+                                          await UserWorkoutsDao()
+                                              .localFetchByUserWorkoutsId(
+                                                  newDocId);
+                                      widget.userWorkouts = newUserWorkout;
+                                    } else {
+                                      final newUserWorkout =
+                                          await UserWorkoutsDao()
+                                              .localCreate(UserWorkouts(
+                                        userWorkoutId: '1',
+                                        userId: FirebaseAuth
+                                                .instance.currentUser?.uid ??
+                                            '',
+                                        workoutId: widget.workouts!.workoutId,
+                                        date: DateTime.now(),
+                                        duration: 0.0,
+                                        statistics: '',
+                                        isActive: true,
+                                      ));
+                                      widget.userWorkouts = newUserWorkout;
+                                    }
+                                  }
+
+                                  exerciseStats = {};
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DuringWorkoutScreen(
+                                          userWorkouts: widget.userWorkouts!,
+                                          exerciseMap: exerciseMap),
                                     ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text('Yes',
-                                          style: TextStyle(
-                                              color:
-                                                  AppColors.fitnessMainColor)),
+                                  );
+                                },
+                                child: Container(
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.fitnessMainColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    "Start Workout",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: AppColors.fitnessPrimaryTextColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
                                     ),
-                                  ],
-                                  backgroundColor: AppColors.fitnessModuleColor,
+                                  ),
                                 ),
-                              );
-                              if (!shouldStartNewWorkout) {
-                                return;
-                              }
-                            }
-                            if (widget.userWorkouts == null &&
-                                widget.workouts != null) {
-                              if (FirebaseAuth.instance.currentUser?.uid !=
-                                  null) {
-                                final newDocId = await UserWorkoutsDao()
-                                    .fireBaseCreateUserWorkout(
-                                        FirebaseAuth.instance.currentUser!.uid,
-                                        widget.workouts!.workoutId,
-                                        DateTime.now());
-                                if (newDocId == null) {
-                                  return;
-                                }
-
-                                final newUserWorkout = await UserWorkoutsDao()
-                                    .localFetchByUserWorkoutsId(newDocId);
-                                widget.userWorkouts = newUserWorkout;
-                              } else {
-                                final newUserWorkout = await UserWorkoutsDao()
-                                    .localCreate(UserWorkouts(
-                                  userWorkoutId: '1',
-                                  userId:
-                                      FirebaseAuth.instance.currentUser?.uid ??
-                                          '',
-                                  workoutId: widget.workouts!.workoutId,
-                                  date: DateTime.now(),
-                                  duration: 0.0,
-                                  statistics: '',
-                                  isActive: true,
-                                ));
-                                widget.userWorkouts = newUserWorkout;
-                              }
-                            }
-
-                            exerciseStats = {};
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DuringWorkoutScreen(
-                                    userWorkouts: widget.userWorkouts!,
-                                    exerciseMap: exerciseMap),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: AppColors.fitnessMainColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              "Start Workout",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: AppColors.fitnessPrimaryTextColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
                               ),
                             ),
-                          ),
+                            if (widget.isSearch && FirebaseAuth.instance.currentUser != null)
+                              Expanded(
+                                flex: 3,
+                                child: CupertinoButton(
+                                  onPressed: () {
+
+                                  },
+                                  child: Container(
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          AppColors.fitnessSecondaryModuleColor,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: const Icon(
+                                      CupertinoIcons.add_circled,
+                                      color: AppColors.fitnessPrimaryTextColor,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),

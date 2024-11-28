@@ -44,11 +44,9 @@ class _WorkoutLogState extends State<WorkoutLog> {
   }
 
   Future<void> fetchData() async {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
-      final result = await _userWorkoutsDao.fireBaseFetchPreviousWorkouts(
-          FirebaseAuth.instance.currentUser!.uid);
-
-      for (var userWorkout in result['previousWorkouts']) {
+      final result = await _userWorkoutsDao.localFetchPreviousUserWorkouts(
+          FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+      for (var userWorkout in result) {
         if (userWorkout.statistics == "null") {
           continue;
         }
@@ -61,7 +59,6 @@ class _WorkoutLogState extends State<WorkoutLog> {
           });
         }
       }
-    }
   }
   
   //For formatting the date to a string format dd/mm/yyyy

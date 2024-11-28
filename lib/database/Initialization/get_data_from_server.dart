@@ -21,6 +21,7 @@ class GetDataFromServer {
     await syncExercises(userId);
     await syncWorkouts(userId);
     await syncFavoriteWorkouts(userId);
+    await syncUserWorkouts(userId);
   }
 
   Future<void> syncExercises(String? userId) async {
@@ -92,7 +93,7 @@ class GetDataFromServer {
     }
   }
 
-  Future<void> SyncUserWorkouts(String? userId) async {
+  Future<void> syncUserWorkouts(String? userId) async {
     if (userId == null) {
       return;
     }
