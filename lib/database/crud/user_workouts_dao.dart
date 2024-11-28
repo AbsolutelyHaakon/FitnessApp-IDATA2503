@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -268,7 +269,6 @@ class UserWorkoutsDao {
       DateTime date,
       String? workoutStats,
       int duration) async {
-
     print('Updating user workout with id: $userWorkoutId');
 
     DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
@@ -366,5 +366,40 @@ class UserWorkoutsDao {
       return true;
     }
     return false;
+  }
+
+  Future<void> fireBaseGetPersonalBests(String uid) async {
+    if (uid == '') return;
+    final result = await fireBaseFetchPreviousWorkouts(uid);
+
+    Map<String, dynamic> personalBests = {};
+
+    for (UserWorkouts workout in result['previousWorkouts']) {
+      if (workout.statistics == 'null' || workout.statistics == '' || workout.statistics == null) continue;
+      print('Workout stats: ${workout.statistics}');
+      final stats = workout.statistics;
+      Map<String, dynamic> decodedStats = jsonDecode(stats!);
+
+      decodedStats.forEach((exercise, sets) {
+        int maxWeightForExercise = 0;
+
+        for (var set in sets) {
+          int weight = set['weight'];
+          if (weight > maxWeightForExercise && weight != 0) {
+            maxWeightForExercise = weight;
+          }
+        }
+
+        if ((personalBests[exercise] == null || personalBests[exercise] < maxWeightForExercise) && maxWeightForExercise > 0) {
+          personalBests[exercise] = maxWeightForExercise;
+        }
+
+      });
+    }
+
+    await FirebaseFirestore.instance.collection('userPersonalBests').add({
+      'userId': uid,
+      'personalBestMap': personalBests,
+    });
   }
 }

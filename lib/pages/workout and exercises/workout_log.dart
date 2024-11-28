@@ -323,7 +323,7 @@ Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkou
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  workout.duration.toString(),
+                  '${workout.duration} min',
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
                 Text(
