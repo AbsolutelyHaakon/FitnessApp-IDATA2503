@@ -392,9 +392,20 @@ class UserWorkoutsDao {
       });
     }
 
-    await FirebaseFirestore.instance.collection('userPersonalBests').add({
-      'userId': uid,
-      'personalBestMap': personalBests,
-    });
+    QuerySnapshot personalBestsQuery = await FirebaseFirestore.instance
+        .collection('userPersonalBests')
+        .where('userId', isEqualTo: uid)
+        .get();
+
+    if (personalBestsQuery.docs.isNotEmpty) {
+      await FirebaseFirestore.instance.collection('userPersonalBests').add({
+        'userId': uid,
+        'personalBestMap': personalBests,
+      });
+    } else {
+      personalBestsQuery.docs.first.reference.update({
+        'personalBestMap': personalBests,
+      });
+    }
   }
 }
