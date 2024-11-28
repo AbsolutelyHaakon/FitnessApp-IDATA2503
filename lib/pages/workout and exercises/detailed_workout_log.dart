@@ -77,7 +77,7 @@ class DetailedWorkoutLog extends StatelessWidget {
                 const Divider(),
                 _buildInfoRow('Date', formattedDate),
                 const Divider(),
-                _buildInfoRow('Duration', '${userWorkout.duration} minutes'),
+                _buildInfoRow('Duration', '${userWorkout.duration?.toStringAsFixed(0)} minutes'),
               ],
             ),
             const SizedBox(height: 20),
