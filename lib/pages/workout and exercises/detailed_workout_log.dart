@@ -1,6 +1,8 @@
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -31,15 +33,34 @@ class DetailedWorkoutLog extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           workout.name,
-          style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.fitnessPrimaryTextColor,
+          ),
         ),
+        titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.fitnessMainColor),
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreatePostPage(
+                      userWorkout: workoutMapEntry.key,),
+                ),
+              );
+            },
+            child: const Text('Share Workout',
+                style: TextStyle(color: AppColors.fitnessMainColor)),
+          ),
+        ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: Padding(

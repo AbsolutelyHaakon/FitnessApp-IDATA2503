@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/modules/calendar_home_module.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/wip_module.dart';
-import 'package:fitnessapp_idata2503/modules/workout_log_module.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/styles.dart';

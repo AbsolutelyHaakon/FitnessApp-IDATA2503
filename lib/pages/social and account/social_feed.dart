@@ -136,7 +136,7 @@ Widget _buildFeedSection() {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 40.0),
                   child: Container(
-                    constraints: BoxConstraints(minHeight: 200), // Adjust the height as needed
+                    constraints: const BoxConstraints(minHeight: 200),
                     child: PostBuilder(
                       post: _posts[index],
                       isProfile: false,
