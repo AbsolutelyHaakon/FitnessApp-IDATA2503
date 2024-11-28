@@ -233,7 +233,7 @@ Widget build(BuildContext context) {
                   );
                 },
               ),
-              if (!widget.isHome)
+              if (!widget.isHome && !widget.isSearch)
                 Positioned(
                   top: 10,
                   right: 10,
