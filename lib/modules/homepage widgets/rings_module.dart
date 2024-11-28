@@ -241,7 +241,9 @@ class _RingsModuleState extends State<RingsModule>
               );
             },
           ),
-        );
+        ).then((_) {
+          fetchAllRingData();
+        });
       },
       child: SizedBox(
         width: ringSize,
