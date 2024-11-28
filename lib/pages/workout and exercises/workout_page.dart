@@ -39,7 +39,6 @@ class _WorkoutPageState extends State<WorkoutPage>
   late Animation<double> _buttonAnimation;
   bool _showOptions = false;
   List<Workouts> workouts = [];
-  Map<Workouts, DateTime> workoutsMap = {};
   String _selectedCategory = 'All';
 
   List<FavoriteWorkouts> favoriteWorkouts = [];
@@ -63,8 +62,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     );
   }
 
-  void fetchFavorites() async {
-    favoriteWorkouts.clear();
+  Future<void> fetchFavorites() async {
     final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(
         FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
     if (!mounted) return;
@@ -74,23 +72,20 @@ class _WorkoutPageState extends State<WorkoutPage>
   }
 
   void fetchAllWorkouts(String category) async {
-    workoutsMap.clear();
-    fetchFavorites();
-    workouts = await WorkoutDao().localFetchAllById(
+    workouts.clear();
+    await fetchFavorites();
+    final fetchedWorkouts = await WorkoutDao().localFetchAllById(
         FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
-    if (category != "All" && category != "Starred") {
-      workouts =
-          workouts.where((element) => element.category == category).toList();
-    } else if (category == "Starred") {
-      workouts = workouts
-          .where((element) => favoriteWorkouts
-              .any((favorite) => favorite.workoutId == element.workoutId))
-          .toList();
-    }
-    if (!mounted) return;
     setState(() {
-      for (var workout in workouts) {
-        workoutsMap[workout] = DateTime(1970, 1, 1);
+      workouts = fetchedWorkouts;
+      if (category != "All" && category != "Starred") {
+        workouts =
+            workouts.where((element) => element.category == category).toList();
+      } else if (category == "Starred") {
+        workouts = workouts.where((element) =>
+            favoriteWorkouts
+                .any((favorite) => favorite.workoutId == element.workoutId))
+            .toList();
       }
     });
   }
@@ -115,7 +110,10 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   @override
   Widget build(BuildContext context) {
-    final appBarHeight = MediaQuery.of(context).size.height * 0.09;
+    final appBarHeight = MediaQuery
+        .of(context)
+        .size
+        .height * 0.09;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -132,7 +130,10 @@ class _WorkoutPageState extends State<WorkoutPage>
                   children: [
                     Text(
                       'Workout',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge,
                     ),
                     InkWell(
                       onTap: () {
@@ -140,7 +141,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                const WorkoutLog(isCreatingPost: false),
+                            const WorkoutLog(isCreatingPost: false),
                           ),
                         );
                       },
@@ -154,7 +155,10 @@ class _WorkoutPageState extends State<WorkoutPage>
                 ),
                 Text(
                   'Select a workout to begin',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium,
                 ),
                 const SizedBox(height: 10),
               ],
@@ -171,7 +175,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children:
-                      List.generate(officialFilterCategories.length, (index) {
+                  List.generate(officialFilterCategories.length, (index) {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -183,7 +187,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
                           color: _selectedCategory ==
-                                  officialFilterCategories[index]
+                              officialFilterCategories[index]
                               ? AppColors.fitnessPrimaryTextColor
                               : AppColors.fitnessModuleColor,
                           shape: BoxShape.circle,
@@ -192,7 +196,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           width: 60,
                           height: 60,
                           child:
-                              Center(child: officialFilterCategoryIcons[index]),
+                          Center(child: officialFilterCategoryIcons[index]),
                         ),
                       ),
                     );
@@ -209,35 +213,34 @@ class _WorkoutPageState extends State<WorkoutPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         WorkoutsBox(
-                          workoutMap: Map.fromEntries(
-                            workoutsMap.entries
-                                .where((entry) => entry.key.userId != ''),
-                          ),
+                          workouts: workouts.where((workout) =>
+                          workout.userId == (FirebaseAuth.instance.currentUser?.uid)).toList(),
                           isHome: false,
                         ),
-                        if (workoutsMap.entries
-                            .where((entry) => entry.key.userId != '')
+                        if (workouts
+                            .where((workout) => workout.userId != '')
                             .isNotEmpty)
                           const SizedBox(height: 40),
-                        if (workoutsMap.entries
-                            .where((entry) => entry.key.userId == '')
+                        if (workouts
+                            .where((workout) => workout.userId != '')
                             .isNotEmpty)
                           Center(
                             child: Text(
-                              workoutsMap.entries
-                                      .where((entry) => entry.key.userId == '')
-                                      .isNotEmpty
+                              workouts
+                                  .where((workout) => workout.userId != '')
+                                  .isNotEmpty
                                   ? 'Premade Workouts'
                                   : '',
-                              style: Theme.of(context).textTheme.headlineLarge,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .headlineLarge,
                             ),
                           ),
                         const SizedBox(height: 10),
                         WorkoutsBox(
-                          workoutMap: Map.fromEntries(
-                            workoutsMap.entries
-                                .where((entry) => entry.key.userId == ''),
-                          ),
+                          workouts: workouts.where((workout) =>
+                          workout.userId == '').toList(),
                           isHome: false,
                         ),
                       ],
@@ -258,9 +261,10 @@ class _WorkoutPageState extends State<WorkoutPage>
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CreateWorkoutPage(
-                          isAdmin: false,
-                        ),
+                        builder: (context) =>
+                            CreateWorkoutPage(
+                              isAdmin: false,
+                            ),
                       ),
                     );
                     if (result == true) {

@@ -15,8 +15,7 @@ class WorkoutTab extends StatefulWidget {
 class _WorkoutTabState extends State<WorkoutTab> {
   bool _isExerciseView = false;
   TextEditingController _searchController = TextEditingController();
-
-  Map<Workouts, DateTime> workoutsMap = {};
+  List<Workouts> workouts = [];
 
   @override
   void initState() {
@@ -25,14 +24,11 @@ class _WorkoutTabState extends State<WorkoutTab> {
   }
 
   void _fetchPublicWorkouts() async {
-    workoutsMap.clear();
-    final workouts = await WorkoutDao().fireBaseFetchPublicWorkouts();
+    workouts.clear();
+    final temp = await WorkoutDao().fireBaseFetchPublicWorkouts();
     if (!mounted) return;
     setState(() {
-      for (var workout in workouts["workouts"]) {
-        workoutsMap[workout] = DateTime(1970, 1, 1);
-      }
-      print(workoutsMap.length);
+      workouts = temp["workouts"] ?? [];
     });
   }
 
@@ -133,9 +129,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     ),
                     const SizedBox(height: 10),
                     WorkoutsBox(
-                      workoutMap: Map.fromEntries(
-                        workoutsMap.entries.where((entry) => entry.key.userId == ''),
-                      ),
+                      workouts: [...workouts],
                       isHome: false,
                     ),
                     const SizedBox(height: 40),
@@ -145,9 +139,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     ),
                     const SizedBox(height: 10),
                     WorkoutsBox(
-                      workoutMap: Map.fromEntries(
-                        workoutsMap.entries.where((entry) => entry.key.userId != ''),
-                      ),
+                      workouts: [...workouts],
                       isHome: false,
                     ),
                   ],

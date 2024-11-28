@@ -423,7 +423,6 @@ class WorkoutDao {
         .where('userId', isEqualTo: '')
         .get();
 
-    print(PremadequerySnapshot.docs.length);
 
     List<Workouts> workouts = PremadequerySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;

@@ -26,9 +26,7 @@ const double rowSpacing = 28.0;
 class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
-Map<Workouts, DateTime> workoutMap = {
-  const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123', isDeleted: false): DateTime(1970, 1, 1),
-};
+List<Workouts> workouts = [const Workouts(workoutId: 'sanjdsadnaslkdnaksl', name: 'Leg day', isPrivate: true, userId: 'user123', isDeleted: false)];
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +79,7 @@ Map<Workouts, DateTime> workoutMap = {
                 ),
                 child: Column(
                   children: [
-                    WorkoutsBox(workoutMap: workoutMap, isHome: true,),
+                    WorkoutsBox(workouts: [...workouts], isHome: true,),
                     const SizedBox(height: 20),
                     const RingsModule(),
                   ],

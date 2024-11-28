@@ -22,9 +22,9 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 class WorkoutsBox extends StatefulWidget {
   bool isHome = false;
 
-  WorkoutsBox({super.key, required this.workoutMap, required this.isHome});
+  WorkoutsBox({super.key, required this.workouts, required this.isHome});
 
-  final Map<Workouts, DateTime> workoutMap;
+  final List<Workouts> workouts;
 
   @override
   State<StatefulWidget> createState() {
@@ -49,7 +49,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         isAdmin = value;
       });
     });
-    for (final workout in widget.workoutMap.keys) {
+    for (final workout in widget.workouts) {
       _favorites[workout.workoutId] = false;
     }
     _favoriteWorkoutsDao
@@ -138,121 +138,119 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: widget.workoutMap.entries.map((entry) {
-        final workout = entry.key;
-        final isFavorite = _favorites[workout.workoutId] ?? false;
+Widget build(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: widget.workouts.map((workout) {
+      final isFavorite = _favorites[workout.workoutId] ?? false;
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: Dismissible(
-            key: Key(workout.workoutId.toString()),
-            direction:
-                // Only allow deletion if the user is the owner of the workout or an admin AND it is not one the home page
-                (workout.userId == FirebaseAuth.instance.currentUser?.uid ||
-                            isAdmin) &&
-                        !widget.isHome
-                    ? DismissDirection.endToStart
-                    : DismissDirection.none,
-            confirmDismiss: (direction) => _confirmDelete(context),
-            onDismissed: (direction) {
-              setState(() {
-                widget.workoutMap.remove(workout);
-                _workoutDao.fireBaseDeleteWorkout(workout.workoutId);
-              });
-            },
-            background: Container(
-              color: AppColors.fitnessWarningColor,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              margin: const EdgeInsets.only(top: 40, bottom: 20),
-              child: const Icon(
-                Icons.delete,
-                color: AppColors.fitnessPrimaryTextColor,
-              ),
-            ),
-            child: Stack(
-              children: [
-                CupertinoButton(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: Container(
-                    constraints: const BoxConstraints(minHeight: 80),
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: widget.isHome
-                          ? AppColors.fitnessSecondaryModuleColor
-                          : AppColors.fitnessModuleColor,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 10),
-                              Heading1(text: workout.name),
-                              Heading2(text: workout.category ?? 'No category'),
-                              const SizedBox(height: 20),
-                              const IconText(
-                                  text: '500Cal',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.local_fire_department),
-                              const SizedBox(height: 7),
-                              const IconText(
-                                  text: '45min',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.access_time),
-                              const SizedBox(height: 7),
-                              IconText(
-                                  text: '${workout.sets} sets',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.help_outline),
-                              const SizedBox(height: 7),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        _getIconForCategory(workout.category ?? 'No category'),
-                        const SizedBox(width: 10),
-                      ],
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) =>
-                            PreWorkoutScreen(workouts: workout),
-                      ),
-                    );
-                  },
-                ),
-                if (!widget.isHome)
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: IconButton(
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite
-                            ? Colors.green
-                            : AppColors.fitnessPrimaryTextColor,
-                      ),
-                      onPressed: () => _favorite(workout.workoutId),
-                    ),
-                  ),
-              ],
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20.0),
+        child: Dismissible(
+          key: Key(workout.workoutId.toString()),
+          direction:
+              // Only allow deletion if the user is the owner of the workout or an admin AND it is not one the home page
+              (workout.userId == FirebaseAuth.instance.currentUser?.uid ||
+                          isAdmin) &&
+                      !widget.isHome
+                  ? DismissDirection.endToStart
+                  : DismissDirection.none,
+          confirmDismiss: (direction) => _confirmDelete(context),
+          onDismissed: (direction) {
+            setState(() {
+              widget.workouts.remove(workout);
+              _workoutDao.fireBaseDeleteWorkout(workout.workoutId);
+            });
+          },
+          background: Container(
+            color: AppColors.fitnessWarningColor,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.only(top: 40, bottom: 20),
+            child: const Icon(
+              Icons.delete,
+              color: AppColors.fitnessPrimaryTextColor,
             ),
           ),
-        );
-      }).toList(),
-    );
-  }
+          child: Stack(
+            children: [
+              CupertinoButton(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 80),
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: widget.isHome
+                        ? AppColors.fitnessSecondaryModuleColor
+                        : AppColors.fitnessModuleColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            Heading1(text: workout.name),
+                            Heading2(text: workout.category ?? 'No category'),
+                            const SizedBox(height: 20),
+                            const IconText(
+                                text: '500Cal',
+                                color: AppColors.fitnessSecondaryTextColor,
+                                icon: Icons.local_fire_department),
+                            const SizedBox(height: 7),
+                            const IconText(
+                                text: '45min',
+                                color: AppColors.fitnessSecondaryTextColor,
+                                icon: Icons.access_time),
+                            const SizedBox(height: 7),
+                            IconText(
+                                text: '${workout.sets} sets',
+                                color: AppColors.fitnessSecondaryTextColor,
+                                icon: Icons.help_outline),
+                            const SizedBox(height: 7),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      _getIconForCategory(workout.category ?? 'No category'),
+                      const SizedBox(width: 10),
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) =>
+                          PreWorkoutScreen(workouts: workout),
+                    ),
+                  );
+                },
+              ),
+              if (!widget.isHome)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite
+                          ? Colors.green
+                          : AppColors.fitnessPrimaryTextColor,
+                    ),
+                    onPressed: () => _favorite(workout.workoutId),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }).toList(),
+  );
+}
 }
