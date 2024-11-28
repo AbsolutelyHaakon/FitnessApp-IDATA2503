@@ -95,12 +95,12 @@ class UserWorkoutsDao {
     }
   }
 
-  Future<void> localDelete(String userId, String workoutId) async {
+  Future<void> localDelete(String userWorkoutId) async {
     final database = await DatabaseService().database;
     await database.delete(
       tableName,
-      where: 'userId = ? AND workoutId = ?',
-      whereArgs: [userId, workoutId],
+      where: 'userWorkoutId = ?',
+      whereArgs: [userWorkoutId],
     );
   }
 
@@ -317,24 +317,17 @@ class UserWorkoutsDao {
     return {'upcomingWorkouts': upcomingWorkouts};
   }
 
-  Future<bool> fireBaseDeleteUserWorkout(
-      String workoutId, DateTime date) async {
+  Future<bool> fireBaseDeleteUserWorkout(UserWorkouts userWorkout) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (workoutId.isNotEmpty && uid != null) {
+    if (userWorkout != null && uid != null) {
       // Delete from Firebase
       final querySnapshot = await FirebaseFirestore.instance
           .collection('userWorkouts')
-          .where('userId', isEqualTo: uid)
-          .where('workoutId', isEqualTo: workoutId)
-          .where('date', isEqualTo: date)
-          .get();
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
+          .doc(userWorkout.userWorkoutId)
+          .delete();
 
       // Delete locally
-      await localDelete(uid, workoutId);
+      await localDelete(userWorkout.userWorkoutId);
 
       return true;
     }
@@ -357,12 +350,11 @@ class UserWorkoutsDao {
     return {'previousWorkouts': previousWorkouts};
   }
 
-  Future<bool> fireBaseReplaceUserWorkout(String toBeDeletedId, String userId,
-      String workoutId, DateTime date) async {
-    final deleted = await fireBaseDeleteUserWorkout(toBeDeletedId, date);
+  Future<bool> fireBaseReplaceUserWorkout(UserWorkouts userWorkout) async {
+    final deleted = await fireBaseDeleteUserWorkout(userWorkout);
 
     if (deleted) {
-      fireBaseCreateUserWorkout(userId, workoutId, date);
+      fireBaseCreateUserWorkout(userWorkout.userId, userWorkout.userWorkoutId, userWorkout.date);
       return true;
     }
     return false;
@@ -375,7 +367,9 @@ class UserWorkoutsDao {
     Map<String, dynamic> personalBests = {};
 
     for (UserWorkouts workout in result['previousWorkouts']) {
-      if (workout.statistics == 'null' || workout.statistics == '' || workout.statistics == null) continue;
+      if (workout.statistics == 'null' ||
+          workout.statistics == '' ||
+          workout.statistics == null) continue;
       print('Workout stats: ${workout.statistics}');
       final stats = workout.statistics;
       Map<String, dynamic> decodedStats = jsonDecode(stats!);
@@ -390,10 +384,11 @@ class UserWorkoutsDao {
           }
         }
 
-        if ((personalBests[exercise] == null || personalBests[exercise] < maxWeightForExercise) && maxWeightForExercise > 0) {
+        if ((personalBests[exercise] == null ||
+                personalBests[exercise] < maxWeightForExercise) &&
+            maxWeightForExercise > 0) {
           personalBests[exercise] = maxWeightForExercise;
         }
-
       });
     }
 

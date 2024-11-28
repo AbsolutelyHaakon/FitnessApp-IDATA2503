@@ -103,7 +103,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
               },
               child: const Text(
                 "Delete",
-                style: TextStyle(color: AppColors.fitnessMainColor),
+                style: TextStyle(color: AppColors.fitnessWarningColor),
               ),
             ),
           ],

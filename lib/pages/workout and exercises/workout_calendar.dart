@@ -111,12 +111,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
     }
   }
 
-  Future<void> replaceExisting(
-      String toBeDeletedId, String workoutId, DateTime date) async {
+  Future<void> replaceExisting(UserWorkouts userWorkout) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
       final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(
-          toBeDeletedId, userId, workoutId, date);
+          userWorkout);
       if (success) {
         await fetchUpcomingWorkouts();
         await fetchWorkoutNames();
@@ -298,21 +297,19 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                                 addToCalendar();
                               } else {
                                 // Find the workout to be deleted
-                                String? toBeDeletedId;
+                                UserWorkouts toBeDeletedId;
                                 for (var workout in _upcomingWorkouts) {
                                   if (workout.date.year == _selectedDay!.year &&
                                       workout.date.month ==
                                           _selectedDay!.month &&
                                       workout.date.day == _selectedDay!.day) {
-                                    toBeDeletedId = workout.workoutId;
+                                    toBeDeletedId = workout;
+                                    if (toBeDeletedId != null) {
+                                      replaceExisting(
+                                          toBeDeletedId);
+                                    }
                                     break;
                                   }
-                                }
-                                if (toBeDeletedId != null) {
-                                  replaceExisting(
-                                      toBeDeletedId,
-                                      _selectedWorkout.workoutId,
-                                      _selectedDay!);
                                 }
                               }
                             });

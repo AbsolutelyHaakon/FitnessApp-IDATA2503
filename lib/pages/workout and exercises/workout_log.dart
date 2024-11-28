@@ -89,6 +89,38 @@ class _WorkoutLogState extends State<WorkoutLog> {
     return monthNames[monthIndex];
   }
 
+  Future<bool?> _confirmDelete(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion",
+              style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+          content: const Text("Are you sure you want to delete this workout from the log?"),
+          backgroundColor: AppColors.fitnessModuleColor,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false
+              },
+              child: const Text("Cancel",
+                  style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true
+              },
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: AppColors.fitnessWarningColor),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -278,64 +310,82 @@ Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkou
   final UserWorkouts userWorkout = workoutMapEntry.key;
   final Workouts workout = workoutMapEntry.value;
 
-  return InkWell(
-    onTap: () {
-      if (widget.isCreatingPost) {
-        Navigator.of(context).pop(userWorkout.userWorkoutId);
-      } else {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => DetailedWorkoutLog(
-            workoutMapEntry: workoutMapEntry,
-          ),
-        ));
-      }
-    },
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: AppColors.fitnessModuleColor,
-          borderRadius: BorderRadius.circular(15),
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 10.0),
+    child: Dismissible(
+      key: Key(userWorkout.userWorkoutId.toString()),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) => _confirmDelete(context),
+      onDismissed: (direction) {
+        setState(() {
+          _workoutMap.remove(userWorkout);
+          _userWorkoutsDao.fireBaseDeleteUserWorkout(userWorkout);
+        });
+      },
+      background: Container(
+        color: AppColors.fitnessWarningColor,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: const Icon(
+          Icons.delete,
+          color: AppColors.fitnessPrimaryTextColor,
         ),
-        child: Row(
-          children: [
-            // Workout Icon
-            _getIconForCategory(workout.category ?? ''),
-            const SizedBox(width: 16),
-            // Workout Title & Subtitle
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      child: InkWell(
+        onTap: () {
+          if (widget.isCreatingPost) {
+            Navigator.of(context).pop(userWorkout.userWorkoutId);
+          } else {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => DetailedWorkoutLog(
+                workoutMapEntry: workoutMapEntry,
+              ),
+            ));
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: AppColors.fitnessModuleColor,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Row(
+            children: [
+              _getIconForCategory(workout.category ?? ''),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      workout.name,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    Text(
+                      workout.description ?? '',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    workout.name,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    '${userWorkout.duration?.toStringAsFixed(0)} min',
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                   Text(
-                    workout.description ?? '',
+                    _isToday(formatDate(userWorkout.date)) ? 'Today' : formatDate(userWorkout.date),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
-            ),
-            // Workout Duration & Date
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${userWorkout.duration?.toStringAsFixed(0)} min',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                Text(
-                  _isToday(formatDate(userWorkout.date)) ? 'Today' : formatDate(userWorkout.date),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ),
   );
-}}
+}
+}
