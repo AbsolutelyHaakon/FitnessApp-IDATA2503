@@ -118,30 +118,40 @@ class _SocialFeedState extends State<SocialFeed> {
   }
 
   /// Builds the feed section with a refreshable list of posts.
-  Widget _buildFeedSection() {
-    return RefreshIndicator(
-      onRefresh: _refreshFeed,
-      color: AppColors.fitnessMainColor,
-      backgroundColor: AppColors.fitnessBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-        child: ListView.builder(
-          itemCount: _posts.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 40.0),
-              child: PostBuilder(
-                post: _posts[index],
-                isProfile: false,
-                onDelete: _refreshFeed,
-              ),
-            );
-          },
-        ),
+Widget _buildFeedSection() {
+  return RefreshIndicator(
+    onRefresh: _refreshFeed,
+    color: AppColors.fitnessMainColor,
+    backgroundColor: AppColors.fitnessBackgroundColor,
+    child: SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _posts.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 40.0),
+                  child: Container(
+                    constraints: BoxConstraints(minHeight: 200), // Adjust the height as needed
+                    child: PostBuilder(
+                      post: _posts[index],
+                      isProfile: false,
+                      onDelete: _refreshFeed,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
+    ),
+  );
+}
   /// Builds the floating action button for creating new posts.
   Widget _buildFloatingActionButton(BuildContext context) {
     return Positioned(
