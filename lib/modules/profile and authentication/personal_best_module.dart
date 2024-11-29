@@ -4,6 +4,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/ind_personal_best_module.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_best_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,20 +50,8 @@ class PersonalBestModule extends StatelessWidget {
                   final personalBests = snapshot.data!;
                   final firstFivePersonalBests =
                       personalBests.entries.take(5).toList();
-                  final svgIcons = [
-                    "assets/icons/medal1.svg",
-                    "assets/icons/medal2.svg",
-                    "assets/icons/medal3.svg",
-                    "",
-                    "",
-                  ];
-                  final medalColors = [
-                    Colors.yellow.shade500,
-                    Colors.grey.shade500,
-                    Colors.brown.shade500,
-                    Colors.transparent,
-                    Colors.transparent,
-                  ];
+                  firstFivePersonalBests
+                      .sort((a, b) => b.value.compareTo(a.value));
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 20),
@@ -86,60 +75,9 @@ class PersonalBestModule extends StatelessWidget {
                               .map((entry) {
                             final index = entry.key;
                             final item = entry.value;
-                            return Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.5),
-                                        spreadRadius: 1,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: AppColors.fitnessSecondaryModuleColor
-                                        .withOpacity(0.6),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            svgIcons[index],
-                                            height: 24,
-                                            width: 24,
-                                            color: medalColors[index],
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            item.key,
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        '${item.value} kg',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
+                            return PersonalBestBox(
+                              index: index,
+                              item: item,
                             );
                           }).toList(),
                         ),
