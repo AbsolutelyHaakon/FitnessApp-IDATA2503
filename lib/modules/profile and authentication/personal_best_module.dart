@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
-import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/ind_personal_best_module.dart';
+import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_bests_list.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_best_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -48,10 +48,10 @@ class PersonalBestModule extends StatelessWidget {
                   return const Center(child: Text('No personal bests found'));
                 } else {
                   final personalBests = snapshot.data!;
-                  final firstFivePersonalBests =
-                      personalBests.entries.take(5).toList();
-                  firstFivePersonalBests
-                      .sort((a, b) => b.value.compareTo(a.value));
+                  final firstFivePersonalBests = (personalBests.entries.toList()
+                        ..sort((a, b) => b.value.compareTo(a.value)))
+                      .take(5)
+                      .toList();
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 20),
@@ -83,7 +83,17 @@ class PersonalBestModule extends StatelessWidget {
                         ),
                         Center(
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PersonalBestsList(
+                                    personalBests:
+                                        personalBests.entries.toList(),
+                                  ),
+                                ),
+                              );
+                            },
                             child: const Text(
                               'View more',
                               style:
