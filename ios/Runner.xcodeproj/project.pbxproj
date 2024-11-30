@@ -107,9 +107,39 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1016E0F62CAC6E8F00B50B8B /* WatchApp Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "WatchApp Watch App"; sourceTree = "<group>"; };
-		1016E1072CAC6E9000B50B8B /* WatchApp Watch AppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "WatchApp Watch AppTests"; sourceTree = "<group>"; };
-		1016E1112CAC6E9000B50B8B /* WatchApp Watch AppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "WatchApp Watch AppUITests"; sourceTree = "<group>"; };
+		1016E0F62CAC6E8F00B50B8B /* WatchApp Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "WatchApp Watch App";
+			sourceTree = "<group>";
+		};
+		1016E1072CAC6E9000B50B8B /* WatchApp Watch AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "WatchApp Watch AppTests";
+			sourceTree = "<group>";
+		};
+		1016E1112CAC6E9000B50B8B /* WatchApp Watch AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "WatchApp Watch AppUITests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,8 +284,6 @@
 				1016E0F52CAC6E8F00B50B8B /* PBXTargetDependency */,
 			);
 			name = WatchApp;
-			packageProductDependencies = (
-			);
 			productName = WatchApp;
 			productReference = 1016E0ED2CAC6E8F00B50B8B /* WatchApp.app */;
 			productType = "com.apple.product-type.application.watchapp2-container";
@@ -276,8 +304,6 @@
 				1016E0F62CAC6E8F00B50B8B /* WatchApp Watch App */,
 			);
 			name = "WatchApp Watch App";
-			packageProductDependencies = (
-			);
 			productName = "WatchApp Watch App";
 			productReference = 1016E0F22CAC6E8F00B50B8B /* WatchApp Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -299,8 +325,6 @@
 				1016E1072CAC6E9000B50B8B /* WatchApp Watch AppTests */,
 			);
 			name = "WatchApp Watch AppTests";
-			packageProductDependencies = (
-			);
 			productName = "WatchApp Watch AppTests";
 			productReference = 1016E1042CAC6E9000B50B8B /* WatchApp Watch AppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -322,8 +346,6 @@
 				1016E1112CAC6E9000B50B8B /* WatchApp Watch AppUITests */,
 			);
 			name = "WatchApp Watch AppUITests";
-			packageProductDependencies = (
-			);
 			productName = "WatchApp Watch AppUITests";
 			productReference = 1016E10E2CAC6E9000B50B8B /* WatchApp Watch AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -359,6 +381,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				047C4648FE4FDE0BFA5B9F13 /* [CP] Embed Pods Frameworks */,
+				169D67B3B09E1149C6F5AAD1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -493,6 +516,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		169D67B3B09E1149C6F5AAD1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		2CFC946C87A3E4F6A8410625 /* [CP] Check Pods Manifest.lock */ = {
