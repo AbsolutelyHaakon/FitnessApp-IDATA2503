@@ -49,7 +49,18 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
         Navigator.of(context)
             .pop(true); // Return true to indicate a new exercise was created
       } catch (e) {
-        print('Error creating exercise: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error, color: AppColors.fitnessPrimaryTextColor),
+                  const SizedBox(width: 8),
+                  Text('Error creating exercise: $e'),
+                ],
+              ),
+              backgroundColor: AppColors.fitnessWarningColor
+            ),
+          );
       }
     }
   }

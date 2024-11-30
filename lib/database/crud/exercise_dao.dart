@@ -239,7 +239,6 @@ class ExerciseDao {
             userId ?? data['userId']);
       }
 
-      print("it should get here");
       if (image != null) {
         imageURL = await uploadImage(image);
       }
@@ -335,10 +334,8 @@ class ExerciseDao {
   Future<String> uploadImage(XFile image) async {
     String? imgurUrl = await imgurService.saveImageToImgur(image);
     if (imgurUrl != null) {
-      print('Image uploaded to Imgur: $imgurUrl');
       return imgurUrl;
     } else {
-      print('Failed to upload to Imgur.');
       return "";
     }
   }

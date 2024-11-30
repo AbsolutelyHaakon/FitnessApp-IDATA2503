@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -9,6 +11,7 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../database/crud/workout_dao.dart';
 import '../../database/tables/exercise.dart';
@@ -34,6 +37,9 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
   final UserDao userDao = UserDao();
   bool _isPublic = false;
+
+  final ImagePicker _picker = ImagePicker();
+  XFile? _selectedImage;
 
   List<Exercises> selectedExercises = [];
   List<IndExerciseBox> exercises = [];
@@ -83,6 +89,9 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       _isPublic = !widget.preWorkout!.isPrivate!;
       _duration = Duration(minutes: widget.preWorkout!.duration!);
       _calories = widget.preWorkout!.calories!;
+      if (widget.preWorkout!.imageURL != null){
+        _selectedImage = XFile(widget.preWorkout!.imageURL!);
+      }
       _selectedCategory = widget.preWorkout!.category!;
       workoutDao
           .localFetchExercisesForWorkout(widget.preWorkout!.workoutId!)
@@ -96,6 +105,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       });
     }
   }
+
 // Function to create or update a workout
   Future<void> _createWorkout() async {
     if (exercises.isEmpty) {
@@ -128,8 +138,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           _intensity,
           !_isPublic,
           user,
-          '',
-          // TODO: Implement workout URL
+          _selectedImage,
           _titleController.text,
           true,
           _calories,
@@ -165,8 +174,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         _intensity,
         !_isPublic,
         FirebaseAuth.instance.currentUser?.uid ?? "localUser",
-        '',
-        // TODO: Implement workout URL
+        _selectedImage,
         _titleController.text,
         true,
         _calories,
@@ -353,6 +361,17 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     );
   }
 
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _selectedImage = image;
+      });
+    } else {
+      print("No image selected.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -517,7 +536,70 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     },
                   ),
                 ),
-                SizedBox(height: 15),
+                if (FirebaseAuth.instance.currentUser?.uid != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: SizedBox(
+                      height: _selectedImage != null ? 250 : 150,
+                      width: double.infinity,
+                      child: Stack(
+                        children: [
+                          if (_selectedImage != null)
+                            Positioned.fill(
+                              child: _selectedImage!.path.startsWith('http')
+                                  ? Image.network(
+                                _selectedImage!.path,
+                                fit: BoxFit.cover,
+                              )
+                                  : Image.file(
+                                File(_selectedImage!.path),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          SizedBox(
+                            height: _selectedImage != null ? 250 : 150,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _pickImage,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors
+                                    .fitnessBackgroundColor
+                                    .withOpacity(
+                                        _selectedImage != null ? 0 : 1.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 24.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  side: BorderSide(
+                                      color: _selectedImage != null
+                                          ? Colors.transparent
+                                          : AppColors.fitnessModuleColor,
+                                      width: 1),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.image, color: AppColors.fitnessMainColor),
+                                      Text(
+                                        _selectedImage != null ? 'Change Image' : 'Add Image',
+                                        style: TextStyle(color: AppColors.fitnessMainColor),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Column(

@@ -16,7 +16,7 @@ class Workouts {
   // Intensity level of the workout (optional)
   final int? intensity;
   // URL to the workout video (optional)
-  final String? videoUrl;
+  final String? imageURL;
   // Whether the workout is private
   final bool isPrivate;
   // ID of the user who created the workout
@@ -36,7 +36,7 @@ class Workouts {
     this.calories, // Initialize calories (optional)
     this.sets, // Initialize sets (optional)
     this.intensity, // Initialize intensity (optional)
-    this.videoUrl, // Initialize videoUrl (optional)
+    this.imageURL, // Initialize videoUrl (optional)
     required this.isPrivate, // Initialize isPrivate
     required this.userId, // Initialize userId
     required this.isDeleted, // Initialize isDeleted
@@ -53,7 +53,7 @@ class Workouts {
       'calories': calories, // Add calories to map
       'sets': sets, // Add sets to map
       'intensity': intensity, // Add intensity to map
-      'videoUrl': videoUrl, // Add videoUrl to map
+      'imageURL': imageURL, // Add imageURL to map
       'isPrivate': isPrivate ? 1 : 0, // Add isPrivate to map (convert bool to int)
       'userId': userId, // Add userId to map
       'isDeleted': isDeleted ? 1 : 0, // Add isDeleted to map (convert bool to int)
@@ -71,7 +71,7 @@ class Workouts {
       calories: map['calories'], // Get calories from map
       sets: map['sets'], // Get sets from map
       intensity: map['intensity'], // Get intensity from map
-      videoUrl: map['videoUrl'], // Get videoUrl from map
+      imageURL: map['imageURL'], // Get videoUrl from map
       isPrivate: map['isPrivate'] == 1, // Get isPrivate from map (convert int to bool)
       userId: map['userId'], // Get userId from map
       isDeleted: map['isDeleted'] == 1, // Get isDeleted from map (convert int to bool)
@@ -89,7 +89,7 @@ class Workouts {
       calories: map['calories'], // Get calories from map
       sets: map['sets'], // Get sets from map
       intensity: map['intensity'], // Get intensity from map
-      videoUrl: map['videoUrl'], // Get videoUrl from map
+      imageURL: map['imageURL'], // Get videoUrl from map
       isPrivate: map['isPrivate'] == 1, // Get isPrivate from map (convert int to bool)
       userId: map['userId'], // Get userId from map
       isDeleted: map['isDeleted'] == 1, // Get isDeleted from map (convert int to bool)

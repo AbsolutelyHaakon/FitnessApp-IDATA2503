@@ -56,7 +56,7 @@ class FitnessAppDB {
       intensity INTEGER,
       calories INTEGER,
       sets INTEGER,
-      videoURL STRING,
+      imageURL STRING,
       isPrivate BOOLEAN NOT NULL DEFAULT FALSE,
       userId STRING,
       isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -97,7 +97,7 @@ class FitnessAppDB {
       date DATE NOT NULL,
       userWorkoutsId STRING,
       location STRING,
-      FOREIGN KEY (workoutId) REFERENCES workouts (id),
+      FOREIGN KEY (userWorkoutsId) REFERENCES userWorkouts (userWorkoutsId),
       FOREIGN KEY (userId) REFERENCES users (id)
     );''');
 

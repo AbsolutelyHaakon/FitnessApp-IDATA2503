@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
+import 'package:fitnessapp_idata2503/database/imgur_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/exercise.dart';
@@ -338,13 +340,18 @@ class WorkoutDao {
       int? intensity,
       bool isPrivate,
       String? userId,
-      String? video_url,
+      XFile? image,
       String name,
       bool wantId,
       int? calories,
       int? sets) async {
     if (userId == null) {
       return;
+    }
+
+    String? imageURL;
+    if (image != null) {
+      imageURL = await uploadImage(image);
     }
 
     // Update it locally
@@ -362,7 +369,7 @@ class WorkoutDao {
       intensity: intensity ?? previousWorkout.intensity,
       isPrivate: isPrivate ?? previousWorkout.isPrivate,
       userId: userId ?? previousWorkout.userId,
-      videoUrl: video_url ?? previousWorkout.videoUrl,
+      imageURL: imageURL ?? previousWorkout.imageURL,
       name: name ?? previousWorkout.name,
       isDeleted: false,
     );
@@ -382,7 +389,7 @@ class WorkoutDao {
       'intensity': intensity ?? previousWorkout.intensity,
       'isPrivate': isPrivate ?? previousWorkout.isPrivate,
       'userId': userId ?? previousWorkout.userId,
-      'video_url': video_url ?? previousWorkout.videoUrl,
+      'imageURL': imageURL ?? previousWorkout.imageURL,
       'name': name ?? previousWorkout.name,
     });
   }
@@ -395,12 +402,19 @@ class WorkoutDao {
       int? intensity,
       bool isPrivate,
       String? userId,
-      String? video_url,
+      XFile? image,
       String name,
       bool wantId,
       int? calories,
       int? sets) async {
     if (userId != null) {
+
+      String? imageURL;
+
+      if (image != null) {
+        imageURL = await uploadImage(image);
+      }
+
       DocumentReference docRef =
           await FirebaseFirestore.instance.collection('workouts').add({
         'category': category ?? '',
@@ -411,7 +425,7 @@ class WorkoutDao {
         'intensity': intensity ?? 0,
         'isPrivate': isPrivate,
         'userId': userId ?? '',
-        'video_url': video_url ?? '',
+        'imageURL': imageURL ?? '',
         'name': name,
       });
 
@@ -427,7 +441,7 @@ class WorkoutDao {
         intensity: intensity,
         isPrivate: isPrivate,
         userId: userId ?? '',
-        videoUrl: video_url,
+        imageURL: imageURL,
         name: name,
         isDeleted: false,
       ));
@@ -445,7 +459,7 @@ class WorkoutDao {
         intensity: intensity,
         isPrivate: isPrivate,
         userId: userId ?? '',
-        videoUrl: video_url,
+        imageURL: '',
         name: name,
         isDeleted: false,
       ));
@@ -504,6 +518,18 @@ class WorkoutDao {
     return exercises;
   }
 
+  ImgurService imgurService = ImgurService();
+
+  // Function to upload an image to Imgur and return the URL
+  Future<String> uploadImage(XFile image) async {
+    String? imgurUrl = await imgurService.saveImageToImgur(image);
+    if (imgurUrl != null) {
+      return imgurUrl;
+    } else {
+      return "";
+    }
+  }
+
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////////////  Firebase Admin /////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -527,4 +553,5 @@ class WorkoutDao {
       throw Exception('User is not an admin');
     }
   }
+
 }
