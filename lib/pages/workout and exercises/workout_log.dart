@@ -50,10 +50,10 @@ class _WorkoutLogState extends State<WorkoutLog> {
       final result = await _userWorkoutsDao.localFetchPreviousUserWorkouts(
           FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
       for (var userWorkout in result) {
-        if (userWorkout.statistics == "null") {
+        final statistics = userWorkout.statistics;
+        if (statistics == null || statistics.replaceAll('"', '').trim() == "null" || statistics.isEmpty) {
           continue;
         }
-
         Workouts? temp =
             await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
         if (temp != null) {

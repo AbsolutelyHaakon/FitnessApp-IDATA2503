@@ -140,7 +140,7 @@ class UserWorkoutsDao {
     final data = await database.query(
       tableName,
       where: 'userId = ? AND date <= ?',
-      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
+      whereArgs: [id, DateTime.now().toIso8601String()],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
