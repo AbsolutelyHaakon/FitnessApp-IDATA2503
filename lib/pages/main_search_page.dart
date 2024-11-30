@@ -1,5 +1,5 @@
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/search_users.dart';
-import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/searchWorkouts.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_search.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 

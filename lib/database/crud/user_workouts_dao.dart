@@ -103,13 +103,18 @@ class UserWorkoutsDao {
   }
 
   /// Delete a specific user workout by user workout ID from the local database
-  Future<void> localDelete(String userWorkoutId) async {
+  Future<bool> localDelete(String userWorkoutId) async {
     final database = await DatabaseService().database;
-    await database.delete(
+    final rowsAffected = await database.delete(
       tableName,
       where: 'userWorkoutId = ?',
       whereArgs: [userWorkoutId],
     );
+    if (rowsAffected > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /// Delete all user workouts from the local database
@@ -242,6 +247,24 @@ class UserWorkoutsDao {
     }
 
     return null;
+  }
+
+  Future<bool> localReplaceUserWorkout(UserWorkouts userWorkout, Workouts newWorkout) async {
+    final deleted = await localDelete(userWorkout.userWorkoutId);
+    if (deleted) {
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? 'localUser';
+      await localCreate(UserWorkouts(
+        userWorkoutId: '1',
+        userId: userId,
+        workoutId: newWorkout.workoutId,
+        date: userWorkout.date,
+        duration: 0.0,
+        statistics: '',
+        isActive: false,
+      ));
+      return true;
+    }
+    return false;
   }
 
   /////////////////////////////////////////////////////////

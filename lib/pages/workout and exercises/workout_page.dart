@@ -313,7 +313,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       'Schedule',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: AppColors.fitnessBackgroundColor,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

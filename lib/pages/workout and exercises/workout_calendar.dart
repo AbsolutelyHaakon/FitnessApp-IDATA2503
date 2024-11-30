@@ -17,7 +17,8 @@ class WorkoutCalendar extends StatefulWidget {
 }
 
 class _WorkoutCalendarState extends State<WorkoutCalendar> {
-  CalendarFormat _calendarFormat = CalendarFormat.month; // Default calendar format
+  CalendarFormat _calendarFormat =
+      CalendarFormat.month; // Default calendar format
   DateTime _focusedDay = DateTime.now(); // Currently focused day
   DateTime? _selectedDay; // Selected day
   Workouts _selectedWorkout = const Workouts(
@@ -33,8 +34,10 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   String _searchQuery = ''; // Search query for filtering workouts
   List<DateTime> workoutDates = []; // List of workout dates
   final WorkoutDao _workoutDao = WorkoutDao(); // Workout DAO instance
-  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao(); // User workouts DAO instance
+  final UserWorkoutsDao _userWorkoutsDao =
+      UserWorkoutsDao(); // User workouts DAO instance
   Map<UserWorkouts, String> _userWorkoutsMap = {}; // Map of user workouts to workout names
+  final String userId = FirebaseAuth.instance.currentUser?.uid ?? 'localUser';
 
   @override
   void initState() {
@@ -57,7 +60,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   // Fetch all workouts based on category
   void fetchAllWorkouts(String category) async {
     List<Workouts> wourkoutsData = await WorkoutDao()
-        .localFetchAllById(FirebaseAuth.instance.currentUser?.uid);
+        .localFetchAllById(userId);
     if (!mounted) return;
     setState(() {
       _workouts.clear();
@@ -89,12 +92,22 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   // Add selected workout to calendar
   void addToCalendar() async {
-    if (FirebaseAuth.instance.currentUser?.uid != null &&
-        _selectedDay != null) {
-      _userWorkoutsDao.fireBaseCreateUserWorkout(
-          FirebaseAuth.instance.currentUser!.uid,
+    if (_selectedDay != null && userId != 'localUser') {
+      await _userWorkoutsDao.fireBaseCreateUserWorkout(
+          userId,
           _selectedWorkout.workoutId,
           _selectedDay!);
+    } // Handle adding workout to calendar when not logged in
+    else if (userId == 'localUser' &&
+        _selectedDay != null) {
+      _userWorkoutsDao.localCreate(
+          UserWorkouts(
+            userId: 'localUser', // localUser is the local "general" user id
+            workoutId: _selectedWorkout.workoutId,
+            date: _selectedDay!,
+            userWorkoutId: '1', // If id == 1 --> It will generate a random one in the localCreate function
+            isActive: false, // It should not be active by default
+          ));
     }
     await fetchUpcomingWorkouts();
     await fetchWorkoutNames();
@@ -102,22 +115,40 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   // Fetch upcoming workouts for the user
   Future<void> fetchUpcomingWorkouts() async {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
-      final result = await _userWorkoutsDao.fireBaseFetchUpcomingWorkouts(
-          FirebaseAuth.instance.currentUser!.uid);
+      final result = await _userWorkoutsDao.localFetchUpcomingUserWorkouts(userId);
+      print(userId);
       setState(() {
-        _upcomingWorkouts = result['upcomingWorkouts'];
+        _upcomingWorkouts = result;
+        print(_upcomingWorkouts);
         workoutDates =
             _upcomingWorkouts.map((workout) => workout.date).toList();
       });
-    }
   }
 
   // Replace an existing workout with a new one
   Future<void> replaceExisting(UserWorkouts userWorkout) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
+    if (userId != 'localUser') {
       final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(
+          userWorkout, _selectedWorkout);
+      if (success) {
+        await fetchUpcomingWorkouts();
+        await fetchWorkoutNames();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check, color: AppColors.fitnessPrimaryTextColor),
+              SizedBox(width: 8),
+              Text(
+                'Workout replaced',
+                style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.fitnessMainColor,
+        ));
+      }
+    } else if (userId == 'localUser') {
+      final success = await _userWorkoutsDao.localReplaceUserWorkout(
           userWorkout, _selectedWorkout);
       if (success) {
         await fetchUpcomingWorkouts();
@@ -309,14 +340,19 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                               _selectedWorkout = _filteredWorkouts[index];
                               if (isAddWorkout) {
                                 addToCalendar();
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
                                   content: Row(
                                     children: [
-                                      Icon(Icons.check, color: AppColors.fitnessPrimaryTextColor),
+                                      Icon(Icons.check,
+                                          color: AppColors
+                                              .fitnessPrimaryTextColor),
                                       SizedBox(width: 8),
                                       Text(
                                         'Workout Added',
-                                        style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                                        style: TextStyle(
+                                            color: AppColors
+                                                .fitnessPrimaryTextColor),
                                       ),
                                     ],
                                   ),
@@ -375,16 +411,22 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
           color: AppColors.fitnessBackgroundColor, // Background color
           child: TableCalendar(
             locale: 'en_US',
-            firstDay: DateTime.utc(2024, 1, 1), // First day of the calendar
-            lastDay: DateTime.utc(2030, 12, 31), // Last day of the calendar
-            focusedDay: _focusedDay, // Currently focused day
-            calendarFormat: _calendarFormat, // Calendar format
-            startingDayOfWeek: StartingDayOfWeek.monday, // Start week on Monday
+            firstDay: DateTime.utc(2024, 1, 1),
+            // First day of the calendar
+            lastDay: DateTime.utc(2030, 12, 31),
+            // Last day of the calendar
+            focusedDay: _focusedDay,
+            // Currently focused day
+            calendarFormat: _calendarFormat,
+            // Calendar format
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            // Start week on Monday
             availableCalendarFormats: const {
               CalendarFormat.month: 'Month',
             },
             selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day); // Check if the day is selected
+              return isSameDay(
+                  _selectedDay, day); // Check if the day is selected
             },
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
