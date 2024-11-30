@@ -145,11 +145,6 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       setState(() {
         exercises = tempExercises;
       });
-
-      exerciseMap.forEach((exercise, workoutExercise) {
-        print(
-            'Exercise Name: ${exercise.name}, Order: ${workoutExercise.exerciseOrder}');
-      });
     } catch (e) {
       print('Error fetching exercises: $e');
     }

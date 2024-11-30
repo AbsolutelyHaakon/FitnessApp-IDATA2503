@@ -52,7 +52,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
         });
       });
     });
-    print(_userWorkoutsMap);
   }
 
   // Fetch all workouts based on category
@@ -108,9 +107,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
           FirebaseAuth.instance.currentUser!.uid);
       setState(() {
         _upcomingWorkouts = result['upcomingWorkouts'];
-        for (var workout in _upcomingWorkouts) {
-          print(workout.date);
-        }
         workoutDates =
             _upcomingWorkouts.map((workout) => workout.date).toList();
       });

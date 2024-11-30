@@ -101,8 +101,6 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
       setState(() {
         _selectedImage = image;
       });
-    } else {
-      print("No image selected.");
     }
   }
 

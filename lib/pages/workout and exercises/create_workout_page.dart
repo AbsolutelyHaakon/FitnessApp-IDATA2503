@@ -188,8 +188,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           selectedExercises, widget.preWorkout!.workoutId!);
 
       for (var exercise in exercises) {
-        print("exercise: ${exercise.exerciseId}");
-        print("exercise index: ${exercises.indexOf(exercise)}");
         final reps = int.tryParse(exercise.repsController.text) ?? 0;
         final sets = int.tryParse(exercise.setsController.text) ?? 0;
         await workoutExercisesDao.fireBaseCreateWorkoutExercise(
@@ -367,8 +365,6 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       setState(() {
         _selectedImage = image;
       });
-    } else {
-      print("No image selected.");
     }
   }
 
