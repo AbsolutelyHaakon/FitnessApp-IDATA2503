@@ -1,3 +1,4 @@
+import 'package:fitnessapp_idata2503/modules/homepage%20widgets/homepage_calendar.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -88,6 +89,7 @@ class _HomeState extends State<Home> {
                       isHome: true,
                       isSearch: false,
                     ),
+                    const HomePageCalendar(),
                     const SizedBox(height: 20),
                     const RingsModule(),
                   ],

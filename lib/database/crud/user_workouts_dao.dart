@@ -131,11 +131,28 @@ class UserWorkoutsDao {
     final data = await database.query(
       tableName,
       where: 'userId = ? AND date >= ?',
-      whereArgs: [id, DateTime.now().millisecondsSinceEpoch],
+      whereArgs: [id, DateTime.now().toIso8601String()],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
+
+  Future<List<UserWorkouts>> localFetchThisWeeksUserWorkouts(String id) async {
+  final database = await DatabaseService().database;
+
+  DateTime today = DateTime.now();
+  DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+  DateTime endOfWeek = startOfWeek.add(const Duration(days: 6)).add(const Duration(hours: 23, minutes: 59, seconds: 59));
+
+  // fetch all workouts for the user
+  final data = await database.query(
+    tableName,
+    where: 'userId = ? AND date >= ? AND date <= ?',
+    whereArgs: [id, startOfWeek.toIso8601String(), endOfWeek.toIso8601String()],
+  );
+
+  return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
+}
 
   /// Fetch previous user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchPreviousUserWorkouts(String id) async {
