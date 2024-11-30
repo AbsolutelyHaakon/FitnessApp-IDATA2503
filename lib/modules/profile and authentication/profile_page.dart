@@ -28,7 +28,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   final UserDao _userDao = UserDao(); // DAO for user data
-  final UserFollowsDao _userFollowsDao = UserFollowsDao(); // DAO for user follows data
+  final UserFollowsDao _userFollowsDao =
+      UserFollowsDao(); // DAO for user follows data
   final PostsDao _postsDao = PostsDao(); // DAO for posts data
   late TabController _tabController; // Controller for tab navigation
 
@@ -40,7 +41,8 @@ class _ProfilePageState extends State<ProfilePage>
 
   int followers = 0; // Number of followers
   int following = 0; // Number of following
-  bool _isFollowing = false; // Whether the current user is following this profile
+  bool _isFollowing =
+      false; // Whether the current user is following this profile
   bool _isEditing = false; // Whether the profile is in edit mode
   bool _changeMade = false; // Whether changes were made in edit mode
 
@@ -55,7 +57,8 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this); // Initialize the tab controller
+    _tabController =
+        TabController(length: 2, vsync: this); // Initialize the tab controller
     _loadUserData(); // Load user data
     if (FirebaseAuth.instance.currentUser?.uid != widget.userId) {
       _checkIfFollowing(); // Check if the current user is following this profile
@@ -148,7 +151,8 @@ class _ProfilePageState extends State<ProfilePage>
     }
     setState(() {
       _isFollowing = !_isFollowing; // Toggle following status
-      followers = _isFollowing ? followers + 1 : followers - 1; // Update follower count
+      followers =
+          _isFollowing ? followers + 1 : followers - 1; // Update follower count
     });
   }
 
@@ -362,7 +366,8 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               const Spacer(),
                               if (FirebaseAuth.instance.currentUser?.uid !=
-                                  widget.userId && FirebaseAuth.instance.currentUser != null)
+                                      widget.userId &&
+                                  FirebaseAuth.instance.currentUser != null)
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   child: SizedBox(
@@ -424,49 +429,66 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                         ),
                         const SizedBox(height: 20),
-                        TabBar(
-                          dividerColor: AppColors.fitnessBackgroundColor,
-                          labelColor: AppColors.fitnessMainColor,
-                          indicatorColor: AppColors.fitnessMainColor,
-                          controller: _tabController,
-                          tabs: const [
-                            Tab(text: "My Posts"),
-                            Tab(text: 'My Stats'),
-                          ],
-                        ),
+                        if (FirebaseAuth.instance.currentUser?.uid ==
+                            widget.userId)
+                          TabBar(
+                            dividerColor: AppColors.fitnessBackgroundColor,
+                            labelColor: AppColors.fitnessMainColor,
+                            indicatorColor: AppColors.fitnessMainColor,
+                            controller: _tabController,
+                            tabs: const [
+                              Tab(text: "My Posts"),
+                              Tab(text: 'My Stats'),
+                            ],
+                          ),
                       ],
                     ),
                   ),
                 ];
               },
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: ListView.builder(
-                      itemCount: _posts.length,
-                      itemBuilder: (context, index) {
-                        final post = _posts[index];
-                        return PostBuilder(
-                          post: post,
-                          isProfile: true,
-                          onDelete: _loadUserPosts,
-                        );
-                      },
+              body: FirebaseAuth.instance.currentUser?.uid == widget.userId
+                  ? TabBarView(
+                      controller: _tabController,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: ListView.builder(
+                            itemCount: _posts.length,
+                            itemBuilder: (context, index) {
+                              final post = _posts[index];
+                              return PostBuilder(
+                                post: post,
+                                isProfile: true,
+                                onDelete: _loadUserPosts,
+                              );
+                            },
+                          ),
+                        ),
+                        const SingleChildScrollView(
+                          child: Column(children: [
+                            SizedBox(height: 20),
+                            PersonalBestModule(),
+                            SizedBox(height: 20),
+                            WeightBarChart(),
+                            SizedBox(height: 20),
+                          ]),
+                        ),
+                      ],
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: ListView.builder(
+                        itemCount: _posts.length,
+                        itemBuilder: (context, index) {
+                          final post = _posts[index];
+                          return PostBuilder(
+                            post: post,
+                            isProfile: true,
+                            onDelete: _loadUserPosts,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SingleChildScrollView(
-                    child: Column(children: [
-                      SizedBox(height: 20),
-                      PersonalBestModule(),
-                      SizedBox(height: 20),
-                      WeightBarChart(),
-                      SizedBox(height: 20),
-                    ]),
-                  ),
-                ],
-              ),
             )
           : const Center(
               child: CircularProgressIndicator(
