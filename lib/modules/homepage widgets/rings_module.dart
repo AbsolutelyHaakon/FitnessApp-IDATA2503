@@ -11,16 +11,7 @@ import '../../database/tables/user_health_data.dart';
 import '../../pages/statistics and nutrition/calorie_intake_page.dart';
 import '../../pages/statistics and nutrition/hydration_page.dart';
 
-// Module for displaying ring widgets as a progress bar
-// Used to display progress in a certain category
-// Examples: BMI, Calories, Body fat, etc.
-
-// Last edited 27/09/2024
-// Last edited by Matti Kjellstadli
-
-//TODO: Implement the actual progress values as persistent values
-//TODO: Link the values up to the actual data
-
+// This class represents the RingsModule widget which displays progress rings for various health metrics
 class RingsModule extends StatefulWidget {
   const RingsModule({super.key});
 
@@ -28,17 +19,18 @@ class RingsModule extends StatefulWidget {
   _RingsModuleState createState() => _RingsModuleState();
 }
 
-class _RingsModuleState extends State<RingsModule>
-    with SingleTickerProviderStateMixin {
+class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   bool _isDisposed = false;
 
+  // Initial percentages for the progress rings
   double waterPercentage = 0.01;
   double caloriePercentage = 0.01;
   double weightPercentage = 0.01;
   double calorieBurnPercentage = 0.01;
 
+  // Goals for the user
   int waterGoal = 2000;
   int calorieGoal = 2000;
   int weightGoal = 70;
@@ -50,22 +42,26 @@ class _RingsModuleState extends State<RingsModule>
     super.initState();
     fetchAllUserGoals();
 
+    // Initialize the animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
+    // Define the animation curve
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     );
 
+    // Add a listener to update the state when the animation value changes
     _animationController.addListener(() {
       if (!_isDisposed) {
         setState(() {});
       }
     });
 
+    // Start the animation
     _animationController.forward();
   }
 
@@ -76,34 +72,24 @@ class _RingsModuleState extends State<RingsModule>
     super.dispose();
   }
 
+  // Fetch user goals from the database
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userGoalsMap = await UserDao()
-          .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      waterGoal = (userGoalsMap?["waterTarget"] ?? 1) == 0
-          ? 2500
-          : userGoalsMap?["waterTarget"] ?? 2500;
-      calorieGoal = (userGoalsMap?["caloriesTarget"] ?? 1) == 0
-          ? 2200
-          : userGoalsMap?["caloriesTarget"] ?? 2200;
-      weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0
-          ? 10
-          : userGoalsMap?["weightTarget"] ?? 10;
-      calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
-          ? 2500
-          : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
-      weightInitial = (userGoalsMap?["weightInitial"] ?? 1) == 0
-          ? 10
-          : userGoalsMap?["weightInitial"] ?? 1;
+      var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+      waterGoal = (userGoalsMap?["waterTarget"] ?? 1) == 0 ? 2500 : userGoalsMap?["waterTarget"] ?? 2500;
+      calorieGoal = (userGoalsMap?["caloriesTarget"] ?? 1) == 0 ? 2200 : userGoalsMap?["caloriesTarget"] ?? 2200;
+      weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0 ? 10 : userGoalsMap?["weightTarget"] ?? 10;
+      calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0 ? 2500 : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
+      weightInitial = (userGoalsMap?["weightInitial"] ?? 1) == 0 ? 10 : userGoalsMap?["weightInitial"] ?? 1;
     }
 
     fetchAllRingData();
   }
 
+  // Fetch user health data from the database
   Future<void> fetchAllRingData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userDataMap = await UserHealthDataDao()
-          .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
+      var userDataMap = await UserHealthDataDao().fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
 
       DateTime today = DateTime.now();
@@ -112,15 +98,11 @@ class _RingsModuleState extends State<RingsModule>
       int todaycb = 0;
       int todayc = 0;
       int todayWeight = 0;
-      DateTime comparisonDate = DateTime(
-        1970,
-        1,
-        1,
-      );
+      DateTime comparisonDate = DateTime(1970, 1, 1);
 
+      // Calculate today's intake and weight
       for (var entry in userData) {
-        DateTime date =
-            DateTime(entry.date.year, entry.date.month, entry.date.day);
+        DateTime date = DateTime(entry.date.year, entry.date.month, entry.date.day);
         if (date == todayDate) {
           if (entry.waterIntake != null) {
             todayIntakew += entry.waterIntake!;
@@ -132,28 +114,24 @@ class _RingsModuleState extends State<RingsModule>
             todayc += entry.caloriesIntake!;
           }
         }
-        if (entry.weight != null &&
-            entry.weight != 0 &&
-            entry.date.isAfter(comparisonDate)) {
+        if (entry.weight != null && entry.weight != 0 && entry.date.isAfter(comparisonDate)) {
           todayWeight = entry.weight;
           comparisonDate = entry.date;
         }
       }
 
+      // Update the state with the new percentages
       if (!_isDisposed) {
         setState(() {
           waterPercentage = todayIntakew / waterGoal;
           calorieBurnPercentage = todaycb / calorieBurnGoal;
           caloriePercentage = todayc / calorieGoal;
           if (todayWeight < weightGoal) {
-            weightPercentage =
-                (weightInitial - todayWeight) / (weightInitial - weightGoal);
+            weightPercentage = (weightInitial - todayWeight) / (weightInitial - weightGoal);
           } else if (weightInitial < todayWeight && todayWeight > weightGoal) {
-            weightPercentage =
-                2 - ( todayWeight / weightGoal);
+            weightPercentage = 2 - (todayWeight / weightGoal);
           } else {
-            weightPercentage =
-                (todayWeight - weightInitial) / (weightGoal - weightInitial);
+            weightPercentage = (todayWeight - weightInitial) / (weightGoal - weightInitial);
           }
           if (weightPercentage.isInfinite) {
             weightPercentage = 1;
@@ -213,8 +191,8 @@ class _RingsModuleState extends State<RingsModule>
     );
   }
 
-  Widget _buildRingButton(BuildContext context, String label, double percentage,
-      Color color, Widget page) {
+  // Helper method to build a ring button
+  Widget _buildRingButton(BuildContext context, String label, double percentage, Color color, Widget page) {
     double screenWidth = MediaQuery.of(context).size.width;
     double ringSize = screenWidth * 0.16;
 
@@ -225,14 +203,12 @@ class _RingsModuleState extends State<RingsModule>
           context,
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => page,
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
               const begin = Offset(1.0, 0.0);
               const end = Offset.zero;
               const curve = Curves.ease;
 
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
               var offsetAnimation = animation.drive(tween);
 
               return SlideTransition(

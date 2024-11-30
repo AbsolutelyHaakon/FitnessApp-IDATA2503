@@ -14,10 +14,12 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../pages/social and account/post_builder.dart';
 
+/// This class represents the profile page of a user in the fitness app.
+/// It displays the user's profile information, posts, and stats.
 class ProfilePage extends StatefulWidget {
-  final String userId;
+  final String userId; // The ID of the user whose profile is being displayed
 
-  const ProfilePage({Key? key, required this.userId}) : super(key: key);
+  const ProfilePage({super.key, required this.userId});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -25,74 +27,78 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  final UserDao _userDao = UserDao();
-  final UserFollowsDao _userFollowsDao = UserFollowsDao();
-  final PostsDao _postsDao = PostsDao();
-  late TabController _tabController;
+  final UserDao _userDao = UserDao(); // DAO for user data
+  final UserFollowsDao _userFollowsDao = UserFollowsDao(); // DAO for user follows data
+  final PostsDao _postsDao = PostsDao(); // DAO for posts data
+  late TabController _tabController; // Controller for tab navigation
 
-  User? _currentUser;
+  User? _currentUser; // The current logged-in user
 
-  String name = " ";
-  String imageURL = " ";
-  String bannerURL = " ";
+  String name = " "; // User's name
+  String imageURL = " "; // URL of the user's profile image
+  String bannerURL = " "; // URL of the user's banner image
 
-  int followers = 0;
-  int following = 0;
-  bool _isFollowing = false;
-  bool _isEditing = false;
-  bool _changeMade = false;
+  int followers = 0; // Number of followers
+  int following = 0; // Number of following
+  bool _isFollowing = false; // Whether the current user is following this profile
+  bool _isEditing = false; // Whether the profile is in edit mode
+  bool _changeMade = false; // Whether changes were made in edit mode
 
-  bool followerCountReady = false;
-  bool _isReady = false;
+  bool followerCountReady = false; // Whether follower count is ready
+  bool _isReady = false; // Whether the profile data is ready
 
-  XFile? _profileImage;
-  XFile? _bannerImage;
+  XFile? _profileImage; // The new profile image file
+  XFile? _bannerImage; // The new banner image file
 
-  List<Posts> _posts = [];
+  List<Posts> _posts = []; // List of user's posts
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _loadUserData();
+    _tabController = TabController(length: 2, vsync: this); // Initialize the tab controller
+    _loadUserData(); // Load user data
     if (FirebaseAuth.instance.currentUser?.uid != widget.userId) {
-      _checkIfFollowing();
+      _checkIfFollowing(); // Check if the current user is following this profile
     }
-    _loadUserPosts();
-    _loadFollowerData();
+    _loadUserPosts(); // Load user's posts
+    _loadFollowerData(); // Load follower data
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController.dispose(); // Dispose the tab controller
     super.dispose();
   }
 
+  /// Loads the user's posts from the database
   Future<void> _loadUserPosts() async {
     final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
 
     setState(() {
       _posts = postsData["posts"];
-      _posts.sort((a, b) => b.date.compareTo(a.date));
+      _posts.sort((a, b) => b.date.compareTo(a.date)); // Sort posts by date
     });
   }
 
+  /// Logs out the current user
   void _onLogout() {
     setState(() {
       _currentUser = null;
     });
   }
 
+  /// Loads the user's data from the database
   Future<void> _loadUserData() async {
     final user = await _userDao.fireBaseGetUserData(widget.userId);
 
     setState(() {
-      name = user?["name"] ?? "Unknown";
-      imageURL = user?["imageURL"] ?? "";
-      bannerURL = user?["bannerURL"] ?? "";
+      name = user?["name"] ?? "Unknown"; // Set user's name
+      imageURL = user?["imageURL"] ?? ""; // Set user's profile image URL
+      bannerURL = user?["bannerURL"] ?? ""; // Set user's banner image URL
     });
   }
 
+  /// Loads the follower data from the database
   Future<void> _loadFollowerData() async {
     final followerData =
         await _userFollowsDao.fireBaseGetFollowerCount(widget.userId);
@@ -100,14 +106,15 @@ class _ProfilePageState extends State<ProfilePage>
         await _userFollowsDao.fireBaseGetFollowingCount(widget.userId);
 
     setState(() {
-      followers = followerData ?? 0;
-      following = followingData ?? 0;
-      followerCountReady = true;
+      followers = followerData ?? 0; // Set number of followers
+      following = followingData ?? 0; // Set number of following
+      followerCountReady = true; // Follower count is ready
     });
 
-    _setReady();
+    _setReady(); // Set profile data as ready
   }
 
+  /// Checks if the current user is following this profile
   void _checkIfFollowing() {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       _userFollowsDao
@@ -115,12 +122,13 @@ class _ProfilePageState extends State<ProfilePage>
               FirebaseAuth.instance.currentUser!.uid, widget.userId)
           .then((value) {
         setState(() {
-          _isFollowing = value;
+          _isFollowing = value; // Set following status
         });
       });
     }
   }
 
+  /// Toggles the follow/unfollow status
   void _toggleFollow() {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       if (_isFollowing) {
@@ -132,19 +140,21 @@ class _ProfilePageState extends State<ProfilePage>
       }
     }
     setState(() {
-      _isFollowing = !_isFollowing;
-      followers = _isFollowing ? followers + 1 : followers - 1;
+      _isFollowing = !_isFollowing; // Toggle following status
+      followers = _isFollowing ? followers + 1 : followers - 1; // Update follower count
     });
   }
 
+  /// Sets the profile data as ready
   void _setReady() {
     if (name.isNotEmpty && followerCountReady) {
       setState(() {
-        _isReady = true;
+        _isReady = true; // Profile data is ready
       });
     }
   }
 
+  /// Picks an image from the gallery
   Future<void> _pickImage(ImageSource source, bool isBanner) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -152,15 +162,16 @@ class _ProfilePageState extends State<ProfilePage>
     if (pickedFile != null) {
       setState(() {
         if (isBanner) {
-          _bannerImage = pickedFile;
+          _bannerImage = pickedFile; // Set banner image
         } else {
-          _profileImage = pickedFile;
+          _profileImage = pickedFile; // Set profile image
         }
-        _changeMade = true;
+        _changeMade = true; // Changes were made
       });
     }
   }
 
+  /// Toggles the edit mode
   void _toggleEdit() {
     if (_isEditing &&
         _changeMade &&
@@ -181,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage>
     }
 
     setState(() {
-      _isEditing = !_isEditing;
+      _isEditing = !_isEditing; // Toggle edit mode
     });
   }
 
@@ -193,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage>
               leading: IconButton(
                 icon: const Icon(Icons.chevron_left, color: Colors.green),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(); // Go back to the previous screen
                 },
               ),
               backgroundColor: AppColors.fitnessBackgroundColor,

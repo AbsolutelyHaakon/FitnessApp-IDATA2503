@@ -3,15 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../styles.dart';
 
-// Shows the selected workout plan details before deciding to start it
-// Displays workout info and potentially a map of the workout route
-
-// Last edited: 27/09/2024
-// Last edited by: Matti Kjellstadli
-
-//TODO: Implement map functionality
-//TODO: Connect it to the persistent storage
-
+// This widget shows the details of the next exercise in the workout plan
+// It displays the exercise name, sets, reps, and weight
 class DwNextExercise extends StatefulWidget {
   const DwNextExercise({super.key});
 
@@ -20,9 +13,6 @@ class DwNextExercise extends StatefulWidget {
 }
 
 class _DwNextExerciseState extends State<DwNextExercise> {
-  bool _isAddingSet = false;
-  int _reps = 0;
-  int _weight = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -31,88 +21,87 @@ class _DwNextExerciseState extends State<DwNextExercise> {
         children: [
           IntrinsicHeight(
             child: Container(
-              width: 400,
+              width: 400, // Width of the container
               decoration: BoxDecoration(
-                color: AppColors.fitnessModuleColor,
-                borderRadius: BorderRadius.circular(30),
+                color: AppColors.fitnessModuleColor, // Background color
+                borderRadius: BorderRadius.circular(30), // Rounded corners
                 border: Border.all(
-                  color: Color(0xFF262626), // Almost the same color
-                  width: 1.0, // Very thin
+                  color: Color(0xFF262626), // Border color
+                  width: 1.0, // Border width
                 ),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 20), // Space at the top
                   Row(
                     children: [
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 20), // Space on the left
                       Container(
-                        width: 20,
-                        height: 20,
+                        width: 20, // Width of the circle
+                        height: 20, // Height of the circle
                         decoration: const BoxDecoration(
-                          color: Colors.grey,
-                          shape: BoxShape.circle,
+                          color: Colors.grey, // Circle color
+                          shape: BoxShape.circle, // Circle shape
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 10), // Space between circle and text
                       const Text(
-                        'Next Exercise',
+                        'Next Exercise', // Title text
                         style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          color: Colors.grey, // Text color
+                          fontSize: 20, // Text size
+                          fontWeight: FontWeight.bold, // Text weight
                         ),
                       ),
                     ],
                   ),
                   const Row(
                     children: [
-                      SizedBox(width: 50),
+                      SizedBox(width: 50), // Space on the left
                       Text(
-                        'Pushups',
+                        'Pushups', // Exercise name
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
+                          color: Colors.white, // Text color
+                          fontSize: 30, // Text size
+                          fontWeight: FontWeight.w900, // Text weight
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 50.0),
+                        padding: EdgeInsets.only(left: 50.0), // Space on the left
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
                           children: [
                             Text(
-                              'Sets   4',
+                              'Sets   4', // Number of sets
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                color: Colors.grey, // Text color
+                                fontWeight: FontWeight.bold, // Text weight
+                                fontSize: 15, // Text size
                               ),
                             ),
                             Text(
-                              'Reps  10',
+                              'Reps  10', // Number of reps
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                color: Colors.grey, // Text color
+                                fontWeight: FontWeight.bold, // Text weight
+                                fontSize: 15, // Text size
                               ),
                             ),
                             Text(
-                              'Weight  0',
+                              'Weight  0', // Weight
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                color: Colors.grey, // Text color
+                                fontWeight: FontWeight.bold, // Text weight
+                                fontSize: 15, // Text size
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 10), // Space at the bottom
                           ],
                         ),
                       ),
                     ],
                   )
-
                 ],
               ),
             ),

@@ -3,6 +3,8 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/// This class represents a list of personal bests.
+/// It displays the personal bests in a sorted order and allows the user to filter and sort them.
 class PersonalBestsList extends StatefulWidget {
   const PersonalBestsList({super.key, required this.personalBests});
 
@@ -13,16 +15,18 @@ class PersonalBestsList extends StatefulWidget {
 }
 
 class _PersonalBestsListState extends State<PersonalBestsList> {
-  bool _isDescending = true;
-  String _selectedMetric = 'Weight';
+  bool _isDescending = true; // Sort order flag
+  String _selectedMetric = 'Weight'; // Default filter option
 
-  final _filterOptions = ['Weight'];
+  final _filterOptions = ['Weight']; // Available filter options
 
   @override
   Widget build(BuildContext context) {
+    // Create a copy of the personal bests list to sort
     List<MapEntry<String, dynamic>> sortedPersonalBests =
         List.from(widget.personalBests);
 
+    // Sort the list based on the selected order
     if (_isDescending) {
       sortedPersonalBests.sort((a, b) => b.value.compareTo(a.value));
     } else {
@@ -34,7 +38,7 @@ class _PersonalBestsListState extends State<PersonalBestsList> {
           leading: IconButton(
             icon: const Icon(CupertinoIcons.back,
                 color: AppColors.fitnessMainColor),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(), // Go back
           ),
           title: const Text(
             'Personal Bests',
@@ -59,7 +63,7 @@ class _PersonalBestsListState extends State<PersonalBestsList> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        _selectedMetric = newValue!;
+                        _selectedMetric = newValue!; // Update selected metric
                       });
                     },
                   ),
@@ -70,7 +74,7 @@ class _PersonalBestsListState extends State<PersonalBestsList> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _isDescending = !_isDescending;
+                        _isDescending = !_isDescending; // Toggle sort order
                       });
                     },
                   ),
@@ -85,7 +89,7 @@ class _PersonalBestsListState extends State<PersonalBestsList> {
           children: sortedPersonalBests.asMap().entries.map((entry) {
             final item = entry.value;
             return PersonalBestBox(
-              item: item,
+              item: item, // Display each personal best
             );
           }).toList(),
         ));

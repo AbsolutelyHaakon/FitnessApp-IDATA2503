@@ -1,26 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/pages/statistics%20and%20nutrition/hydration_page.dart';
-import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_exercise_page.dart';
-import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
-import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';
-import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_calendar.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/pages/social%20and%20account/account_setup.dart';
 
-import '../../pages/workout and exercises/exercise_selector.dart';
-import '../../styles.dart';
-
-// Module for displaying a WIP widget
-// Used internally only for quick access to unfinished modules
-// TO BE REMOVED BEFORE RELEASE
-
-// Last edited: 31/10/2024
-// Last edited by: Håkon Svensen Karlsen
+// This module displays a WIP (Work In Progress) widget
+// It's used internally for quick access to unfinished modules
 
 class WipModule extends StatefulWidget {
   const WipModule({super.key});
+
   @override
   State<WipModule> createState() => _WipModuleState();
 }
@@ -32,19 +20,18 @@ class _WipModuleState extends State<WipModule> {
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
+          // Navigate to the HydrationPage when the button is pressed
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                   HydrationPage(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
+              pageBuilder: (context, animation, secondaryAnimation) => HydrationPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                // Slide transition for the page navigation
                 const begin = Offset(1.0, 0.0);
                 const end = Offset.zero;
                 const curve = Curves.ease;
 
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
 
                 return SlideTransition(
@@ -61,7 +48,6 @@ class _WipModuleState extends State<WipModule> {
           decoration: BoxDecoration(
             color: AppColors.fitnessModuleColor,
             borderRadius: BorderRadius.circular(30),
-
           ),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,

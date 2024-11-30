@@ -6,8 +6,6 @@ import 'dart:async';
 
 // The BreakTimerModule widget allows for counting down time
 // Used for taking breaks between gym sets
-// Last Edited: 27/09/2024
-// Last Edited by: Haakon
 
 // Explainer: As soon as we are able to implement persistent storage we should start working on the TODOs
 // Persistent storage of timer presets should be cloud saved for the user to access on any device

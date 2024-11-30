@@ -8,12 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:flutter_svg/svg.dart';
 
-// Login module for the authentication page
-// Contains a form for logging in or registering a new user
-
-// Last edited: 11/11/2024
-// Last edited by: Matti Kjellstadli
-
+/// This class represents the login module for the authentication page.
+/// It contains a form for logging in or registering a new user.
 class LoginModule extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
@@ -35,10 +31,11 @@ class LoginModule extends StatefulWidget {
 }
 
 class _LoginModuleState extends State<LoginModule> {
-  bool _isRegistering = false;
-  String? _errorMessage;
-  final _confirmPasswordController = TextEditingController();
+  bool _isRegistering = false; // Flag to check if the user is registering
+  String? _errorMessage; // Error message to display
+  final _confirmPasswordController = TextEditingController(); // Controller for confirm password field
 
+  // Function to handle login
   Future<void> _login() async {
     try {
       final result = await widget.userDao.fireBaseLoginWithEmailAndPassword(
@@ -73,16 +70,16 @@ class _LoginModuleState extends State<LoginModule> {
     }
   }
 
+  // Function to handle registration
   Future<void> _register() async {
-    if ( await widget.userDao.fireBaseCheckIfEmailExists(widget.emailController.text)) {
+    if (await widget.userDao.fireBaseCheckIfEmailExists(widget.emailController.text)) {
       setState(() {
         _errorMessage = 'An account already exists for that email';
         return;
       });
     }
     try {
-      final result =
-          await widget.userDao.fireBaseCreateUserWithEmailAndPassword(
+      final result = await widget.userDao.fireBaseCreateUserWithEmailAndPassword(
         widget.emailController.text,
         widget.passwordController.text,
       );

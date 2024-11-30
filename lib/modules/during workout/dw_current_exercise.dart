@@ -5,23 +5,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
-import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../database/tables/exercise.dart';
 import '../../database/tables/workout_exercises.dart';
 import '../../globals.dart';
 import '../../styles.dart';
 
+/// This widget represents the current exercise screen during a workout session.
+/// It displays the current exercise, allows the user to log sets and reps, and navigate to the next exercise.
 class DwCurrentExercise extends StatefulWidget {
-  final Map<Exercises, WorkoutExercises> exerciseMap;
-  final UserWorkouts userWorkouts;
-  final VoidCallback onEndWorkout;
+  final Map<Exercises, WorkoutExercises> exerciseMap; // Map of exercises and their details
+  final UserWorkouts userWorkouts; // User workout details
+  final VoidCallback onEndWorkout; // Callback function to end the workout
 
   const DwCurrentExercise({
     super.key,

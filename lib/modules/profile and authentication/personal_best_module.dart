@@ -1,18 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
-import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
-import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_bests_list.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_best_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
+/// This class represents the Personal Bests module on the profile page.
+/// It fetches and displays the user's top 5 personal bests and provides a button to view more.
 class PersonalBestModule extends StatelessWidget {
   const PersonalBestModule({super.key});
 
+  // Fetches the personal bests from the database
   Future<Map<String, dynamic>> _getPersonalBests() async {
     return UserWorkoutsDao()
         .fireBaseGetPersonalBests(FirebaseAuth.instance.currentUser!.uid);
@@ -36,17 +35,22 @@ class PersonalBestModule extends StatelessWidget {
         ),
         child: Stack(
           children: [
+            // Using FutureBuilder to fetch and display personal bests
             FutureBuilder<Map<String, dynamic>>(
               future: _getPersonalBests(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Show loading indicator while fetching data
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
+                  // Show error message if there is an error
                   return const Center(
                       child: Text('Error loading personal bests'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  // Show message if no personal bests are found
                   return const Center(child: Text('No personal bests found'));
                 } else {
+                  // Display the top 5 personal bests
                   final personalBests = snapshot.data!;
                   final firstFivePersonalBests = (personalBests.entries.toList()
                         ..sort((a, b) => b.value.compareTo(a.value)))
@@ -68,6 +72,7 @@ class PersonalBestModule extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
+                        // Display each personal best in a PersonalBestBox
                         Column(
                           children: firstFivePersonalBests
                               .asMap()
@@ -84,6 +89,7 @@ class PersonalBestModule extends StatelessWidget {
                         Center(
                           child: TextButton(
                             onPressed: () {
+                              // Navigate to the PersonalBestsList page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -107,6 +113,7 @@ class PersonalBestModule extends StatelessWidget {
                 }
               },
             ),
+            // Refresh button to update personal bests
             Positioned(
               top: 10,
               right: 10,
