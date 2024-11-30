@@ -362,7 +362,7 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               const Spacer(),
                               if (FirebaseAuth.instance.currentUser?.uid !=
-                                  widget.userId)
+                                  widget.userId && FirebaseAuth.instance.currentUser != null)
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   child: SizedBox(

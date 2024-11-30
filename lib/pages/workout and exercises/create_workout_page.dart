@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
+import 'package:fitnessapp_idata2503/modules/ind_exercise_box.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';

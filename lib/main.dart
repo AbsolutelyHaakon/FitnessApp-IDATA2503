@@ -6,7 +6,7 @@ import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
+import 'package:fitnessapp_idata2503/modules/navigation_bar.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'database/crud/exercise_dao.dart';
 import 'firebase_options.dart';

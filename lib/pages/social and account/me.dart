@@ -44,34 +44,6 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: ui.Size.fromHeight(40.0), // Set the height of the app bar
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.fitnessModuleColor, // Border color
-                width: 1.0, // Border width
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Me',
-                    style: Theme.of(context).textTheme.bodyLarge, // App bar title
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
       body: Stack(
         children: [
           Column(
@@ -82,7 +54,7 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                     width: double.infinity,
                     color: AppColors.fitnessBackgroundColor, // Background color
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 35.0),
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,

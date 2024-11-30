@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
+import 'package:fitnessapp_idata2503/texts.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';

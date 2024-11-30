@@ -26,8 +26,11 @@ class _SocialFeedState extends State<SocialFeed> {
   @override
   void initState() {
     super.initState();
-    _fetchFeed(); // Fetch the feed when the widget is initialized
+    if (FirebaseAuth.instance.currentUser != null) {
+      _fetchFeed(); // Fetch the feed when the widget is initialized
+    }
   }
+
 
   /// Fetches the social feed data for the current user.
   Future<void> _fetchFeed() async {
