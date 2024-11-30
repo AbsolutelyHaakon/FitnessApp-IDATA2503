@@ -66,18 +66,25 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   void dispose() {
-    _tabController.dispose(); // Dispose the tab controller
+    _tabController.dispose();
     super.dispose();
   }
 
   /// Loads the user's posts from the database
   Future<void> _loadUserPosts() async {
+    setState(() {
+      _isReady = false;
+      _posts = [];
+    });
     final postsData = await _postsDao.fireBaseFetchUserPosts(widget.userId);
 
-    setState(() {
-      _posts = postsData["posts"];
-      _posts.sort((a, b) => b.date.compareTo(a.date)); // Sort posts by date
-    });
+    if (postsData != null && postsData["posts"] != null) {
+      setState(() {
+        _posts = List<Posts>.from(postsData["posts"]);
+        _posts.sort((a, b) => b.date.compareTo(a.date));
+        _setReady();
+      });
+    }
   }
 
   /// Logs out the current user
@@ -111,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage>
       followerCountReady = true; // Follower count is ready
     });
 
-    _setReady(); // Set profile data as ready
+    _setReady();
   }
 
   /// Checks if the current user is following this profile
