@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Define the colors used in the app
 class AppColors {
   static const Color fitnessMainColor = Color(0xFF48CC6D);
   static const Color fitnessModuleColor = Color(0xFF1E1E1E);

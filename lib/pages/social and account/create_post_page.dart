@@ -15,8 +15,6 @@ import '../../styles.dart';
 
 /// CreatePostPage which allows the user to create a post
 ///
-/// Last edited: 13.11.2024
-/// Last edited by: Håkon Karlsen
 ///
 /// TODO: Implement post creation logic
 /// TODO: Implement attach exercise logic

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:image_picker/image_picker.dart';
 
+// This page allows users to create a new exercise
 class CreateExercisePage extends StatefulWidget {
   const CreateExercisePage({super.key});
 
@@ -15,6 +16,7 @@ class CreateExercisePage extends StatefulWidget {
 }
 
 class _CreateExercisePageState extends State<CreateExercisePage> {
+  // Controllers for the text fields
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _videoUrlController = TextEditingController();
@@ -31,6 +33,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
 
+  // Function to create a new exercise
   Future<void> _createExercise() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -51,6 +54,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
     }
   }
 
+  // Function to show the category picker
   void _showCategoryPicker(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
@@ -79,6 +83,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
     );
   }
 
+  // Function to pick an image from the gallery
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -90,6 +95,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
     }
   }
 
+  // Function to create input decoration for text fields
   InputDecoration _inputDecoration(String label) => InputDecoration(
         filled: true,
         fillColor: AppColors.fitnessBackgroundColor,
@@ -103,7 +109,6 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
         ),
       );
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,6 +140,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      // Text field for exercise name
                       TextFormField(
                         controller: _nameController,
                         cursorColor: AppColors.fitnessMainColor,
@@ -192,7 +198,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
+                          // Text field for exercise description
                           Flexible(
                             child: TextFormField(
                               controller: _descriptionController,
@@ -251,6 +257,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
+                          // Text field for video URL
                           Expanded(
                             child: TextFormField(
                               controller: _videoUrlController,
@@ -304,6 +311,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                             ),
                           ),
                           const SizedBox(width: 8),
+                          // Info button for video URL
                           IconButton(
                             icon: const Icon(Icons.info_outline,
                                 color: AppColors.fitnessMainColor),
@@ -338,6 +346,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
+                          // Category picker
                           Expanded(
                             child: GestureDetector(
                               onTap: () => _showCategoryPicker(context),
@@ -368,6 +377,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                             ),
                           ),
                           const SizedBox(width: 16),
+                          // Button to pick an image
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: _pickImage,
@@ -390,6 +400,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                           ),
                         ],
                       ),
+                      // Display selected image
                       if (_selectedImage != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 16.0),
@@ -404,6 +415,7 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                           ),
                         ),
                       const SizedBox(height: 16),
+                      // Public switch
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Row(
@@ -430,7 +442,6 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
                             ),
                           ],
                         ),
-
                       ),
                     ],
                   ),

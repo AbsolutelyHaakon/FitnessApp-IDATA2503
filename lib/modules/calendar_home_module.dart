@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../pages/workout and exercises/workout_calendar.dart';
 
 import '../styles.dart';
 
+/// CalendarHomeModule widget for displaying the calendar home module.
 class CalendarHomeModule extends StatefulWidget {
   const CalendarHomeModule({super.key});
 

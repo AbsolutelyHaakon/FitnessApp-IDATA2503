@@ -1,18 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/modules/calendar_home_module.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dart';
-import 'package:fitnessapp_idata2503/modules/homepage%20widgets/wip_module.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
-import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../database/tables/workout.dart';
-import '../modules/date_picker.dart';
-import '../modules/homepage widgets/community_module.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
 import 'social and account/me.dart';
 
+// Home page widget
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -23,6 +18,7 @@ class Home extends StatefulWidget {
 const double commonPadding = 16.0;
 const double rowSpacing = 28.0;
 
+// Home page widget. This is the main page of the app.
 class _HomeState extends State<Home> {
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
 
@@ -35,6 +31,7 @@ class _HomeState extends State<Home> {
         isDeleted: false)
   ];
 
+  // Fetch the workouts from the server
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
@@ -103,32 +100,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildHeader(String date) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  date,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Text(
-                  'Home',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
-          ),
-          _buildProfileAvatar(),
-        ],
-      ),
-    );
-  }
-
+  // This function builds the profile avatar in the app bar
   Widget _buildProfileAvatar() {
     return GestureDetector(
       onTap: () => _navigateToProfile(),
@@ -141,6 +113,7 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // This function navigates to the profile page
   void _navigateToProfile() {
     Navigator.push(
       context,
@@ -155,43 +128,6 @@ class _HomeState extends State<Home> {
           final offsetAnimation = animation.drive(tween);
           return SlideTransition(position: offsetAnimation, child: child);
         },
-      ),
-    );
-  }
-
-  Widget _buildModuleRow({
-    required Widget leftChild,
-    required Widget rightChild,
-    double topPadding = rowSpacing,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(
-          left: commonPadding, right: commonPadding, top: topPadding),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Expanded(child: leftChild),
-          const SizedBox(width: commonPadding),
-          Expanded(child: rightChild),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModuleRowInDashboard({
-    required Widget leftChild,
-    required Widget rightChild,
-    double topPadding = 15,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(left: 0, right: 0, top: topPadding),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Expanded(child: leftChild),
-          const SizedBox(width: commonPadding),
-          Expanded(child: rightChild),
-        ],
       ),
     );
   }

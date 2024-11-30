@@ -9,11 +9,13 @@ import '../database_service.dart';
 import '../tables/exercise.dart';
 import '../tables/workout.dart';
 
+/// This class handles all the CRUD operations for workouts in both local SQLite database and Firebase Firestore.
 class WorkoutDao {
   final tableName = 'workouts';
   final WorkoutExercisesDao _workoutDao = WorkoutExercisesDao();
   final UserDao _userDao = UserDao();
 
+  /// Inserts a new workout into the local database.
   Future<int> localCreate(Workouts workout) async {
     final database = await DatabaseService().database;
     return await database.insert(
@@ -23,6 +25,7 @@ class WorkoutDao {
     );
   }
 
+  /// Updates an existing workout in the local database.
   Future<int> localUpdate(Workouts workout) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -34,6 +37,7 @@ class WorkoutDao {
     );
   }
 
+  /// Updates the isActive status of a workout in the local database.
   Future<void> localUpdateActive(Workouts workout, bool isActive) async {
     final database = await DatabaseService().database;
 
@@ -46,6 +50,7 @@ class WorkoutDao {
     );
   }
 
+  /// Sets all workouts to inactive in the local database.
   Future<void> localSetAllInactive() async {
     final database = await DatabaseService().database;
 
@@ -55,6 +60,7 @@ class WorkoutDao {
     );
   }
 
+  /// Updates the exercises associated with a workout in the local database.
   Future<void> localUpdateWorkoutExercises(
       String workoutId, List<Exercises> exercises) async {
     final database = await DatabaseService().database;
@@ -70,6 +76,7 @@ class WorkoutDao {
     });
   }
 
+  /// Fetches a workout by its ID from the local database.
   Future<Workouts> localFetchWorkoutById(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -80,12 +87,14 @@ class WorkoutDao {
     return Workouts.fromMap(data.first);
   }
 
+  /// Fetches all workouts from the local database.
   Future<List<Workouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName, orderBy: 'name');
     return data.map((entry) => Workouts.fromMap(entry)).toList();
   }
 
+  /// Fetches all workouts by user ID from the local database.
   Future<List<Workouts>> localFetchAllById(String? id) async {
     final database = await DatabaseService().database;
     if (id != null && id.isNotEmpty) {
@@ -113,6 +122,7 @@ class WorkoutDao {
     }
   }
 
+  /// Fetches a workout by its ID from the local database.
   Future<Workouts?> localFetchByWorkoutId(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -127,6 +137,7 @@ class WorkoutDao {
     }
   }
 
+  /// Deletes a workout by its ID from the local database.
   Future<void> localDelete(String id) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -136,6 +147,7 @@ class WorkoutDao {
     );
   }
 
+  /// Marks a workout as deleted in the local database.
   Future<void> localSetDeleted(String id) async {
     final database = await DatabaseService().database;
     await database.update(
@@ -146,6 +158,7 @@ class WorkoutDao {
     );
   }
 
+  /// Fetches all exercises associated with a workout from the local database.
   Future<List<Exercises>> localFetchExercisesForWorkout(
       String workoutId) async {
     final database = await DatabaseService().database;
@@ -158,11 +171,13 @@ class WorkoutDao {
     return data.map((entry) => Exercises.fromSqfl(entry)).toList();
   }
 
+  /// Deletes all workouts from the local database.
   Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
 
+  /// Checks if there are any active workouts in the local database.
   Future<bool> hasActiveWorkouts() async {
     final database = await DatabaseService().database;
     final List<Map<String, dynamic>> maps = await database.query(
@@ -173,6 +188,7 @@ class WorkoutDao {
     return maps.isNotEmpty;
   }
 
+  /// Fetches the active workout from the local database.
   Future<Workouts?> fetchActiveWorkout() async {
     final database = await DatabaseService().database;
     final List<Map<String, dynamic>> maps = await database.query(
@@ -188,6 +204,7 @@ class WorkoutDao {
     return Workouts.fromMap(maps.first);
   }
 
+  /// Generates a unique workout ID.
   Future<String> generateUniqueWorkoutId() async {
     final database = await DatabaseService().database;
     final existingIds = await database.query(tableName, columns: ['workoutId']);
@@ -202,6 +219,7 @@ class WorkoutDao {
     return newId;
   }
 
+  /// Generates a random ID for a workout.
   String _generateRandomId() {
     const length = 10;
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -210,6 +228,7 @@ class WorkoutDao {
         .join();
   }
 
+  /// Fetches public workouts from Firebase and stores them locally if not already present.
   Future<void> fireBaseFirstTimeStartup() async {
     final database = await DatabaseService().database;
     final WorkoutExercisesDao workoutExercisesDao = WorkoutExercisesDao();
@@ -238,6 +257,7 @@ class WorkoutDao {
   ////////////////// FIREBASE FUNCTIONS //////////////////////
   ////////////////////////////////////////////////////////////
 
+  /// Deletes a workout from Firebase and marks it as deleted locally if it is part of user workouts.
   Future<void> fireBaseDeleteWorkout(String WorkoutId) async {
     // Handle the case where a workout is a part of someones userWorkouts
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -262,6 +282,7 @@ class WorkoutDao {
     }
   }
 
+  /// Fetches all workouts for a user from Firebase.
   Future<Map<String, dynamic>> fireBaseFetchAllWorkouts(String userId) async {
     // Get all workouts for the user (public and private)
     QuerySnapshot personalWorkoutsQuery = await FirebaseFirestore.instance
@@ -293,6 +314,7 @@ class WorkoutDao {
     return {'workouts': allWorkouts};
   }
 
+  /// Fetches a workout by its ID from Firebase.
   Future<Workouts?> fireBaseFetchWorkout(String workoutId) async {
     DocumentSnapshot doc = await FirebaseFirestore.instance
         .collection('workouts')
@@ -307,6 +329,7 @@ class WorkoutDao {
     }
   }
 
+  /// Updates a workout in Firebase and locally.
   Future<void> firebaseUpdateWorkout(
       String workoutId,
       String? category,
@@ -364,6 +387,7 @@ class WorkoutDao {
     });
   }
 
+  /// Creates a new workout in Firebase and locally.
   Future<String?> fireBaseCreateWorkout(
       String? category,
       String? description,
@@ -430,6 +454,7 @@ class WorkoutDao {
     }
   }
 
+  /// Fetches all public workouts from Firebase.
   Future<Map<String, dynamic>> fireBaseFetchPublicWorkouts() async {
     // Fetch our premade workouts
     QuerySnapshot PremadequerySnapshot = await FirebaseFirestore.instance
@@ -465,6 +490,7 @@ class WorkoutDao {
     return {'workouts': workouts};
   }
 
+  /// Fetches all exercises associated with a workout from Firebase.
   Future<List<Exercises>> fireBaseFetchExercisesForWorkout(String workoutId) async{
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('workoutExercises').where('workoutId', isEqualTo: workoutId).get();
     List exerciseIds = querySnapshot.docs.map((doc) => doc['exerciseId']).toList();
@@ -482,12 +508,14 @@ class WorkoutDao {
 ////////////////////////////  Firebase Admin /////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+  /// Gets the total count of workouts in Firebase.
   Future<int> getWorkoutsCount() async {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('workouts').get();
     return querySnapshot.docs.length;
   }
 
+  /// Gets all workout IDs for an admin user from Firebase.
   Future<List<String>> getAllWorkouts(String? userId) async {
     if (userId != null && await _userDao.getAdminStatus(userId)) {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =

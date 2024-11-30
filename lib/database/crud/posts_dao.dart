@@ -7,10 +7,12 @@ import 'package:sqflite/sqflite.dart';
 
 import '../imgur_service.dart';
 
+// DAO for handling posts
 class PostsDao {
   final tableName = 'posts';
   final UserFollowsDao _userFollowsDao = UserFollowsDao();
 
+  // Function to create a new post in the local database
   Future<int> LocalCreate(Posts post) async {
     final database = await DatabaseService().database;
     return await database.insert(
@@ -20,6 +22,7 @@ class PostsDao {
     );
   }
 
+  // Function to update an existing post in the local database
   Future<int> localUpdate(Posts post) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -31,12 +34,14 @@ class PostsDao {
     );
   }
 
+  // Function to fetch all posts from the local database
   Future<List<Posts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => Posts.fromMap(entry)).toList();
   }
 
+  // Function to fetch a post by its ID from the local database
   Future<Posts> localFetchById(int postId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -47,6 +52,7 @@ class PostsDao {
     return Posts.fromMap(data.first);
   }
 
+  // Function to delete a post by its ID from the local database
   Future<void> localDelete(int postId) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -60,6 +66,7 @@ class PostsDao {
 ////////////////// FIREBASE FUNCTIONS ///////////////////
 /////////////////////////////////////////////////////////
 
+  // Function to delete a post from Firebase
   Future<bool> fireBaseDeletePost(String postId) async {
     try {
       await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
@@ -70,6 +77,7 @@ class PostsDao {
     }
   }
 
+  // Function to create a new post in Firebase
   Future<Map<String, dynamic>> fireBaseCreatePost(
       String? content,
       XFile? image,
@@ -117,6 +125,7 @@ class PostsDao {
     };
   }
 
+  // Function to fetch the feed for a user from Firebase
   Future<Map<String, dynamic>> fireBaseFetchFeed(String userId) async {
     // First we find out who the person is following
     Map<String, dynamic> followingMap =
@@ -147,6 +156,7 @@ class PostsDao {
     };
   }
 
+  // Function to fetch all posts for a specific user from Firebase
   Future<Map<String, dynamic>> fireBaseFetchUserPosts(String? userId) async {
     // If the user has no posts, return an empty list
     if (userId == null) {
@@ -173,6 +183,7 @@ class PostsDao {
 
   ImgurService imgurService = ImgurService();
 
+  // Function to upload an image to Imgur and return the URL
   Future<String> uploadImage(XFile image) async {
     String? imgurUrl = await imgurService.saveImageToImgur(image);
     if (imgurUrl != null) {
@@ -188,6 +199,7 @@ class PostsDao {
 ////////////////////////////  Firebase Admin /////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+  // Function to get the count of posts in Firebase
   Future<int> getPostsCount() async {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('posts').get();

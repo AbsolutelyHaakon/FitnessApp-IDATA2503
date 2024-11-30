@@ -13,9 +13,6 @@ import 'exercise_overview_detailed.dart';
 /// The user can also create a new exercise
 /// The user can view an overview of an exercise by clicking on it
 /// The user can add or remove exercises from the workout
-///
-/// Last Edited: 26/11/2024
-/// Last Edited by: Håkon Svensen Karlsen
 
 class ExerciseSelectorPage extends StatefulWidget {
   final List<Exercises> selectedExercises;

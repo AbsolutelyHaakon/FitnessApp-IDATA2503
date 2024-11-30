@@ -18,54 +18,54 @@ class CalorieBurnPage extends StatefulWidget {
 
 class _CalorieBurnPageState extends State<CalorieBurnPage>
     with SingleTickerProviderStateMixin {
-  Map<DateTime, int> dailyBurn = <DateTime, int>{};
-  List<MapEntry<DateTime, int>> hourlyBurn = [];
+  Map<DateTime, int> dailyBurn = <DateTime, int>{}; // Stores daily burn data
+  List<MapEntry<DateTime, int>> hourlyBurn = []; // Stores hourly burn data
   double goal = 400; // Example goal in calories
-  bool isLoading = false;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-  late Future<void> _fetchDataFuture;
-  DateTime today = DateTime.now();
-  double todayBurn = 0;
-  double burnPercentage = 0.0;
-  List<FlSpot> cumulativeSpots = [];
-  double cumulativeSum = 0;
+  bool isLoading = false; // Loading state
+  late AnimationController _animationController; // Animation controller
+  late Animation<double> _animation; // Animation
+  late Future<void> _fetchDataFuture; // Future for fetching data
+  DateTime today = DateTime.now(); // Today's date
+  double todayBurn = 0; // Calories burned today
+  double burnPercentage = 0.0; // Burn percentage
+  List<FlSpot> cumulativeSpots = []; // Cumulative spots for line chart
+  double cumulativeSum = 0; // Cumulative sum of calories burned
 
   @override
   void initState() {
     super.initState();
-    fetchAllUserGoals();
-    _fetchDataFuture = fetchBurnData();
+    fetchAllUserGoals(); // Fetch user goals
+    _fetchDataFuture = fetchBurnData(); // Fetch burn data
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000), // Animation duration
       vsync: this,
     );
 
     _animation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut,
+      curve: Curves.easeInOut, // Animation curve
     );
 
     _animationController.addListener(() {
-      setState(() {});
+      setState(() {}); // Update state on animation change
     });
 
-    _animationController.forward();
+    _animationController.forward(); // Start animation
   }
 
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      var goalInt = userGoalsMap?["calorieBurnTarget"] ?? 400;
+      var goalInt = userGoalsMap?["calorieBurnTarget"] ?? 400; // Default goal
       setState(() {
-        goal = goalInt.toDouble();
+        goal = goalInt.toDouble(); // Set goal
       });
     }
   }
 
   Future<void> fetchBurnData() async {
-    todayBurn = 0;
+    todayBurn = 0; // Reset today's burn
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
@@ -77,7 +77,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
         DateTime date =
         DateTime(entry.date.year, entry.date.month, entry.date.day);
         if (entry.caloriesBurned == null || entry.caloriesBurned! <= 0) {
-          continue;
+          continue; // Skip invalid data
         }
         if (aggregatedData.containsKey(date)) {
           aggregatedData[date] = aggregatedData[date]! + entry.caloriesBurned!;
@@ -86,13 +86,13 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
         }
         if (date == todayDate) {
           if (entry.caloriesBurned != null) {
-            todayBurn += entry.caloriesBurned!;
+            todayBurn += entry.caloriesBurned!; // Add to today's burn
           }
         }
       }
       setState(() {
-        dailyBurn = aggregatedData;
-        burnPercentage = todayBurn / goal;
+        dailyBurn = aggregatedData; // Set daily burn data
+        burnPercentage = todayBurn / goal; // Calculate burn percentage
 
         DateTime now = DateTime.now();
         today = DateTime(now.year, now.month, now.day);
@@ -102,13 +102,13 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
             .map((e) => MapEntry(e.date, e.caloriesBurned!))
             .toList();
 
-        hourlyBurn.insert(0, MapEntry(today, 0));
+        hourlyBurn.insert(0, MapEntry(today, 0)); // Add initial entry
       });
     }
   }
 
   Future<void> _addData() async {
-    int calorieBurn = 0;
+    int calorieBurn = 0; // Initial calorie burn
 
     await showDialog(
       context: context,
@@ -129,7 +129,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         icon: const Icon(Icons.remove, color: Colors.red),
                         onPressed: () {
                           setState(() {
-                            if (calorieBurn > 0) calorieBurn -= 100;
+                            if (calorieBurn > 0) calorieBurn -= 100; // Decrease burn
                           });
                         },
                       ),
@@ -138,7 +138,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         icon: const Icon(Icons.add, color: Colors.red),
                         onPressed: () {
                           setState(() {
-                            calorieBurn += 100;
+                            calorieBurn += 100; // Increase burn
                           });
                         },
                       ),
@@ -149,7 +149,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Close dialog
                   },
                   child: const Text('Cancel', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
                 ),
@@ -166,9 +166,9 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         calorieBurn,
                         null,
                       );
-                      fetchBurnData();
+                      fetchBurnData(); // Refresh data
                     }
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Close dialog
                   },
                   child: const Text('OK', style: TextStyle(color: Colors.red)),
                 ),
@@ -185,7 +185,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
   Widget build(BuildContext context) {
     double maxY = dailyBurn.values.isNotEmpty
         ? dailyBurn.values.reduce((a, b) => a > b ? a : b).toDouble()
-        : 3.0;
+        : 3.0; // Max Y value for bar chart
 
     // Filter hourlyBurn to only include entries from today
     DateTime today = DateTime.now();
@@ -198,11 +198,11 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
     cumulativeSpots.clear();
     cumulativeSum = 0;
 
-    todayBurnEntries.sort((a, b) => a.key.hour.compareTo(b.key.hour));
+    todayBurnEntries.sort((a, b) => a.key.hour.compareTo(b.key.hour)); // Sort by hour
 
     for (var entry in todayBurnEntries) {
-      cumulativeSum += entry.value;
-      cumulativeSpots.add(FlSpot(entry.key.hour.toDouble(), cumulativeSum));
+      cumulativeSum += entry.value; // Calculate cumulative sum
+      cumulativeSpots.add(FlSpot(entry.key.hour.toDouble(), cumulativeSum)); // Add spot
     }
 
     return Scaffold(
@@ -218,14 +218,14 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back, color: Color(0xFFCC4848)),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(); // Go back
           },
         ),
         actions: [
           if (FirebaseAuth.instance.currentUser != null)
             TextButton(
               onPressed: () async {
-                _addData();
+                _addData(); // Add new data
               },
               child: const Text('Add Data',
                   style: TextStyle(color: Color(0xFFCC4848))),
@@ -233,7 +233,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
           : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -255,7 +255,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                             height: 180.0,
                             child: CircularProgressIndicator(
                               value: _animation.value *
-                                  (todayBurn / goal),
+                                  (todayBurn / goal), // Progress indicator
                               strokeWidth: 18.0,
                               strokeCap: StrokeCap.round,
                               valueColor:
@@ -268,7 +268,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                           Text(
                             goal - todayBurn >= 0
                                 ?  '${(goal - todayBurn).abs()} cal'
-                                : '0.0 cal',
+                                : '0.0 cal', // Remaining burn
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -294,7 +294,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         Text(
                           burnPercentage >= goal
                               ? 'Congratulations! Goal Reached!'
-                              : 'Current: ${todayBurn.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal',
+                              : 'Current: ${todayBurn.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal', // Display current and goal burn
                           style: const TextStyle(
                             color: AppColors.fitnessSecondaryTextColor,
                             fontSize: 14,
@@ -336,7 +336,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                       borderData: FlBorderData(show: true),
                       lineBarsData: [
                         LineChartBarData(
-                          spots: cumulativeSpots,
+                          spots: cumulativeSpots, // Cumulative spots
                           isCurved: false,
                           color: const Color(0xFFCC4848),
                           barWidth: 4,
@@ -355,7 +355,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                             label: HorizontalLineLabel(
                               show: true,
                               alignment: Alignment.topRight,
-                              labelResolver: (line) => 'Goal',
+                              labelResolver: (line) => 'Goal', // Goal line
                               style: const TextStyle(
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold,
@@ -376,7 +376,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                   child: BarChart(
                     BarChartData(
                       alignment: BarChartAlignment.spaceAround,
-                      maxY: maxY,
+                      maxY: maxY, // Max Y value for bar chart
                       barTouchData: BarTouchData(enabled: false),
                       titlesData: FlTitlesData(
                         show: true,
@@ -390,7 +390,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                                 axisSide: meta.axisSide,
                                 space: 5,
                                 child: Text(
-                                  DateFormat('MM/dd').format(date),
+                                  DateFormat('MM/dd').format(date), // Date format
                                   style: const TextStyle(
                                     color: Color(0xFFCC4848),
                                     fontWeight: FontWeight.bold,
@@ -416,7 +416,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                           x: index,
                           barRods: [
                             BarChartRodData(
-                              toY: burn.toDouble(),
+                              toY: burn.toDouble(), // Bar height
                               color: const Color(0xFFCC4848),
                               width: 16,
                               borderRadius: BorderRadius.circular(8),
@@ -436,7 +436,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                     DateTime date = entry.key;
                     double burn = entry.value.toDouble();
                     String formattedDate =
-                    DateFormat('MMM dd, yyyy').format(date);
+                    DateFormat('MMM dd, yyyy').format(date); // Format date
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       padding: const EdgeInsets.all(16.0),
@@ -451,7 +451,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                               style:
                               Theme.of(context).textTheme.bodyMedium),
                           Text(
-                            '${burn.toStringAsFixed(1)} cal / ${goal.toStringAsFixed(1)} cal',
+                            '${burn.toStringAsFixed(1)} cal / ${goal.toStringAsFixed(1)} cal', // Display burn
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium

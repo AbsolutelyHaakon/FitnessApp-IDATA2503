@@ -3,9 +3,11 @@ import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_follows.dart';
 import 'package:sqflite/sqflite.dart';
 
+// DAO for handling user follows
 class UserFollowsDao {
   final tableName = 'userFollows';
 
+  // Insert a new follow relationship into the local database
   Future<int> localCreate(UserFollows userFollows) async {
     final database = await DatabaseService().database;
     return await database.insert(
@@ -15,6 +17,7 @@ class UserFollowsDao {
     );
   }
 
+  // Update an existing follow relationship in the local database
   Future<int> localUpdate(UserFollows userFollows) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -26,12 +29,14 @@ class UserFollowsDao {
     );
   }
 
+  // Fetch all follow relationships from the local database
   Future<List<UserFollows>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => UserFollows.fromMap(entry)).toList();
   }
 
+  // Fetch a specific follow relationship by userId and followsId from the local database
   Future<UserFollows> localFetchById(int userId, int followsId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -42,6 +47,7 @@ class UserFollowsDao {
     return UserFollows.fromMap(data.first);
   }
 
+  // Delete a follow relationship from the local database
   Future<void> localDelete(String userId, String followsId) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -55,6 +61,7 @@ class UserFollowsDao {
 /////////////////// FIREBASE FUNCTIONS /////////////////////
 ////////////////////////////////////////////////////////////
 
+  // Check if a user follows another user in Firebase
   Future<bool> fireBaseCheckIfFollows(String userId, String followsId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userFollows')
@@ -65,6 +72,7 @@ class UserFollowsDao {
     return querySnapshot.docs.isNotEmpty;
   }
 
+  // Add a follow relationship in Firebase and local database
   Future<void> fireBaseFollow(String userId, String followsId) async {
     DocumentReference docref =
         await FirebaseFirestore.instance.collection('userFollows').add({
@@ -78,6 +86,7 @@ class UserFollowsDao {
         userFollowsId: docId, userId: userId, followsId: followsId));
   }
 
+  // Remove a follow relationship from Firebase and local database
   Future<void> fireBaseUnfollow(String userId, String followsId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userFollows')
@@ -91,6 +100,7 @@ class UserFollowsDao {
     }
   }
 
+  // Fetch all users that the given user is following from Firebase
   Future<Map<String, dynamic>> fetchFollowing(String userId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userFollows')
@@ -109,6 +119,7 @@ class UserFollowsDao {
     };
   }
 
+  // Fetch all users that follow the given user from Firebase
   Future<Map<String, dynamic>> fetchFollowedBy(String userId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userFollows')
@@ -127,6 +138,7 @@ class UserFollowsDao {
     };
   }
 
+  // Get the number of followers for a given user from Firebase
   Future<int> fireBaseGetFollowerCount(String uid) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userFollows')
@@ -135,6 +147,7 @@ class UserFollowsDao {
     return querySnapshot.size;
   }
 
+  // Get the number of users that the given user is following from Firebase
   Future<int> fireBaseGetFollowingCount(String uid) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userFollows')

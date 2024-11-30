@@ -4,9 +4,11 @@ import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/workout_exercises.dart';
 
+/// This class handles CRUD operations for workout exercises both locally and on Firebase.
 class WorkoutExercisesDao {
   final tableName = 'workoutExercises';
 
+  /// Inserts a new workout exercise into the local database.
   Future<int> localCreate(WorkoutExercises workoutExercises) async {
     final database = await DatabaseService().database;
     return await database.insert(
@@ -16,6 +18,7 @@ class WorkoutExercisesDao {
     );
   }
 
+  /// Updates an existing workout exercise in the local database.
   Future<int> localUpdate(WorkoutExercises workoutExercises) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -27,12 +30,14 @@ class WorkoutExercisesDao {
     );
   }
 
+  /// Fetches all workout exercises from the local database.
   Future<List<WorkoutExercises>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => WorkoutExercises.fromMap(entry)).toList();
   }
 
+  /// Fetches all workout exercises for a specific workout ID from the local database.
   Future<List<WorkoutExercises>> localFetchByWorkoutId(String workoutId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -43,6 +48,7 @@ class WorkoutExercisesDao {
     return data.map((entry) => WorkoutExercises.fromMap(entry)).toList();
   }
 
+  /// Fetches a specific workout exercise by workout ID and exercise ID from the local database.
   Future<WorkoutExercises> localFetchById(
       String workoutId, String exerciseId) async {
     final database = await DatabaseService().database;
@@ -54,6 +60,7 @@ class WorkoutExercisesDao {
     return WorkoutExercises.fromMap(data.first);
   }
 
+  /// Deletes a specific workout exercise from the local database.
   Future<void> localDelete(String workoutId, String exerciseId) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -63,31 +70,33 @@ class WorkoutExercisesDao {
     );
   }
 
+  /// Deletes all workout exercises from the local database.
   Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
 
-
   ////////////////////////////////////////////////////////////
   /////////////////// FIREBASE FUNCTIONS /////////////////////
   ////////////////////////////////////////////////////////////
 
-Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, String workoutId) async {
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('workoutExercises')
-      .where('workoutId', isEqualTo: workoutId)
-      .get();
+  /// Deletes all workout exercises not in the provided list from Firebase and locally.
+  Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, String workoutId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workoutExercises')
+        .where('workoutId', isEqualTo: workoutId)
+        .get();
 
-  for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    if (!exercises.any((exercise) => exercise.exerciseId == data['exerciseId'])) {
-      await doc.reference.delete();
-      await localDelete(data['workoutId'], data['exerciseId']);
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      if (!exercises.any((exercise) => exercise.exerciseId == data['exerciseId'])) {
+        await doc.reference.delete();
+        await localDelete(data['workoutId'], data['exerciseId']);
+      }
     }
   }
-}
 
+  /// Deletes all workout exercises with a specific workout ID from Firebase and locally.
   Future<void> deleteAllWorkoutExercisesWithWorkoutId(String workoutId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('workoutExercises')
@@ -104,6 +113,7 @@ Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, Strin
     }
   }
 
+  /// Fetches all workout exercises for a specific workout ID from Firebase.
   Future<Map<String, dynamic>> fireBaseFetchAllWorkoutExercises(
       String workoutId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -128,6 +138,7 @@ Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, Strin
     };
   }
 
+  /// Creates a new workout exercise in Firebase and updates it locally.
   Future<void> fireBaseCreateWorkoutExercise(String workoutId, String exerciseId,
       int reps, int sets, int exerciseOrder) async {
     // Check if the workoutExercise already exists
@@ -175,6 +186,7 @@ Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, Strin
     }
   }
 
+  /// Fetches a specific workout exercise by workout ID and exercise ID from Firebase.
   Future<WorkoutExercises?> fireBaseFetchById(String workoutId, String exerciseId) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('workoutExercises')
@@ -199,6 +211,7 @@ Future<void> deleteAllWorkoutExercisesNotInList(List<Exercises> exercises, Strin
     );
   }
 
+  /// Deletes all inactive workout exercises from Firebase.
   Future<Map<String, dynamic>> fireBaseDeleteInactiveWorkoutExercises(
       List<String> activeWorkoutIds) async {
     if (activeWorkoutIds.isEmpty) {

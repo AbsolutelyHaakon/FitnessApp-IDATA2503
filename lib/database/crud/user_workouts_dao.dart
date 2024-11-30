@@ -9,9 +9,11 @@ import 'package:sqflite/sqflite.dart';
 
 import '../tables/workout.dart';
 
+/// Data Access Object (DAO) for handling user workouts in the database
 class UserWorkoutsDao {
   final tableName = 'userWorkouts';
 
+  /// Create a new user workout in the local database
   Future<UserWorkouts> localCreate(UserWorkouts userWorkout) async {
     final database = await DatabaseService().database;
 
@@ -38,6 +40,7 @@ class UserWorkoutsDao {
     return userWorkout;
   }
 
+  /// Update an existing user workout in the local database
   Future<int> localUpdate(UserWorkouts userWorkout) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -49,12 +52,14 @@ class UserWorkoutsDao {
     );
   }
 
+  /// Fetch all user workouts from the local database
   Future<List<UserWorkouts>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
+  /// Fetch user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchByUserId(String userId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -65,6 +70,7 @@ class UserWorkoutsDao {
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
+  /// Fetch a specific user workout by user ID and workout ID from the local database
   Future<UserWorkouts?> localFetchById(String userId, String workoutId) async {
     final database = await DatabaseService().database;
     final List<Map<String, dynamic>> maps = await database.query(
@@ -80,6 +86,7 @@ class UserWorkoutsDao {
     }
   }
 
+  /// Fetch a specific user workout by user workout ID from the local database
   Future<UserWorkouts?> localFetchByUserWorkoutsId(String userWorkoutId) async {
     final database = await DatabaseService().database;
     final List<Map<String, dynamic>> maps = await database.query(
@@ -95,6 +102,7 @@ class UserWorkoutsDao {
     }
   }
 
+  /// Delete a specific user workout by user workout ID from the local database
   Future<void> localDelete(String userWorkoutId) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -104,11 +112,13 @@ class UserWorkoutsDao {
     );
   }
 
-  Future<void> localTruncate() async{
+  /// Delete all user workouts from the local database
+  Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
 
+  /// Fetch upcoming user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 
@@ -122,6 +132,7 @@ class UserWorkoutsDao {
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
+  /// Fetch previous user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchPreviousUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 
@@ -135,6 +146,7 @@ class UserWorkoutsDao {
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
+  /// Fetch upcoming workouts by user ID from the local database
   Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
     final database = await DatabaseService().database;
 
@@ -155,6 +167,7 @@ class UserWorkoutsDao {
     return upcomingWorkouts;
   }
 
+  /// Fetch previous workouts by user ID from the local database
   Future<Map<Workouts, DateTime>> FetchPreviousWorkouts(String uid) async {
     final database = await DatabaseService().database;
 
@@ -175,6 +188,7 @@ class UserWorkoutsDao {
     return upcomingWorkouts;
   }
 
+  /// Set all user workouts to inactive in the local database
   Future<void> localSetAllInactive() async {
     final database = await DatabaseService().database;
     await database.update(
@@ -183,6 +197,7 @@ class UserWorkoutsDao {
     );
   }
 
+  /// Set a specific user workout to active or inactive in the local database
   Future<void> localSetActive(
       String workoutId, DateTime date, bool isActive) async {
     final database = await DatabaseService().database;
@@ -194,6 +209,7 @@ class UserWorkoutsDao {
     );
   }
 
+  /// Update the active status of a specific user workout in the local database
   Future<void> localUpdateActive(
       UserWorkouts userWorkout, bool isActive) async {
     final database = await DatabaseService().database;
@@ -205,6 +221,7 @@ class UserWorkoutsDao {
     );
   }
 
+  /// Fetch the active user workout from the local database
   Future<Workouts?> fetchActiveUserWorkout() async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -231,6 +248,7 @@ class UserWorkoutsDao {
   ////////////// FIREBASE FUNCTIONS ///////////////////////
   /////////////////////////////////////////////////////////
 
+  /// Fetch a user workout by ID from Firebase
   Future<UserWorkouts> fireBaseFetchUserWorkoutById(
       String userWorkoutId) async {
     DocumentSnapshot doc = await FirebaseFirestore.instance
@@ -243,6 +261,7 @@ class UserWorkoutsDao {
     return UserWorkouts.fromMap(data);
   }
 
+  /// Create a new user workout in Firebase
   Future<String?> fireBaseCreateUserWorkout(
       String userId, String workoutId, DateTime date) async {
     DocumentReference docRef =
@@ -267,6 +286,7 @@ class UserWorkoutsDao {
     return newDocId;
   }
 
+  /// Update an existing user workout in Firebase
   Future<String> fireBaseUpdateUserWorkout(
       String userWorkoutId,
       String userId,
@@ -303,6 +323,7 @@ class UserWorkoutsDao {
     }
   }
 
+  /// Fetch upcoming workouts by user ID from Firebase
   Future<Map<String, dynamic>> fireBaseFetchUpcomingWorkouts(String uid) async {
     DateTime startOfDay =
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -322,6 +343,7 @@ class UserWorkoutsDao {
     return {'upcomingWorkouts': upcomingWorkouts};
   }
 
+  /// Delete a user workout from Firebase
   Future<bool> fireBaseDeleteUserWorkout(UserWorkouts userWorkout) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (userWorkout != null && uid != null) {
@@ -339,6 +361,7 @@ class UserWorkoutsDao {
     return false;
   }
 
+  /// Fetch previous workouts by user ID from Firebase
   Future<Map<String, dynamic>> fireBaseFetchPreviousWorkouts(String uid) async {
     QuerySnapshot previousWorkoutsQuery = await FirebaseFirestore.instance
         .collection('userWorkouts')
@@ -355,6 +378,7 @@ class UserWorkoutsDao {
     return {'previousWorkouts': previousWorkouts};
   }
 
+  /// Replace a user workout in Firebase
   Future<bool> fireBaseReplaceUserWorkout(
       UserWorkouts userWorkout, Workouts newWorkout) async {
     final deleted = await fireBaseDeleteUserWorkout(userWorkout);
@@ -366,6 +390,7 @@ class UserWorkoutsDao {
     return false;
   }
 
+  /// Set personal bests for a user in Firebase
   Future<void> fireBaseSetPersonalBests(String uid) async {
     if (uid == '') return;
     final result = await fireBaseFetchPreviousWorkouts(uid);
@@ -415,6 +440,7 @@ class UserWorkoutsDao {
     }
   }
 
+  /// Get personal bests for a user from Firebase
   Future<Map<String, dynamic>> fireBaseGetPersonalBests(String uid) async {
     if (uid == '') return {};
 

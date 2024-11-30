@@ -5,6 +5,8 @@ import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/prof
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
+/// SearchUsers page to search for users.
+
 class SearchUsers extends StatefulWidget {
   const SearchUsers({super.key});
 
@@ -13,32 +15,36 @@ class SearchUsers extends StatefulWidget {
 }
 
 class _SearchUsersState extends State<SearchUsers> {
-  final SocialFeedData _socialFeedData = SocialFeedData();
-  List<LocalUser> _allUsers = [];
-  List<LocalUser> _filteredUsers = [];
-  final FocusNode _searchFocusNode = FocusNode();
-  final TextEditingController _searchController = TextEditingController();
+  final SocialFeedData _socialFeedData = SocialFeedData(); // Instance to fetch data
+  List<LocalUser> _allUsers = []; // List to store all users
+  List<LocalUser> _filteredUsers = []; // List to store filtered users
+  final FocusNode _searchFocusNode = FocusNode(); // Focus node for search field
+  final TextEditingController _searchController = TextEditingController(); // Controller for search field
 
   @override
   void initState() {
     super.initState();
-    getUsers();
+    getUsers(); // Fetch users when the widget is initialized
   }
 
+  // Function to fetch users from the database
   Future<void> getUsers() async {
-  try {
-    final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch();
-    setState(() {
-      _allUsers = fetchedUsers["users"]?.where((user) => user.userId != FirebaseAuth.instance.currentUser?.uid).toList() ?? [];
-      _filteredUsers = _allUsers;
-    }); 
-  } catch (e) {
-    print("Error fetching users: $e");
+    try {
+      final fetchedUsers = await _socialFeedData.fireBaseFetchUsersForSearch(); // Fetch users
+      setState(() {
+        // Update state with fetched users, excluding the current user
+        _allUsers = fetchedUsers["users"]?.where((user) => user.userId != FirebaseAuth.instance.currentUser?.uid).toList() ?? [];
+        _filteredUsers = _allUsers; // Initially, all users are shown
+      });
+    } catch (e) {
+      print("Error fetching users: $e"); // Print error if fetching fails
+    }
   }
-}
 
+  // Function to filter users based on search query
   void _filterUsers(String query) {
     setState(() {
+      // Update filtered users list based on query
       _filteredUsers = _allUsers
           .where((user) => user.email.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -49,37 +55,38 @@ class _SearchUsersState extends State<SearchUsers> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        color: AppColors.fitnessBackgroundColor,
+        width: double.infinity, // Make container take full width
+        color: AppColors.fitnessBackgroundColor, // Set background color
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0), // Padding around search field
               child: TextField(
-                focusNode: _searchFocusNode,
-                controller: _searchController,
+                focusNode: _searchFocusNode, // Set focus node
+                controller: _searchController, // Set controller
                 decoration: const InputDecoration(
-                  hintText: 'Search users...',
-                  border: OutlineInputBorder(),
-                  enabledBorder: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: AppColors.fitnessMainColor),
+                  hintText: 'Search users...', // Placeholder text
+                  border: OutlineInputBorder(), // Border style
+                  enabledBorder: InputBorder.none, // No border when enabled
+                  prefixIcon: Icon(Icons.search, color: AppColors.fitnessMainColor), // Search icon
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent),
+                    borderSide: BorderSide(color: Colors.transparent), // No border when focused
                   ),
                 ),
                 style: const TextStyle(
-                    color: AppColors.fitnessPrimaryTextColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15),
-                onChanged: _filterUsers,
+                    color: AppColors.fitnessPrimaryTextColor, // Text color
+                    fontWeight: FontWeight.w500, // Text weight
+                    fontSize: 15), // Text size
+                onChanged: _filterUsers, // Call filter function on text change
               ),
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: _filteredUsers.length,
+                itemCount: _filteredUsers.length, // Number of items in the list
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
+                      // Navigate to profile page on tap
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -89,15 +96,16 @@ class _SearchUsersState extends State<SearchUsers> {
                     },
                     child: ListTile(
                       leading: CircleAvatar(
+                        // Display first letter of user's email
                         child: Text(_filteredUsers[index].email[0], style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-                        backgroundColor: AppColors.fitnessMainColor,
+                        backgroundColor: AppColors.fitnessMainColor, // Avatar background color
                       ),
                       title: Text(
-                        _filteredUsers[index].email,
+                        _filteredUsers[index].email, // Display user's email
                         style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                          color: AppColors.fitnessPrimaryTextColor,
+                          fontWeight: FontWeight.w500, // Text weight
+                          fontSize: 18, // Text size
+                          color: AppColors.fitnessPrimaryTextColor, // Text color
                         ),
                       ),
                     ),
@@ -108,7 +116,7 @@ class _SearchUsersState extends State<SearchUsers> {
           ],
         ),
       ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
+      backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
     );
   }
 }

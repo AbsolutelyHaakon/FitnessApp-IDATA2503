@@ -6,11 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'workout_log.dart';
-
-// Last edited: 25.11.2024
-// Last edited by: Di Xie
-
 class DetailedWorkoutLog extends StatelessWidget {
   final MapEntry<UserWorkouts, Workouts> workoutMapEntry;
 
@@ -87,6 +82,7 @@ class DetailedWorkoutLog extends StatelessWidget {
     );
   }
 
+  // Function to build the section title
   Widget _buildSectionTitle(String title) {
     return Center(
       child: Text(
@@ -100,6 +96,7 @@ class DetailedWorkoutLog extends StatelessWidget {
     );
   }
 
+  // Function to build a card with the given children widgets
   Widget _buildCard({required List<Widget> children}) {
     return Card(
       color: AppColors.fitnessBackgroundColor,
@@ -115,6 +112,7 @@ class DetailedWorkoutLog extends StatelessWidget {
     );
   }
 
+  // Function to build a row with label and value
   Widget _buildInfoRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

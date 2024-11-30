@@ -4,11 +4,7 @@ import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
-import 'package:fitnessapp_idata2503/modules/during%20workout/break_timer_module.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/dw_current_exercise.dart';
-import 'package:fitnessapp_idata2503/modules/during%20workout/dw_end_workout.dart';
-import 'package:fitnessapp_idata2503/modules/during%20workout/dw_next_exercise.dart';
-import 'package:fitnessapp_idata2503/modules/workout_plan_module.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../database/tables/workout.dart';
 import '../../styles.dart';
 
+// Initialize the notifications plugin
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 

@@ -17,11 +17,12 @@ import '../../database/Initialization/get_data_from_server.dart';
 class SettingsPage extends StatelessWidget {
   final VoidCallback? onLogout;
 
-  SettingsPage({Key? key, this.onLogout}) : super(key: key);
+  SettingsPage({super.key, this.onLogout});
 
   final GetDataFromServer _getDataFromServer = GetDataFromServer();
   final UserDao _userDao = UserDao();
 
+  // Function to synchronize data with the cloud
   // TODO: Implement proper feedback logic on the sync function
   void _synchronizeCloud(BuildContext context) async {
     try {
@@ -46,6 +47,7 @@ class SettingsPage extends StatelessWidget {
     }
   }
 
+  // Function to log out the user
   Future<void> _logout() async {
     // Set all local workouts and user workouts to inactive when logging out to prevent data from being displayed
     hasActiveWorkout.value = false;
@@ -192,6 +194,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
+  // Helper function to build each settings item
   Widget _buildSettingsItem(BuildContext context,
       {required IconData icon,
       required String text,

@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 
 import '../../database/crud/workout_dao.dart';
 
+// Screen displayed before starting a workout
 class PreWorkoutScreen extends StatefulWidget {
   UserWorkouts? userWorkouts;
   Workouts? workouts;
@@ -55,6 +56,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     }
   }
 
+  // Fetch workout data
   _getWorkoutData(bool isUpdate) async {
     if (isUpdate) {
       if (widget.workouts == null) {
@@ -70,6 +72,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     fetchExercises();
   }
 
+  // Fetch user workout data
   _getUserWorkoutData() async {
     if (widget.userWorkouts == null) {
       return;
@@ -99,6 +102,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
     });
   }
 
+  // Fetch exercises for the workout
   Future<void> fetchExercises() async {
     try {
       List<Exercises> tempExercises = [];

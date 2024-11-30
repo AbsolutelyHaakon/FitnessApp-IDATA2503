@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
@@ -8,9 +6,11 @@ import 'package:sqflite/sqflite.dart';
 
 import '../imgur_service.dart';
 
+// DAO for handling exercises
 class ExerciseDao {
   final tableName = 'exercises';
 
+  // Function to create a new exercise in the local database
   Future<int> localCreate(Exercises exercise) async {
     final database = await DatabaseService().database;
     return await database.insert(
@@ -20,6 +20,7 @@ class ExerciseDao {
     );
   }
 
+  // Function to update an existing exercise in the local database
   Future<int> localUpdate(Exercises exercise) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -31,12 +32,14 @@ class ExerciseDao {
     );
   }
 
+  // Function to fetch all exercises from the local database
   Future<List<Exercises>> localFetchAll() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);
     return data.map((entry) => Exercises.fromMap(entry)).toList();
   }
 
+  // Function to fetch a specific exercise by its ID from the local database
   Future<Exercises> localFetchById(int exerciseId) async {
     final database = await DatabaseService().database;
     final data = await database.query(
@@ -47,6 +50,7 @@ class ExerciseDao {
     return Exercises.fromMap(data.first);
   }
 
+  // Function to delete a specific exercise by its ID from the local database
   Future<void> localDelete(String exerciseId) async {
     final database = await DatabaseService().database;
     await database.delete(
@@ -56,16 +60,19 @@ class ExerciseDao {
     );
   }
 
+  // Function to delete all exercises from the local database
   Future<void> localTruncate() async {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
 
+  // Function to fetch all exercises as a map from the local database
   Future<List<Map<String, dynamic>>> localFetchAllAsMap() async {
     final database = await DatabaseService().database;
     return await database.query(tableName);
   }
 
+  // Function to fetch all exercises, both public and private, for a specific user from the local database
   Future<Map<String, dynamic>> localFetchAllExercises(String? userId) async {
     final database = await DatabaseService().database;
 
@@ -96,6 +103,7 @@ class ExerciseDao {
   /////////// FIREBASE FUNCTIONS //////////////
   /////////////////////////////////////////////
 
+  // Function to fetch all exercises from Firebase and store them in the local database if they don't exist
   Future<void> fireBaseFirstTimeStartup() async {
     final database = await DatabaseService().database;
 
@@ -115,6 +123,7 @@ class ExerciseDao {
     }
   }
 
+  // Function to delete a specific exercise from Firebase and the local database
   Future<bool> fireBaseDeleteExercise(String exerciseId) async {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
         .collection('exercises')
@@ -132,6 +141,7 @@ class ExerciseDao {
     }
   }
 
+  // Function to fetch all exercises from Firebase
   Future<Map<String, dynamic>> fireBaseFetchAllExercisesFromFireBase(
       String? userId) async {
     // Fetch public exercises
@@ -169,6 +179,7 @@ class ExerciseDao {
     }
   }
 
+  // Function to fetch a specific exercise from Firebase by its ID
   Future<Exercises?> fireBaseFetchExercise(String exerciseId) async {
     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
         .collection('exercises')
@@ -183,6 +194,7 @@ class ExerciseDao {
     }
   }
 
+  // Function to update a specific exercise in Firebase and the local database
   Future<Map<String, dynamic>> fireBaseUpdateExercise(
       String exerciseId,
       String? name,
@@ -262,6 +274,7 @@ class ExerciseDao {
     }
   }
 
+  // Function to create a new exercise in Firebase and the local database
   Future<Map<String, dynamic>> fireBaseCreateExercise(
       String name,
       String? description,
@@ -318,6 +331,7 @@ class ExerciseDao {
 
   ImgurService imgurService = ImgurService();
 
+  // Function to upload an image to Imgur and return the URL
   Future<String> uploadImage(XFile image) async {
     String? imgurUrl = await imgurService.saveImageToImgur(image);
     if (imgurUrl != null) {
@@ -333,6 +347,7 @@ class ExerciseDao {
 ////////////////////////////  Firebase Admin /////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+  // Function to get the count of exercises in the local database
   Future<int> getExercisesCount() async {
     final database = await DatabaseService().database;
     final data = await database.query(tableName);

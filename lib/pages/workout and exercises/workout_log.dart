@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
+// Workout log page widget
 class WorkoutLog extends StatefulWidget {
   final bool isCreatingPost;
 
@@ -20,6 +21,7 @@ class WorkoutLog extends StatefulWidget {
   _WorkoutLogState createState() => _WorkoutLogState();
 }
 
+// Workout log page state.
 class _WorkoutLogState extends State<WorkoutLog> {
   bool isAscending = false;
   String _selectedFilter = 'All';
@@ -43,6 +45,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
     fetchData();
   }
 
+  // Fetch the data from the database
   Future<void> fetchData() async {
       final result = await _userWorkoutsDao.localFetchPreviousUserWorkouts(
           FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
@@ -86,6 +89,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
     return monthNames[monthIndex];
   }
 
+  // Function to confirm deletion of a workout
   Future<bool?> _confirmDelete(BuildContext context) {
     return showDialog<bool>(
       context: context,
@@ -118,6 +122,7 @@ class _WorkoutLogState extends State<WorkoutLog> {
     );
   }
 
+  // Build the workout log page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -303,6 +308,7 @@ SvgPicture _getIconForCategory(String category) {
   return SvgPicture.asset('assets/icons/defaultIcon.svg', width: 40, height: 40);
 }
 
+// Function to build the workout log entry
 Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkouts, Workouts> workoutMapEntry}) {
   final UserWorkouts userWorkout = workoutMapEntry.key;
   final Workouts workout = workoutMapEntry.value;

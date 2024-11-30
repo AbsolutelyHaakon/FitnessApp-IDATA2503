@@ -3,16 +3,13 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/imgur_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database_service.dart';
 import '../tables/user.dart';
 
-/**
- * Data Access Object for the User table
- * All CRUD operations are defined here
- */
+/// Data Access Object for the User table
+/// All CRUD operations are defined here
 
 class UserDao {
   final tableName = 'users';

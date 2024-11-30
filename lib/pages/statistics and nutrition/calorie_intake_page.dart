@@ -18,42 +18,47 @@ class CalorieIntakePage extends StatefulWidget {
 
 class _CalorieIntakePageState extends State<CalorieIntakePage>
     with SingleTickerProviderStateMixin {
-  Map<DateTime, int> dailyIntake = <DateTime, int>{};
-  List<MapEntry<DateTime, int>> hourlyIntake = [];
-  double goal = 2000; // Example goal in calories
-  bool isLoading = false;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-  late Future<void> _fetchDataFuture;
-  DateTime today = DateTime.now();
-  double todayIntake = 0;
-  double intakePercentage = 0.0;
-  List<FlSpot> cumulativeSpots = [];
-  double cumulativeSum = 0;
+  Map<DateTime, int> dailyIntake = <DateTime, int>{}; // Stores daily calorie intake
+  List<MapEntry<DateTime, int>> hourlyIntake = []; // Stores hourly calorie intake
+  double goal = 2500; // Example goal in milliliters
+  bool isLoading = false; // Loading state
+  late AnimationController _animationController; // Animation controller
+  late Animation<double> _animation; // Animation
+  late Future<void> _fetchDataFuture; // Future for fetching data
+  DateTime today = DateTime.now(); // Today's date
+  double todayIntake = 0; // Today's calorie intake
+  double intakePercentage = 0.0; // Percentage of calorie intake goal achieved
+  List<FlSpot> cumulativeSpots = []; // Cumulative calorie intake spots for graph
+  double cumulativeSum = 0; // Cumulative sum of calorie intake
 
   @override
   void initState() {
     super.initState();
-    fetchAllUserGoals();
-    _fetchDataFuture = fetchIntakeData();
+    fetchAllUserGoals(); // Fetch user goals from the database
+    _fetchDataFuture = fetchIntakeData(); // Fetch intake data
 
+    // Initialize animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
 
+    // Initialize animation
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     );
 
+    // Add listener to animation controller
     _animationController.addListener(() {
       setState(() {});
     });
 
+    // Start the animation
     _animationController.forward();
   }
 
+  // Fetch user goals from the database
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
@@ -64,6 +69,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
     }
   }
 
+  // Fetch intake data from the database
   Future<void> fetchIntakeData() async {
     todayIntake = 0;
     if (FirebaseAuth.instance.currentUser?.uid != null) {
@@ -107,6 +113,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
     }
   }
 
+  // Add new calorie intake data
   Future<void> _addData() async {
     int calorieIntake = 0;
 
@@ -169,7 +176,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                         null,
                         null,
                       );
-                      fetchIntakeData();
+                      fetchIntakeData(); // Refresh intake data
                     }
                     Navigator.of(context).pop();
                   },
@@ -229,7 +236,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
           if (FirebaseAuth.instance.currentUser != null)
             TextButton(
               onPressed: () async {
-                _addData();
+                _addData(); // Add new data
               },
               child: const Text('Add Data',
                   style: TextStyle(color: Color(0xFFCC7F48))),
@@ -237,7 +244,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
           : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -259,7 +266,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                             height: 180.0,
                             child: CircularProgressIndicator(
                               value: _animation.value *
-                                  (todayIntake / goal),
+                                  (todayIntake / goal), // Progress indicator
                               strokeWidth: 18.0,
                               strokeCap: StrokeCap.round,
                               valueColor:
@@ -272,7 +279,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                           Text(
                             goal - todayIntake >= 0
                                 ?  '${(goal - todayIntake).abs()} cal'
-                                : '0.0 cal',
+                                : '0.0 cal', // Remaining intake
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -298,7 +305,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                         Text(
                           intakePercentage >= goal
                               ? 'Congratulations! Goal Reached!'
-                              : 'Current: ${todayIntake.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal',
+                              : 'Current: ${todayIntake.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal', // Display current and goal intake
                           style: const TextStyle(
                             color: AppColors.fitnessSecondaryTextColor,
                             fontSize: 14,
@@ -341,7 +348,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                       borderData: FlBorderData(show: true),
                       lineBarsData: [
                         LineChartBarData(
-                          spots: cumulativeSpots,
+                          spots: cumulativeSpots, // Cumulative spots
                           isCurved: false,
                           color: const Color(0xFFCC7F48),
                           barWidth: 4,
@@ -360,7 +367,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                             label: HorizontalLineLabel(
                               show: true,
                               alignment: Alignment.topRight,
-                              labelResolver: (line) => 'Goal',
+                              labelResolver: (line) => 'Goal', // Goal line
                               style: TextStyle(
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold,
@@ -381,7 +388,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                   child: BarChart(
                     BarChartData(
                       alignment: BarChartAlignment.spaceAround,
-                      maxY: maxY,
+                      maxY: maxY, // Max Y value for bar chart
                       barTouchData: BarTouchData(enabled: false),
                       titlesData: FlTitlesData(
                         show: true,
@@ -395,7 +402,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                                 axisSide: meta.axisSide,
                                 space: 5,
                                 child: Text(
-                                  DateFormat('MM/dd').format(date),
+                                  DateFormat('MM/dd').format(date), // Date format
                                   style: const TextStyle(
                                     color: Color(0xFFCC7F48),
                                     fontWeight: FontWeight.bold,
@@ -421,7 +428,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                           x: index,
                           barRods: [
                             BarChartRodData(
-                              toY: intake.toDouble(),
+                              toY: intake.toDouble(), // Bar height
                               color: Color(0xFFCC7F48),
                               width: 16,
                               borderRadius: BorderRadius.circular(8),
@@ -441,7 +448,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                     DateTime date = entry.key;
                     double intake = entry.value.toDouble();
                     String formattedDate =
-                    DateFormat('MMM dd, yyyy').format(date);
+                    DateFormat('MMM dd, yyyy').format(date); // Format date
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       padding: const EdgeInsets.all(16.0),
@@ -456,7 +463,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                               style:
                               Theme.of(context).textTheme.bodyMedium),
                           Text(
-                            '${intake.toStringAsFixed(1)} cal / ${goal.toStringAsFixed(1)} cal',
+                            '${intake.toStringAsFixed(1)} cal / ${goal.toStringAsFixed(1)} cal', // Display intake
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium

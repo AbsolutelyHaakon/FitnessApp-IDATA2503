@@ -8,8 +8,6 @@ import '../tables/user.dart';
 /// 
 /// Later on it will also be used for fetching posts for the social feed
 /// 
-/// Last edited: 14.11.2024
-/// Last edited by: Håkon Svensen Karlsen
 
 class SocialFeedData {
 

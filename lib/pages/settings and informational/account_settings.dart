@@ -4,17 +4,28 @@ import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/edit_f
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 
-class AccountSettingsPage extends StatelessWidget {
-  AccountSettingsPage({super.key});
+/// Account settings page for the user to view and edit their account settings.
+class AccountSettingsPage extends StatefulWidget {
+  const AccountSettingsPage({super.key});
 
+  @override
+  State<AccountSettingsPage> createState() => _AccountSettingsPageState();
+}
+
+class _AccountSettingsPageState extends State<AccountSettingsPage> {
   late String displayName;
+
   late String email;
+
   late int height;
+
   late int weightTarget;
+
   late int waterTarget;
+
   late int caloriesIntakeTarget;
+
   late int caloriesBurnedTarget;
 
   Future<void> getUserData() async {

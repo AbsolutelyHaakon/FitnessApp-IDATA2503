@@ -10,6 +10,7 @@ import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import '../crud/workout_exercises_dao.dart';
 import '../tables/workout_exercises.dart';
 
+/// This class is responsible for synchronizing data between the local database and Firebase.
 class GetDataFromServer {
   final ExerciseDao exerciseDao = ExerciseDao();
   final WorkoutDao workoutsDao = WorkoutDao();
@@ -17,6 +18,7 @@ class GetDataFromServer {
   final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
   final UserWorkoutsDao userWorkoutsDao = UserWorkoutsDao();
 
+  /// This function synchronizes all data related to the user.
   Future<void> syncData(String? userId) async {
     await syncExercises(userId);
     await syncWorkouts(userId);
@@ -24,6 +26,7 @@ class GetDataFromServer {
     await syncUserWorkouts(userId);
   }
 
+  /// This function synchronizes exercises data.
   Future<void> syncExercises(String? userId) async {
     if (userId == null) {
       return;
@@ -41,6 +44,7 @@ class GetDataFromServer {
     }
   }
 
+  /// This function synchronizes workouts data.
   Future<void> syncWorkouts(String? userId) async {
     if (userId == null) {
       return;
@@ -59,10 +63,9 @@ class GetDataFromServer {
       await workoutsDao.localCreate(workout);
       await syncWorkoutExercises(workout.workoutId);
     }
-
-
   }
 
+  /// This function synchronizes workout exercises data.
   Future<void> syncWorkoutExercises(String? workoutId) async {
     if (workoutId == null) {
       return;
@@ -78,6 +81,7 @@ class GetDataFromServer {
     }
   }
 
+  /// This function synchronizes favorite workouts data.
   Future<void> syncFavoriteWorkouts(String? userId) async {
     // Fetch all favorite workouts from Firebase
     Map<String, dynamic> firebaseData =
@@ -93,6 +97,7 @@ class GetDataFromServer {
     }
   }
 
+  /// This function synchronizes user workouts data.
   Future<void> syncUserWorkouts(String? userId) async {
     if (userId == null) {
       return;
@@ -111,5 +116,5 @@ class GetDataFromServer {
     for (UserWorkouts userWorkouts in allUserWorkouts) {
       await userWorkoutsDao.localCreate(userWorkouts);
     }
-    }
   }
+}

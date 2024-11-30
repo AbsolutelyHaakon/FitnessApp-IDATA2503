@@ -8,9 +8,6 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
 /// SocialFeed page displaying a feed of posts from other users.
-///
-/// Last edited: 26.11.2024
-/// Last edited by: Håkon Karlsen
 
 class SocialFeed extends StatefulWidget {
   const SocialFeed({super.key});
@@ -20,71 +17,71 @@ class SocialFeed extends StatefulWidget {
 }
 
 class _SocialFeedState extends State<SocialFeed> {
-  final PostsDao _postsDao = PostsDao();
-  final SocialFeedData _socialFeedData = SocialFeedData();
+  final PostsDao _postsDao = PostsDao(); // DAO for handling posts
+  final SocialFeedData _socialFeedData = SocialFeedData(); // Data for social feed
 
-  List<Posts> _posts = [];
-  bool _isReady = false;
+  List<Posts> _posts = []; // List to store posts
+  bool _isReady = false; // Flag to check if data is ready
 
   @override
   void initState() {
     super.initState();
-    _fetchFeed();
+    _fetchFeed(); // Fetch the feed when the widget is initialized
   }
 
   /// Fetches the social feed data for the current user.
   Future<void> _fetchFeed() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser; // Get the current user
 
-    if (user == null) return;
+    if (user == null) return; // If no user is logged in, return
 
     if (!mounted) return;
-    setState(() => _isReady = false);
+    setState(() => _isReady = false); // Set loading state
 
     try {
-      final fetchedPosts = await _postsDao.fireBaseFetchFeed(user.uid);
+      final fetchedPosts = await _postsDao.fireBaseFetchFeed(user.uid); // Fetch posts from Firebase
 
       if (fetchedPosts != null && fetchedPosts["posts"] != null) {
         if (!mounted) return;
         setState(() {
-          _posts = fetchedPosts["posts"];
-          _isReady = true;
+          _posts = fetchedPosts["posts"]; // Update posts list
+          _isReady = true; // Data is ready
         });
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() => _isReady = true);
-      debugPrint("Error fetching feed: $e");
+      setState(() => _isReady = true); // Set ready state even if there's an error
+      debugPrint("Error fetching feed: $e"); // Print error message
     }
   }
 
   /// Refreshes the social feed.
   Future<void> _refreshFeed() async {
-    await _fetchFeed();
+    await _fetchFeed(); // Fetch the feed again
   }
 
   @override
   Widget build(BuildContext context) {
-    final appBarHeight = MediaQuery.of(context).size.height * 0.1;
+    final appBarHeight = MediaQuery.of(context).size.height * 0.1; // Calculate app bar height
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: _buildAppBar(context),
+        preferredSize: Size.fromHeight(appBarHeight), // Set app bar height
+        child: _buildAppBar(context), // Build the app bar
       ),
       body: Stack(
         children: [
           _isReady
-              ? _buildFeedSection()
+              ? _buildFeedSection() // Show feed if data is ready
               : const Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.fitnessMainColor,
+                    color: AppColors.fitnessMainColor, // Show loading indicator
                   ),
                 ),
-          _buildFloatingActionButton(context),
+          _buildFloatingActionButton(context), // Show floating action button
         ],
       ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
+      backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
     );
   }
 
@@ -94,24 +91,24 @@ class _SocialFeedState extends State<SocialFeed> {
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.fitnessModuleColor,
-            width: 1.0,
+            color: AppColors.fitnessModuleColor, // Set border color
+            width: 1.0, // Set border width
           ),
         ),
       ),
-      padding: const EdgeInsets.only(left: 20.0),
+      padding: const EdgeInsets.only(left: 20.0), // Set padding
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.centerLeft, // Align to the left
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
           children: [
             Text(
-              'Social Feed',
-              style: Theme.of(context).textTheme.bodyLarge,
+              'Social Feed', // Title
+              style: Theme.of(context).textTheme.bodyLarge, // Set text style
             ),
             Text(
-              'Explore posts from other users',
-              style: Theme.of(context).textTheme.bodyMedium,
+              'Explore posts from other users', // Subtitle
+              style: Theme.of(context).textTheme.bodyMedium, // Set text style
             ),
           ],
         ),
@@ -122,28 +119,28 @@ class _SocialFeedState extends State<SocialFeed> {
   /// Builds the feed section with a refreshable list of posts.
   Widget _buildFeedSection() {
     return RefreshIndicator(
-      onRefresh: _refreshFeed,
-      color: AppColors.fitnessMainColor,
-      backgroundColor: AppColors.fitnessBackgroundColor,
+      onRefresh: _refreshFeed, // Refresh feed on pull down
+      color: AppColors.fitnessMainColor, // Set refresh indicator color
+      backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
       child: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0), // Set padding
               child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _posts.length,
+                shrinkWrap: true, // Shrink wrap the list
+                physics: const NeverScrollableScrollPhysics(), // Disable scrolling
+                itemCount: _posts.length, // Number of posts
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 40.0),
+                    padding: const EdgeInsets.only(bottom: 40.0), // Set padding
                     child: Container(
-                      constraints: const BoxConstraints(minHeight: 200),
+                      constraints: const BoxConstraints(minHeight: 200), // Set minimum height
                       child: PostBuilder(
-                        post: _posts[index],
-                        isProfile: false,
-                        onDelete: _refreshFeed,
+                        post: _posts[index], // Build post
+                        isProfile: false, // Not a profile post
+                        onDelete: _refreshFeed, // Refresh feed on delete
                       ),
                     ),
                   );
@@ -159,20 +156,20 @@ class _SocialFeedState extends State<SocialFeed> {
   /// Builds the floating action button for creating new posts.
   Widget _buildFloatingActionButton(BuildContext context) {
     return Positioned(
-      bottom: 35,
-      right: 10,
+      bottom: 35, // Position from bottom
+      right: 10, // Position from right
       child: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CreatePostPage()),
+            MaterialPageRoute(builder: (context) => const CreatePostPage()), // Navigate to create post page
           );
         },
-        backgroundColor: AppColors.fitnessMainColor,
-        shape: const CircleBorder(),
+        backgroundColor: AppColors.fitnessMainColor, // Set button color
+        shape: const CircleBorder(), // Set button shape
         child: const Icon(
-          Icons.add,
-          color: AppColors.fitnessBackgroundColor,
+          Icons.add, // Add icon
+          color: AppColors.fitnessBackgroundColor, // Set icon color
         ),
       ),
     );

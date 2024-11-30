@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_workout_page.dart';
@@ -7,22 +6,31 @@ import 'package:fitnessapp_idata2503/styles.dart';
 
 import '../../database/crud/workout_dao.dart';
 
+/// This class represents the Workout Tab in the admin panel.
+/// It allows the admin to view and manage workouts.
 class WorkoutTab extends StatefulWidget {
+  const WorkoutTab({super.key});
+
   @override
   _WorkoutTabState createState() => _WorkoutTabState();
 }
 
 class _WorkoutTabState extends State<WorkoutTab> {
+  // Boolean to toggle between workout and exercise view
   bool _isExerciseView = false;
+  // Controller for the search text field
   TextEditingController _searchController = TextEditingController();
+  // List to store fetched workouts
   List<Workouts> workouts = [];
 
   @override
   void initState() {
     super.initState();
+    // Fetch public workouts when the widget is initialized
     _fetchPublicWorkouts();
   }
 
+  // Method to fetch public workouts from the database
   void _fetchPublicWorkouts() async {
     workouts.clear();
     final temp = await WorkoutDao().fireBaseFetchPublicWorkouts();
@@ -36,6 +44,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Row to toggle between workout and exercise view
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Row(
@@ -63,6 +72,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
             ],
           ),
         ),
+        // Search text field
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Container(
@@ -86,6 +96,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
             ),
           ),
         ),
+        // Button to create a new preset workout
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Row(
@@ -115,6 +126,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
             ],
           ),
         ),
+        // Display workouts or exercises based on the toggle
         if (!_isExerciseView)
           Expanded(
             child: SingleChildScrollView(

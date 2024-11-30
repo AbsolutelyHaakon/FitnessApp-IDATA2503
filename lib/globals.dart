@@ -27,6 +27,7 @@ List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/customIcon.svg', width: 10, height: 10),
 ];
 
+// Define the categories for the custom workouts
 class SetStats {
   int set;
   int reps;

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/components/Elements/texts.dart';
 import 'package:fitnessapp_idata2503/components/ind_exercise_box.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
@@ -8,10 +7,7 @@ import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/exercise_selector.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../database/crud/workout_dao.dart';
@@ -44,6 +40,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   int _intensity = 1;
   String _selectedCategory = 'Cardio';
 
+  // Function to create an individual exercise box
   createIndExerciseBox(Exercises exercise) {
     return IndExerciseBox(
       key: ValueKey(exercise),
@@ -73,6 +70,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     super.dispose();
   }
 
+  // Check if there is pre-existing data to populate the form
   _checkForPreData() {
     if (widget.preWorkout != null) {
       _titleController.text = widget.preWorkout!.name;
@@ -93,6 +91,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     }
   }
 
+  // Function to create or update a workout
   void _createWorkout() async {
     if (exercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,7 +148,9 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         // Only pop after workout creation succeeds
         Navigator.pop(context, true);
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         // Optionally, show an error dialog or message here
       }
     } else if (_formKey.currentState!.validate() && widget.preWorkout != null) {
@@ -198,6 +199,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     }
   }
 
+  // Function to show category picker
   void _showCategoryPicker(BuildContext context) {
     showCupertinoModalPopup(
       context: context,
@@ -226,6 +228,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
     );
   }
 
+  // Function to show intensity picker
   void _showIntensityPicker(BuildContext context) {
     showCupertinoModalPopup(
       context: context,

@@ -9,6 +9,7 @@ import '../../database/crud/user_dao.dart';
 import '../../database/tables/user_health_data.dart';
 import '../../styles.dart';
 
+// This page displays the user's weight data
 class WeightPage extends StatefulWidget {
   const WeightPage({super.key});
 
@@ -34,25 +35,30 @@ class _WeightPageState extends State<WeightPage>
     super.initState();
     _fetchDataFuture = fetchAllUserGoals();
 
+    // Initialize the animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
 
+    // Define the animation curve
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     );
 
+    // Add a listener to the animation controller
     _animationController.addListener(() {
       setState(() {});
     });
 
+    // Start the animation
     _animationController.forward();
   }
 
   @override
   void dispose() {
+    // Dispose the animation controller
     _animationController.dispose();
     super.dispose();
   }

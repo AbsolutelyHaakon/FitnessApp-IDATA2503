@@ -1,5 +1,6 @@
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -29,8 +30,11 @@ class _RoutePlannerState extends State<RoutePlanner> {
     _getCurrentLocation();
   }
 
+  // Save the route
   Future<void> _saveRoute() async {
-    print('Route saved: $_routePoints');
+    if (kDebugMode) {
+      print('Route saved: $_routePoints');
+    }
 
     if (_routePoints.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -44,17 +48,19 @@ class _RoutePlannerState extends State<RoutePlanner> {
     }
   }
 
+  // Get the current location of the user
   Future<void> _getCurrentLocation() async {
     Location location = Location();
     _currentLocation = await location.getLocation();
     setState(() {});
   }
 
-
+  // When the map is created, set the controller
   void _onMapCreated(GoogleMapController controller) {
     _controller = controller;
   }
 
+  // Add a point to the route
   void _addRoutePoint(LatLng point) {
     setState(() {
       _routePoints.add(point);
@@ -62,6 +68,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
     });
   }
 
+  // Remove the last point from the route
   void _removeLastRoutePoint() {
     if (_routePoints.isNotEmpty) {
       setState(() {
@@ -71,6 +78,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
     }
   }
 
+  // Calculate the total distance of the route
   double _calculateTotalDistance() {
     double totalDistance = 0.0;
     for (int i = 0; i < _routePoints.length - 1; i++) {
@@ -84,6 +92,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
     return totalDistance;
   }
 
+  // Calculate the distance between two coordinates
   double _coordinateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -153,7 +162,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
               ),
               child: Text(
                 'Total Distance: ${_totalDistance.toStringAsFixed(2)} km',
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 16, color: AppColors.fitnessPrimaryTextColor),
               ),
             ),
@@ -169,14 +178,14 @@ class _RoutePlannerState extends State<RoutePlanner> {
             },
             backgroundColor: AppColors.fitnessMainColor,
             foregroundColor: AppColors.fitnessPrimaryTextColor,
-            child: Icon(Icons.save),
+            child: const Icon(Icons.save),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           FloatingActionButton(
             onPressed: _removeLastRoutePoint,
             backgroundColor: AppColors.fitnessMainColor,
             foregroundColor: AppColors.fitnessPrimaryTextColor,
-            child: Icon(Icons.undo),
+            child: const Icon(Icons.undo),
           ),
         ],
       ),

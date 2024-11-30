@@ -10,9 +10,6 @@ import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_log
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../database/crud/user_workouts_dao.dart';
 import '../../database/crud/workout_dao.dart';
 import '../../database/tables/workout.dart';
 
@@ -21,9 +18,7 @@ import '../../database/tables/workout.dart';
 /// Let's the user create a new workout
 /// Let's the user select a workout to start
 /// Let's the user select a date to workout
-///
-/// @Last Edited: 08.11.2024
-/// @Last Edited By: Håkon Svensen Karlsen
+
 
 class WorkoutPage extends StatefulWidget {
   const WorkoutPage({super.key});
@@ -32,6 +27,7 @@ class WorkoutPage extends StatefulWidget {
   _WorkoutPageState createState() => _WorkoutPageState();
 }
 
+// The state of the WorkoutPage
 class _WorkoutPageState extends State<WorkoutPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _addIconController;
@@ -44,6 +40,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   List<FavoriteWorkouts> favoriteWorkouts = [];
   final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
 
+  // Fetch all workouts from the database
   @override
   void initState() {
     super.initState();
@@ -62,6 +59,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     );
   }
 
+  // Fetch all favorite workouts from the database
   Future<void> fetchFavorites() async {
     final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(
         FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
@@ -71,6 +69,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     });
   }
 
+  // Fetch all workouts from the database
   void fetchAllWorkouts(String category) async {
     workouts.clear();
     await fetchFavorites();
@@ -90,12 +89,14 @@ class _WorkoutPageState extends State<WorkoutPage>
     });
   }
 
+  // Dispose of the animation controller
   @override
   void dispose() {
     _addIconController.dispose();
     super.dispose();
   }
 
+  // Toggle the options for creating a new workout
   void _toggleOptions() {
     if (!mounted) return;
     setState(() {
@@ -108,6 +109,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     }
   }
 
+  // Build the WorkoutPage widget
   @override
   Widget build(BuildContext context) {
     final appBarHeight = MediaQuery

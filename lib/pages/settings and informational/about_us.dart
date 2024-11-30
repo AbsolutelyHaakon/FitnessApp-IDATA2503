@@ -2,7 +2,9 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// About Us page to display information about the developers
 class AboutUsPage extends StatelessWidget {
+  // List of developers with their details
   final List<Map<String, String>> developers = [
     {
       'name': 'Adrian Faustino Johansen',
@@ -26,61 +28,63 @@ class AboutUsPage extends StatelessWidget {
     },
   ];
 
+  AboutUsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: true, // Center the title
         title: const Text(
           'Developers',
           style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w900,
-            color: AppColors.fitnessPrimaryTextColor,
+            fontSize: 30, // Title font size
+            fontWeight: FontWeight.w900, // Title font weight
+            color: AppColors.fitnessPrimaryTextColor, // Title color
           ),
         ),
-        backgroundColor: AppColors.fitnessBackgroundColor,
+        backgroundColor: AppColors.fitnessBackgroundColor, // App bar background color
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back,
-              color: AppColors.fitnessMainColor),
+              color: AppColors.fitnessMainColor), // Back button icon
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(); // Go back to the previous screen
           },
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0), // Padding around the body
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // Space at the top
             Expanded(
               child: ListView.builder(
-                itemCount: developers.length,
+                itemCount: developers.length, // Number of developers
                 itemBuilder: (context, index) {
-                  final developer = developers[index];
+                  final developer = developers[index]; // Get developer details
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    padding: const EdgeInsets.symmetric(vertical: 10.0), // Padding around each developer
                     child: Column(
                       children: [
                         CircleAvatar(
-                          radius: 50,
-                          backgroundImage: AssetImage(developer['imageUrl']!),
-                          backgroundColor: AppColors.fitnessMainColor,
+                          radius: 50, // Avatar radius
+                          backgroundImage: AssetImage(developer['imageUrl']!), // Developer image
+                          backgroundColor: AppColors.fitnessMainColor, // Background color
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 10), // Space between avatar and name
                         Text(
-                          developer['name']!,
+                          developer['name']!, // Developer name
                           style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 20, // Name font size
+                            fontWeight: FontWeight.bold, // Name font weight
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 5), // Space between name and credentials
                         Text(
-                          developer['credentials']!,
+                          developer['credentials']!, // Developer credentials
                           style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 14, // Credentials font size
+                            fontWeight: FontWeight.w500, // Credentials font weight
                           ),
                         ),
                       ],
@@ -92,7 +96,7 @@ class AboutUsPage extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
+      backgroundColor: AppColors.fitnessBackgroundColor, // Background color of the page
     );
   }
 }

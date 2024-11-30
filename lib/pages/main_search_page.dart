@@ -7,6 +7,7 @@ void main() {
   runApp(MyApp());
 }
 
+// Main app widget
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Main search page widget
 class MainSearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class MainSearchPage extends StatelessWidget {
       children: [
         Container(
           color: AppColors.fitnessBackgroundColor,
-          child: TabBar(
+          child: const TabBar(
             indicatorColor: AppColors.fitnessMainColor,
             labelColor: AppColors.fitnessMainColor,
             unselectedLabelColor: AppColors.fitnessPrimaryTextColor,
@@ -37,7 +39,7 @@ class MainSearchPage extends StatelessWidget {
             ],
           ),
         ),
-        Expanded(
+        const Expanded(
           child: TabBarView(
             children: [
               SearchUsers(),

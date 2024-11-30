@@ -9,10 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/components/navigation_bar.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'database/crud/exercise_dao.dart';
-import 'database/dummy_data.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// Initialize the FlutterLocalNotificationsPlugin
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -21,8 +21,11 @@ final WorkoutDao _workoutDao = WorkoutDao();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await _initializeFirebase();
 
+  // Set up notification settings for Android and iOS
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -38,10 +41,14 @@ void main() async {
     iOS: initializationSettingsIOS,
   );
 
+  // Initialize local notifications
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // Perform first-time startup tasks for Firebase
   await ExerciseDao().fireBaseFirstTimeStartup();
   await _workoutDao.fireBaseFirstTimeStartup();
 
+  // Fetch active user workout and set global variables accordingly
   var userWorkout = await _userWorkoutsDao.fetchActiveUserWorkout();
   if (userWorkout != null) {
     hasActiveWorkout.value = true;
@@ -61,14 +68,16 @@ void main() async {
     }
   }
 
+  // Run the main application
   runApp(MyApp());
 }
 
+// Initialize Firebase based on the platform (iOS or other)
 Future<void> _initializeFirebase() async {
   if (Firebase.apps.isEmpty) {
     if (Platform.isIOS) {
       await Firebase.initializeApp(
-        name: 'fitnessapp2',
+        name: 'fitnessapp2', // Comment: We could not figure out why this is needed for iOS, and why it breaks is if the name is set in Android
         options: DefaultFirebaseOptions.currentPlatform,
       );
     } else {
@@ -79,6 +88,7 @@ Future<void> _initializeFirebase() async {
   }
 }
 
+// Main application widget
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -143,6 +153,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Wrapper for authentication
 class AuthWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

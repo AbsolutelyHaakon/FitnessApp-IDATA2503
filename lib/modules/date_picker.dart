@@ -7,7 +7,7 @@ import 'package:scroll_date_picker/scroll_date_picker.dart';
 // Last edited by Big D
 
 class DatePickerModule extends StatefulWidget {
-  const DatePickerModule({Key? key}) : super(key: key);
+  const DatePickerModule({super.key});
 
   @override
   _DatePickerModuleState createState() => _DatePickerModuleState();
@@ -78,7 +78,7 @@ class _DatePickerModuleState extends State<DatePickerModule> {
                       return AlertDialog(
                           title: Text("Title"),
                           content: DefaultTextStyle(
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: AppColors.fitnessSecondaryTextColor),
                             child: Text(
                                 "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}"),
@@ -88,7 +88,7 @@ class _DatePickerModuleState extends State<DatePickerModule> {
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text("OKOKOKOKOK"),
+                              child: const Text("OKOKOKOKOK"),
                             )
                           ]);
                     },
