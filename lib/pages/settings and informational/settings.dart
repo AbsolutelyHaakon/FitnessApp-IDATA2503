@@ -23,7 +23,6 @@ class SettingsPage extends StatelessWidget {
   final UserDao _userDao = UserDao();
 
   // Function to synchronize data with the cloud
-  // TODO: Implement proper feedback logic on the sync function
   void _synchronizeCloud(BuildContext context) async {
     try {
       await _getDataFromServer
@@ -194,7 +193,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // Helper function to build each settings item
   Widget _buildSettingsItem(BuildContext context,
       {required IconData icon,
       required String text,

@@ -10,7 +10,7 @@ class Posts {
   final String? content; // The actual content of the post
   final String? imageURL; // URL to an image associated with the post
   final DateTime date; // The date the post was made
-  final String? workoutId; // ID of the workout associated with the post
+  final String? userWorkoutsId; // ID of the workout associated with the post
   final String? location; // Location where the post was made
   final Map<String, String>? visibleStats; // Stats visible to other users
 
@@ -21,7 +21,7 @@ class Posts {
     this.content,
     this.imageURL,
     required this.date,
-    this.workoutId,
+    this.userWorkoutsId,
     this.location,
     this.visibleStats,
   });
@@ -33,8 +33,8 @@ class Posts {
       'userId': userId,
       'content': content,
       'imageURL': imageURL,
-      'date': date.toIso8601String(), // Convert date to ISO 8601 string
-      'workoutId': workoutId,
+      'date': date.toIso8601String(),
+      'userWorkoutsId': userWorkoutsId,
       'location': location,
       'visibleStats': visibleStats,
     };
@@ -48,7 +48,7 @@ class Posts {
       content: map['content'],
       imageURL: map['imageURL'],
       date: map['date'] is Timestamp ? (map['date'] as Timestamp).toDate() : DateTime.parse(map['date']),
-      workoutId: map['workoutId'],
+      userWorkoutsId: map['userWorkoutsId'],
       location: map['location'],
       visibleStats: (map['visibleStats'] as Map<String, dynamic>?)
           ?.map((key, value) => MapEntry(key, value as String)),

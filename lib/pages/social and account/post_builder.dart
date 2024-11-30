@@ -52,7 +52,7 @@ class _PostBuilderState extends State<PostBuilder> {
         name = userData?['name'] ?? ''; // Set user name
         date = widget.post.date; // Set post date
         message = widget.post.content; // Set post message
-        workoutId = widget.post.workoutId; // Set workout ID
+        workoutId = widget.post.userWorkoutsId; // Set workout ID
         visibleStats = widget.post.visibleStats?.entries
             .map((entry) => {'name': entry.key, 'value': entry.value})
             .toList(); // Set visible stats

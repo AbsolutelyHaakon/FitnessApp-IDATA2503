@@ -75,6 +75,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     await fetchFavorites();
     final fetchedWorkouts = await WorkoutDao().localFetchAllById(
         FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+    if (!mounted) return;
     setState(() {
       workouts = fetchedWorkouts;
       if (category != "All" && category != "Starred") {

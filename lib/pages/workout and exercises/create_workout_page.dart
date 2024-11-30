@@ -24,6 +24,7 @@ class CreateWorkoutPage extends StatefulWidget {
 }
 
 class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
+  final FocusNode _TitleFocusNode = FocusNode();
   final FocusNode _descriptionFocusNode = FocusNode();
   bool _isDescriptionFocused = false;
   final _formKey = GlobalKey<FormState>();
@@ -39,6 +40,9 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   int _intensity = 1;
   String _selectedCategory = 'Cardio';
+  Duration _duration = Duration.zero;
+  int _calories = 0;
+  bool _isLoading = false;
 
   // Function to create an individual exercise box
   createIndExerciseBox(Exercises exercise) {
@@ -77,6 +81,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       _descriptionController.text = widget.preWorkout!.description!;
       _intensity = widget.preWorkout!.intensity!;
       _isPublic = !widget.preWorkout!.isPrivate!;
+      _duration = Duration(minutes: widget.preWorkout!.duration!);
+      _calories = widget.preWorkout!.calories!;
       _selectedCategory = widget.preWorkout!.category!;
       workoutDao
           .localFetchExercisesForWorkout(widget.preWorkout!.workoutId!)
@@ -90,9 +96,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       });
     }
   }
-
-  // Function to create or update a workout
-  void _createWorkout() async {
+// Function to create or update a workout
+  Future<void> _createWorkout() async {
     if (exercises.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -119,8 +124,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         final result = await workoutDao.fireBaseCreateWorkout(
           _selectedCategory,
           _descriptionController.text,
-          0,
-          // TODO: Implement workout duration
+          _duration.inMinutes,
           _intensity,
           !_isPublic,
           user,
@@ -128,8 +132,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           // TODO: Implement workout URL
           _titleController.text,
           true,
-          0,
-          // TODO: Implement workout calories
+          _calories,
           exercises.length, // Number of exercises / sets
         );
 
@@ -158,8 +161,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         widget.preWorkout!.workoutId,
         _selectedCategory,
         _descriptionController.text,
-        0,
-        // TODO: Implement workout duration
+        _duration.inMinutes,
         _intensity,
         !_isPublic,
         FirebaseAuth.instance.currentUser?.uid ?? "localUser",
@@ -167,18 +169,16 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         // TODO: Implement workout URL
         _titleController.text,
         true,
-        0,
-        // TODO: Implement workout calories
+        _calories,
         exercises.length, // Number of exercises / sets
       );
 
-      print("step 1");
-
-      if (widget.preWorkout!.workoutId == null) {return;}
+      if (widget.preWorkout!.workoutId == null) {
+        return;
+      }
       await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(
           selectedExercises, widget.preWorkout!.workoutId!);
 
-      print("step 2");
       for (var exercise in exercises) {
         print("exercise: ${exercise.exerciseId}");
         print("exercise index: ${exercises.indexOf(exercise)}");
@@ -192,15 +192,14 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           exercises.indexOf(exercise),
         );
       }
-
-      print("step 3");
-
       Navigator.pop(context, widget.preWorkout);
     }
   }
 
   // Function to show category picker
   void _showCategoryPicker(BuildContext context) {
+    _descriptionFocusNode.unfocus();
+    _TitleFocusNode.unfocus();
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -230,6 +229,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   // Function to show intensity picker
   void _showIntensityPicker(BuildContext context) {
+    _descriptionFocusNode.unfocus();
+    _TitleFocusNode.unfocus();
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -257,6 +258,96 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                     style:
                         TextStyle(color: AppColors.fitnessPrimaryTextColor))),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showDurationPicker(BuildContext context) {
+    _descriptionFocusNode.unfocus();
+    _TitleFocusNode.unfocus();
+    int selectedHours = 0;
+    int selectedMinutes = 0;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: AppColors.fitnessBackgroundColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: CupertinoPicker(
+                backgroundColor: AppColors.fitnessBackgroundColor,
+                itemExtent: 32.0,
+                onSelectedItemChanged: (int index) {
+                  selectedHours = index;
+                },
+                children: List<Widget>.generate(24, (int index) {
+                  return Center(
+                    child: Text(
+                      '$index hr',
+                      style: const TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            Expanded(
+              child: CupertinoPicker(
+                backgroundColor: AppColors.fitnessBackgroundColor,
+                itemExtent: 32.0,
+                onSelectedItemChanged: (int index) {
+                  selectedMinutes = index;
+                },
+                children: List<Widget>.generate(60, (int index) {
+                  return Center(
+                    child: Text(
+                      '$index min',
+                      style: const TextStyle(
+                          color: AppColors.fitnessPrimaryTextColor),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).then((_) {
+      setState(() {
+        _duration = Duration(hours: selectedHours, minutes: selectedMinutes);
+      });
+    });
+  }
+
+  void _showCaloriesPicker(BuildContext context) {
+    _descriptionFocusNode.unfocus();
+    _TitleFocusNode.unfocus();
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: AppColors.fitnessBackgroundColor,
+        child: CupertinoPicker(
+          backgroundColor: AppColors.fitnessBackgroundColor,
+          itemExtent: 32.0,
+          onSelectedItemChanged: (int index) {
+            setState(() {
+              _calories = index * 20;
+            });
+          },
+          children: List<Widget>.generate(101, (int index) {
+            return Center(
+              child: Text(
+                '${index * 20} cal',
+                style:
+                    const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+              ),
+            );
+          }),
         ),
       ),
     );
@@ -323,6 +414,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextFormField(
                     controller: _titleController,
+                    focusNode: _TitleFocusNode,
                     cursorColor: AppColors.fitnessMainColor,
                     style: const TextStyle(
                         color: AppColors.fitnessPrimaryTextColor, fontSize: 25),
@@ -373,7 +465,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: _isDescriptionFocused
-                      ? MediaQuery.of(context).size.height * 0.2
+                      ? MediaQuery.of(context).size.height * 0.1
                       : 60,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextFormField(
@@ -536,6 +628,99 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                             ),
                           ],
                         ),
+                      if (_isPublic) const SizedBox(height: 20),
+                      if (_isPublic)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: Text(
+                                'Duration',
+                                style: TextStyle(
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _showDurationPicker(context),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.fitnessModuleColor,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '${_duration.inHours} hr ${_duration.inMinutes % 60} min',
+                                        style: const TextStyle(
+                                            color: AppColors
+                                                .fitnessPrimaryTextColor),
+                                      ),
+                                      const Icon(
+                                        CupertinoIcons.chevron_down,
+                                        color:
+                                            AppColors.fitnessPrimaryTextColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (_isPublic) const SizedBox(height: 20),
+                      if (_isPublic)
+                        Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: Text(
+                                'Expected Calories Burned',
+                                style: TextStyle(
+                                  color: AppColors.fitnessSecondaryTextColor,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _showCaloriesPicker(context),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 16.0),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.fitnessModuleColor,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '$_calories cal',
+                                        style: const TextStyle(
+                                            color: AppColors
+                                                .fitnessPrimaryTextColor),
+                                      ),
+                                      const Icon(
+                                        CupertinoIcons.chevron_down,
+                                        color:
+                                            AppColors.fitnessPrimaryTextColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
                     ],
                   ),
                 ),
@@ -593,12 +778,30 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       floatingActionButton: SizedBox(
         width: 300,
         child: FloatingActionButton(
-          onPressed: _createWorkout,
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  await _createWorkout();
+                  setState(() {
+                    _isLoading = false;
+                  });
+                },
           backgroundColor: AppColors.fitnessMainColor,
-          child: Text(
-            widget.preWorkout == null ? "Create Workout" : "Update Workout",
-            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
-          ),
+          child: _isLoading
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.fitnessPrimaryTextColor),
+                )
+              : Text(
+                  widget.preWorkout == null
+                      ? "Create Workout"
+                      : "Update Workout",
+                  style:
+                      const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                ),
         ),
       ),
     );
