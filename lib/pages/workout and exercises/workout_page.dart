@@ -35,6 +35,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   bool _showOptions = false;
   List<Workouts> workouts = [];
   String _selectedCategory = 'All';
+  String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? 'localUser';
 
   List<FavoriteWorkouts> favoriteWorkouts = [];
   final FavoriteWorkoutsDao favoriteWorkoutsDao = FavoriteWorkoutsDao();
@@ -61,7 +62,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   // Fetch all favorite workouts from the database
   Future<void> fetchFavorites() async {
     final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(
-        FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+        currentUserId);
     if (!mounted) return;
     setState(() {
       favoriteWorkouts = favoriteWorkoutsData;
@@ -73,7 +74,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     workouts.clear();
     await fetchFavorites();
     final fetchedWorkouts = await WorkoutDao().localFetchAllById(
-        FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+        currentUserId);
     if (!mounted) return;
     setState(() {
       workouts = fetchedWorkouts;
@@ -210,7 +211,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           workouts: workouts
                               .where((workout) =>
                                   workout.userId ==
-                                  (FirebaseAuth.instance.currentUser?.uid ?? 'localUser') )
+                                  (currentUserId) )
                               .toList(),
                           isHome: false,
                           isSearch: false,
