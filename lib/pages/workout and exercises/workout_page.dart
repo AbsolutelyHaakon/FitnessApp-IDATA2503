@@ -210,7 +210,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                           workouts: workouts
                               .where((workout) =>
                                   workout.userId ==
-                                  (FirebaseAuth.instance.currentUser?.uid))
+                                  (FirebaseAuth.instance.currentUser?.uid ?? 'localUser') )
                               .toList(),
                           isHome: false,
                           isSearch: false,
