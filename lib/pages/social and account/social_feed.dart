@@ -22,7 +22,8 @@ class _SocialFeedState extends State<SocialFeed> {
 
   List<Posts> _posts = []; // List to store posts
   bool _isReady = false; // Flag to check if data is ready
-  bool _noPostsAvailable = false; // Flag to check if no posts are available
+  bool _noPostsAvailable = false;// Flag to check if no posts are available
+  bool _notLoggedIn = false; // Flag to check if user is not logged in
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _SocialFeedState extends State<SocialFeed> {
     setState(() {
       _isReady = true;
       _noPostsAvailable = true;
+      _notLoggedIn = true;
     });
   }
 }
@@ -85,7 +87,7 @@ Widget build(BuildContext context) {
                 ? Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Center(
-                      child: Text(
+                      child: Text( _notLoggedIn ? 'Please log in see your feed and create posts! You can still search for other users and view their posts.' :
                         'No posts available.... Follow some peers to see their content!',
                         style: Theme.of(context).textTheme.bodySmall,
                         textAlign: TextAlign.center,
@@ -98,6 +100,7 @@ Widget build(BuildContext context) {
                   color: AppColors.fitnessMainColor, // Show loading indicator
                 ),
               ),
+        if (!_notLoggedIn)
         _buildFloatingActionButton(context), // Show floating action button
       ],
     ),
