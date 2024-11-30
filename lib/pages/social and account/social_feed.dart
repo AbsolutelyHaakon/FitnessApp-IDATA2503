@@ -22,14 +22,20 @@ class _SocialFeedState extends State<SocialFeed> {
 
   List<Posts> _posts = []; // List to store posts
   bool _isReady = false; // Flag to check if data is ready
+  bool _noPostsAvailable = false; // Flag to check if no posts are available
 
   @override
   void initState() {
-    super.initState();
-    if (FirebaseAuth.instance.currentUser != null) {
-      _fetchFeed(); // Fetch the feed when the widget is initialized
-    }
+  super.initState();
+  if (FirebaseAuth.instance.currentUser != null) {
+    _fetchFeed(); // Fetch the feed when the widget is initialized
+  } else {
+    setState(() {
+      _isReady = true;
+      _noPostsAvailable = true;
+    });
   }
+}
 
 
   /// Fetches the social feed data for the current user.
@@ -64,29 +70,40 @@ class _SocialFeedState extends State<SocialFeed> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final appBarHeight = MediaQuery.of(context).size.height * 0.1; // Calculate app bar height
+Widget build(BuildContext context) {
+  final appBarHeight = MediaQuery.of(context).size.height * 0.1; // Calculate app bar height
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight), // Set app bar height
-        child: _buildAppBar(context), // Build the app bar
-      ),
-      body: Stack(
-        children: [
-          _isReady
-              ? _buildFeedSection() // Show feed if data is ready
-              : const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.fitnessMainColor, // Show loading indicator
-                  ),
+  return Scaffold(
+    appBar: PreferredSize(
+      preferredSize: Size.fromHeight(appBarHeight), // Set app bar height
+      child: _buildAppBar(context), // Build the app bar
+    ),
+    body: Stack(
+      children: [
+        _isReady
+            ? _noPostsAvailable
+                ? Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Center(
+                      child: Text(
+                        'No posts available.... Follow some peers to see their content!',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                )
+                : _buildFeedSection() // Show feed if data is ready
+            : const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.fitnessMainColor, // Show loading indicator
                 ),
-          _buildFloatingActionButton(context), // Show floating action button
-        ],
-      ),
-      backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
-    );
-  }
+              ),
+        _buildFloatingActionButton(context), // Show floating action button
+      ],
+    ),
+    backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
+  );
+}
 
   /// Builds the app bar with a title and subtitle.
   Widget _buildAppBar(BuildContext context) {
