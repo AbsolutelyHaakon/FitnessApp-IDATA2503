@@ -54,9 +54,7 @@ class _PersonalBestModuleState extends State<PersonalBestModule> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // Show loading indicator while fetching data
-                  return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   // Show error message if there is an error
                   return const Padding(

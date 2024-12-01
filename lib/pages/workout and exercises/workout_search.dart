@@ -55,44 +55,47 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        color: AppColors.fitnessBackgroundColor,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                focusNode: _searchFocusNode,
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Search workouts...',
-                  border: OutlineInputBorder(),
-                  enabledBorder: InputBorder.none,
-                  prefixIcon:
-                      Icon(Icons.search, color: AppColors.fitnessMainColor),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+          width: double.infinity,
+          color: AppColors.fitnessBackgroundColor,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  focusNode: _searchFocusNode,
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search workouts...',
+                    border: OutlineInputBorder(),
+                    enabledBorder: InputBorder.none,
+                    prefixIcon:
+                        Icon(Icons.search, color: AppColors.fitnessMainColor),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: AppColors.fitnessPrimaryTextColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15),
+                  onChanged: _filterUsers, // Filter workouts as the user types
+                ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: WorkoutsBox(
+                    workouts: _filteredWorkouts, // Display filtered workouts
+                    isHome: false,
+                    isSearch: true,
                   ),
                 ),
-                style: const TextStyle(
-                    color: AppColors.fitnessPrimaryTextColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15),
-                onChanged: _filterUsers, // Filter workouts as the user types
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: SingleChildScrollView(
-                child: WorkoutsBox(
-                  workouts: _filteredWorkouts, // Display filtered workouts
-                  isHome: false,
-                  isSearch: true,
-                ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
