@@ -368,7 +368,6 @@ class UserWorkoutsDao {
       DateTime date,
       String? workoutStats,
       double duration) async {
-    print('Updating user workout with id: $userWorkoutId');
 
     DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
         .collection('userWorkouts')
