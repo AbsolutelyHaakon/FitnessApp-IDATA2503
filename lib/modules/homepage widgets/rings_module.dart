@@ -148,7 +148,7 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
         width: 350,
         height: 100,
         decoration: BoxDecoration(
-          color: AppColors.fitnessSecondaryModuleColor,
+          color: AppColors.fitnessModuleColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -235,7 +235,7 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
                 strokeWidth: 8.0,
                 strokeCap: StrokeCap.round,
                 valueColor: AlwaysStoppedAnimation<Color>(color),
-                backgroundColor: AppColors.fitnessModuleColor,
+                backgroundColor: const Color(0xFF262825),
               ),
             ),
             Text(

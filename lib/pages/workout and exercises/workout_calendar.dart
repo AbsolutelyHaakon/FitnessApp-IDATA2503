@@ -12,6 +12,9 @@ import 'package:fitnessapp_idata2503/modules/appBar.dart';
 
 // Workout calendar widget
 class WorkoutCalendar extends StatefulWidget {
+  const WorkoutCalendar({super.key});
+
+
   @override
   _WorkoutCalendarState createState() => _WorkoutCalendarState();
 }

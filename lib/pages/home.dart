@@ -1,11 +1,13 @@
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/homepage_calendar.dart';
 import 'package:fitnessapp_idata2503/modules/homepage%20widgets/rings_module.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_calendar.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../database/tables/workout.dart';
-import 'package:fitnessapp_idata2503/database/Initialization/get_data_from_server.dart';
 import 'social and account/me.dart';
 
 // Home page widget
@@ -21,16 +23,31 @@ const double rowSpacing = 28.0;
 
 // Home page widget. This is the main page of the app.
 class _HomeState extends State<Home> {
-  final GetDataFromServer _getDataFromServer = GetDataFromServer();
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
+  final WorkoutDao _workoutDao = WorkoutDao();
 
-  List<Workouts> workouts = [
-    const Workouts(
-        workoutId: 'sanjdsadnaslkdnaksl',
-        name: 'Leg day',
-        isPrivate: true,
-        userId: 'user123',
-        isDeleted: false)
-  ];
+  List<Workouts> workouts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNextWorkout();
+  }
+
+  Future<void> fetchNextWorkout() async {
+    setState(() {
+      workouts = [];
+    });
+    final result = await _userWorkoutsDao.localFetchTodaysWorkout();
+    if (result != null) {
+      final workout = await _workoutDao.localFetchByWorkoutId(result.workoutId);
+      if (workout != null) {
+        setState(() {
+          workouts = [workout];
+        });
+      }
+    }
+  }
 
   // Fetch the workouts from the server
   @override
@@ -71,31 +88,51 @@ class _HomeState extends State<Home> {
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            children: [
-              //_buildHeader(formattedDate),
-
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.fitnessModuleColor,
-                  borderRadius: BorderRadius.circular(30),
-                ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF262825),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 10.0, right: 10.0, top: 20.0, bottom: 40.0),
                 child: Column(
                   children: [
-                    WorkoutsBox(
-                      workouts: [...workouts],
-                      isHome: true,
-                      isSearch: false,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('Today\'s workout',
+                            style: Theme.of(context).textTheme.headlineMedium),
+                      ),
                     ),
-                    const HomePageCalendar(),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.fitnessModuleColor,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                        children: [
+                          HomePageCalendar(onRefresh: fetchNextWorkout, workoutsIsEmpty: workouts.isEmpty),
+                          const SizedBox(height: 10),
+                          if (workouts.isNotEmpty)
+                            WorkoutsBox(
+                              workouts: [...workouts],
+                              isHome: true,
+                              isSearch: false,
+                            ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     const RingsModule(),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -174,7 +174,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         final isFavorite = _favorites[workout.workoutId] ?? false;
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
+          padding: EdgeInsets.only(bottom: widget.isHome ? 10.0 : 20.0),
           child: Dismissible(
             key: Key(workout.workoutId.toString()),
             direction:
@@ -210,9 +210,9 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       color: widget.isHome
-                          ? AppColors.fitnessSecondaryModuleColor
+                          ? AppColors.fitnessModuleColor
                           : AppColors.fitnessModuleColor,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(widget.isHome ? 10 : 30),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                     child: Row(
@@ -241,7 +241,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                                     icon: Icons.local_fire_department),
                               if (workout.calories == 0)
                                 IconText(
-                                    text: '${intensity} Intensity',
+                                    text: '$intensity Intensity',
                                     color: AppColors.fitnessSecondaryTextColor,
                                     icon: Icons.local_fire_department),
                               const SizedBox(height: 7),

@@ -125,34 +125,67 @@ class UserWorkoutsDao {
 
   /// Fetch upcoming user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
+  final database = await DatabaseService().database;
+
+  // Set the start of the day
+  DateTime startOfDay = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  // Fetch all workouts for the user
+  final data = await database.query(
+    tableName,
+    where: 'userId = ? AND date >= ?',
+    whereArgs: [id, startOfDay.toIso8601String()],
+  );
+
+  return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
+}
+
+  Future<List<UserWorkouts>> localFetchThisWeeksUserWorkouts(String id) async {
     final database = await DatabaseService().database;
+
+    DateTime today = DateTime.now();
+    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    DateTime endOfWeek = startOfWeek
+        .add(const Duration(days: 6))
+        .add(const Duration(hours: 23, minutes: 59, seconds: 59));
 
     // fetch all workouts for the user
     final data = await database.query(
       tableName,
-      where: 'userId = ? AND date >= ?',
-      whereArgs: [id, DateTime.now().toIso8601String()],
+      where: 'userId = ? AND date >= ? AND date <= ?',
+      whereArgs: [
+        id,
+        startOfWeek.toIso8601String(),
+        endOfWeek.toIso8601String()
+      ],
     );
 
     return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
   }
 
-  Future<List<UserWorkouts>> localFetchThisWeeksUserWorkouts(String id) async {
-  final database = await DatabaseService().database;
+  // Fetch the user workout for the current day
+  Future<UserWorkouts?> localFetchTodaysWorkout() async {
+    final database = await DatabaseService().database;
 
-  DateTime today = DateTime.now();
-  DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
-  DateTime endOfWeek = startOfWeek.add(const Duration(days: 6)).add(const Duration(hours: 23, minutes: 59, seconds: 59));
+    DateTime today = DateTime.now();
+    DateTime startOfDay = DateTime(today.year, today.month, today.day);
+    DateTime endOfDay =
+        startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
 
-  // fetch all workouts for the user
-  final data = await database.query(
-    tableName,
-    where: 'userId = ? AND date >= ? AND date <= ?',
-    whereArgs: [id, startOfWeek.toIso8601String(), endOfWeek.toIso8601String()],
-  );
+    final data = await database.query(
+      tableName,
+      where: 'date >= ? AND date <= ?',
+      whereArgs: [startOfDay.toIso8601String(), endOfDay.toIso8601String()],
+      orderBy: 'date ASC',
+      limit: 1,
+    );
 
-  return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
-}
+    if (data.isNotEmpty) {
+      return UserWorkouts.fromMap(data.first);
+    } else {
+      return null;
+    }
+  }
 
   /// Fetch previous user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchPreviousUserWorkouts(String id) async {
@@ -266,7 +299,8 @@ class UserWorkoutsDao {
     return null;
   }
 
-  Future<bool> localReplaceUserWorkout(UserWorkouts userWorkout, Workouts newWorkout) async {
+  Future<bool> localReplaceUserWorkout(
+      UserWorkouts userWorkout, Workouts newWorkout) async {
     final deleted = await localDelete(userWorkout.userWorkoutId);
     if (deleted) {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? 'localUser';
