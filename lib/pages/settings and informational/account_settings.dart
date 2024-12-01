@@ -300,7 +300,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       future: getUserData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child:
+                  CircularProgressIndicator(color: AppColors.fitnessMainColor));
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {

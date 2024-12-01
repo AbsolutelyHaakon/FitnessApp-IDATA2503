@@ -18,7 +18,8 @@ class WeightBarChart extends StatefulWidget {
 
 class _WeightBarChartState extends State<WeightBarChart> {
   late int goalWeight; // Variable to store the user's goal weight
-  late final weightController = TextEditingController(); // Controller for the weight input field
+  late final weightController =
+      TextEditingController(); // Controller for the weight input field
 
   /// Fetches the user's health data from Firebase.
   Future<Map<DateTime, int>> getUserHealthData() async {
@@ -56,7 +57,8 @@ class _WeightBarChartState extends State<WeightBarChart> {
 
   /// Saves the weight data entered by the user.
   void onAddWeightSave() async {
-    int weight = int.parse(weightController.text); // Get the weight from the input field
+    int weight =
+        int.parse(weightController.text); // Get the weight from the input field
     DateTime date = DateTime.now(); // Get the current date
 
     if (FirebaseAuth.instance.currentUser?.uid != null) {
@@ -175,17 +177,24 @@ class _WeightBarChartState extends State<WeightBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; // Get the screen width
+    final screenWidth =
+        MediaQuery.of(context).size.width; // Get the screen width
 
     return FutureBuilder<int>(
       future: getGoalWeight(), // Fetch the goal weight
       builder: (context, goalWeightSnapshot) {
         if (goalWeightSnapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator()); // Show loading indicator
+          return const Center(
+              child: CircularProgressIndicator(
+                  color: AppColors.fitnessMainColor)); // Show loading indicator
         } else if (goalWeightSnapshot.hasError) {
-          return Center(child: Text('Error: ${goalWeightSnapshot.error}')); // Show error message
+          return Center(
+              child: Text(
+                  'Error: ${goalWeightSnapshot.error}')); // Show error message
         } else if (!goalWeightSnapshot.hasData) {
-          return const Center(child: Text('No goal weight available')); // Show message if no goal weight
+          return const Center(
+              child: Text(
+                  'No goal weight available')); // Show message if no goal weight
         }
 
         final goalWeight = goalWeightSnapshot.data!; // Get the goal weight
@@ -194,9 +203,14 @@ class _WeightBarChartState extends State<WeightBarChart> {
           future: getUserHealthData(), // Fetch the user health data
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator()); // Show loading indicator
+              return const Center(
+                  child: CircularProgressIndicator(
+                      color: AppColors
+                          .fitnessMainColor)); // Show loading indicator
             } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}')); // Show error message
+              return Center(
+                  child:
+                      Text('Error: ${snapshot.error}')); // Show error message
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -211,15 +225,20 @@ class _WeightBarChartState extends State<WeightBarChart> {
                           width: 1.0,
                         ),
                       ),
-                      child: addWeightAndGoalDialog(), // Show dialog to add weight
+                      child:
+                          addWeightAndGoalDialog(), // Show dialog to add weight
                     ),
-                    const Center(child: Text('No weight data available')) // Show message if no weight data
+                    const Center(
+                        child: Text(
+                            'No weight data available')) // Show message if no weight data
                   ]);
             } else {
               List<MapEntry<DateTime, int>> limitedData =
                   snapshot.data!.entries.toList();
-              limitedData.sort((a, b) => b.key.compareTo(a.key)); // Sort data by date
-              limitedData = limitedData.take(30).toList(); // Limit to 30 entries
+              limitedData
+                  .sort((a, b) => b.key.compareTo(a.key)); // Sort data by date
+              limitedData =
+                  limitedData.take(30).toList(); // Limit to 30 entries
               limitedData = limitedData.reversed.toList(); // Reverse the list
 
               // Group data by month and year

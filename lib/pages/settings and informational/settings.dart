@@ -83,7 +83,9 @@ class SettingsPage extends StatelessWidget {
         future: _userDao.getAdminStatus(FirebaseAuth.instance.currentUser?.uid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(
+                    color: AppColors.fitnessMainColor));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {

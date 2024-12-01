@@ -8,7 +8,28 @@ This app allows a user to create, complete and log workouts. users can create th
 
 ## Services used
 
-This project uses Firebase for cloud storage
+This project uses Firebase for cloud storage.
+
+## Screenshots
+![Social Feed page](image.png)
+![Home page](image-3.png)
+![alt text](image-1.png)
+
+## Installation
+Clone the repository locally on your device. Run this in your preferred directory:
+```
+git clone [https](https://github.com/AbsolutelyHaakon/FitnessApp-IDATA2503.git)
+```
+
+Before running the project make sure you have [Flutter](https://flutter.dev) downloaded. Then you may run this snippet of code inside the project's directory to initialize all dependencies used:
+```
+flutter pub get
+```
+
+When all of this is done you may run the app!
+```
+flutter run
+```
 
 ## Project Requirements
 
@@ -25,8 +46,8 @@ The requirements for the projects are:
 - Storage of data in a remote databse
 - CRUD operations for the storeddata
 
-# Accessing your local database
+## Dependencies
 
-Please view this video to see for yourself:
-https://drive.google.com/file/d/1mGjAMrG91rBiw7BYtAwrYwPt_rybibio/view?usp=sharing
-
+* ``image_picker``: Provides image support for both iOS and Android.
+* ``flutter_local_notifications``: Allows for sending push notifications between parent and child.
+* ``table_calender``: Easy implementation of a simple calendar.
