@@ -761,7 +761,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                             const Padding(
                               padding: EdgeInsets.only(left: 10, right: 10),
                               child: Text(
-                                'Expected Calories Burned',
+                                'Calories Burned',
                                 style: TextStyle(
                                   color: AppColors.fitnessSecondaryTextColor,
                                   fontSize: 16,

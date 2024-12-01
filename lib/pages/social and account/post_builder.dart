@@ -90,6 +90,23 @@ class _PostBuilderState extends State<PostBuilder> {
     );
   }
 
+  String formatDateWithSuffix(DateTime date) {
+    String day = DateFormat('d').format(date);
+    String suffix;
+
+    if (day.endsWith('1') && !day.endsWith('11')) {
+      suffix = 'st';
+    } else if (day.endsWith('2') && !day.endsWith('12')) {
+      suffix = 'nd';
+    } else if (day.endsWith('3') && !day.endsWith('13')) {
+      suffix = 'rd';
+    } else {
+      suffix = 'th';
+    }
+
+    return DateFormat('d').format(date) + suffix + DateFormat(' MMMM').format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isReady) {
@@ -133,11 +150,12 @@ class _PostBuilderState extends State<PostBuilder> {
                     Text(name,
                         style: const TextStyle(fontWeight: FontWeight.bold)), // Display user name
                   Text(
-                    DateFormat('d\'th\' of MMMM').format(date), // Display post date
+                    formatDateWithSuffix(date), // Display post date with suffix
                     style: const TextStyle(
-                        color: AppColors.fitnessSecondaryTextColor,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12),
+                      color: AppColors.fitnessSecondaryTextColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
