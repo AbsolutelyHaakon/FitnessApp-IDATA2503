@@ -49,7 +49,9 @@ class _WeightPageState extends State<WeightPage>
 
     // Add a listener to the animation controller
     _animationController.addListener(() {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
 
     // Start the animation
@@ -58,8 +60,7 @@ class _WeightPageState extends State<WeightPage>
 
   @override
   void dispose() {
-    // Dispose the animation controller
-    _animationController.dispose();
+    _animationController.dispose(); // Dispose of the animation controller
     super.dispose();
   }
 
@@ -327,14 +328,14 @@ class _WeightPageState extends State<WeightPage>
                                       child: Text(
                                         weightPercentage >= 1
                                             ? 'Congratulations!\nGoal Reached!'
-                                            : 'Current: ${todayWeight.toStringAsFixed(1)} Kg \nGoal: ${goal.toStringAsFixed(1)} Kg',
+                                            : 'Current: \n${todayWeight.toStringAsFixed(1)} Kg \nGoal: \n${goal.toStringAsFixed(1)} Kg',
                                         style: const TextStyle(
                                           color: AppColors
                                               .fitnessSecondaryTextColor,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w900,
                                         ),
-                                        textAlign: TextAlign.left,
+                                        textAlign: TextAlign.center,
                                         softWrap: true,
                                       ),
                                     ),

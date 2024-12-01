@@ -18,7 +18,8 @@ class HydrationPage extends StatefulWidget {
 
 class _HydrationPageState extends State<HydrationPage>
     with SingleTickerProviderStateMixin {
-  Map<DateTime, int> dailyIntake = <DateTime, int>{}; // Stores daily water intake
+  Map<DateTime, int> dailyIntake =
+      <DateTime, int>{}; // Stores daily water intake
   List<MapEntry<DateTime, int>> hourlyIntake = []; // Stores hourly water intake
   double goal = 2500; // Example goal in milliliters
   bool isLoading = false; // Loading state
@@ -48,16 +49,26 @@ class _HydrationPageState extends State<HydrationPage>
     );
 
     _animationController.addListener(() {
-      setState(() {}); // Update state on animation change
+      if (mounted) {
+        setState(() {}); // Update state on animation change
+      }
     });
 
     _animationController.forward(); // Start animation
   }
 
+  @override
+  void dispose() {
+    _animationController.dispose(); // Dispose of the animation controller
+    super.dispose();
+  }
+
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userGoalsMap = await UserDao().fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      var goalInt = userGoalsMap?["waterTarget"] ?? 2500; // Default goal if not set
+      var userGoalsMap = await UserDao()
+          .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+      var goalInt =
+          userGoalsMap?["waterTarget"] ?? 2500; // Default goal if not set
       setState(() {
         goal = goalInt.toDouble(); // Set goal
       });
@@ -135,12 +146,15 @@ class _HydrationPageState extends State<HydrationPage>
                         icon: const Icon(Icons.remove, color: Colors.blue),
                         onPressed: () {
                           setState(() {
-                            if (waterIntake > 0) waterIntake -= 100; // Decrease intake
+                            if (waterIntake > 0)
+                              waterIntake -= 100; // Decrease intake
                           });
                         },
                       ),
-                      Text('$waterIntake ml', style: const TextStyle(fontSize: 20,
-                          color: AppColors.fitnessPrimaryTextColor)),
+                      Text('$waterIntake ml',
+                          style: const TextStyle(
+                              fontSize: 20,
+                              color: AppColors.fitnessPrimaryTextColor)),
                       IconButton(
                         icon: const Icon(Icons.add, color: Colors.blue),
                         onPressed: () {
@@ -159,7 +173,8 @@ class _HydrationPageState extends State<HydrationPage>
                     Navigator.of(context).pop(); // Close dialog
                   },
                   child: const Text('Cancel',
-                      style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+                      style:
+                          TextStyle(color: AppColors.fitnessPrimaryTextColor)),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -178,8 +193,7 @@ class _HydrationPageState extends State<HydrationPage>
                     }
                     Navigator.of(context).pop(); // Close dialog
                   },
-                  child: const Text('OK',
-                      style: TextStyle(color: Colors.blue)),
+                  child: const Text('OK', style: TextStyle(color: Colors.blue)),
                 ),
               ],
               backgroundColor: AppColors.fitnessModuleColor,
@@ -207,11 +221,13 @@ class _HydrationPageState extends State<HydrationPage>
     cumulativeSpots.clear();
     cumulativeSum = 0;
 
-    todayIntake.sort((a, b) => a.key.hour.compareTo(b.key.hour)); // Sort by hour
+    todayIntake
+        .sort((a, b) => a.key.hour.compareTo(b.key.hour)); // Sort by hour
 
     for (var entry in todayIntake) {
       cumulativeSum += entry.value; // Calculate cumulative sum
-      cumulativeSpots.add(FlSpot(entry.key.hour.toDouble(), cumulativeSum)); // Add spot
+      cumulativeSpots
+          .add(FlSpot(entry.key.hour.toDouble(), cumulativeSum)); // Add spot
     }
 
     return Scaffold(
@@ -242,7 +258,8 @@ class _HydrationPageState extends State<HydrationPage>
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? const Center(
+              child: CircularProgressIndicator()) // Show loading indicator
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -266,7 +283,8 @@ class _HydrationPageState extends State<HydrationPage>
                                     value: _animation.value *
                                         (waterPercentage > 1
                                             ? 1
-                                            : waterPercentage), // Progress indicator
+                                            : waterPercentage),
+                                    // Progress indicator
                                     strokeWidth: 18.0,
                                     strokeCap: StrokeCap.round,
                                     valueColor:
@@ -278,7 +296,7 @@ class _HydrationPageState extends State<HydrationPage>
                                 ),
                                 Text(
                                   goal - todayIntakew >= 0
-                                      ?  '${(goal - todayIntakew).abs()} mL'
+                                      ? '${(goal - todayIntakew).abs()} mL'
                                       : '0.0 mL', // Remaining intake
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -289,8 +307,7 @@ class _HydrationPageState extends State<HydrationPage>
                                 const Text(
                                   'Consume\n\n\n',
                                   style: TextStyle(
-                                    color: AppColors
-                                        .fitnessSecondaryTextColor,
+                                    color: AppColors.fitnessSecondaryTextColor,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
                                   ),
@@ -305,13 +322,14 @@ class _HydrationPageState extends State<HydrationPage>
                               Text(
                                 waterPercentage >= goal
                                     ? 'Congratulations!\nGoal Reached!'
-                                    : 'Current: ${todayIntakew.toStringAsFixed(1)} mL \nGoal: ${goal.toStringAsFixed(1)} mL', // Display current and goal intake
+                                    : 'Current: \n${todayIntakew.toStringAsFixed(1)} mL \nGoal: \n${goal.toStringAsFixed(1)} mL',
+                                // Display current and goal intake
                                 style: const TextStyle(
                                   color: AppColors.fitnessSecondaryTextColor,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,
                                 ),
-                                textAlign: TextAlign.left,
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
@@ -335,24 +353,26 @@ class _HydrationPageState extends State<HydrationPage>
                                 sideTitles: SideTitles(showTitles: false),
                               ),
                               rightTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: true,
-                                    reservedSize: 50),
+                                sideTitles: SideTitles(
+                                    showTitles: true, reservedSize: 50),
                               ),
                               bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: true,
-                                    reservedSize: 30),
+                                sideTitles: SideTitles(
+                                    showTitles: true, reservedSize: 30),
                               ),
                             ),
                             borderData: FlBorderData(show: true),
                             lineBarsData: [
                               LineChartBarData(
-                                spots: cumulativeSpots, // Cumulative spots
+                                spots: cumulativeSpots,
+                                // Cumulative spots
                                 isCurved: false,
                                 color: const Color(0xFF468CF6),
                                 barWidth: 4,
                                 belowBarData: BarAreaData(
                                     show: true,
-                                    color: const Color(0xFF468CF6).withOpacity(0.3)),
+                                    color: const Color(0xFF468CF6)
+                                        .withOpacity(0.3)),
                               ),
                             ],
                             extraLinesData: ExtraLinesData(
@@ -365,7 +385,8 @@ class _HydrationPageState extends State<HydrationPage>
                                   label: HorizontalLineLabel(
                                     show: true,
                                     alignment: Alignment.topRight,
-                                    labelResolver: (line) => 'Goal', // Goal line
+                                    labelResolver: (line) =>
+                                        'Goal', // Goal line
                                     style: const TextStyle(
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold,
@@ -386,7 +407,8 @@ class _HydrationPageState extends State<HydrationPage>
                         child: BarChart(
                           BarChartData(
                             alignment: BarChartAlignment.spaceAround,
-                            maxY: maxY, // Max Y value for bar chart
+                            maxY: maxY,
+                            // Max Y value for bar chart
                             barTouchData: BarTouchData(enabled: false),
                             titlesData: FlTitlesData(
                               show: true,
@@ -400,7 +422,8 @@ class _HydrationPageState extends State<HydrationPage>
                                       axisSide: meta.axisSide,
                                       space: 5,
                                       child: Text(
-                                        DateFormat('MM/dd').format(date), // Date format
+                                        DateFormat('MM/dd').format(date),
+                                        // Date format
                                         style: const TextStyle(
                                           color: Color(0xFF468CF6),
                                           fontWeight: FontWeight.bold,
@@ -445,8 +468,8 @@ class _HydrationPageState extends State<HydrationPage>
                         children: dailyIntake.entries.map((entry) {
                           DateTime date = entry.key;
                           double intake = entry.value.toDouble();
-                          String formattedDate =
-                              DateFormat('MMM dd, yyyy').format(date); // Format date
+                          String formattedDate = DateFormat('MMM dd, yyyy')
+                              .format(date); // Format date
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 4.0),
                             padding: const EdgeInsets.all(16.0),
