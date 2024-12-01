@@ -44,11 +44,15 @@ class PersonalBestModule extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   // Show error message if there is an error
-                  return const Center(
-                      child: Text('Error loading personal bests'));
+                  return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child:
+                          Center(child: Text('Error loading personal bests')));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   // Show message if no personal bests are found
-                  return const Center(child: Text('No personal bests found'));
+                  return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: Text('No personal bests found')));
                 } else {
                   // Display the top 5 personal bests
                   final personalBests = snapshot.data!;
