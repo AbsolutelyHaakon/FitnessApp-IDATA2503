@@ -61,8 +61,8 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   // Fetch all favorite workouts from the database
   Future<void> fetchFavorites() async {
-    final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(
-        currentUserId);
+    final favoriteWorkoutsData =
+        await FavoriteWorkoutsDao().localFetchByUserId(currentUserId);
     if (!mounted) return;
     setState(() {
       favoriteWorkouts = favoriteWorkoutsData;
@@ -73,8 +73,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   void fetchAllWorkouts(String category) async {
     workouts.clear();
     await fetchFavorites();
-    final fetchedWorkouts = await WorkoutDao().localFetchAllById(
-        currentUserId);
+    final fetchedWorkouts = await WorkoutDao().localFetchAllById(currentUserId);
     if (!mounted) return;
     setState(() {
       workouts = fetchedWorkouts;
@@ -100,14 +99,15 @@ class _WorkoutPageState extends State<WorkoutPage>
   // Toggle the options for creating a new workout
   void _toggleOptions() {
     if (!mounted) return;
+    if (_addIconAnimation.isAnimating) return;
     setState(() {
       _showOptions = !_showOptions;
+      if (_addIconAnimation.isCompleted) {
+        _addIconController.reverse();
+      } else {
+        _addIconController.forward();
+      }
     });
-    if (_addIconController.isCompleted) {
-      _addIconController.reverse();
-    } else {
-      _addIconController.forward();
-    }
   }
 
   // Build the WorkoutPage widget
@@ -116,211 +116,228 @@ class _WorkoutPageState extends State<WorkoutPage>
     final appBarHeight = MediaQuery.of(context).size.height * 0.09;
 
     return MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: Scaffold(
-      appBar: PreferredSize(
-  preferredSize: Size.fromHeight(appBarHeight),
-  child: Padding(
-    padding: const EdgeInsets.only(left: 20.0, right: 10.0),
-    child: Align(
-      alignment: Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Workout',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WorkoutLog(isCreatingPost: false),
-                    ),
-                  );
-                },
-                child: const Icon(
-                  Icons.history_rounded,
-                  size: 30.0,
-                  color: AppColors.fitnessMainColor,
-                ),
-              ),
-            ],
-          ),
-          Text(
-            'Select a workout to begin',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-    ),
-  ),
-),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children:
-                      List.generate(officialFilterCategories.length, (index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedCategory = officialFilterCategories[index];
-                          fetchAllWorkouts(officialFilterCategories[index]);
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        decoration: BoxDecoration(
-                          color: _selectedCategory ==
-                                  officialFilterCategories[index]
-                              ? AppColors.fitnessPrimaryTextColor
-                              : AppColors.fitnessModuleColor,
-                          shape: BoxShape.circle,
-                        ),
-                        child: SizedBox(
-                          width: 60,
-                          height: 60,
-                          child:
-                              Center(child: officialFilterCategoryIcons[index]),
-                        ),
+      context: context,
+      removeTop: true,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(appBarHeight),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Workout',
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                    );
-                  }),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (workouts.isEmpty)
-                          const Center(child: CircularProgressIndicator( color: AppColors.fitnessMainColor,))
-                        else ...[
-                          WorkoutsBox(
-                            workouts: workouts.where((workout) => workout.userId == currentUserId).toList(),
-                            isHome: false,
-                            isSearch: false,
-                          ),
-                          if (workouts.where((workout) => workout.userId != '').isNotEmpty)
-                            const SizedBox(height: 40),
-                          if (workouts.where((workout) => workout.userId != '').isNotEmpty)
-                            Center(
-                              child: Text(
-                                'Premade Workouts',
-                                style: Theme.of(context).textTheme.headlineLarge,
-                              ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const WorkoutLog(isCreatingPost: false),
                             ),
-                          const SizedBox(height: 10),
-                          WorkoutsBox(
-                            workouts: workouts.where((workout) => workout.userId == '').toList(),
-                            isHome: false,
-                            isSearch: false,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (_showOptions) ...[
-            Positioned(
-              bottom: 150,
-              right: 10,
-              child: ScaleTransition(
-                scale: _buttonAnimation,
-                child: GestureDetector(
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CreateWorkoutPage(
-                          isAdmin: false,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.history_rounded,
+                          size: 30.0,
+                          color: AppColors.fitnessMainColor,
                         ),
                       ),
-                    );
-                    if (result == true) {
-                      fetchAllWorkouts("All");
-                    }
-                    _toggleOptions();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.fitnessMainColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Create New',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.fitnessBackgroundColor,
-                          fontWeight: FontWeight.w700),
-                    ),
+                    ],
                   ),
-                ),
+                  Text(
+                    'Select a workout to begin',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
               ),
             ),
-            Positioned(
-              bottom: 100,
-              right: 10,
-              child: ScaleTransition(
-                scale: _buttonAnimation,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WorkoutCalendar(),
-                      ),
-                    );
-                    _toggleOptions();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.fitnessMainColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Schedule',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.fitnessBackgroundColor,
-                        fontWeight: FontWeight.w700,
+          ),
+        ),
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children:
+                        List.generate(officialFilterCategories.length, (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = officialFilterCategories[index];
+                            fetchAllWorkouts(officialFilterCategories[index]);
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                          decoration: BoxDecoration(
+                            color: _selectedCategory ==
+                                    officialFilterCategories[index]
+                                ? AppColors.fitnessPrimaryTextColor
+                                : AppColors.fitnessModuleColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: Center(
+                                child: officialFilterCategoryIcons[index]),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (workouts.isEmpty)
+                            const Center(
+                                child: CircularProgressIndicator(
+                              color: AppColors.fitnessMainColor,
+                            ))
+                          else ...[
+                            WorkoutsBox(
+                              workouts: workouts
+                                  .where((workout) =>
+                                      workout.userId == currentUserId)
+                                  .toList(),
+                              isHome: false,
+                              isSearch: false,
+                            ),
+                            if (workouts
+                                .where((workout) => workout.userId != '')
+                                .isNotEmpty)
+                              const SizedBox(height: 40),
+                            if (workouts
+                                .where((workout) => workout.userId != '')
+                                .isNotEmpty)
+                              Center(
+                                child: Text(
+                                  'Premade Workouts',
+                                  style:
+                                      Theme.of(context).textTheme.headlineLarge,
+                                ),
+                              ),
+                            const SizedBox(height: 10),
+                            WorkoutsBox(
+                              workouts: workouts
+                                  .where((workout) => workout.userId == '')
+                                  .toList(),
+                              isHome: false,
+                              isSearch: false,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ),
                 ),
+              ],
+            ),
+            if (_showOptions) ...[
+              Positioned(
+                bottom: 150,
+                right: 10,
+                child: ScaleTransition(
+                  scale: _buttonAnimation,
+                  child: GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateWorkoutPage(
+                            isAdmin: false,
+                          ),
+                        ),
+                      );
+                      if (result == true) {
+                        fetchAllWorkouts("All");
+                      }
+                      _toggleOptions();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.fitnessMainColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'Create New',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.fitnessBackgroundColor,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 100,
+                right: 10,
+                child: ScaleTransition(
+                  scale: _buttonAnimation,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WorkoutCalendar(),
+                        ),
+                      );
+                      _toggleOptions();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.fitnessMainColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'Schedule',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.fitnessBackgroundColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            Positioned(
+              bottom: 35,
+              right: 10,
+              child: ToggleOptionsButton(
+                onPressed: _toggleOptions,
+                animation: _addIconAnimation,
               ),
             ),
           ],
-          Positioned(
-            bottom: 35,
-            right: 10,
-            child: ToggleOptionsButton(onPressed: _toggleOptions),
-          ),
-        ],
-      ),
-      backgroundColor: AppColors.fitnessBackgroundColor,
         ),
+        backgroundColor: AppColors.fitnessBackgroundColor,
+      ),
     );
   }
 }
