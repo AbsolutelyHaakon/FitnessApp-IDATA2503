@@ -36,7 +36,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   final WorkoutDao _workoutDao = WorkoutDao(); // Workout DAO instance
   final UserWorkoutsDao _userWorkoutsDao =
       UserWorkoutsDao(); // User workouts DAO instance
-  Map<UserWorkouts, String> _userWorkoutsMap = {}; // Map of user workouts to workout names
+  Map<UserWorkouts, String> _userWorkoutsMap =
+      {}; // Map of user workouts to workout names
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? 'localUser';
 
   @override
@@ -59,8 +60,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   // Fetch all workouts based on category
   void fetchAllWorkouts(String category) async {
-    List<Workouts> wourkoutsData = await WorkoutDao()
-        .localFetchAllById(userId);
+    List<Workouts> wourkoutsData = await WorkoutDao().localFetchAllById(userId);
     if (!mounted) return;
     setState(() {
       _workouts.clear();
@@ -94,20 +94,18 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   void addToCalendar() async {
     if (_selectedDay != null && userId != 'localUser') {
       await _userWorkoutsDao.fireBaseCreateUserWorkout(
-          userId,
-          _selectedWorkout.workoutId,
-          _selectedDay!);
+          userId, _selectedWorkout.workoutId, _selectedDay!);
     } // Handle adding workout to calendar when not logged in
-    else if (userId == 'localUser' &&
-        _selectedDay != null) {
-      _userWorkoutsDao.localCreate(
-          UserWorkouts(
-            userId: 'localUser', // localUser is the local "general" user id
-            workoutId: _selectedWorkout.workoutId,
-            date: _selectedDay!,
-            userWorkoutId: '1', // If id == 1 --> It will generate a random one in the localCreate function
-            isActive: false, // It should not be active by default
-          ));
+    else if (userId == 'localUser' && _selectedDay != null) {
+      _userWorkoutsDao.localCreate(UserWorkouts(
+        userId: 'localUser',
+        // localUser is the local "general" user id
+        workoutId: _selectedWorkout.workoutId,
+        date: _selectedDay!,
+        userWorkoutId: '1',
+        // If id == 1 --> It will generate a random one in the localCreate function
+        isActive: false, // It should not be active by default
+      ));
     }
     await fetchUpcomingWorkouts();
     await fetchWorkoutNames();
@@ -115,14 +113,12 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   // Fetch upcoming workouts for the user
   Future<void> fetchUpcomingWorkouts() async {
-      final result = await _userWorkoutsDao.localFetchUpcomingUserWorkouts(userId);
-      print(userId);
-      setState(() {
-        _upcomingWorkouts = result;
-        print(_upcomingWorkouts);
-        workoutDates =
-            _upcomingWorkouts.map((workout) => workout.date).toList();
-      });
+    final result =
+        await _userWorkoutsDao.localFetchUpcomingUserWorkouts(userId);
+    setState(() {
+      _upcomingWorkouts = result;
+      workoutDates = _upcomingWorkouts.map((workout) => workout.date).toList();
+    });
   }
 
   // Replace an existing workout with a new one
@@ -169,6 +165,44 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
       }
     }
   }
+
+  void removeCurrentFromCalendar() async {
+  if (_selectedDay != null) {
+    // Find the workout to be deleted
+    UserWorkouts? toBeDeleted;
+    for (var workout in _upcomingWorkouts) {
+      if (workout.date.year == _selectedDay!.year &&
+          workout.date.month == _selectedDay!.month &&
+          workout.date.day == _selectedDay!.day) {
+        toBeDeleted = workout;
+        break;
+      }
+    }
+
+    if (toBeDeleted != null) {
+      if (userId != 'localUser') {
+        await _userWorkoutsDao.fireBaseDeleteUserWorkout(toBeDeleted);
+      } else {
+        await _userWorkoutsDao.localDelete(toBeDeleted.userWorkoutId);
+      }
+      await fetchUpcomingWorkouts();
+      await fetchWorkoutNames();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check, color: AppColors.fitnessPrimaryTextColor),
+            SizedBox(width: 8),
+            Text(
+              'Workout removed',
+              style: TextStyle(color: AppColors.fitnessPrimaryTextColor),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.fitnessMainColor,
+      ));
+    }
+  }
+}
 
   // Check if a workout exists in the list
   bool workoutExist(String workoutId) {
@@ -238,45 +272,70 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                       fontSize: 14, color: AppColors.fitnessSecondaryTextColor),
                 ),
                 const SizedBox(height: 20),
-                if (!selectedDay
-                    .isBefore(DateTime.now().subtract(Duration(days: 1)))) ...[
-                  if (canAddWorkout)
-                    InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                          _showSecondModal(true);
-                        },
-                        child: Container(
+                if (!selectedDay.isBefore(
+                    DateTime.now().subtract(const Duration(days: 1)))) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (canAddWorkout)
+                        InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              _showSecondModal(true);
+                            },
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 24.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.fitnessMainColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  'Add workout',
+                                  style: TextStyle(color: Colors.white),
+                                )))
+                      else
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                            _showSecondModal(false);
+                          },
+                          child: Container(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 12.0, horizontal: 24.0),
                             decoration: BoxDecoration(
-                              color: AppColors.fitnessMainColor,
+                              color: AppColors.fitnessModuleColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Text(
-                              'Add workout',
-                              style: TextStyle(color: Colors.white),
-                            )))
-                  else
-                    InkWell(
+                              'Replace workout',
+                              style: TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(width: 10),
+                      InkWell(
                         onTap: () {
                           Navigator.pop(context);
-                          _showSecondModal(false);
+                          removeCurrentFromCalendar();
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 12.0, horizontal: 24.0),
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: AppColors.fitnessWarningColor,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Text(
-                            'Replace workout',
-                            style: TextStyle(
-                                color: AppColors.fitnessPrimaryTextColor),
-                          ),
-                        ))
-                ]
+                          child: const Icon(
+                            Icons.delete,
+                            color: AppColors.fitnessPrimaryTextColor,
+                          )
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -474,8 +533,8 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                           child: Container(
                             width: 5,
                             height: 5,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
+                            decoration: const BoxDecoration(
+                              color: AppColors.fitnessWarningColor,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -492,7 +551,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
               weekendTextStyle: TextStyle(fontSize: 12),
               selectedTextStyle: TextStyle(
                 fontSize: 12,
-                color: AppColors.fitnessMainColor,
+                color: AppColors.fitnessPrimaryTextColor,
               ),
               todayTextStyle:
                   TextStyle(fontSize: 12, color: AppColors.fitnessMainColor),
@@ -506,7 +565,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 color: AppColors.fitnessBackgroundColor,
               ),
               selectedDecoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.fitnessMainColor,
                 shape: BoxShape.circle,
               ),
               todayDecoration: BoxDecoration(
@@ -514,7 +573,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                 shape: BoxShape.circle,
               ),
               markerDecoration: BoxDecoration(
-                color: Colors.red,
+                color: AppColors.fitnessWarningColor,
                 shape: BoxShape.circle,
               ),
             ),
@@ -533,7 +592,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
             daysOfWeekStyle: const DaysOfWeekStyle(
               weekdayStyle: TextStyle(
                   fontSize: 9, color: AppColors.fitnessPrimaryTextColor),
-              weekendStyle: TextStyle(fontSize: 9, color: Colors.red),
+              weekendStyle: TextStyle(fontSize: 9, color: AppColors.fitnessWarningColor),
             ),
           ),
         ),
