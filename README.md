@@ -11,9 +11,9 @@ This app allows a user to create, complete and log workouts. users can create th
 This project uses Firebase for cloud storage.
 
 ## Screenshots
-![Social Feed page](image.png)
-![Home page](image-3.png)
-![alt text](image-1.png)
+![Social Feed page](assets/images/image.png)
+![Home page](assets/images/image-3.png)
+![alt text](assets/images/image-1.png)
 
 ## Installation
 Clone the repository locally on your device. Run this in your preferred directory:
