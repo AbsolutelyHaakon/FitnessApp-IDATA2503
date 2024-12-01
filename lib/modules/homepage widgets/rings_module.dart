@@ -141,11 +141,11 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
+ @override
+Widget build(BuildContext context) {
+  return Center(
       child: Container(
-        width: 350,
+        width: double.infinity,
         height: 100,
         decoration: BoxDecoration(
           color: AppColors.fitnessModuleColor,
@@ -188,8 +188,8 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
           ],
         ),
       ),
-    );
-  }
+  );
+}
 
   // Helper method to build a ring button
   Widget _buildRingButton(BuildContext context, String label, double percentage, Color color, Widget page) {
