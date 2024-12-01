@@ -173,20 +173,20 @@ class _CreatePostPageState extends State<CreatePostPage> {
     _workoutStats['Duration'] = formattedDuration;
   }
 
-  Future<void> _showStatsSelectionDialog() async {
-
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Select up to 3 stats',
-              style: TextStyle(
-                  color: AppColors.fitnessPrimaryTextColor,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20)),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return Column(
+Future<void> _showStatsSelectionDialog() async {
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Select up to 3 stats',
+            style: TextStyle(
+                color: AppColors.fitnessPrimaryTextColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 20)),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return SingleChildScrollView(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ..._workoutStats.entries.map((entry) {
@@ -243,33 +243,34 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         style: TextStyle(color: AppColors.fitnessMainColor)),
                   ),
                 ],
-              );
+              ),
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
             },
+            child: const Text('Cancel',
+                style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel',
-                  style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  displayedStats = displayedStats;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK',
-                  style: TextStyle(color: AppColors.fitnessMainColor)),
-            ),
-          ],
-          backgroundColor: AppColors.fitnessModuleColor,
-        );
-      },
-    );
-  }
+          TextButton(
+            onPressed: () {
+              setState(() {
+                displayedStats = displayedStats;
+              });
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK',
+                style: TextStyle(color: AppColors.fitnessMainColor)),
+          ),
+        ],
+        backgroundColor: AppColors.fitnessModuleColor,
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
