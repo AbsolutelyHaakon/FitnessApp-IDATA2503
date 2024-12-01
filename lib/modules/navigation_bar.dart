@@ -156,9 +156,9 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                   color: AppColors.fitnessMainColor, // Background color
                   alignment: Alignment.center,
                   padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Workout active: ${activeWorkoutName.value}', // Display the active workout name
-                    style: const TextStyle(
+                  child: const Text(
+                    'Workout active - Click to Resume', // Display the active workout name
+                    style: TextStyle(
                       color: AppColors.fitnessPrimaryTextColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 12.0,

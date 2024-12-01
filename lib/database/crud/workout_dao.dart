@@ -243,7 +243,7 @@ class WorkoutDao {
 
     // If no public workouts exist, fetch from Firestore
     if (publicData.isEmpty) {
-      final workouts = await fireBaseFetchPublicWorkouts();
+      final workouts = await fireBaseFetchPremadeWorkouts();
       for (var workout in workouts['workouts']) {
         await localCreate(workout);
         final temp = await workoutExercisesDao
@@ -406,13 +406,15 @@ class WorkoutDao {
       String name,
       bool wantId,
       int? calories,
-      int? sets) async {
+      int? sets,
+      String? PreImageURL) async {
     if (userId != null) {
-
       String? imageURL;
 
       if (image != null) {
         imageURL = await uploadImage(image);
+      } else {
+        imageURL = PreImageURL;
       }
 
       DocumentReference docRef =
@@ -431,7 +433,7 @@ class WorkoutDao {
 
       String newDocId = docRef.id;
 
-      localCreate(Workouts(
+      await localCreate(Workouts(
         workoutId: newDocId,
         category: category,
         description: description,
@@ -447,9 +449,9 @@ class WorkoutDao {
       ));
       return wantId ? newDocId : null;
     } else {
-      String newDocId = await _generateRandomId();
+      String newDocId = _generateRandomId();
 
-      localCreate(Workouts(
+      await localCreate(Workouts(
         workoutId: newDocId,
         category: category,
         description: description,
@@ -477,7 +479,6 @@ class WorkoutDao {
         .where('userId', isEqualTo: '')
         .get();
 
-
     List<Workouts> workouts = PremadequerySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['workoutId'] = doc.id;
@@ -490,9 +491,7 @@ class WorkoutDao {
         .where('isPrivate', isEqualTo: false)
         .where('userId', isNotEqualTo: '')
         .get();
-
-    print(PublicquerySnapshot.docs.length);
-
+    
     List<Workouts> publicWorkouts = PublicquerySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['workoutId'] = doc.id;
@@ -504,13 +503,36 @@ class WorkoutDao {
     return {'workouts': workouts};
   }
 
+  Future<Map<String, dynamic>> fireBaseFetchPremadeWorkouts() async {
+    // Fetch our premade workouts
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workouts')
+        .where('isPrivate', isEqualTo: false)
+        .where('userId', isEqualTo: '')
+        .get();
+
+    List<Workouts> workouts = querySnapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['workoutId'] = doc.id;
+      return Workouts.fromMap(data);
+    }).toList();
+
+    return {'workouts': workouts};
+  }
+
   /// Fetches all exercises associated with a workout from Firebase.
-  Future<List<Exercises>> fireBaseFetchExercisesForWorkout(String workoutId) async{
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('workoutExercises').where('workoutId', isEqualTo: workoutId).get();
-    List exerciseIds = querySnapshot.docs.map((doc) => doc['exerciseId']).toList();
+  Future<List<Exercises>> fireBaseFetchExercisesForWorkout(
+      String workoutId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('workoutExercises')
+        .where('workoutId', isEqualTo: workoutId)
+        .get();
+    List exerciseIds =
+        querySnapshot.docs.map((doc) => doc['exerciseId']).toList();
     List<Exercises> exercises = [];
     for (String exerciseId in exerciseIds) {
-      Exercises? exercise = await ExerciseDao().fireBaseFetchExercise(exerciseId);
+      Exercises? exercise =
+          await ExerciseDao().fireBaseFetchExercise(exerciseId);
       if (exercise != null) {
         exercises.add(exercise);
       }
@@ -528,6 +550,34 @@ class WorkoutDao {
     } else {
       return "";
     }
+  }
+
+//////////////////////////////////////////////////////////////////////////////
+////////////////////////////  Duplication Checks /////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+  Future<String?> fireBaseIsAlreadyDuplicated(
+    String oldWorkoutId, String userId) async {
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection('userWorkoutDuplicate')
+      .where('oldWorkoutId', isEqualTo: oldWorkoutId)
+      .where('userId', isEqualTo: userId)
+      .get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    return querySnapshot.docs.first['newWorkoutId'] as String?;
+  } else {
+    return null;
+  }
+}
+
+  Future<void> fireBaseAddDuplicate(
+      String oldWorkoutId, String userId, String newWorkoutId) async {
+    await FirebaseFirestore.instance.collection('userWorkoutDuplicate').add({
+      'oldWorkoutId': oldWorkoutId,
+      'newWorkoutId': newWorkoutId,
+      'userId': userId,
+    });
   }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -553,5 +603,4 @@ class WorkoutDao {
       throw Exception('User is not an admin');
     }
   }
-
 }

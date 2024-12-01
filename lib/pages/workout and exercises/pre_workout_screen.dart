@@ -34,8 +34,11 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   List<Exercises> exercises = [];
   Map<Exercises, WorkoutExercises> exerciseMap = {};
   bool isAdmin = false;
+  String userId = FirebaseAuth.instance.currentUser?.uid ??
+      'localUser'; // Default to localUser if no user is logged in
 
   final WorkoutDao _workoutDao = WorkoutDao();
+  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
   Workouts workouts = const Workouts(
     workoutId: '0',
     name: 'Workout 1',
@@ -94,9 +97,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       }
     }
 
-    await UserDao()
-        .getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
-        .then((value) {
+    await UserDao().getAdminStatus(userId).then((value) {
       setState(() {
         isAdmin = value;
       });
@@ -150,13 +151,95 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       print('Error fetching exercises: $e');
     }
 
-    await UserDao()
-        .getAdminStatus(FirebaseAuth.instance.currentUser!.uid)
-        .then((value) {
+    await UserDao().getAdminStatus(userId).then((value) {
       setState(() {
         isAdmin = value;
       });
     });
+  }
+
+  // Create a new user workout if the page was loading user a Workout object
+  Future<void> createNewUserWorkout(String newWorkoutId) async {
+    // If the user is logged in
+    if (userId != 'localUser') {
+      // Use a new workout id to create a new user workout
+      final newDocId = await UserWorkoutsDao()
+          .fireBaseCreateUserWorkout(userId, newWorkoutId, DateTime.now());
+      if (newDocId == null) {
+        return;
+      }
+
+      final newUserWorkout =
+          await UserWorkoutsDao().localFetchByUserWorkoutsId(newDocId);
+      widget.userWorkouts = newUserWorkout;
+    } else {
+      final newUserWorkout = await UserWorkoutsDao().localCreate(UserWorkouts(
+        userWorkoutId: '1',
+        userId: userId,
+        workoutId: widget.workouts!.workoutId,
+        date: DateTime.now(),
+        duration: 0.0,
+        statistics: '',
+        isActive: true,
+      ));
+      widget.userWorkouts = newUserWorkout;
+    }
+  }
+
+  Future<void> createNewWorkout() async {
+    // Fetch the old workout and its exercises from firebase
+    final result = await _workoutDao
+        .fireBaseFetchWorkout(widget.workouts?.workoutId ?? '');
+    if (result != null) {
+      // See if all data is complete before creating the workout and its exercises
+      final workoutExercise = await WorkoutExercisesDao()
+          .fireBaseFetchAllWorkoutExercises(result.workoutId);
+      final temp = workoutExercise['workoutExercises'];
+      if (temp != null) {
+        // At this point, all old data is fetched and we can create a new user-owned workout
+        // Users get cloud backup, therefore if check is needed
+        if (userId != 'localUser') {
+          final newDocId = await _workoutDao.fireBaseCreateWorkout(
+            result.category,
+            result.description,
+            result.duration,
+            result.intensity,
+            result.isPrivate,
+            userId,
+            null,
+            result.name,
+            true,
+            result.calories,
+            result.sets,
+            result.imageURL,
+          );
+          if (newDocId == null) {
+            return;
+          }
+          for (final exercise in temp) {
+            await WorkoutExercisesDao().fireBaseCreateWorkoutExercise(
+              newDocId,
+              exercise.exerciseId,
+              exercise.reps,
+              exercise.sets,
+              exercise.exerciseOrder,
+            );
+          }
+
+          _workoutDao.fireBaseAddDuplicate(widget.workouts!.workoutId, userId, newDocId);
+          // After it has been made, lets make it the default one for the page
+          widget.workouts = await _workoutDao.localFetchByWorkoutId(newDocId);
+        } else {
+          await _workoutDao.localCreate(result);
+          for (final exercise in temp) {
+            await WorkoutExercisesDao().localCreate(exercise);
+          }
+          _workoutDao.fireBaseAddDuplicate(widget.workouts!.workoutId, userId, result.workoutId);
+          // After it has been made, lets make it the default one for the page
+          widget.workouts = result;
+        }
+      }
+    }
   }
 
   @override
@@ -179,9 +262,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           },
         ),
         actions: [
-          if (FirebaseAuth.instance.currentUser != null &&
-              (FirebaseAuth.instance.currentUser!.uid == workouts.userId ||
-                  isAdmin))
+          if (userId == workouts.userId || isAdmin)
             TextButton(
               onPressed: () async {
                 final result = await Navigator.push(
@@ -238,11 +319,14 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                       SizedBox(
                         width: 100, // Set the desired width
                         height: 100, // Set the desired height
-                        child: workouts.imageURL != null && workouts.imageURL!.isNotEmpty
+                        child: workouts.imageURL != null &&
+                                workouts.imageURL!.isNotEmpty
                             ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10), // Set the desired radius
-                          child: Image.network(workouts.imageURL!, fit: BoxFit.cover),
-                        )
+                                borderRadius: BorderRadius.circular(10),
+                                // Set the desired radius
+                                child: Image.network(workouts.imageURL!,
+                                    fit: BoxFit.cover),
+                              )
                             : const Icon(Icons.image_not_supported),
                       ),
                     ],
@@ -370,40 +454,28 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                   }
                                   if (widget.userWorkouts == null &&
                                       widget.workouts != null) {
-                                    if (FirebaseAuth
-                                            .instance.currentUser?.uid !=
-                                        null) {
-                                      final newDocId = await UserWorkoutsDao()
-                                          .fireBaseCreateUserWorkout(
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              widget.workouts!.workoutId,
-                                              DateTime.now());
-                                      if (newDocId == null) {
-                                        return;
-                                      }
+                                    // Check if the user has the workout locally
+                                    if (widget.isSearch) {
+                                      final result = await _workoutDao
+                                          .localFetchByWorkoutId(
+                                              widget.workouts?.workoutId ?? '');
+                                      final newWorkout = await _workoutDao.fireBaseIsAlreadyDuplicated(widget.workouts?.workoutId ?? '', userId);
+                                      if (result == null && newWorkout == null) {
 
-                                      final newUserWorkout =
-                                          await UserWorkoutsDao()
-                                              .localFetchByUserWorkoutsId(
-                                                  newDocId);
-                                      widget.userWorkouts = newUserWorkout;
-                                    } else {
-                                      final newUserWorkout =
-                                          await UserWorkoutsDao()
-                                              .localCreate(UserWorkouts(
-                                        userWorkoutId: '1',
-                                        userId: FirebaseAuth
-                                                .instance.currentUser?.uid ??
-                                            '',
-                                        workoutId: widget.workouts!.workoutId,
-                                        date: DateTime.now(),
-                                        duration: 0.0,
-                                        statistics: '',
-                                        isActive: true,
-                                      ));
-                                      widget.userWorkouts = newUserWorkout;
+                                        // It does not have it locally, lets create it then
+                                        // We do this by duplicating the workout and its exercises
+                                        // and setting it as the user's workout
+                                        await createNewWorkout();
+                                      } else if (result == null && newWorkout != null) {
+                                       final temp = await _workoutDao.localFetchByWorkoutId(newWorkout);
+                                        if (temp != null) {
+                                          widget.workouts = temp;
+                                        }
+                                      }
                                     }
+                                    // Make a new user workout
+                                    await createNewUserWorkout(
+                                        widget.workouts!.workoutId);
                                   }
 
                                   exerciseStats = {};
@@ -435,8 +507,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                 ),
                               ),
                             ),
-                            if (widget.isSearch &&
-                                FirebaseAuth.instance.currentUser != null)
+                            if (widget.isSearch && userId != 'localUser')
                               Expanded(
                                 flex: 3,
                                 child: CupertinoButton(

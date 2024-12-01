@@ -105,10 +105,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     DateTime endTime = DateTime.now();
     workoutDuration = endTime.difference(activeWorkoutStartTime);
     finalTime = workoutDuration.inMinutes.toDouble();
-
-    print('Workout Duration: $workoutDuration');
-    print('Workout Duration in Minutes: $finalTime');
-
+    
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       _userWorkoutsDao.fireBaseUpdateUserWorkout(
           widget.userWorkouts.userWorkoutId,

@@ -69,8 +69,10 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
   }
 
   _getWorkoutData() async {
+    print('Workout ID: ${widget.userWorkouts.workoutId}');
     Workouts? temp =
         await _workoutDao.localFetchByWorkoutId(widget.userWorkouts.workoutId);
+    print('Workout: $temp');
     workouts = temp ?? workouts;
     if (workouts.workoutId != '0') {
       WidgetsBinding.instance.addObserver(this);

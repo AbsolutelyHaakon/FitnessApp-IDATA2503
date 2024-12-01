@@ -142,7 +142,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           _titleController.text,
           true,
           _calories,
-          exercises.length, // Number of exercises / sets
+          exercises.length,
+          '',// Number of exercises / sets
         );
 
         for (var exercise in exercises) {

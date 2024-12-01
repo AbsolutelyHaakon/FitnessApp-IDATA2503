@@ -21,7 +21,7 @@ List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/lowerBodyIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/coreIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/upperBodyIcon.svg', width: 40, height: 40),
-  SvgPicture.asset('assets/icons/runnerIcon.svg', width: 40, height: 40),
+  SvgPicture.asset('assets/icons/cardioIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/hikerIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/armsIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/customIcon.svg', width: 10, height: 10),
