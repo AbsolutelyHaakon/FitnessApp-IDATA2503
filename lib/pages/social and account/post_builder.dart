@@ -95,13 +95,13 @@ class _PostBuilderState extends State<PostBuilder> {
     String suffix;
 
     if (day.endsWith('1') && !day.endsWith('11')) {
-      suffix = 'st';
+      suffix = 'st of';
     } else if (day.endsWith('2') && !day.endsWith('12')) {
-      suffix = 'nd';
+      suffix = 'nd of';
     } else if (day.endsWith('3') && !day.endsWith('13')) {
-      suffix = 'rd';
+      suffix = 'rd of';
     } else {
-      suffix = 'th';
+      suffix = 'th of';
     }
 
     return DateFormat('d').format(date) + suffix + DateFormat(' MMMM').format(date);
