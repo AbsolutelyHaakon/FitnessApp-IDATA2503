@@ -17,11 +17,14 @@ import '../pages/workout and exercises/pre_workout_screen.dart';
 class WorkoutsBox extends StatefulWidget {
   bool isHome = false;
   bool isSearch = false;
+  final List<Workouts> workouts;
 
   // Constructor for WorkoutsBox
-  WorkoutsBox({super.key, required this.workouts, required this.isHome, required this.isSearch});
-
-  final List<Workouts> workouts;
+  WorkoutsBox(
+      {super.key,
+      required this.workouts,
+      required this.isHome,
+      required this.isSearch});
 
   @override
   State<StatefulWidget> createState() {
@@ -35,6 +38,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   final FavoriteWorkoutsDao _favoriteWorkoutsDao = FavoriteWorkoutsDao();
   final UserDao _userDao = UserDao();
   bool isAdmin = false;
+  String intensity = '';
 
   @override
   void initState() {
@@ -47,10 +51,6 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         isAdmin = value;
       });
     });
-    // Initialize favorites map
-    for (final workout in widget.workouts) {
-      _favorites[workout.workoutId] = false;
-    }
     // Fetch favorite workouts for the current user
     _favoriteWorkoutsDao
         .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? '')
@@ -61,6 +61,30 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
         };
       });
     });
+
+    for (final workout in widget.workouts) {
+      getIntensityLevel(workout);
+    }
+  }
+
+  void getIntensityLevel(Workouts workout) {
+    print(widget.workouts);
+    print(workout.name);
+    print(workout.intensity);
+    switch (workout.intensity) {
+      case 1:
+        intensity = 'Low';
+        break;
+      case 2:
+        intensity = 'Medium';
+        break;
+      case 3:
+        intensity = 'High';
+        break;
+      default:
+        intensity = 'Unknown';
+        break;
+    }
   }
 
   // Get the icon for a specific category
@@ -71,7 +95,8 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
       return SizedBox(
         width: size,
         height: size,
-        child: officialFilterCategoryIcons[index + 2], // +2 to skip 'All' and 'Starred'
+        child: officialFilterCategoryIcons[
+            index + 2], // +2 to skip 'All' and 'Starred'
       );
     }
     return SizedBox(
@@ -202,20 +227,29 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                               Heading1(text: workout.name),
                               Heading2(text: workout.category ?? 'No category'),
                               const SizedBox(height: 20),
-                              const IconText(
-                                  text: '500Cal',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.local_fire_department),
-                              const SizedBox(height: 7),
-                              const IconText(
-                                  text: '45min',
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  icon: Icons.access_time),
-                              const SizedBox(height: 7),
                               IconText(
-                                  text: '${workout.sets} sets',
+                                  text: workout.sets == 1
+                                      ? '${workout.sets} set'
+                                      : '${workout.sets} sets',
                                   color: AppColors.fitnessSecondaryTextColor,
                                   icon: Icons.help_outline),
+                              const SizedBox(height: 7),
+                              if (workout.calories != 0)
+                                IconText(
+                                    text: '${workout.calories} Cal',
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    icon: Icons.local_fire_department),
+                              if (workout.calories == 0)
+                                IconText(
+                                    text: '${intensity} Intensity',
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    icon: Icons.local_fire_department),
+                              const SizedBox(height: 7),
+                              if (workout.duration != 0)
+                                IconText(
+                                    text: '${workout.duration} min',
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    icon: Icons.access_time),
                               const SizedBox(height: 7),
                             ],
                           ),
@@ -230,8 +264,10 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                     Navigator.push(
                       context,
                       CupertinoPageRoute(
-                        builder: (context) =>
-                            PreWorkoutScreen(workouts: workout, isSearch: widget.isSearch,),
+                        builder: (context) => PreWorkoutScreen(
+                          workouts: workout,
+                          isSearch: widget.isSearch,
+                        ),
                       ),
                     );
                   },

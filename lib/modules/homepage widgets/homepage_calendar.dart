@@ -102,10 +102,6 @@ class _HomePageCalendarState extends State<HomePageCalendar> {
               Workouts? workout = userWorkout.date != DateTime(1970, 1, 1)
                   ? _workoutData[userWorkout]
                   : null;
-
-              print(workout?.name);
-              print(workout?.category);
-
               bool isToday = date.day == today.day &&
                   date.month == today.month &&
                   date.year == today.year;

@@ -206,41 +206,30 @@ class _WorkoutPageState extends State<WorkoutPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-                        WorkoutsBox(
-                          workouts: workouts
-                              .where((workout) =>
-                                  workout.userId ==
-                                  (currentUserId) )
-                              .toList(),
-                          isHome: false,
-                          isSearch: false,
-                        ),
-                        if (workouts
-                            .where((workout) => workout.userId != '')
-                            .isNotEmpty)
-                          const SizedBox(height: 40),
-                        if (workouts
-                            .where((workout) => workout.userId != '')
-                            .isNotEmpty)
-                          Center(
-                            child: Text(
-                              workouts
-                                      .where((workout) => workout.userId != '')
-                                      .isNotEmpty
-                                  ? 'Premade Workouts'
-                                  : '',
-                              style: Theme.of(context).textTheme.headlineLarge,
-                            ),
+                        if (workouts.isEmpty)
+                          const Center(child: CircularProgressIndicator( color: AppColors.fitnessMainColor,))
+                        else ...[
+                          WorkoutsBox(
+                            workouts: workouts.where((workout) => workout.userId == currentUserId).toList(),
+                            isHome: false,
+                            isSearch: false,
                           ),
-                        const SizedBox(height: 10),
-                        WorkoutsBox(
-                          workouts: workouts
-                              .where((workout) => workout.userId == '')
-                              .toList(),
-                          isHome: false,
-                          isSearch: false,
-                        ),
+                          if (workouts.where((workout) => workout.userId != '').isNotEmpty)
+                            const SizedBox(height: 40),
+                          if (workouts.where((workout) => workout.userId != '').isNotEmpty)
+                            Center(
+                              child: Text(
+                                'Premade Workouts',
+                                style: Theme.of(context).textTheme.headlineLarge,
+                              ),
+                            ),
+                          const SizedBox(height: 10),
+                          WorkoutsBox(
+                            workouts: workouts.where((workout) => workout.userId == '').toList(),
+                            isHome: false,
+                            isSearch: false,
+                          ),
+                        ],
                       ],
                     ),
                   ),
