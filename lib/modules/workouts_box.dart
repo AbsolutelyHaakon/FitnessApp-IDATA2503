@@ -68,9 +68,6 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   }
 
   void getIntensityLevel(Workouts workout) {
-    print(widget.workouts);
-    print(workout.name);
-    print(workout.intensity);
     switch (workout.intensity) {
       case 1:
         intensity = 'Low';

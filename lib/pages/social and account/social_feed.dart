@@ -57,6 +57,7 @@ class _SocialFeedState extends State<SocialFeed> {
         setState(() {
           _posts = fetchedPosts["posts"]; // Update posts list
           _isReady = true; // Data is ready
+          _noPostsAvailable = _posts.isEmpty; // Check if no posts are available
         });
       }
     } catch (e) {
