@@ -8,8 +8,21 @@ import 'package:flutter/material.dart';
 
 /// This class represents the Personal Bests module on the profile page.
 /// It fetches and displays the user's top 5 personal bests and provides a button to view more.
-class PersonalBestModule extends StatelessWidget {
+class PersonalBestModule extends StatefulWidget {
   const PersonalBestModule({super.key});
+
+  @override
+  State<PersonalBestModule> createState() => _PersonalBestModuleState();
+}
+
+class _PersonalBestModuleState extends State<PersonalBestModule> {
+  late Future<Map<String, dynamic>> _personalBests;
+
+  @override
+  void initState() {
+    super.initState();
+    _personalBests = _getPersonalBests();
+  }
 
   // Fetches the personal bests from the database
   Future<Map<String, dynamic>> _getPersonalBests() async {
@@ -37,11 +50,13 @@ class PersonalBestModule extends StatelessWidget {
           children: [
             // Using FutureBuilder to fetch and display personal bests
             FutureBuilder<Map<String, dynamic>>(
-              future: _getPersonalBests(),
+              future: _personalBests,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // Show loading indicator while fetching data
-                  return const Center(child: CircularProgressIndicator());
+                  return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   // Show error message if there is an error
                   return const Padding(
@@ -123,8 +138,9 @@ class PersonalBestModule extends StatelessWidget {
               right: 10,
               child: IconButton(
                 onPressed: () {
-                  UserWorkoutsDao().fireBaseSetPersonalBests(
-                      FirebaseAuth.instance.currentUser!.uid);
+                  setState(() {
+                    _personalBests = _getPersonalBests();
+                  });
                 },
                 icon: const Icon(Icons.refresh_rounded),
                 color: AppColors.fitnessMainColor,

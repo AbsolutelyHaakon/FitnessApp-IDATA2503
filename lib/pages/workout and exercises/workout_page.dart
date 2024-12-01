@@ -110,61 +110,76 @@ class _WorkoutPageState extends State<WorkoutPage>
     });
   }
 
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.fitnessModuleColor, // Set border color
+            width: 1.0, // Set border width
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.only(left: 20.0), // Set padding
+      child: Align(
+        alignment: Alignment.centerLeft, // Align to the left
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Align text to the start
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Workout',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const WorkoutLog(isCreatingPost: false),
+                        ),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.history_rounded,
+                      size: 30.0,
+                      color: AppColors.fitnessMainColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              'Select a workout to begin', // Subtitle
+              style: Theme.of(context).textTheme.bodyMedium, // Set text style
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Build the WorkoutPage widget
   @override
   Widget build(BuildContext context) {
     final appBarHeight = MediaQuery.of(context).size.height * 0.09;
 
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(appBarHeight),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 10.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Workout',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const WorkoutLog(isCreatingPost: false),
-                            ),
-                          );
-                        },
-                        child: const Icon(
-                          Icons.history_rounded,
-                          size: 30.0,
-                          color: AppColors.fitnessMainColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    'Select a workout to begin',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: Stack(
-          children: [
-            Column(
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(appBarHeight),
+        child: _buildAppBar(context),
+      ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
               children: [
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -252,92 +267,92 @@ class _WorkoutPageState extends State<WorkoutPage>
                 ),
               ],
             ),
-            if (_showOptions) ...[
-              Positioned(
-                bottom: 150,
-                right: 10,
-                child: ScaleTransition(
-                  scale: _buttonAnimation,
-                  child: GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateWorkoutPage(
-                            isAdmin: false,
-                          ),
+          ),
+          if (_showOptions) ...[
+            Positioned(
+              bottom: 150,
+              right: 10,
+              child: ScaleTransition(
+                scale: _buttonAnimation,
+                child: GestureDetector(
+                  onTap: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateWorkoutPage(
+                          isAdmin: false,
                         ),
-                      );
-                      if (result == true) {
-                        fetchAllWorkouts("All");
-                      }
-                      _toggleOptions();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.fitnessMainColor,
-                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        'Create New',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.fitnessBackgroundColor,
-                            fontWeight: FontWeight.w700),
-                      ),
+                    );
+                    if (result == true) {
+                      fetchAllWorkouts("All");
+                    }
+                    _toggleOptions();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessMainColor,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 100,
-                right: 10,
-                child: ScaleTransition(
-                  scale: _buttonAnimation,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const WorkoutCalendar(),
-                        ),
-                      );
-                      _toggleOptions();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.fitnessMainColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'Schedule',
-                        style: TextStyle(
+                    child: const Text(
+                      'Create New',
+                      style: TextStyle(
                           fontSize: 16,
                           color: AppColors.fitnessBackgroundColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                          fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
             Positioned(
-              bottom: 35,
+              bottom: 100,
               right: 10,
-              child: ToggleOptionsButton(
-                onPressed: _toggleOptions,
-                animation: _addIconAnimation,
+              child: ScaleTransition(
+                scale: _buttonAnimation,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WorkoutCalendar(),
+                      ),
+                    );
+                    _toggleOptions();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.fitnessMainColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Schedule',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.fitnessBackgroundColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
-        ),
-        backgroundColor: AppColors.fitnessBackgroundColor,
+          Positioned(
+            bottom: 35,
+            right: 10,
+            child: ToggleOptionsButton(
+              onPressed: _toggleOptions,
+              animation: _addIconAnimation,
+            ),
+          ),
+        ],
       ),
+      backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
 }
