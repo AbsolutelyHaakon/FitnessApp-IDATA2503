@@ -282,6 +282,15 @@ class WorkoutDao {
       localDelete(WorkoutId);
       _workoutDao.deleteAllWorkoutExercisesWithWorkoutId(WorkoutId);
     }
+
+    final querySnapshot2 = await FirebaseFirestore.instance
+        .collection('userWorkoutDuplicate')
+        .where('newWorkoutId', isEqualTo: WorkoutId)
+        .get();
+
+    for (var doc in querySnapshot2.docs) {
+      await doc.reference.delete();
+    }
   }
 
   /// Fetches all workouts for a user from Firebase.
@@ -491,7 +500,7 @@ class WorkoutDao {
         .where('isPrivate', isEqualTo: false)
         .where('userId', isNotEqualTo: '')
         .get();
-    
+
     List<Workouts> publicWorkouts = PublicquerySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['workoutId'] = doc.id;
@@ -557,19 +566,19 @@ class WorkoutDao {
 //////////////////////////////////////////////////////////////////////////////
 
   Future<String?> fireBaseIsAlreadyDuplicated(
-    String oldWorkoutId, String userId) async {
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('userWorkoutDuplicate')
-      .where('oldWorkoutId', isEqualTo: oldWorkoutId)
-      .where('userId', isEqualTo: userId)
-      .get();
+      String oldWorkoutId, String userId) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('userWorkoutDuplicate')
+        .where('oldWorkoutId', isEqualTo: oldWorkoutId)
+        .where('userId', isEqualTo: userId)
+        .get();
 
-  if (querySnapshot.docs.isNotEmpty) {
-    return querySnapshot.docs.first['newWorkoutId'] as String?;
-  } else {
-    return null;
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first['newWorkoutId'] as String?;
+    } else {
+      return null;
+    }
   }
-}
 
   Future<void> fireBaseAddDuplicate(
       String oldWorkoutId, String userId, String newWorkoutId) async {

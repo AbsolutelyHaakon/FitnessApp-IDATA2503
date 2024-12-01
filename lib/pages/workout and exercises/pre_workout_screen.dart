@@ -36,6 +36,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   bool isAdmin = false;
   String userId = FirebaseAuth.instance.currentUser?.uid ??
       'localUser'; // Default to localUser if no user is logged in
+  bool alreadySubcribed = false;
+  bool isReady = false;
 
   final WorkoutDao _workoutDao = WorkoutDao();
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
@@ -57,6 +59,20 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       _getWorkoutData(false);
     } else {
       _getUserWorkoutData();
+    }
+    existing();
+  }
+
+  Future<void> existing() async {
+    final newWorkout = await _workoutDao.fireBaseIsAlreadyDuplicated(
+        widget.workouts?.workoutId ?? '', userId);
+    print(newWorkout);
+    if (newWorkout != null) {
+      final temp = await _workoutDao.localFetchByWorkoutId(newWorkout);
+      print(temp);
+      if (temp != null) {
+        alreadySubcribed = true;
+      }
     }
   }
 
@@ -106,57 +122,51 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
 
   // Fetch exercises for the workout
   Future<void> fetchExercises() async {
-    try {
-      List<Exercises> tempExercises = [];
-      Map<Exercises, WorkoutExercises> newExerciseMap = {};
-      if (widget.isSearch) {
-        tempExercises = await WorkoutDao()
-            .fireBaseFetchExercisesForWorkout(workouts.workoutId);
-        for (final exercise in tempExercises) {
-          final workoutExercise = await WorkoutExercisesDao()
-              .fireBaseFetchById(workouts.workoutId, exercise.exerciseId);
-          if (workoutExercise != null) {
-            newExerciseMap[exercise] = workoutExercise;
-          }
-        }
-      } else {
-        tempExercises = await WorkoutDao()
-            .localFetchExercisesForWorkout(workouts.workoutId);
-
-        for (final exercise in tempExercises) {
-          final workoutExercise = await WorkoutExercisesDao()
-              .localFetchById(workouts.workoutId, exercise.exerciseId);
-          if (workoutExercise != null) {
-            newExerciseMap[exercise] = workoutExercise;
-          }
+  try {
+    List<Exercises> tempExercises = [];
+    Map<Exercises, WorkoutExercises> newExerciseMap = {};
+    if (widget.isSearch) {
+      tempExercises = await WorkoutDao().fireBaseFetchExercisesForWorkout(workouts.workoutId);
+      for (final exercise in tempExercises) {
+        final workoutExercise = await WorkoutExercisesDao().fireBaseFetchById(workouts.workoutId, exercise.exerciseId);
+        if (workoutExercise != null) {
+          newExerciseMap[exercise] = workoutExercise;
         }
       }
+    } else {
+      tempExercises = await WorkoutDao().localFetchExercisesForWorkout(workouts.workoutId);
+      for (final exercise in tempExercises) {
+        final workoutExercise = await WorkoutExercisesDao().localFetchById(workouts.workoutId, exercise.exerciseId);
+        if (workoutExercise != null) {
+          newExerciseMap[exercise] = workoutExercise;
+        }
+      }
+    }
 
-      // Update the exerciseMap before sorting
+    // Update the exerciseMap before sorting
+    if (mounted) {
       setState(() {
         exerciseMap = newExerciseMap;
       });
-
-      // Sort exercises based on exerciseOrder
-      tempExercises.sort((a, b) {
-        final orderA = exerciseMap[a]?.exerciseOrder ?? 0;
-        final orderB = exerciseMap[b]?.exerciseOrder ?? 0;
-        return orderA.compareTo(orderB);
-      });
-
-      setState(() {
-        exercises = tempExercises;
-      });
-    } catch (e) {
-      print('Error fetching exercises: $e');
     }
 
-    await UserDao().getAdminStatus(userId).then((value) {
-      setState(() {
-        isAdmin = value;
-      });
+    // Sort exercises based on exerciseOrder
+    tempExercises.sort((a, b) {
+      final orderA = exerciseMap[a]?.exerciseOrder ?? 0;
+      final orderB = exerciseMap[b]?.exerciseOrder ?? 0;
+      return orderA.compareTo(orderB);
     });
+
+    if (mounted) {
+      setState(() {
+        exercises = tempExercises;
+        isReady = true;
+      });
+    }
+  } catch (e) {
+    print('Error fetching exercises: $e');
   }
+}
 
   // Create a new user workout if the page was loading user a Workout object
   Future<void> createNewUserWorkout(String newWorkoutId) async {
@@ -226,7 +236,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
             );
           }
 
-          _workoutDao.fireBaseAddDuplicate(widget.workouts!.workoutId, userId, newDocId);
+          _workoutDao.fireBaseAddDuplicate(
+              widget.workouts!.workoutId, userId, newDocId);
           // After it has been made, lets make it the default one for the page
           widget.workouts = await _workoutDao.localFetchByWorkoutId(newDocId);
         } else {
@@ -234,7 +245,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
           for (final exercise in temp) {
             await WorkoutExercisesDao().localCreate(exercise);
           }
-          _workoutDao.fireBaseAddDuplicate(widget.workouts!.workoutId, userId, result.workoutId);
+          _workoutDao.fireBaseAddDuplicate(
+              widget.workouts!.workoutId, userId, result.workoutId);
           // After it has been made, lets make it the default one for the page
           widget.workouts = result;
         }
@@ -286,7 +298,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: isReady ?
+        SingleChildScrollView(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(15.0),
@@ -459,15 +472,21 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                       final result = await _workoutDao
                                           .localFetchByWorkoutId(
                                               widget.workouts?.workoutId ?? '');
-                                      final newWorkout = await _workoutDao.fireBaseIsAlreadyDuplicated(widget.workouts?.workoutId ?? '', userId);
-                                      if (result == null && newWorkout == null) {
-
+                                      final newWorkout = await _workoutDao
+                                          .fireBaseIsAlreadyDuplicated(
+                                              widget.workouts?.workoutId ?? '',
+                                              userId);
+                                      if (result == null &&
+                                          newWorkout == null &&
+                                          !alreadySubcribed) {
                                         // It does not have it locally, lets create it then
                                         // We do this by duplicating the workout and its exercises
                                         // and setting it as the user's workout
                                         await createNewWorkout();
-                                      } else if (result == null && newWorkout != null) {
-                                       final temp = await _workoutDao.localFetchByWorkoutId(newWorkout);
+                                      } else if (result == null &&
+                                          newWorkout != null) {
+                                        final temp = await _workoutDao
+                                            .localFetchByWorkoutId(newWorkout);
                                         if (temp != null) {
                                           widget.workouts = temp;
                                         }
@@ -507,11 +526,70 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                 ),
                               ),
                             ),
-                            if (widget.isSearch && userId != 'localUser')
+                            if (widget.isSearch &&
+                                userId != 'localUser' &&
+                                !alreadySubcribed)
                               Expanded(
                                 flex: 3,
-                                child: CupertinoButton(
-                                  onPressed: () {},
+                                child: GestureDetector(
+                                  onTapUp: (_) {
+                                    setState(() {
+                                      alreadySubcribed = !alreadySubcribed;
+                                    });
+                                  },
+                                  onTapDown: (_) async {
+                                    if (widget.isSearch && !alreadySubcribed) {
+                                      final result = await _workoutDao
+                                          .localFetchByWorkoutId(
+                                              widget.workouts?.workoutId ?? '');
+                                      final newWorkout = await _workoutDao
+                                          .fireBaseIsAlreadyDuplicated(
+                                              widget.workouts?.workoutId ?? '',
+                                              userId);
+                                      if (result == null &&
+                                          newWorkout == null) {
+                                        // It does not have it locally, lets create it then
+                                        // We do this by duplicating the workout and its exercises
+                                        // and setting it as the user's workout
+                                        await createNewWorkout();
+                                      } else if (result == null &&
+                                          newWorkout != null) {
+                                        final temp = await _workoutDao
+                                            .localFetchByWorkoutId(newWorkout);
+                                        if (temp != null) {
+                                          widget.workouts = temp;
+                                        }
+                                      }
+                                      setState(() {
+                                        alreadySubcribed = true;
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Row(
+                                            children: [
+                                              Icon(Icons.check,
+                                                  color: AppColors
+                                                      .fitnessPrimaryTextColor),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  'Workout added to collection',
+                                                  style: TextStyle(
+                                                      color: AppColors
+                                                          .fitnessPrimaryTextColor),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor:
+                                              AppColors.fitnessMainColor,
+                                        ),
+                                      );
+                                    }
+                                  },
                                   child: Container(
                                     height: 60,
                                     decoration: BoxDecoration(
@@ -520,14 +598,18 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     alignment: Alignment.center,
-                                    child: const Icon(
-                                      CupertinoIcons.add_circled,
-                                      color: AppColors.fitnessPrimaryTextColor,
+                                    child: Icon(
+                                      alreadySubcribed
+                                          ? CupertinoIcons.check_mark_circled
+                                          : CupertinoIcons.add_circled,
+                                      color: alreadySubcribed
+                                          ? Colors.green
+                                          : AppColors.fitnessPrimaryTextColor,
                                       size: 30,
                                     ),
                                   ),
                                 ),
-                              ),
+                              )
                           ],
                         ),
                       ],
@@ -538,7 +620,10 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
               ),
             ),
           ),
-        ),
+        )
+        : const Center(child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.fitnessMainColor),
+        )),
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
     );
