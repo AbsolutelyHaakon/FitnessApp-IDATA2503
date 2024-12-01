@@ -295,6 +295,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                                   style: TextStyle(color: Colors.white),
                                 )))
                       else
+                        ...[
                         InkWell(
                           onTap: () {
                             Navigator.pop(context);
@@ -333,6 +334,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                           )
                         ),
                       ),
+                      ],
                     ],
                   ),
                 ],
