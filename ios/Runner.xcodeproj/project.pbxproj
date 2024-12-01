@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -107,39 +107,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1016E0F62CAC6E8F00B50B8B /* WatchApp Watch App */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = "WatchApp Watch App";
-			sourceTree = "<group>";
-		};
-		1016E1072CAC6E9000B50B8B /* WatchApp Watch AppTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = "WatchApp Watch AppTests";
-			sourceTree = "<group>";
-		};
-		1016E1112CAC6E9000B50B8B /* WatchApp Watch AppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = "WatchApp Watch AppUITests";
-			sourceTree = "<group>";
-		};
+		1016E0F62CAC6E8F00B50B8B /* WatchApp Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "WatchApp Watch App"; sourceTree = "<group>"; };
+		1016E1072CAC6E9000B50B8B /* WatchApp Watch AppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "WatchApp Watch AppTests"; sourceTree = "<group>"; };
+		1016E1112CAC6E9000B50B8B /* WatchApp Watch AppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "WatchApp Watch AppUITests"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1140,7 +1110,7 @@
 				DEVELOPMENT_TEAM = XBBW4HGHAD;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = FitBuddy;
+				INFOPLIST_KEY_CFBundleDisplayName = "G5 Fitness";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1332,7 +1302,7 @@
 				DEVELOPMENT_TEAM = XBBW4HGHAD;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = FitBuddy;
+				INFOPLIST_KEY_CFBundleDisplayName = "G5 Fitness";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1359,7 +1329,7 @@
 				DEVELOPMENT_TEAM = XBBW4HGHAD;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = FitBuddy;
+				INFOPLIST_KEY_CFBundleDisplayName = "G5 Fitness";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
