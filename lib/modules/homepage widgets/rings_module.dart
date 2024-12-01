@@ -235,7 +235,7 @@ class _RingsModuleState extends State<RingsModule> with SingleTickerProviderStat
                 strokeWidth: 8.0,
                 strokeCap: StrokeCap.round,
                 valueColor: AlwaysStoppedAnimation<Color>(color),
-                backgroundColor: const Color(0xFF262825),
+                backgroundColor: AppColors.fitnessSecondaryModuleColor,
               ),
             ),
             Text(
