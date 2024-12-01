@@ -326,7 +326,7 @@ class _WeightPageState extends State<WeightPage>
                                     Flexible(
                                       child: Text(
                                         weightPercentage >= 1
-                                            ? 'Congratulations!\n Goal Reached!'
+                                            ? 'Congratulations!\nGoal Reached!'
                                             : 'Current: ${todayWeight.toStringAsFixed(1)} Kg \nGoal: ${goal.toStringAsFixed(1)} Kg',
                                         style: const TextStyle(
                                           color: AppColors

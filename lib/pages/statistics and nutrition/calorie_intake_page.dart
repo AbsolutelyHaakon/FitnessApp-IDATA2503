@@ -304,7 +304,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                       children: [
                         Text(
                           intakePercentage >= goal
-                              ? 'Congratulations! Goal Reached!'
+                              ? 'Congratulations!\nGoal Reached!'
                               : 'Current: ${todayIntake.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal', // Display current and goal intake
                           style: const TextStyle(
                             color: AppColors.fitnessSecondaryTextColor,

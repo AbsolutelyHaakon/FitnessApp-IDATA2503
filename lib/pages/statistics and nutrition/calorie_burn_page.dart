@@ -293,7 +293,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                       children: [
                         Text(
                           burnPercentage >= goal
-                              ? 'Congratulations! Goal Reached!'
+                              ? 'Congratulations!\nGoal Reached!'
                               : 'Current: ${todayBurn.toStringAsFixed(1)} cal \nGoal: ${goal.toStringAsFixed(1)} cal', // Display current and goal burn
                           style: const TextStyle(
                             color: AppColors.fitnessSecondaryTextColor,

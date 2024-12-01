@@ -304,7 +304,7 @@ class _HydrationPageState extends State<HydrationPage>
                             children: [
                               Text(
                                 waterPercentage >= goal
-                                    ? 'Congratulations! Goal Reached!'
+                                    ? 'Congratulations!\nGoal Reached!'
                                     : 'Current: ${todayIntakew.toStringAsFixed(1)} mL \nGoal: ${goal.toStringAsFixed(1)} mL', // Display current and goal intake
                                 style: const TextStyle(
                                   color: AppColors.fitnessSecondaryTextColor,
