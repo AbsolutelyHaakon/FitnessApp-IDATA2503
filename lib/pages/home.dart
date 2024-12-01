@@ -79,7 +79,6 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-                _buildProfileAvatar(),
               ],
             ),
           ),
@@ -107,7 +106,7 @@ class _HomeState extends State<Home> {
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.fitnessModuleColor,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(30),
                     ),
                     child: Column(
                       children: [
@@ -128,19 +127,6 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // This function builds the profile avatar in the app bar
-  Widget _buildProfileAvatar() {
-    return GestureDetector(
-      onTap: () => _navigateToProfile(),
-      child: const CircleAvatar(
-        radius: 17,
-        backgroundImage: NetworkImage(
-          'https://media.istockphoto.com/id/1388253782/photo/positive-successful-millennial-business-professional-man-head-shot-portrait.jpg?s=612x612&w=0&k=20&c=uS4knmZ88zNA_OjNaE_JCRuq9qn3ycgtHKDKdJSnGdY=',
         ),
       ),
     );

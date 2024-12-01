@@ -149,7 +149,7 @@ Widget build(BuildContext context) {
         height: 100,
         decoration: BoxDecoration(
           color: AppColors.fitnessModuleColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

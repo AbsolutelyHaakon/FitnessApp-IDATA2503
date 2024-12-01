@@ -61,8 +61,8 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   // Fetch all favorite workouts from the database
   Future<void> fetchFavorites() async {
-    final favoriteWorkoutsData =
-        await FavoriteWorkoutsDao().localFetchByUserId(currentUserId);
+    final favoriteWorkoutsData = await FavoriteWorkoutsDao().localFetchByUserId(
+        currentUserId);
     if (!mounted) return;
     setState(() {
       favoriteWorkouts = favoriteWorkoutsData;
@@ -73,7 +73,8 @@ class _WorkoutPageState extends State<WorkoutPage>
   void fetchAllWorkouts(String category) async {
     workouts.clear();
     await fetchFavorites();
-    final fetchedWorkouts = await WorkoutDao().localFetchAllById(currentUserId);
+    final fetchedWorkouts = await WorkoutDao().localFetchAllById(
+        currentUserId);
     if (!mounted) return;
     setState(() {
       workouts = fetchedWorkouts;
@@ -114,51 +115,52 @@ class _WorkoutPageState extends State<WorkoutPage>
   Widget build(BuildContext context) {
     final appBarHeight = MediaQuery.of(context).size.height * 0.09;
 
-    return Scaffold(
+    return MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 10.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Workout',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Select a workout to begin',
-                      style: Theme.of(context).textTheme.bodyMedium,
+  preferredSize: Size.fromHeight(appBarHeight),
+  child: Padding(
+    padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+    child: Align(
+      alignment: Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Workout',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WorkoutLog(isCreatingPost: false),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const WorkoutLog(isCreatingPost: false),
-                          ),
-                        );
-                      },
-                      child: const Icon(
-                        Icons.history_rounded,
-                        size: 30.0,
-                        color: AppColors.fitnessMainColor,
-                      ),
-                    ),
-                  ],
+                  );
+                },
+                child: const Icon(
+                  Icons.history_rounded,
+                  size: 30.0,
+                  color: AppColors.fitnessMainColor,
                 ),
-                const SizedBox(height: 10),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
+          Text(
+            'Select a workout to begin',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
       ),
+    ),
+  ),
+),
       body: Stack(
         children: [
           Column(
@@ -206,35 +208,25 @@ class _WorkoutPageState extends State<WorkoutPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (workouts.isEmpty)
-                          const Center(child: Text('No workouts found'))
+                          const Center(child: CircularProgressIndicator( color: AppColors.fitnessMainColor,))
                         else ...[
                           WorkoutsBox(
-                            workouts: workouts
-                                .where((workout) =>
-                                    workout.userId == currentUserId)
-                                .toList(),
+                            workouts: workouts.where((workout) => workout.userId == currentUserId).toList(),
                             isHome: false,
                             isSearch: false,
                           ),
-                          if (workouts
-                              .where((workout) => workout.userId != '')
-                              .isNotEmpty)
+                          if (workouts.where((workout) => workout.userId != '').isNotEmpty)
                             const SizedBox(height: 40),
-                          if (workouts
-                              .where((workout) => workout.userId != '')
-                              .isNotEmpty)
+                          if (workouts.where((workout) => workout.userId != '').isNotEmpty)
                             Center(
                               child: Text(
                                 'Premade Workouts',
-                                style:
-                                    Theme.of(context).textTheme.headlineLarge,
+                                style: Theme.of(context).textTheme.headlineLarge,
                               ),
                             ),
                           const SizedBox(height: 10),
                           WorkoutsBox(
-                            workouts: workouts
-                                .where((workout) => workout.userId == '')
-                                .toList(),
+                            workouts: workouts.where((workout) => workout.userId == '').toList(),
                             isHome: false,
                             isSearch: false,
                           ),
@@ -328,6 +320,7 @@ class _WorkoutPageState extends State<WorkoutPage>
         ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
+        ),
     );
   }
 }

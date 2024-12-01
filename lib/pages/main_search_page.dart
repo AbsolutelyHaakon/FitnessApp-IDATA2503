@@ -23,7 +23,10 @@ class MainSearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
   length: 3,
-  child: Scaffold(
+  child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Scaffold(
     body: Column(
       children: [
         Container(
@@ -35,7 +38,6 @@ class MainSearchPage extends StatelessWidget {
             tabs: [
               Tab(text: 'Users'),
               Tab(text: 'Workouts'),
-              Tab(text: 'Exercises'),
             ],
           ),
         ),
@@ -44,13 +46,13 @@ class MainSearchPage extends StatelessWidget {
             children: [
               SearchUsers(),
               SearchWorkouts(),
-              Center(child: Text('Exercises', style: TextStyle(color: AppColors.fitnessMainColor))), // Placeholder for Exercises tab
             ],
           ),
         ),
       ],
     ),
     backgroundColor: AppColors.fitnessBackgroundColor,
+  ),
   ),
 );
   }

@@ -83,7 +83,7 @@ Widget build(BuildContext context) {
       height: widget.workoutsIsEmpty ? 230 : 75,
       decoration: BoxDecoration(
         color: AppColors.fitnessModuleColor,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(30),
       ),
       constraints:
           BoxConstraints(minWidth: MediaQuery.of(context).size.width),
