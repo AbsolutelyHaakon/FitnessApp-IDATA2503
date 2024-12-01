@@ -39,6 +39,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   Workouts workouts = const Workouts(
     workoutId: '0',
     name: 'Workout 1',
+    imageURL: '',
     description: 'Description 1',
     duration: 30,
     isPrivate: false,
@@ -212,19 +213,39 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    workouts.name ?? '',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    workouts.category ?? '',
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    workouts.description ?? '',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            workouts.name ?? '',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            workouts.category ?? '',
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            workouts.description ?? '',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 100, // Set the desired width
+                        height: 100, // Set the desired height
+                        child: workouts.imageURL != null && workouts.imageURL!.isNotEmpty
+                            ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10), // Set the desired radius
+                          child: Image.network(workouts.imageURL!, fit: BoxFit.cover),
+                        )
+                            : const Icon(Icons.image_not_supported),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Center(
@@ -234,72 +255,70 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(30),
                           child: Container(
-                              width: 400,
-                              height: 400,
-                              decoration: BoxDecoration(
-                                color: AppColors.fitnessModuleColor,
-                              ),
-                              child: ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: exercises.length,
-                                itemBuilder: (context, index) {
-                                  final exercise = exercises[index];
-                                  return ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    tileColor: Colors.white.withOpacity(0.1),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    leading: CircleAvatar(
-                                      backgroundImage:
-                                          exercise.imageURL != null &&
-                                                  exercise.imageURL!.isNotEmpty
-                                              ? NetworkImage(exercise.imageURL!)
-                                              : null,
-                                      backgroundColor:
-                                          exercise.imageURL == null ||
-                                                  exercise.imageURL!.isEmpty
-                                              ? Colors.green
-                                              : null,
-                                      child: exercise.imageURL == null ||
-                                              exercise.imageURL!.isEmpty
-                                          ? Text(
-                                              exercise.name[0],
-                                              style: const TextStyle(
-                                                color: AppColors
-                                                    .fitnessPrimaryTextColor,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 24.0,
-                                              ),
-                                            )
-                                          : null,
-                                    ),
-                                    title: Text(
-                                      exercise.name,
-                                      style: const TextStyle(
-                                        color:
-                                            AppColors.fitnessPrimaryTextColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.0,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      'Reps: ${exerciseMap[exercise]?.reps}, Sets: ${exerciseMap[exercise]?.sets}',
-                                      style: const TextStyle(
-                                        color:
-                                            AppColors.fitnessSecondaryTextColor,
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                    trailing: exercise.videoUrl != null &&
-                                            exercise.videoUrl!.isNotEmpty
-                                        ? const Icon(Icons.tv,
-                                            color: AppColors.fitnessMainColor)
+                            width: 400,
+                            height: 400,
+                            decoration: const BoxDecoration(
+                              color: AppColors.fitnessModuleColor,
+                            ),
+                            child: ListView.builder(
+                              itemCount: exercises.length,
+                              itemBuilder: (context, index) {
+                                final exercise = exercises[index];
+                                return ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0, vertical: 8.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        exercise.imageURL != null &&
+                                                exercise.imageURL!.isNotEmpty
+                                            ? NetworkImage(exercise.imageURL!)
+                                            : null,
+                                    backgroundColor:
+                                        exercise.imageURL == null ||
+                                                exercise.imageURL!.isEmpty
+                                            ? Colors.green
+                                            : null,
+                                    child: exercise.imageURL == null ||
+                                            exercise.imageURL!.isEmpty
+                                        ? Text(
+                                            exercise.name[0],
+                                            style: const TextStyle(
+                                              color: AppColors
+                                                  .fitnessPrimaryTextColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24.0,
+                                            ),
+                                          )
                                         : null,
-                                  );
-                                },
-                              )),
+                                  ),
+                                  title: Text(
+                                    exercise.name,
+                                    style: const TextStyle(
+                                      color: AppColors.fitnessPrimaryTextColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Reps: ${exerciseMap[exercise]?.reps}, Sets: ${exerciseMap[exercise]?.sets}',
+                                    style: const TextStyle(
+                                      color:
+                                          AppColors.fitnessSecondaryTextColor,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                  trailing: exercise.videoUrl != null &&
+                                          exercise.videoUrl!.isNotEmpty
+                                      ? const Icon(Icons.tv,
+                                          color: AppColors.fitnessMainColor)
+                                      : null,
+                                );
+                              },
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 40),
                         Row(
@@ -416,13 +435,12 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                 ),
                               ),
                             ),
-                            if (widget.isSearch && FirebaseAuth.instance.currentUser != null)
+                            if (widget.isSearch &&
+                                FirebaseAuth.instance.currentUser != null)
                               Expanded(
                                 flex: 3,
                                 child: CupertinoButton(
-                                  onPressed: () {
-
-                                  },
+                                  onPressed: () {},
                                   child: Container(
                                     height: 60,
                                     decoration: BoxDecoration(
