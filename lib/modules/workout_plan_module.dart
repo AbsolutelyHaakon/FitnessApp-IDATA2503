@@ -1,7 +1,6 @@
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
-import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,9 +12,6 @@ import '../pages/workout and exercises/during_workout.dart';
 
 // Shows the selected workout plan details before deciding to start it
 // Displays workout info and potentially a map of the workout route
-
-// Last edited: 24/11/2024
-// Last edited by: Håkon Svensen Karlsen
 
 //TODO: Implement map functionality
 //TODO: Connect it to the persistent storage
