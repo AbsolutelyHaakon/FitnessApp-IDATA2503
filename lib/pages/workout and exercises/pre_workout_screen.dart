@@ -221,7 +221,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
             result.description,
             result.duration,
             result.intensity,
-            false,
+            true,
             userId,
             null,
             result.name,

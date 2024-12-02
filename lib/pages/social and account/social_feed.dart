@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/database/Initialization/social_feed_data.dart';
 import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
@@ -17,7 +16,8 @@ class SocialFeed extends StatefulWidget {
 }
 
 class _SocialFeedState extends State<SocialFeed> {
-  final PostsDao _postsDao = PostsDao(); // DAO for handling posts/ Data for social feed
+  final PostsDao _postsDao =
+      PostsDao(); // DAO for handling posts/ Data for social feed
 
   List<Posts> _posts = []; // List to store posts
   bool _isReady = false; // Flag to check if data is ready
