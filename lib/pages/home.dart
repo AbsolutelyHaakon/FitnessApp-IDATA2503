@@ -59,9 +59,11 @@ class _HomeState extends State<Home> {
         context: context,
         removeTop: true,
         child: Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: Padding(
+      appBar: AppBar(
+        toolbarHeight: appBarHeight,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Align(
             alignment: Alignment.centerLeft,
