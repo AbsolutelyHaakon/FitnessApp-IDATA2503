@@ -139,7 +139,7 @@ class _PostBuilderState extends State<PostBuilder> {
       children: [
         const SizedBox(height: 10.0), // Add spacing
         Card(
-          color: AppColors.fitnessBackgroundColor, // Card background color
+          color: AppColors.fitnessModuleColor, // Card background color
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30), // Rounded corners
           ),
