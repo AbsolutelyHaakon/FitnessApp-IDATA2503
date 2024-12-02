@@ -106,7 +106,7 @@ class GetDataFromServer {
     await userWorkoutsDao.localTruncate();
 
     // Fetch all user workouts from Firebase
-    final prevWork = await userWorkoutsDao.fireBaseFetchPreviousWorkouts(userId);
+    final prevWork = await userWorkoutsDao.fireBaseFetchPreviousWorkouts(userId, false);
     final upcomingWork = await userWorkoutsDao.fireBaseFetchUpcomingWorkouts(userId);
 
     List<UserWorkouts> allUserWorkouts = prevWork["previousWorkouts"];

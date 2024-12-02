@@ -2,8 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -96,6 +99,31 @@ class _GeneralTabState extends State<GeneralTab> with TickerProviderStateMixin {
     );
   }
 
+  _removeInactiveUserWorkouts() async {
+    final result = await UserWorkoutsDao().fireBaseFetchPreviousWorkouts(
+        FirebaseAuth.instance.currentUser?.uid ?? '', true);
+
+    int deleteCount = 0;
+    final toBeDeleted = result['previousWorkouts'];
+    for (UserWorkouts userWorkouts in toBeDeleted) {
+      if (userWorkouts.statistics == null ||
+          userWorkouts.statistics == 'null' ||
+          userWorkouts.statistics == '"null"') {
+        await UserWorkoutsDao().fireBaseDeleteUserWorkout(userWorkouts);
+        deleteCount++;
+      }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(deleteCount > 0 ? '$deleteCount User Workouts Deleted' : 'No User Workouts to Delete',
+            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+        backgroundColor: deleteCount > 0
+            ? AppColors.fitnessMainColor
+            : AppColors.fitnessWarningColor,
+      ),
+    );
+  }
+
   // Method to fetch statistics from the database
   Future<void> fetchStatistics() async {
     // Get counts for users, workouts, exercises, and posts
@@ -153,15 +181,25 @@ class _GeneralTabState extends State<GeneralTab> with TickerProviderStateMixin {
           // Button to remove inactive data
           Expanded(
             child: ListView.builder(
-              itemCount: 1,
+              itemCount: 2, // Update item count to 2
               itemBuilder: (context, index) {
-                return _buildButton(
-                  text: 'Remove Inactive Data',
-                  icon: Icons.delete,
-                  onPressed: () {
-                    _removeInactiveData();
-                  },
-                );
+                if (index == 0) {
+                  return _buildButton(
+                    text: 'Remove Inactive Data',
+                    icon: Icons.delete,
+                    onPressed: () {
+                      _removeInactiveData();
+                    },
+                  );
+                } else {
+                  return _buildButton(
+                    text: 'Remove Inactive User Workouts',
+                    icon: Icons.delete,
+                    onPressed: () {
+                      _removeInactiveUserWorkouts();
+                    },
+                  );
+                }
               },
             ),
           ),

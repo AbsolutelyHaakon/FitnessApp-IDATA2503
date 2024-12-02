@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:sqflite/sqflite.dart';
@@ -443,20 +444,44 @@ class UserWorkoutsDao {
   }
 
   /// Fetch previous workouts by user ID from Firebase
-  Future<Map<String, dynamic>> fireBaseFetchPreviousWorkouts(String uid) async {
-    QuerySnapshot previousWorkoutsQuery = await FirebaseFirestore.instance
-        .collection('userWorkouts')
-        .where('userId', isEqualTo: uid)
-        .where('date', isLessThanOrEqualTo: DateTime.now())
-        .get();
+  Future<Map<String, dynamic>> fireBaseFetchPreviousWorkouts(String uid, bool WantALl) async {
 
-    List<UserWorkouts> previousWorkouts = previousWorkoutsQuery.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      data['userWorkoutId'] = doc.id;
-      return UserWorkouts.fromMap(data);
-    }).toList();
+    bool isAdmin = false;
 
-    return {'previousWorkouts': previousWorkouts};
+    if (WantALl){
+      await UserDao().getAdminStatus(uid).then((value) {
+        isAdmin = value;
+      });
+    }
+    if (isAdmin){
+      QuerySnapshot previousWorkoutsQuery = await FirebaseFirestore.instance
+          .collection('userWorkouts')
+          .where('date', isLessThanOrEqualTo: DateTime.now())
+          .get();
+
+      List<UserWorkouts> previousWorkouts = previousWorkoutsQuery.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['userWorkoutId'] = doc.id;
+        return UserWorkouts.fromMap(data);
+      }).toList();
+
+      return {'previousWorkouts': previousWorkouts};
+    } else {
+      QuerySnapshot previousWorkoutsQuery = await FirebaseFirestore.instance
+          .collection('userWorkouts')
+          .where('userId', isEqualTo: uid)
+          .where('date', isLessThanOrEqualTo: DateTime.now())
+          .get();
+
+      List<UserWorkouts> previousWorkouts = previousWorkoutsQuery.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['userWorkoutId'] = doc.id;
+        return UserWorkouts.fromMap(data);
+      }).toList();
+
+      return {'previousWorkouts': previousWorkouts};
+    }
+
   }
 
   /// Replace a user workout in Firebase
@@ -475,7 +500,7 @@ class UserWorkoutsDao {
   /// Set personal bests for a user in Firebase
   Future<void> fireBaseSetPersonalBests(String uid) async {
     if (uid == '') return;
-    final result = await fireBaseFetchPreviousWorkouts(uid);
+    final result = await fireBaseFetchPreviousWorkouts(uid, false);
 
     Map<String, dynamic> personalBests = {};
 
