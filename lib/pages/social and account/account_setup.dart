@@ -38,13 +38,13 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   }
 
   // Function to update user data in Firebase
-  void _updateUserData() {
+  Future<void> _updateUserData() async {
     if (FirebaseAuth.instance.currentUser == null) {
       return;
     }
 
     if (_formKey.currentState!.validate()) {
-      UserDao().fireBaseUpdateUserData(
+      await UserDao().fireBaseUpdateUserData(
         FirebaseAuth.instance.currentUser?.uid ?? '',
         _nameController.text,
         double.tryParse(_heightController.text) ?? 0,
@@ -257,7 +257,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
         child: SizedBox(
           width: double.infinity,
           child: FloatingActionButton(
-            onPressed: () {
+            onPressed: () async {
               if (_nameController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -266,9 +266,8 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                   ),
                 );
               } else {
-                _updateUserData();
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const CustomNavigationBar()));
+                await _updateUserData();
+                Navigator.of(context).pop();
               }
             },
             backgroundColor: AppColors.fitnessMainColor,
