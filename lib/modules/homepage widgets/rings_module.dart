@@ -224,7 +224,9 @@ class _RingsModuleState extends State<RingsModule>
     double ringSize = screenWidth * 0.16;
 
     if (percentage.isNaN){
-      percentage = 0;
+      setState(() {
+        percentage = 0;
+      });
     }
 
     return CupertinoButton(

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/modules/navigation_bar.dart';
+import 'package:fitnessapp_idata2503/pages/home.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -265,7 +267,8 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                 );
               } else {
                 _updateUserData();
-                Navigator.of(context).pop();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const CustomNavigationBar()));
               }
             },
             backgroundColor: AppColors.fitnessMainColor,
