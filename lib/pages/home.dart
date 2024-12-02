@@ -55,7 +55,10 @@ class _HomeState extends State<Home> {
     String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
     final appBarHeight = MediaQuery.of(context).size.height * 0.08;
 
-    return Scaffold(
+    return MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
         child: Padding(
@@ -129,6 +132,7 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
+        ),
     );
   }
 

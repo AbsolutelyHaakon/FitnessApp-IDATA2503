@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchWorkouts extends StatefulWidget {
@@ -64,24 +65,27 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  focusNode: _searchFocusNode,
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search workouts...',
-                    border: OutlineInputBorder(),
-                    enabledBorder: InputBorder.none,
-                    prefixIcon:
-                        Icon(Icons.search, color: AppColors.fitnessMainColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
+                child: CupertinoTextField(
+                  focusNode: _searchFocusNode, // Set focus node
+                  controller: _searchController, // Set controller
+                  placeholder: 'Search workouts...',
+                  placeholderStyle: TextStyle(
+                    color: AppColors.fitnessSecondaryTextColor, // Set placeholder text color
+                  ),// Placeholder text
+                  prefix: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(CupertinoIcons.search, color: AppColors.fitnessMainColor), // Search icon
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.fitnessModuleColor, // Background color
+                    borderRadius: BorderRadius.circular(8.0), // Rounded corners
                   ),
                   style: const TextStyle(
-                      color: AppColors.fitnessPrimaryTextColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15),
-                  onChanged: _filterUsers, // Filter workouts as the user types
+                    color: AppColors.fitnessPrimaryTextColor, // Text color
+                    fontWeight: FontWeight.w500, // Text weight
+                    fontSize: 15, // Text size
+                  ),
+                  onChanged: _filterUsers, // Call filter function on text change
                 ),
               ),
               const SizedBox(height: 20),

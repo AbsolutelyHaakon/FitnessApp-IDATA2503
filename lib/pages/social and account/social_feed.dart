@@ -76,82 +76,51 @@ class _SocialFeedState extends State<SocialFeed> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight), // Use default app bar height
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final appBarHeight = constraints.maxHeight * 0.8; // Calculate dynamic height
-            return SizedBox(
-              height: appBarHeight,
-              child: _buildAppBar(context), // Build the app bar
-            );
-          },
-        ),
-      ),
-      body: Stack(
-        children: [
-          _isReady
-              ? _noPostsAvailable
-                  ? Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Center(
-                        child: Text(
-                          _notLoggedIn
-                              ? 'Please log in see your feed and create posts! You can still search for other users and view their posts.'
-                              : 'No posts available.... Follow some peers to see their content!',
-                          style: Theme.of(context).textTheme.bodySmall,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  : _buildFeedSection() // Show feed if data is ready
-              : const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.fitnessMainColor, // Show loading indicator
-                  ),
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Feed',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.fitnessPrimaryTextColor,
                 ),
-          if (!_notLoggedIn && _isReady) // If user is logged in
-            Positioned(
-                bottom: 35,
-                right: 10,
-                child: _buildFloatingActionButton(context)),
-        ],
-      ),
-      backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
-    );
-  }
-
-  /// Builds the app bar with a title and subtitle.
-  Widget _buildAppBar(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.fitnessModuleColor, // Set border color
-            width: 1.0, // Set border width
           ),
+          backgroundColor: AppColors.fitnessBackgroundColor,
         ),
-      ),
-      padding: const EdgeInsets.only(left: 20.0), // Set padding
-      child: Align(
-        alignment: Alignment.centerLeft, // Align to the left
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          // Align text to the start
+        body: Stack(
           children: [
-            Text(
-              'Social Feed', // Title
-              style: Theme.of(context).textTheme.bodyLarge, // Set text style
-            ),
-            Text(
-              'Explore posts from other users', // Subtitle
-              style: Theme.of(context).textTheme.bodyMedium, // Set text style
-            ),
+            _isReady
+                ? _noPostsAvailable
+                    ? Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Center(
+                          child: Text(
+                            _notLoggedIn
+                                ? 'Please log in see your feed and create posts! You can still search for other users and view their posts.'
+                                : 'No posts available.... Follow some peers to see their content!',
+                            style: Theme.of(context).textTheme.bodySmall,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : _buildFeedSection() // Show feed if data is ready
+                : const Center(
+                    child: CircularProgressIndicator(
+                      color:
+                          AppColors.fitnessMainColor, // Show loading indicator
+                    ),
+                  ),
+            if (!_notLoggedIn && _isReady) // If user is logged in
+              Positioned(
+                  bottom: 35,
+                  right: 10,
+                  child: _buildFloatingActionButton(context)),
           ],
         ),
-      ),
+        backgroundColor: AppColors.fitnessBackgroundColor,
+      ), // Set background color
     );
   }
 
@@ -165,8 +134,7 @@ class _SocialFeedState extends State<SocialFeed> {
         child: Column(
           children: [
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               // Set padding
               child: ListView.builder(
                 shrinkWrap: true,

@@ -170,7 +170,10 @@ class _WorkoutPageState extends State<WorkoutPage>
   Widget build(BuildContext context) {
     final appBarHeight = MediaQuery.of(context).size.height * 0.09;
 
-    return Scaffold(
+    return MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
         child: _buildAppBar(context),
@@ -353,6 +356,7 @@ class _WorkoutPageState extends State<WorkoutPage>
         ],
       ),
       backgroundColor: AppColors.fitnessBackgroundColor,
+        ),
     );
   }
 }

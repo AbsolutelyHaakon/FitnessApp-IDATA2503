@@ -3,6 +3,7 @@ import 'package:fitnessapp_idata2503/database/Initialization/social_feed_data.da
 import 'package:fitnessapp_idata2503/database/tables/user.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// SearchUsers page to search for users.
@@ -61,22 +62,26 @@ class _SearchUsersState extends State<SearchUsers> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0), // Padding around search field
-              child: TextField(
+              child: CupertinoTextField(
                 focusNode: _searchFocusNode, // Set focus node
                 controller: _searchController, // Set controller
-                decoration: const InputDecoration(
-                  hintText: 'Search users...', // Placeholder text
-                  border: OutlineInputBorder(), // Border style
-                  enabledBorder: InputBorder.none, // No border when enabled
-                  prefixIcon: Icon(Icons.search, color: AppColors.fitnessMainColor), // Search icon
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent), // No border when focused
-                  ),
+                placeholder: 'Search users...',
+                placeholderStyle: TextStyle(
+                  color: AppColors.fitnessSecondaryTextColor, // Set placeholder text color
+                ),// Placeholder text
+                prefix: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(CupertinoIcons.search, color: AppColors.fitnessMainColor), // Search icon
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.fitnessModuleColor, // Background color
+                  borderRadius: BorderRadius.circular(8.0), // Rounded corners
                 ),
                 style: const TextStyle(
-                    color: AppColors.fitnessPrimaryTextColor, // Text color
-                    fontWeight: FontWeight.w500, // Text weight
-                    fontSize: 15), // Text size
+                  color: AppColors.fitnessPrimaryTextColor, // Text color
+                  fontWeight: FontWeight.w500, // Text weight
+                  fontSize: 15, // Text size
+                ),
                 onChanged: _filterUsers, // Call filter function on text change
               ),
             ),
