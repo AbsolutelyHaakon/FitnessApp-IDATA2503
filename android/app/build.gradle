@@ -4,39 +4,9 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-}
-
-secrets {
-    // Specify the properties file containing the API key
-    propertiesFileName = "secrets.properties"
-    defaultPropertiesFileName = "local.defaults.properties"
-    // Configure which keys should be ignored by the plugin
-    ignoreList.add("sdk.dir") // "sdk.dir" is ignored by default
 }
 
 android {
-    def mapsProperties = new Properties()
-    def localMapsPropertiesFile = rootProject.file('local_maps.properties')
-    if (localMapsPropertiesFile.exists()) {
-        project.logger.info('Load maps properties from local file')
-        localMapsPropertiesFile.withReader('UTF-8') { reader ->
-            mapsProperties.load(reader)
-        }
-    } else {
-        project.logger.info('Load maps properties from environment')
-        try {
-            mapsProperties['MAPS_API_KEY'] = System.getenv('MAPS_API_KEY')
-        } catch(NullPointerException e) {
-            project.logger.warn('Failed to load MAPS_API_KEY from environment.', e)
-        }
-    }
-    def mapsApiKey = mapsProperties.getProperty('MAPS_API_KEY')
-    if(mapsApiKey == null){
-        mapsApiKey = ""
-        project.logger.error('Google Maps Api Key not configured. Set it in `local_maps.properties` or in the environment variable `MAPS_API_KEY`')
-    }
-
     namespace = "ntnu.group03.fitnessapp_idata2503"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -53,7 +23,6 @@ android {
     }
 
     defaultConfig {
-        manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
         applicationId = "ntnu.group03.fitnessapp_idata2503"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.

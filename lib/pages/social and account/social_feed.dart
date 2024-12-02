@@ -76,13 +76,19 @@ class _SocialFeedState extends State<SocialFeed> {
 
   @override
   Widget build(BuildContext context) {
-    final appBarHeight =
-        MediaQuery.of(context).size.height * 0.1; // Calculate app bar height
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight), // Set app bar height
-        child: _buildAppBar(context), // Build the app bar
+        preferredSize: Size.fromHeight(kToolbarHeight), // Use default app bar height
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final appBarHeight = constraints.maxHeight * 0.8; // Calculate dynamic height
+            return SizedBox(
+              height: appBarHeight,
+              child: _buildAppBar(context), // Build the app bar
+            );
+          },
+        ),
       ),
       body: Stack(
         children: [
