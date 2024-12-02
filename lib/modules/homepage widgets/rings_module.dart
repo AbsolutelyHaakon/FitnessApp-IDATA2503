@@ -32,10 +32,10 @@ class _RingsModuleState extends State<RingsModule>
   double calorieBurnPercentage = 0.01;
 
   // Goals for the user
-  int waterGoal = 2000;
-  int calorieGoal = 2000;
-  int weightGoal = 70;
-  int calorieBurnGoal = 2000;
+  int waterGoal = 0;
+  int calorieGoal = 0;
+  int weightGoal = 0;
+  int calorieBurnGoal =0;
   int weightInitial = 0;
 
   @override
@@ -79,20 +79,20 @@ class _RingsModuleState extends State<RingsModule>
       var userGoalsMap = await UserDao()
           .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
       waterGoal = (userGoalsMap?["waterTarget"] ?? 1) == 0
-          ? 2500
-          : userGoalsMap?["waterTarget"] ?? 2500;
+          ? 0
+          : userGoalsMap?["waterTarget"] ?? 0;
       calorieGoal = (userGoalsMap?["caloriesTarget"] ?? 1) == 0
-          ? 2200
-          : userGoalsMap?["caloriesTarget"] ?? 2200;
+          ? 0
+          : userGoalsMap?["caloriesTarget"] ?? 0;
       weightGoal = (userGoalsMap?["weightTarget"] ?? 1) == 0
-          ? 10
-          : userGoalsMap?["weightTarget"] ?? 10;
+          ? 0
+          : userGoalsMap?["weightTarget"] ?? 0;
       calorieBurnGoal = (userGoalsMap?["caloriesBurnedTarget"] ?? 1) == 0
-          ? 2500
-          : userGoalsMap?["caloriesBurnedTarget"] ?? 400;
+          ? 0
+          : userGoalsMap?["caloriesBurnedTarget"] ?? 0;
       weightInitial = (userGoalsMap?["weightInitial"] ?? 1) == 0
-          ? 10
-          : userGoalsMap?["weightInitial"] ?? 1;
+          ? 0
+          : userGoalsMap?["weightInitial"] ?? 0;
     }
 
     fetchAllRingData();
@@ -145,7 +145,14 @@ class _RingsModuleState extends State<RingsModule>
                 (weightInitial - todayWeight) / (weightInitial - weightGoal);
           } else if (weightInitial < todayWeight && todayWeight > weightGoal) {
             weightPercentage = 2 - (todayWeight / weightGoal);
-          } else {
+          } else if (weightInitial == weightGoal) {
+            weightPercentage = 0;
+          } else if (weightInitial == todayWeight) {
+            weightPercentage = 0.02;
+          } else if (weightGoal == 0){
+            weightPercentage = 0;
+          }
+          else {
             weightPercentage =
                 (todayWeight - weightInitial) / (weightGoal - weightInitial);
           }
@@ -250,7 +257,7 @@ class _RingsModuleState extends State<RingsModule>
               width: ringSize * 0.85,
               height: ringSize * 0.85,
               child: CircularProgressIndicator(
-                value: _animation.value * percentage,
+                value: _animation.value * (percentage > 1 ? 0 : (percentage < 0 ? 0 : percentage)),
                 strokeWidth: 8.0,
                 strokeCap: StrokeCap.round,
                 valueColor: AlwaysStoppedAnimation<Color>(color),

@@ -33,9 +33,16 @@ class _HomePageCalendarState extends State<HomePageCalendar> {
     getUserWorkouts();
   }
 
+  @override
+  void dispose() {
+    // Clean up any resources here if needed
+    super.dispose();
+  }
+
   Future<void> getUserWorkouts() async {
     final result =
         await _userWorkoutsDao.localFetchThisWeeksUserWorkouts(userId);
+    if (!mounted) return;
     setState(() {
       _userWorkouts = result;
     });
@@ -49,7 +56,7 @@ class _HomePageCalendarState extends State<HomePageCalendar> {
     for (final userWorkout in _userWorkouts) {
       final workoutId = userWorkout.workoutId;
       final result = await _workoutDao.localFetchByWorkoutId(workoutId);
-      if (result != null) {
+      if (result != null && mounted) {
         setState(() {
           _workoutData[userWorkout] = result;
         });

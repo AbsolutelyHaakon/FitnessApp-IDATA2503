@@ -47,19 +47,23 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
     _userDao
         .getAdminStatus(FirebaseAuth.instance.currentUser?.uid)
         .then((value) {
-      setState(() {
-        isAdmin = value;
-      });
+      if (mounted) {
+        setState(() {
+          isAdmin = value;
+        });
+      }
     });
     // Fetch favorite workouts for the current user
     _favoriteWorkoutsDao
         .localFetchByUserId(FirebaseAuth.instance.currentUser?.uid ?? '')
         .then((favorites) {
-      setState(() {
-        _favorites = {
-          for (final favorite in favorites) favorite.workoutId: true,
-        };
-      });
+      if (mounted) {
+        setState(() {
+          _favorites = {
+            for (final favorite in favorites) favorite.workoutId: true,
+          };
+        });
+      }
     });
 
     for (final workout in widget.workouts) {

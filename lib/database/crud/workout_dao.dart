@@ -247,7 +247,7 @@ class WorkoutDao {
       for (var workout in workouts['workouts']) {
         await localCreate(workout);
         final temp = await workoutExercisesDao
-            .fireBaseFetchAllWorkoutExercises(workout.userWorkoutId);
+            .fireBaseFetchAllWorkoutExercises(workout.workoutId);
         for (var exercise in temp['workoutExercises']) {
           await workoutExercisesDao.localCreate(exercise);
         }
