@@ -139,9 +139,9 @@ class _PostBuilderState extends State<PostBuilder> {
       children: [
         const SizedBox(height: 10.0), // Add spacing
         Card(
-          color: AppColors.fitnessModuleColor, // Card background color
+          color: AppColors.fitnessBackgroundColor, // Card background color
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15), // Rounded corners
+            borderRadius: BorderRadius.circular(30), // Rounded corners
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,11 +219,6 @@ class _PostBuilderState extends State<PostBuilder> {
                       horizontal: 10.0), // Add padding
                   child: Row(
                     children: [
-                      Transform.scale(
-                        scale: 0.8,
-                        child: const Icon(Icons.message,
-                            color: AppColors.fitnessMainColor), // Message icon
-                      ),
                       const SizedBox(width: 10.0), // Add spacing
                       Expanded(
                           child: Text(message!,
@@ -307,14 +302,14 @@ class _PostBuilderState extends State<PostBuilder> {
                     ],
                   ),
                 ),
-              const SizedBox(height: 10.0),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0), // Add padding
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0), // Add padding
                 child: Text(formatDateWithSuffix(date),
                     style: const TextStyle(
                         fontSize: 12.0,
                         fontWeight: FontWeight.w400,
                         color: AppColors.fitnessSecondaryTextColor)),
               ),
+              const SizedBox(height: 10.0),
             ],
           ),
         ),

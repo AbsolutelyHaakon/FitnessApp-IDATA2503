@@ -460,7 +460,7 @@ class _ProfilePageState extends State<ProfilePage>
                       controller: _tabController,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
                           child: ListView.builder(
                             itemCount: _posts.length,
                             itemBuilder: (context, index) {

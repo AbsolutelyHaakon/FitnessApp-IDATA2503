@@ -154,7 +154,7 @@ class _SocialFeedState extends State<SocialFeed> {
           children: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 20.0),
               // Set padding
               child: ListView.builder(
                 shrinkWrap: true,
