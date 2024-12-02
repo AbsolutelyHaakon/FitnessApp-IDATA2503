@@ -489,8 +489,7 @@ class UserWorkoutsDao {
       UserWorkouts userWorkout, Workouts newWorkout, String userId) async {
     final deleted = await fireBaseDeleteUserWorkout(userWorkout);
     if (deleted) {
-      print(newWorkout.userId);
-      fireBaseCreateUserWorkout(
+      await fireBaseCreateUserWorkout(
           userId, newWorkout.workoutId, userWorkout.date);
       return true;
     }
@@ -508,7 +507,6 @@ class UserWorkoutsDao {
       if (workout.statistics == 'null' ||
           workout.statistics == '' ||
           workout.statistics == null) continue;
-      print('Workout stats: ${workout.statistics}');
       final stats = workout.statistics;
       Map<String, dynamic> decodedStats = jsonDecode(stats!);
 
