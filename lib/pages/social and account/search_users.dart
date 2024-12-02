@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/social_feed_data.dart';
 import 'package:fitnessapp_idata2503/database/tables/user.dart';
@@ -71,7 +73,8 @@ class _SearchUsersState extends State<SearchUsers> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(20.0), // Padding around search field
+              padding:
+                  const EdgeInsets.all(20.0), // Padding around search field
               child: CupertinoTextField(
                 focusNode: _searchFocusNode, // Set focus node
                 controller: _searchController, // Set controller
@@ -94,8 +97,7 @@ class _SearchUsersState extends State<SearchUsers> {
                   fontWeight: FontWeight.w500, // Text weight
                   fontSize: 15, // Text size
                 ),
-                onChanged:
-                _filterUsers, // Call filter function on text change
+                onChanged: _filterUsers, // Call filter function on text change
               ),
             ),
             Expanded(
@@ -115,16 +117,18 @@ class _SearchUsersState extends State<SearchUsers> {
                     },
                     child: ListTile(
                       leading: CircleAvatar(
-                        // Display first letter of user's email
-                        backgroundColor: AppColors.fitnessMainColor,
-                        // Display first letter of user's email
-                        child: Text(_filteredUsers[index].email[0],
-                            style: const TextStyle(
-                                color: AppColors
-                                    .fitnessPrimaryTextColor)), // Avatar background color
+                        backgroundImage: _filteredUsers[index].imageURL != null
+                            ? NetworkImage(_filteredUsers[index].imageURL!,
+                                scale: 1)
+                            : const AssetImage(
+                                    'assets/images/placeholder_icon.png')
+                                as ImageProvider,
+                        onBackgroundImageError: (_, __) {},
+                        radius: 20.0,
+                        backgroundColor: Colors.white,
                       ),
                       title: Text(
-                        _filteredUsers[index].email, // Display user's email
+                        _filteredUsers[index].name, // Display user's email
                         style: const TextStyle(
                           fontWeight: FontWeight.w500, // Text weight
                           fontSize: 18, // Text size
