@@ -16,19 +16,19 @@ class AccountSettingsPage extends StatefulWidget {
 }
 
 class _AccountSettingsPageState extends State<AccountSettingsPage> {
-  late String displayName;
+  String displayName = '';
 
-  late String email;
+  String email = '';
 
-  late int height;
+  int height = 0;
 
-  late int weightTarget;
+  int weightTarget = 0;
 
-  late int waterTarget;
+  int waterTarget = 0;
 
-  late int caloriesIntakeTarget;
+  int caloriesIntakeTarget = 0;
 
-  late int caloriesBurnedTarget;
+  int caloriesBurnedTarget = 0;
 
   Future<void> getUserData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
@@ -36,21 +36,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         var userDataMap = await UserDao()
             .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
 
-        if (userDataMap != null &&
-            userDataMap.containsKey('name') &&
-            userDataMap.containsKey('email') &&
-            userDataMap.containsKey('height') &&
-            userDataMap.containsKey('weightTarget') &&
-            userDataMap.containsKey('waterTarget') &&
-            userDataMap.containsKey('caloriesIntakeTarget') &&
-            userDataMap.containsKey('caloriesBurnedTarget')) {
-          displayName = userDataMap['name'];
-          email = userDataMap['email'];
-          height = (userDataMap['height'] as double).toInt();
-          weightTarget = userDataMap['weightTarget'];
-          waterTarget = userDataMap['waterTarget'];
-          caloriesIntakeTarget = userDataMap['caloriesIntakeTarget'];
-          caloriesBurnedTarget = userDataMap['caloriesBurnedTarget'];
+        if (userDataMap != null && userDataMap.isNotEmpty) {
+            displayName = userDataMap['name'];
+            email = userDataMap['email'];
+            height = (userDataMap['height'] as double).toInt();
+            weightTarget = userDataMap['weightTarget'];
+            waterTarget = userDataMap['waterTarget'];
+            caloriesIntakeTarget = userDataMap['caloriesIntakeTarget'];
+            caloriesBurnedTarget = userDataMap['caloriesBurnedTarget'];
         }
       } catch (e) {
         print('Error fetching goal weight: $e');
@@ -64,7 +57,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       String initialValue,
       ValueChanged<String> onSave,
       TextInputType keyboardType) {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => EditFieldPage(
           title: title,
@@ -73,7 +67,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           keyboardType: keyboardType,
         ),
       ),
-    );
+    ).then((_) async {
+      await getUserData();
+      setState(() {
+      });
+    });
   }
 
   void navigateToEditEmailField(BuildContext context, String title,
