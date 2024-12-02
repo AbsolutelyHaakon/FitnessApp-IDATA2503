@@ -103,7 +103,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                             onPressed: () {
                               setState(() {
                                 if (newGoal > 0)
-                                  newGoal -= 100; // Decrease goal
+                                  newGoal -= 20; // Decrease goal
                               });
                             },
                           ),
@@ -115,7 +115,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                             icon: const Icon(Icons.add, color: Colors.orange),
                             onPressed: () {
                               setState(() {
-                                newGoal += 100; // Increase goal
+                                newGoal += 20; // Increase goal
                               });
                             },
                           ),
@@ -242,7 +242,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                         icon: const Icon(Icons.remove, color: Colors.orange),
                         onPressed: () {
                           setState(() {
-                            if (calorieIntake > 0) calorieIntake -= 100;
+                            if (calorieIntake > 0) calorieIntake -= 20;
                           });
                         },
                       ),
@@ -254,7 +254,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                         icon: const Icon(Icons.add, color: Colors.orange),
                         onPressed: () {
                           setState(() {
-                            calorieIntake += 100;
+                            calorieIntake += 20;
                           });
                         },
                       ),

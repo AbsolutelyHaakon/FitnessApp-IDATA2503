@@ -231,7 +231,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         onPressed: () {
                           setState(() {
                             if (calorieBurn > 0)
-                              calorieBurn -= 100; // Decrease burn
+                              calorieBurn -= 20; // Decrease burn
                           });
                         },
                       ),
@@ -243,7 +243,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         icon: const Icon(Icons.add, color: Colors.red),
                         onPressed: () {
                           setState(() {
-                            calorieBurn += 100; // Increase burn
+                            calorieBurn += 20; // Increase burn
                           });
                         },
                       ),

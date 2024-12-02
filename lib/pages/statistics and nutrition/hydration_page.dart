@@ -94,7 +94,7 @@ class _HydrationPageState extends State<HydrationPage>
                             onPressed: () {
                               setState(() {
                                 if (newGoal > 0)
-                                  newGoal -= 100; // Decrease goal
+                                  newGoal -= 50; // Decrease goal
                               });
                             },
                           ),
@@ -106,7 +106,7 @@ class _HydrationPageState extends State<HydrationPage>
                             icon: const Icon(Icons.add, color: Colors.blue),
                             onPressed: () {
                               setState(() {
-                                newGoal += 100; // Increase goal
+                                newGoal += 50; // Increase goal
                               });
                             },
                           ),
@@ -237,8 +237,9 @@ class _HydrationPageState extends State<HydrationPage>
                         icon: const Icon(Icons.remove, color: Colors.blue),
                         onPressed: () {
                           setState(() {
-                            if (waterIntake > 0)
-                              waterIntake -= 100; // Decrease intake
+                            if (waterIntake > 0) {
+                              waterIntake -= 50; // Decrease intake
+                            }
                           });
                         },
                       ),
@@ -250,7 +251,7 @@ class _HydrationPageState extends State<HydrationPage>
                         icon: const Icon(Icons.add, color: Colors.blue),
                         onPressed: () {
                           setState(() {
-                            waterIntake += 100; // Increase intake
+                            waterIntake += 50; // Increase intake
                           });
                         },
                       ),
