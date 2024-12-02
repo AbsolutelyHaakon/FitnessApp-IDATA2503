@@ -156,7 +156,7 @@ class UserWorkoutsDao {
             milliseconds: today.millisecond,
             microseconds: today.microsecond));
     DateTime endOfWeek = startOfWeek
-        .add(const Duration(days: 6))
+        .add(const Duration(days: 7))
         .add(const Duration(hours: 23, minutes: 59, seconds: 59));
 
     // fetch all workouts for the user
