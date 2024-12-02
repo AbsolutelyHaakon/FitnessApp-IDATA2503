@@ -123,8 +123,9 @@ class _WorkoutPageState extends State<WorkoutPage>
       removeTop: true,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.fitnessBackgroundColor,
           elevation: 0,
+          surfaceTintColor: AppColors.fitnessBackgroundColor,
           flexibleSpace: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Align(
