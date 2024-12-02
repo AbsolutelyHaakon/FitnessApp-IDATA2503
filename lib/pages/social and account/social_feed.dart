@@ -154,7 +154,7 @@ class _SocialFeedState extends State<SocialFeed> {
           children: [
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
               // Set padding
               child: ListView.builder(
                 shrinkWrap: true,
@@ -165,7 +165,7 @@ class _SocialFeedState extends State<SocialFeed> {
                 // Number of posts
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 40.0), // Set padding
+                    padding: const EdgeInsets.only(bottom: 20.0), // Set padding
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 200),
                       // Set minimum height

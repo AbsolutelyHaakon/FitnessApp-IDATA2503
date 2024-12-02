@@ -236,7 +236,7 @@ class _PostBuilderState extends State<PostBuilder> {
                   padding:
                       EdgeInsets.symmetric(horizontal: 15.0), // Add padding
                   child: Divider(
-                    color: AppColors.fitnessMainColor, // Divider color
+                    color: AppColors.fitnessSecondaryModuleColor, // Divider color
                     thickness: 1.0, // Divider thickness
                   ),
                 ),
@@ -257,49 +257,42 @@ class _PostBuilderState extends State<PostBuilder> {
                         ),
                       ),
                       if (userWorkoutId != null)
-                        ElevatedButton(
-                          onPressed: () async {
-                            final userWorkout = await UserWorkoutsDao()
-                                .fireBaseFetchUserWorkoutById(userWorkoutId!);
-                            final workout = await WorkoutDao()
-                                .fireBaseFetchWorkout(userWorkout.workoutId);
-                            if (workout == null) {
-                              return;
-                            }
-                            final MapEntry<UserWorkouts, Workouts>
-                                workoutMapEntry =
-                                MapEntry(userWorkout, workout);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailedWorkoutLog(
-                                        workoutMapEntry: workoutMapEntry,
-                                      )),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors
-                                .fitnessModuleColor, // Button background color
-                            foregroundColor: AppColors
-                                .fitnessBackgroundColor, // Button text color
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10), // Rounded corners
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10), // Add padding
-                          ),
-                          child: const Text(
-                            'View',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors
-                                  .fitnessMainColor, // Button text color
-                            ),
-                          ),
-                        ),
+                        IconButton(
+  onPressed: () async {
+    final userWorkout = await UserWorkoutsDao()
+        .fireBaseFetchUserWorkoutById(userWorkoutId!);
+    final workout = await WorkoutDao()
+        .fireBaseFetchWorkout(userWorkout.workoutId);
+    if (workout == null) {
+      return;
+    }
+    final MapEntry<UserWorkouts, Workouts>
+        workoutMapEntry =
+        MapEntry(userWorkout, workout);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => DetailedWorkoutLog(
+                workoutMapEntry: workoutMapEntry,
+              )),
+    );
+  },
+  icon: const Icon(
+    Icons.info,
+    color: AppColors.fitnessMainColor, // Icon color
+  ),
+  tooltip: 'View Workout Info', // Tooltip for accessibility
+),
                     ],
+                  ),
+                ),
+              if (visibleStats != null && visibleStats!.isNotEmpty)
+                const Padding(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 15.0), // Add padding
+                  child: Divider(
+                    color: AppColors.fitnessSecondaryModuleColor, // Divider color
+                    thickness: 1.0, // Divider thickness
                   ),
                 ),
               Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0), // Add padding
