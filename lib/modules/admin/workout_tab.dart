@@ -44,34 +44,6 @@ class _WorkoutTabState extends State<WorkoutTab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Row to toggle between workout and exercise view
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Workout',
-                  style: TextStyle(
-                      fontSize: 20, color: AppColors.fitnessPrimaryTextColor)),
-              const SizedBox(width: 16),
-              Switch(
-                value: _isExerciseView,
-                onChanged: (value) {
-                  setState(() {
-                    _isExerciseView = value;
-                  });
-                },
-                activeColor: AppColors.fitnessMainColor,
-                inactiveTrackColor: AppColors.fitnessMainColor.withOpacity(0.5),
-                inactiveThumbColor: AppColors.fitnessMainColor,
-              ),
-              const SizedBox(width: 16),
-              const Text('Exercise',
-                  style: TextStyle(
-                      fontSize: 20, color: AppColors.fitnessPrimaryTextColor)),
-            ],
-          ),
-        ),
         // Search text field
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
