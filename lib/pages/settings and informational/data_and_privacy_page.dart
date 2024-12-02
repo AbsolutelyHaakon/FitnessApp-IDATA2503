@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/exercise_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
@@ -29,6 +31,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
 
   Map<String, dynamic> userData = {}; // Map to store user data
   List<Workouts> workoutData = []; // Map to store workout data
+  Map<String, dynamic> exerciseData = {}; // Map to store exercise data
 
   @override
   void initState() {
@@ -49,6 +52,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
     if (userId != null) {
       await _fetchUserData(); // Fetch user data
       await fetchWorkoutData(); // Fetch workout data
+      await fetchExerciseData(); // Fetch exercise data
     }
   }
 
@@ -66,6 +70,14 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
       workoutData = temp['workouts']; // Set workout data
     });
   }
+
+  Future<void> fetchExerciseData() async {
+    final temp = await ExerciseDao().fireBaseFetchAllExercisesFromFireBase(userId!);
+    setState(() {
+      exerciseData = temp; // Set exercise data
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +154,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
               child: const Text(
                 'Fitness App stores your data both locally and in the cloud. '
                 'Local data cannot be accessed by anyone but you. Cloud data lets you sync your data across devices. '
-                'We use Firebase Firestore as our cloud service, which provides a safe and secure option for storing data. '
-                'If you do not wish to have your data stored in the cloud, '
-                'you can opt out by pressing the "Cloud Backup Data" switch.',
+                'We use Firebase Firestore as our cloud service, which provides a safe and secure option for storing data. ',
                 textAlign: TextAlign.center, // Center align the text
                 style: TextStyle(
                   color: AppColors.fitnessPrimaryTextColor, // Text color
@@ -168,88 +178,6 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                   color: AppColors.fitnessMainColor), // Chevron icon
             ),
             onTap: _viewYourData, // Function to view data
-          ),
-          const SizedBox(height: 20), // Space between elements
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16.0), // Horizontal padding
-            child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween, // Space between elements
-              children: [
-                const Text('Cloud Backup Data'), // Text for the switch
-                Switch(
-                  value: isCloudBackupEnabled, // Value of the switch
-                  onChanged: (value) async {
-                    if (!value) {
-                      bool confirmChange = await showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          backgroundColor: AppColors.fitnessModuleColor,
-                          // Background color of dialog
-                          title: const Text('Are you sure?',
-                              style: TextStyle(
-                                  color: AppColors.fitnessWarningColor)),
-                          // Title of dialog
-                          content: const Text(
-                              'Do you really want to change the cloud backup setting?'),
-                          // Content of dialog
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              // Close dialog without changing
-                              child: const Text(
-                                'No',
-                                style: TextStyle(
-                                    color: AppColors
-                                        .fitnessMainColor), // Text color
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              // Close dialog and change setting
-                              child: const Text(
-                                'Yes',
-                                style: TextStyle(
-                                    color: AppColors
-                                        .fitnessWarningColor), // Text color
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirmChange) {
-                        setState(() {
-                          isCloudBackupEnabled = value; // Update switch value
-                        });
-                      }
-                    } else {
-                      setState(() {
-                        isCloudBackupEnabled = value; // Update switch value
-                      });
-                    }
-                  },
-                  activeColor:
-                      AppColors.fitnessMainColor, // Active color of switch
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20), // Space between elements
-          ListTile(
-            leading: const Icon(Icons.delete,
-                color: AppColors.fitnessWarningColor), // Icon for the list tile
-            title: const Text('Delete My Data',
-                style: TextStyle(
-                    color: AppColors.fitnessWarningColor,
-                    fontSize: 18)), // Title of the list tile
-            trailing: Transform.scale(
-              scale: 0.6, // Scale down the icon
-              child: const Icon(CupertinoIcons.right_chevron,
-                  color: AppColors.fitnessWarningColor), // Chevron icon
-            ),
-            onTap: _deleteMyData, // Function to delete data
           ),
         ],
       ),
@@ -314,13 +242,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
             ],
           ), // Build workouts data section
           _buildDataSection('EXERCISES',
-              _allData['exercises']), // Build exercises data section
-          _buildDataSection('USERWORKOUTS',
-              _allData['userworkouts']), // Build user workouts data section
-          _buildDataSection(
-              'POSTS', _allData['posts']), // Build posts data section
-          _buildDataSection('USERFOLLOWS',
-              _allData['userfollows']), // Build user follows data section
+              _allData['exercises']), // Build exercises data section// Build user workouts data section
         ],
       ),
     );
@@ -365,7 +287,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                           ),
                         ),
                         TextSpan(
-                          text: '${entry.value}',
+                          text: entry.value.toString().replaceAll('[', '').replaceAll(']', ''),
                           style: const TextStyle(
                             color:
                                 AppColors.fitnessPrimaryTextColor, // Text color
@@ -402,8 +324,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
     setState(() {
       _allData = {
         'userdata': userData, // Set user data
-        'exercises': 'Exercises content', // Set exercises data
-        'userworkouts': 'User workouts content', // Set user workouts data
+        'exercises': exerciseData, // Set exercises data
         'posts': 'Posts content', // Set posts data
         'userfollows': 'User follows content', // Set user follows data
       };
@@ -411,57 +332,4 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
     });
   }
 
-  // Function to delete user data
-  void _deleteMyData() async {
-    bool confirmDelete = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor:
-            AppColors.fitnessModuleColor, // Background color of dialog
-        title: const Text('Delete My Data',
-            style: TextStyle(
-                color: AppColors.fitnessWarningColor)), // Title of dialog
-        content: RichText(
-          text: const TextSpan(
-            children: [
-              TextSpan(
-                text:
-                    'Are you sure you want to delete your data? Your account will also be removed.\n\n',
-                style: TextStyle(
-                    color: AppColors.fitnessPrimaryTextColor,
-                    fontSize: 15), // Text style
-              ),
-              TextSpan(
-                text: 'This action cannot be undone.',
-                style: TextStyle(
-                    color: AppColors.fitnessWarningColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold), // Text style
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context)
-                .pop(false), // Close dialog without deleting
-            child: const Text('Cancel',
-                style:
-                    TextStyle(color: AppColors.fitnessMainColor)), // Text style
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            // Close dialog and delete data
-            child: const Text('Delete',
-                style: TextStyle(
-                    color: AppColors.fitnessWarningColor)), // Text style
-          ),
-        ],
-      ),
-    );
-
-    if (confirmDelete) {
-      // Implement delete data functionality
-    }
-  }
 }
