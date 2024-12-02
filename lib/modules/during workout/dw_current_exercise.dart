@@ -368,138 +368,154 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                   SingleChildScrollView(
                     child: Column(
                       children: [
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 240),
-                          child: RawScrollbar(
-                            thumbVisibility: true,
-                            thickness: 4.0,
-                            radius: const Radius.circular(20.0),
-                            thumbColor: AppColors.fitnessMainColor,
-                            controller: _scrollController,
-                            child: SingleChildScrollView(
+                        if (exercises[activeWorkoutIndex].name != 'Hike')
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 240),
+                            child: RawScrollbar(
+                              thumbVisibility: true,
+                              thickness: 4.0,
+                              radius: const Radius.circular(20.0),
+                              thumbColor: AppColors.fitnessMainColor,
                               controller: _scrollController,
-                              child: Column(
-                                children: exerciseStats[
-                                        exercises[activeWorkoutIndex]]!
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                  int index = entry.key;
-                                  SetStats stats = entry.value;
+                              child: SingleChildScrollView(
+                                controller: _scrollController,
+                                child: Column(
+                                  children: exerciseStats[
+                                          exercises[activeWorkoutIndex]]!
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
+                                    int index = entry.key;
+                                    SetStats stats = entry.value;
 
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30.0, vertical: 2.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                '\u2022 Set ${stats.set}',
-                                                style: const TextStyle(
-                                                  color: AppColors
-                                                      .fitnessPrimaryTextColor,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 15,
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30.0, vertical: 2.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  '\u2022 Set ${stats.set}',
+                                                  style: const TextStyle(
+                                                    color: AppColors
+                                                        .fitnessPrimaryTextColor,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15,
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                '${stats.reps} Reps',
-                                                style: const TextStyle(
-                                                  color: AppColors
-                                                      .fitnessPrimaryTextColor,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 15,
+                                                Text(
+                                                  '${stats.reps} Reps',
+                                                  style: const TextStyle(
+                                                    color: AppColors
+                                                        .fitnessPrimaryTextColor,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15,
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                '${stats.weight} Kg',
-                                                style: const TextStyle(
-                                                  color: AppColors
-                                                      .fitnessPrimaryTextColor,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 15,
+                                                Text(
+                                                  '${stats.weight} Kg',
+                                                  style: const TextStyle(
+                                                    color: AppColors
+                                                        .fitnessPrimaryTextColor,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            if (index ==
-                                                exerciseStats[exercises[
-                                                            activeWorkoutIndex]]!
-                                                        .length -
-                                                    1)
+                                          Row(
+                                            children: [
+                                              if (index ==
+                                                  exerciseStats[exercises[
+                                                              activeWorkoutIndex]]!
+                                                          .length -
+                                                      1)
+                                                CupertinoButton(
+                                                  padding: EdgeInsets.zero,
+                                                  onPressed: () => _removeSet(
+                                                      exercises[
+                                                          activeWorkoutIndex],
+                                                      index),
+                                                  child: const Icon(
+                                                    CupertinoIcons.minus_circle,
+                                                    color: Colors.red,
+                                                    size: 20,
+                                                  ),
+                                                )
+                                              else
+                                                const SizedBox(
+                                                  width: 40,
+                                                  height: 20,
+                                                ),
                                               CupertinoButton(
                                                 padding: EdgeInsets.zero,
-                                                onPressed: () => _removeSet(
+                                                onPressed: () => _showPicker(
+                                                    context,
                                                     exercises[
                                                         activeWorkoutIndex],
                                                     index),
                                                 child: const Icon(
-                                                  CupertinoIcons.minus_circle,
-                                                  color: Colors.red,
+                                                  CupertinoIcons.pencil,
+                                                  color: AppColors
+                                                      .fitnessPrimaryTextColor,
                                                   size: 20,
                                                 ),
-                                              )
-                                            else
-                                              const SizedBox(
-                                                width: 40,
-                                                height: 20,
                                               ),
-                                            CupertinoButton(
-                                              padding: EdgeInsets.zero,
-                                              onPressed: () => _showPicker(
-                                                  context,
-                                                  exercises[activeWorkoutIndex],
-                                                  index),
-                                              child: const Icon(
-                                                CupertinoIcons.pencil,
-                                                color: AppColors
-                                                    .fitnessPrimaryTextColor,
-                                                size: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: CupertinoButton(
-                      onPressed: () => _addSet(exercises[activeWorkoutIndex]),
-                      child: Container(
-                        width: double.infinity,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        alignment: Alignment.center,
-                        child: const Text(
-                          "Add Set",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                        if (exercises[activeWorkoutIndex].name != 'Hike')
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: CupertinoButton(
+                              onPressed: () =>
+                                  _addSet(exercises[activeWorkoutIndex]),
+                              child: Container(
+                                width: double.infinity,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "Add Set",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        if (exercises[activeWorkoutIndex].name == 'Hike')
+                          const Padding(padding: EdgeInsets.all(20.0),
+                          child: Text(
+                            'Sets and reps are not required for this exercise',
+                            style: TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),

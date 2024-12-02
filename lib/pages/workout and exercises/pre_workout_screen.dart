@@ -412,14 +412,16 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                             fontSize: 18.0,
                                           ),
                                         ),
-                                        subtitle: Text(
-                                          'Reps: ${exerciseMap[exercise]?.reps}, Sets: ${exerciseMap[exercise]?.sets}',
-                                          style: const TextStyle(
-                                            color: AppColors
-                                                .fitnessSecondaryTextColor,
-                                            fontSize: 16.0,
-                                          ),
-                                        ),
+                                        subtitle: exercise.name != 'Hike'
+                                            ? Text(
+                                                'Reps: ${exerciseMap[exercise]?.reps}, Sets: ${exerciseMap[exercise]?.sets}',
+                                                style: const TextStyle(
+                                                  color: AppColors
+                                                      .fitnessSecondaryTextColor,
+                                                  fontSize: 16.0,
+                                                ),
+                                              )
+                                            : null,
                                         trailing: exercise.videoUrl != null &&
                                                 exercise.videoUrl!.isNotEmpty
                                             ? const Icon(Icons.tv,

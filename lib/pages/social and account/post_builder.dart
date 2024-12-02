@@ -82,27 +82,28 @@ class _PostBuilderState extends State<PostBuilder> {
   }
 
   Widget statBuilder(Map<String, String> stat) {
-    return Row(
-      children: [
-        const SizedBox(width: 5), // Add spacing
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(stat['name'] ?? '',
-                style: const TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.fitnessSecondaryTextColor)), // Stat name
+  return Row(
+    children: [
+      const SizedBox(width: 5), // Add spacing
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(stat['name'] ?? '',
+              style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.fitnessSecondaryTextColor)), // Stat name
+          if (stat['name'] != 'Hike')
             Text(stat['value'] ?? '',
                 style: const TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w700,
                     color: AppColors.fitnessPrimaryTextColor)), // Stat value
-          ],
-        ),
-      ],
-    );
-  }
+        ],
+      ),
+    ],
+  );
+}
 
   String formatDateWithSuffix(DateTime date) {
     String day = DateFormat('d').format(date);
