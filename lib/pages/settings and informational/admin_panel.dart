@@ -54,15 +54,11 @@ class _AdminPanelState extends State<AdminPanel> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center), // Icon for workout tab
-            label: 'Workout', // Label for workout tab
+            label: 'Workouts', // Label for workout tab
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings), // Icon for general settings tab
             label: 'General', // Label for general settings tab
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people), // Icon for social tab
-            label: 'Social', // Label for social tab
           ),
         ],
         currentIndex: _selectedIndex, // Current selected index
