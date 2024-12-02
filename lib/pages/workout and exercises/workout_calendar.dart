@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
@@ -32,12 +34,11 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   List<Workouts> _workouts = []; // List of all workouts
   List<Workouts> _filteredWorkouts = []; // List of filtered workouts
   List<UserWorkouts> _upcomingWorkouts = []; // List of upcoming workouts
-  String _searchQuery = ''; // Search query for filtering workouts
   List<DateTime> workoutDates = []; // List of workout dates
   final WorkoutDao _workoutDao = WorkoutDao(); // Workout DAO instance
   final UserWorkoutsDao _userWorkoutsDao =
       UserWorkoutsDao(); // User workouts DAO instance
-  Map<UserWorkouts, String> _userWorkoutsMap =
+  final Map<UserWorkouts, String> _userWorkoutsMap =
       {}; // Map of user workouts to workout names
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? 'localUser';
 
@@ -49,14 +50,14 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
 
   // Fetch workout names for upcoming workouts
   Future<void> fetchWorkoutNames() async {
-    _upcomingWorkouts.forEach((workout) {
+    for (var workout in _upcomingWorkouts) {
       _workoutDao.localFetchByWorkoutId(workout.workoutId).then((value) {
         if (value == null) return;
         setState(() {
           _userWorkoutsMap[workout] = '${value.name} - ${value.description}';
         });
       });
-    });
+    }
   }
 
   // Fetch all workouts based on category
@@ -75,7 +76,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   // Filter workouts based on search query
   void _filterWorkouts(String query) {
     setState(() {
-      _searchQuery = query;
       _filteredWorkouts = _workouts
           .where((workout) =>
               workout.name.toLowerCase().contains(query.toLowerCase()))
@@ -86,7 +86,6 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   // Clear the search filter
   void _clearFilter() {
     setState(() {
-      _searchQuery = '';
       _filteredWorkouts = _workouts;
     });
   }
@@ -379,12 +378,12 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Search',
-                      labelStyle: TextStyle(fontSize: 12),
+                      labelStyle: const TextStyle(fontSize: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
                     onChanged: _filterWorkouts,
                   ),
                 ),
@@ -427,9 +426,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                                           _selectedDay!.month &&
                                       workout.date.day == _selectedDay!.day) {
                                     toBeDeletedId = workout;
-                                    if (toBeDeletedId != null) {
-                                      replaceExisting(toBeDeletedId);
-                                    }
+                                    replaceExisting(toBeDeletedId);
                                     break;
                                   }
                                 }
@@ -446,7 +443,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
                             ),
                             child: Text(
                               _filteredWorkouts[index].name,
-                              style: TextStyle(fontSize: 14),
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ),
                         );

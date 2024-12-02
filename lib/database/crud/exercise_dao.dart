@@ -186,7 +186,8 @@ class ExerciseDao {
         .doc(exerciseId)
         .get();
     if (documentSnapshot.exists) {
-      Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
       data['exerciseId'] = documentSnapshot.id;
       return Exercises.fromMap(data);
     } else {
@@ -236,7 +237,7 @@ class ExerciseDao {
             videoUrl ?? data['video_url'],
             imageURL ?? data['imageURL'],
             isPrivate ?? data['isPrivate'],
-            userId ?? data['userId']);
+            userId);
       }
 
       if (image != null) {
@@ -253,7 +254,7 @@ class ExerciseDao {
         'video_url': videoUrl ?? data['video_url'],
         'imageURL': imageURL ?? data['imageURL'],
         'isPrivate': isPrivate ?? data['isPrivate'],
-        'userId': userId ?? data['userId'],
+        'userId': userId,
       });
 
       await localUpdate(Exercises(
@@ -264,7 +265,7 @@ class ExerciseDao {
         videoUrl: videoUrl ?? data['video_url'],
         imageURL: imageURL ?? data['imageURL'],
         isPrivate: isPrivate ?? data['isPrivate'],
-        userId: userId ?? data['userId'],
+        userId: userId,
       ));
 
       return {'exerciseId': exerciseId};
@@ -307,7 +308,7 @@ class ExerciseDao {
       'description': description ?? '',
       'category': category,
       'video_url': videoUrl ?? '',
-      'imageURL': imageURL ?? '',
+      'imageURL': imageURL,
       'isPrivate': isPrivate,
       'userId': userId ?? '',
     });
@@ -320,7 +321,7 @@ class ExerciseDao {
       description: description ?? '',
       category: category,
       videoUrl: videoUrl ?? '',
-      imageURL: imageURL ?? '',
+      imageURL: imageURL,
       isPrivate: isPrivate,
       userId: userId ?? '',
     ));

@@ -260,32 +260,32 @@ class WorkoutDao {
   ////////////////////////////////////////////////////////////
 
   /// Deletes a workout from Firebase and marks it as deleted locally if it is part of user workouts.
-  Future<void> fireBaseDeleteWorkout(String WorkoutId) async {
+  Future<void> fireBaseDeleteWorkout(String workoutId) async {
     // Handle the case where a workout is a part of someones userWorkouts
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('userWorkouts')
-        .where('workoutId', isEqualTo: WorkoutId)
+        .where('workoutId', isEqualTo: workoutId)
         .get();
 
     // if there exists userWorkouts with that workoutId we dont want to delete them, just set them as inactive
     if (querySnapshot.docs.isNotEmpty) {
       await FirebaseFirestore.instance
           .collection('workouts')
-          .doc(WorkoutId)
+          .doc(workoutId)
           .update({'isDeleted': true});
-      localSetDeleted(WorkoutId);
+      localSetDeleted(workoutId);
     } else {
       await FirebaseFirestore.instance
           .collection('workouts')
-          .doc(WorkoutId)
+          .doc(workoutId)
           .delete();
-      localDelete(WorkoutId);
-      _workoutDao.deleteAllWorkoutExercisesWithWorkoutId(WorkoutId);
+      localDelete(workoutId);
+      _workoutDao.deleteAllWorkoutExercisesWithWorkoutId(workoutId);
     }
 
     final querySnapshot2 = await FirebaseFirestore.instance
         .collection('userWorkoutDuplicate')
-        .where('newWorkoutId', isEqualTo: WorkoutId)
+        .where('newWorkoutId', isEqualTo: workoutId)
         .get();
 
     for (var doc in querySnapshot2.docs) {
@@ -376,14 +376,14 @@ class WorkoutDao {
       calories: calories ?? previousWorkout.calories,
       sets: sets ?? previousWorkout.sets,
       intensity: intensity ?? previousWorkout.intensity,
-      isPrivate: isPrivate ?? previousWorkout.isPrivate,
-      userId: userId ?? previousWorkout.userId,
+      isPrivate: isPrivate,
+      userId: userId,
       imageURL: imageURL ?? previousWorkout.imageURL,
-      name: name ?? previousWorkout.name,
+      name: name,
       isDeleted: false,
     );
 
-    final result = localUpdate(updatedWorkout);
+    localUpdate(updatedWorkout);
 
     // Update it on Firebase
     await FirebaseFirestore.instance
@@ -396,10 +396,10 @@ class WorkoutDao {
       'calories': calories ?? previousWorkout.calories,
       'sets': sets ?? previousWorkout.sets,
       'intensity': intensity ?? previousWorkout.intensity,
-      'isPrivate': isPrivate ?? previousWorkout.isPrivate,
-      'userId': userId ?? previousWorkout.userId,
+      'isPrivate': isPrivate,
+      'userId': userId,
       'imageURL': imageURL ?? previousWorkout.imageURL,
-      'name': name ?? previousWorkout.name,
+      'name': name,
     });
   }
 
@@ -416,14 +416,14 @@ class WorkoutDao {
       bool wantId,
       int? calories,
       int? sets,
-      String? PreImageURL) async {
+      String? preImageURL) async {
     if (userId != null) {
       String? imageURL;
 
       if (image != null) {
         imageURL = await uploadImage(image);
       } else {
-        imageURL = PreImageURL;
+        imageURL = preImageURL;
       }
 
       DocumentReference docRef =
@@ -435,7 +435,7 @@ class WorkoutDao {
         'sets': sets ?? 0,
         'intensity': intensity ?? 0,
         'isPrivate': isPrivate,
-        'userId': userId ?? '',
+        'userId': userId,
         'imageURL': imageURL ?? '',
         'name': name,
       });
@@ -451,7 +451,7 @@ class WorkoutDao {
         sets: sets,
         intensity: intensity,
         isPrivate: isPrivate,
-        userId: userId ?? '',
+        userId: userId,
         imageURL: imageURL,
         name: name,
         isDeleted: false,
@@ -482,26 +482,26 @@ class WorkoutDao {
   /// Fetches all public workouts from Firebase.
   Future<Map<String, dynamic>> fireBaseFetchPublicWorkouts() async {
     // Fetch our premade workouts
-    QuerySnapshot PremadequerySnapshot = await FirebaseFirestore.instance
+    QuerySnapshot premadequerySnapshot = await FirebaseFirestore.instance
         .collection('workouts')
         .where('isPrivate', isEqualTo: false)
         .where('userId', isEqualTo: '')
         .get();
 
-    List<Workouts> workouts = PremadequerySnapshot.docs.map((doc) {
+    List<Workouts> workouts = premadequerySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['workoutId'] = doc.id;
       return Workouts.fromMap(data);
     }).toList();
 
     // Fetch all public workouts
-    QuerySnapshot PublicquerySnapshot = await FirebaseFirestore.instance
+    QuerySnapshot publicquerySnapshot = await FirebaseFirestore.instance
         .collection('workouts')
         .where('isPrivate', isEqualTo: false)
         .where('userId', isNotEqualTo: '')
         .get();
 
-    List<Workouts> publicWorkouts = PublicquerySnapshot.docs.map((doc) {
+    List<Workouts> publicWorkouts = publicquerySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['workoutId'] = doc.id;
       return Workouts.fromMap(data);

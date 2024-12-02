@@ -97,8 +97,9 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                         onTap: _pickImage,
                         child: CircleAvatar(
                           radius: 30,
-                          backgroundColor:
-                              _image == null ? AppColors.fitnessMainColor : null,
+                          backgroundColor: _image == null
+                              ? AppColors.fitnessMainColor
+                              : null,
                           backgroundImage: _image != null
                               ? FileImage(File(_image!.path))
                               : null,
@@ -148,7 +149,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                       ),
                       const SizedBox(width: 20),
                       Expanded(
-                        child: Container(
+                        child: SizedBox(
                           width: 100,
                           height: 50,
                           child: CupertinoPicker(
@@ -180,7 +181,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                       ),
                       const SizedBox(width: 20),
                       Expanded(
-                        child: Container(
+                        child: SizedBox(
                           height: 50,
                           child: CupertinoPicker(
                             scrollController:
@@ -211,7 +212,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                       ),
                       const SizedBox(width: 20),
                       Expanded(
-                        child: Container(
+                        child: SizedBox(
                           height: 50,
                           child: CupertinoPicker(
                             scrollController:

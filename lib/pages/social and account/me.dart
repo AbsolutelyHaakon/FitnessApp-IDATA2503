@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/profile_page.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/user_profile_module.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -18,20 +16,24 @@ class Me extends StatefulWidget {
 
 class _MeState extends State<Me> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>(); // Form key for login form
-  final _emailController = TextEditingController(); // Controller for email input
-  final _passwordController = TextEditingController(); // Controller for password input
+  final _emailController =
+      TextEditingController(); // Controller for email input
+  final _passwordController =
+      TextEditingController(); // Controller for password input
   final UserDao _userDao = UserDao(); // Data access object for user operations
   User? _currentUser; // Current logged-in user
 
   @override
   void initState() {
     super.initState();
-    _currentUser = FirebaseAuth.instance.currentUser; // Get the current user from Firebase
+    _currentUser =
+        FirebaseAuth.instance.currentUser; // Get the current user from Firebase
   }
 
   void _onLoginSuccess(User? user) {
     setState(() {
-      _currentUser = FirebaseAuth.instance.currentUser; // Update the current user on login success
+      _currentUser = FirebaseAuth
+          .instance.currentUser; // Update the current user on login success
     });
   }
 
@@ -54,27 +56,34 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
                     width: double.infinity,
                     color: AppColors.fitnessBackgroundColor, // Background color
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 35.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 35.0),
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             if (_currentUser != null) ...[
                               UserProfileModule(
-                                user: _currentUser!, // Pass the current user to the profile module
+                                user:
+                                    _currentUser!, // Pass the current user to the profile module
                                 onLogout: _onLogout, // Logout callback
                               ),
                               const SizedBox(height: 20),
                               ProfilePage(
-                                userId: FirebaseAuth.instance.currentUser!.uid, // Pass the user ID to the profile page
+                                userId: FirebaseAuth.instance.currentUser!
+                                    .uid, // Pass the user ID to the profile page
                               ),
                             ] else ...[
                               LoginModule(
-                                formKey: _formKey, // Pass the form key to the login module
-                                emailController: _emailController, // Pass the email controller
-                                passwordController: _passwordController, // Pass the password controller
+                                formKey:
+                                    _formKey, // Pass the form key to the login module
+                                emailController:
+                                    _emailController, // Pass the email controller
+                                passwordController:
+                                    _passwordController, // Pass the password controller
                                 userDao: _userDao, // Pass the user DAO
-                                onLoginSuccess: _onLoginSuccess, // Login success callback
+                                onLoginSuccess:
+                                    _onLoginSuccess, // Login success callback
                               ),
                             ],
                           ],
@@ -88,7 +97,8 @@ class _MeState extends State<Me> with SingleTickerProviderStateMixin {
           ),
         ],
       ),
-      backgroundColor: AppColors.fitnessBackgroundColor, // Scaffold background color
+      backgroundColor:
+          AppColors.fitnessBackgroundColor, // Scaffold background color
     );
   }
 }

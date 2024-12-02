@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,7 +36,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
   void initState() {
     super.initState();
     for (Exercises exercise in widget.selectedExercises) {
-      _selectedExercisesMap[exercise.exerciseId!] = exercise;
+      _selectedExercisesMap[exercise.exerciseId] = exercise;
     }
     _fetchExercises();
   }
@@ -159,7 +161,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                 onTap: () {
                                   setState(() {
                                     _selectedExercisesMap
-                                        .remove(exercise.exerciseId!);
+                                        .remove(exercise.exerciseId);
                                   });
                                 },
                                 child: Chip(
@@ -257,7 +259,7 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                           IconButton(
                                             icon: Icon(
                                               _selectedExercisesMap.containsKey(
-                                                      exercise.exerciseId!)
+                                                      exercise.exerciseId)
                                                   ? Icons.remove
                                                   : Icons.add,
                                               color: AppColors.fitnessMainColor,
@@ -266,12 +268,12 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                                               setState(() {
                                                 if (_selectedExercisesMap
                                                     .containsKey(
-                                                        exercise.exerciseId!)) {
+                                                        exercise.exerciseId)) {
                                                   _selectedExercisesMap.remove(
-                                                      exercise.exerciseId!);
+                                                      exercise.exerciseId);
                                                 } else {
                                                   _selectedExercisesMap[exercise
-                                                      .exerciseId!] = exercise;
+                                                      .exerciseId] = exercise;
                                                 }
                                               });
                                             },
@@ -303,90 +305,90 @@ class _ExerciseSelectorPageState extends State<ExerciseSelectorPage> {
                   constraints: const BoxConstraints(minHeight: 100),
                   child: _allPublicExercises.isEmpty
                       ? Center(
-                    child: Text(
-                      'No exercises available.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  )
+                          child: Text(
+                            'No exercises available.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        )
                       : Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _allPublicExercises.length,
-                      itemBuilder: (context, index) {
-                        Exercises exercise = _allPublicExercises[index];
-                        if (_searchController.text.isEmpty ||
-                            exercise.name.toLowerCase().contains(
-                                _searchController.text.toLowerCase())) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 4.0),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor:
-                                AppColors.fitnessPrimaryTextColor,
-                                backgroundColor: AppColors
-                                    .fitnessSecondaryModuleColor,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 12.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(16.0),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ExerciseOverviewPage(
-                                            exercise: exercise),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    exercise.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium,
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      _selectedExercisesMap.containsKey(
-                                          exercise.exerciseId!)
-                                          ? Icons.remove
-                                          : Icons.add,
-                                      color: AppColors.fitnessMainColor,
+                          padding: const EdgeInsets.all(16.0),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _allPublicExercises.length,
+                            itemBuilder: (context, index) {
+                              Exercises exercise = _allPublicExercises[index];
+                              if (_searchController.text.isEmpty ||
+                                  exercise.name.toLowerCase().contains(
+                                      _searchController.text.toLowerCase())) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor:
+                                          AppColors.fitnessPrimaryTextColor,
+                                      backgroundColor:
+                                          AppColors.fitnessSecondaryModuleColor,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 12.0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0),
+                                      ),
                                     ),
                                     onPressed: () {
-                                      setState(() {
-                                        if (_selectedExercisesMap
-                                            .containsKey(
-                                            exercise.exerciseId!)) {
-                                          _selectedExercisesMap.remove(
-                                              exercise.exerciseId!);
-                                        } else {
-                                          _selectedExercisesMap[
-                                          exercise.exerciseId!] = exercise;
-                                        }
-                                      });
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ExerciseOverviewPage(
+                                                  exercise: exercise),
+                                        ),
+                                      );
                                     },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          exercise.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            _selectedExercisesMap.containsKey(
+                                                    exercise.exerciseId)
+                                                ? Icons.remove
+                                                : Icons.add,
+                                            color: AppColors.fitnessMainColor,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              if (_selectedExercisesMap
+                                                  .containsKey(
+                                                      exercise.exerciseId)) {
+                                                _selectedExercisesMap.remove(
+                                                    exercise.exerciseId);
+                                              } else {
+                                                _selectedExercisesMap[exercise
+                                                    .exerciseId] = exercise;
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                          ),
+                        ),
                 ),
               ],
             ),

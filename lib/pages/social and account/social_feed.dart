@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitnessapp_idata2503/database/Initialization/social_feed_data.dart';
 import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
@@ -18,8 +17,6 @@ class SocialFeed extends StatefulWidget {
 
 class _SocialFeedState extends State<SocialFeed> {
   final PostsDao _postsDao = PostsDao(); // DAO for handling posts
-  final SocialFeedData _socialFeedData =
-      SocialFeedData(); // Data for social feed
 
   List<Posts> _posts = []; // List to store posts
   bool _isReady = false; // Flag to check if data is ready
@@ -53,7 +50,7 @@ class _SocialFeedState extends State<SocialFeed> {
       final fetchedPosts = await _postsDao
           .fireBaseFetchFeed(user.uid); // Fetch posts from Firebase
 
-      if (fetchedPosts != null && fetchedPosts["posts"] != null) {
+      if (fetchedPosts["posts"] != null) {
         if (!mounted) return;
         setState(() {
           _posts = fetchedPosts["posts"]; // Update posts list
@@ -76,51 +73,83 @@ class _SocialFeedState extends State<SocialFeed> {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Feed',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.fitnessPrimaryTextColor,
-                ),
-          ),
-          backgroundColor: AppColors.fitnessBackgroundColor,
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize:
+            const Size.fromHeight(kToolbarHeight), // Use default app bar height
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final appBarHeight =
+                constraints.maxHeight * 0.8; // Calculate dynamic height
+            return SizedBox(
+              height: appBarHeight,
+              child: _buildAppBar(context), // Build the app bar
+            );
+          },
         ),
-        body: Stack(
-          children: [
-            _isReady
-                ? _noPostsAvailable
-                    ? Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Center(
-                          child: Text(
-                            _notLoggedIn
-                                ? 'Please log in see your feed and create posts! You can still search for other users and view their posts.'
-                                : 'No posts available.... Follow some peers to see their content!',
-                            style: Theme.of(context).textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
+      ),
+      body: Stack(
+        children: [
+          _isReady
+              ? _noPostsAvailable
+                  ? Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Center(
+                        child: Text(
+                          _notLoggedIn
+                              ? 'Please log in see your feed and create posts! You can still search for other users and view their posts.'
+                              : 'No posts available.... Follow some peers to see their content!',
+                          style: Theme.of(context).textTheme.bodySmall,
+                          textAlign: TextAlign.center,
                         ),
-                      )
-                    : _buildFeedSection() // Show feed if data is ready
-                : const Center(
-                    child: CircularProgressIndicator(
-                      color:
-                          AppColors.fitnessMainColor, // Show loading indicator
-                    ),
+                      ),
+                    )
+                  : _buildFeedSection() // Show feed if data is ready
+              : const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.fitnessMainColor, // Show loading indicator
                   ),
-            if (!_notLoggedIn && _isReady) // If user is logged in
-              Positioned(
-                  bottom: 35,
-                  right: 10,
-                  child: _buildFloatingActionButton(context)),
+                ),
+          if (!_notLoggedIn && _isReady) // If user is logged in
+            Positioned(
+                bottom: 35,
+                right: 10,
+                child: _buildFloatingActionButton(context)),
+        ],
+      ),
+      backgroundColor: AppColors.fitnessBackgroundColor, // Set background color
+    );
+  }
+
+  /// Builds the app bar with a title and subtitle.
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.fitnessModuleColor, // Set border color
+            width: 1.0, // Set border width
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.only(left: 20.0), // Set padding
+      child: Align(
+        alignment: Alignment.centerLeft, // Align to the left
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          // Align text to the start
+          children: [
+            Text(
+              'Social Feed', // Title
+              style: Theme.of(context).textTheme.bodyLarge, // Set text style
+            ),
+            Text(
+              'Explore posts from other users', // Subtitle
+              style: Theme.of(context).textTheme.bodyMedium, // Set text style
+            ),
           ],
         ),
-        backgroundColor: AppColors.fitnessBackgroundColor,
-      ), // Set background color
+      ),
     );
   }
 
@@ -134,7 +163,8 @@ class _SocialFeedState extends State<SocialFeed> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
               // Set padding
               child: ListView.builder(
                 shrinkWrap: true,

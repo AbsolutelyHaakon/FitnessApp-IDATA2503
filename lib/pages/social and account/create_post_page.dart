@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,17 +9,12 @@ import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../database/crud/posts_dao.dart';
 import '../../styles.dart';
 
 /// CreatePostPage which allows the user to create a post
-///
-///
-/// TODO: Implement post creation logic
-/// TODO: Implement attach exercise logic
 
 class CreatePostPage extends StatefulWidget {
   final UserWorkouts? userWorkout;
@@ -31,7 +28,7 @@ class CreatePostPage extends StatefulWidget {
 class _CreatePostPageState extends State<CreatePostPage> {
   final _formKey = GlobalKey<FormState>();
   String? _message;
-  Map<String, String> _workoutStats = {};
+  final Map<String, String> _workoutStats = {};
   Map<String, String> displayedStats = {};
   String? _userWorkoutId;
   String? _location;
@@ -107,14 +104,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
     await UserWorkoutsDao()
         .fireBaseFetchUserWorkoutById(_userWorkoutId!)
         .then((userWorkout) {
-      if (userWorkout != null) {
-        if (userWorkout.statistics == null) {
-          return;
-        }
-
-        calculateStatistics(userWorkout);
-        calculateDuration(userWorkout);
+      if (userWorkout.statistics == null) {
+        return;
       }
+
+      calculateStatistics(userWorkout);
+      calculateDuration(userWorkout);
     });
   }
 
@@ -155,7 +150,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     _workoutStats['Sets'] = setCount.toString();
     _workoutStats['Max Weight'] = '$maxWeightOverall kg';
     maxWeightPerExercise.forEach((exercise, maxWeight) {
-     _workoutStats[exercise] = '$maxWeight kg';
+      _workoutStats[exercise] = '$maxWeight kg';
     });
 
     print('Stats: $stats');
@@ -173,104 +168,104 @@ class _CreatePostPageState extends State<CreatePostPage> {
     _workoutStats['Duration'] = formattedDuration;
   }
 
-Future<void> _showStatsSelectionDialog() async {
-  await showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Select up to 3 stats',
-            style: TextStyle(
-                color: AppColors.fitnessPrimaryTextColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 20)),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ..._workoutStats.entries.map((entry) {
-                    return CheckboxListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${entry.key}: ',
-                              style: const TextStyle(
-                                  color: AppColors.fitnessPrimaryTextColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17)),
-                          Text(entry.value,
-                              style: const TextStyle(
-                                  color: AppColors.fitnessSecondaryTextColor,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15)),
-                        ],
-                      ),
-                      value: displayedStats.containsKey(entry.key),
-                      checkColor: AppColors.fitnessPrimaryTextColor,
-                      activeColor: AppColors.fitnessMainColor,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            if (displayedStats.length < 3) {
-                              displayedStats[entry.key] = entry.value;
-                            }
-                          } else {
-                            displayedStats.remove(entry.key);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                  TextButton(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const WorkoutLog(isCreatingPost: true),
+  Future<void> _showStatsSelectionDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Select up to 3 stats',
+              style: TextStyle(
+                  color: AppColors.fitnessPrimaryTextColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 20)),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ..._workoutStats.entries.map((entry) {
+                      return CheckboxListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${entry.key}: ',
+                                style: const TextStyle(
+                                    color: AppColors.fitnessPrimaryTextColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 17)),
+                            Text(entry.value,
+                                style: const TextStyle(
+                                    color: AppColors.fitnessSecondaryTextColor,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 15)),
+                          ],
                         ),
+                        value: displayedStats.containsKey(entry.key),
+                        checkColor: AppColors.fitnessPrimaryTextColor,
+                        activeColor: AppColors.fitnessMainColor,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              if (displayedStats.length < 3) {
+                                displayedStats[entry.key] = entry.value;
+                              }
+                            } else {
+                              displayedStats.remove(entry.key);
+                            }
+                          });
+                        },
                       );
-                      if (result != null) {
-                        setState(() {
-                          _workoutStats.clear();
-                          _userWorkoutId = result;
-                        });
-                        await _buildWorkoutStats();
-                        await _showStatsSelectionDialog();
-                      }
-                    },
-                    child: const Text('Attach Different Workout',
-                        style: TextStyle(color: AppColors.fitnessMainColor)),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
+                    }),
+                    TextButton(
+                      onPressed: () async {
+                        final result = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const WorkoutLog(isCreatingPost: true),
+                          ),
+                        );
+                        if (result != null) {
+                          setState(() {
+                            _workoutStats.clear();
+                            _userWorkoutId = result;
+                          });
+                          await _buildWorkoutStats();
+                          await _showStatsSelectionDialog();
+                        }
+                      },
+                      child: const Text('Attach Different Workout',
+                          style: TextStyle(color: AppColors.fitnessMainColor)),
+                    ),
+                  ],
+                ),
+              );
             },
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                displayedStats = displayedStats;
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK',
-                style: TextStyle(color: AppColors.fitnessMainColor)),
-          ),
-        ],
-        backgroundColor: AppColors.fitnessModuleColor,
-      );
-    },
-  );
-}
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel',
+                  style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  displayedStats = displayedStats;
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK',
+                  style: TextStyle(color: AppColors.fitnessMainColor)),
+            ),
+          ],
+          backgroundColor: AppColors.fitnessModuleColor,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,8 +274,8 @@ Future<void> _showStatsSelectionDialog() async {
         title: Text(
           'Create Post',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppColors.fitnessPrimaryTextColor,
-          ),
+                color: AppColors.fitnessPrimaryTextColor,
+              ),
         ),
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
@@ -297,11 +292,10 @@ Future<void> _showStatsSelectionDialog() async {
               if (_userWorkoutId != null) {
                 await _showStatsSelectionDialog();
               } else {
-                final result =
-                await Navigator.of(context).push(
+                final result = await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const WorkoutLog(
-                        isCreatingPost: true),
+                    builder: (context) =>
+                        const WorkoutLog(isCreatingPost: true),
                   ),
                 );
                 if (result != null) {
@@ -315,9 +309,8 @@ Future<void> _showStatsSelectionDialog() async {
                 }
               }
             },
-            child: Text(_userWorkoutId != null
-                ? 'Edit Stats'
-                : 'Attach Workout',
+            child: Text(
+                _userWorkoutId != null ? 'Edit Stats' : 'Attach Workout',
                 style: const TextStyle(color: AppColors.fitnessMainColor)),
           ),
         ],
@@ -408,19 +401,19 @@ Future<void> _showStatsSelectionDialog() async {
                                 }).toList(),
                               ),
                             if (displayedStats.isNotEmpty)
-                            TextButton(
-                              onPressed: () async {
-                                // TODO: MAKE THIS NAVIGATE TO THE WORKOUT ITSELF
-                              },
-                              child: const Text(
-                                'View >',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.fitnessMainColor,
+                              TextButton(
+                                onPressed: () async {
+                                  // TODO: MAKE THIS NAVIGATE TO THE WORKOUT ITSELF
+                                },
+                                child: const Text(
+                                  'View >',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.fitnessMainColor,
+                                  ),
                                 ),
-                              ),
-                            )
+                              )
                           ],
                         ),
                       ),
@@ -529,7 +522,8 @@ Future<void> _showStatsSelectionDialog() async {
                             setState(() {
                               _isLocationFieldVisible = true;
                             });
-                            Future.delayed(Duration(milliseconds: 100), () {
+                            Future.delayed(const Duration(milliseconds: 100),
+                                () {
                               FocusScope.of(context)
                                   .requestFocus(_locationFocusNode);
                             });

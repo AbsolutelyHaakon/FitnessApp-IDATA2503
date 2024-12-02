@@ -8,7 +8,6 @@ import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/create_work
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_calendar.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_log.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../database/crud/workout_dao.dart';
 import '../../database/tables/workout.dart';
@@ -113,56 +112,53 @@ class _WorkoutPageState extends State<WorkoutPage>
   Widget _buildAppBar(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.black, // Set background color to black
         border: Border(
           bottom: BorderSide(
             color: AppColors.fitnessModuleColor, // Set border color
+            width: 1.0, // Set border width
           ),
         ),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 10.0), // Set padding
-      child: SizedBox(
-        height: 100.0, // Set the desired height
-        child: Align(
-          alignment: Alignment.centerLeft, // Align to the left
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // Align text to the start
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Workout',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 0.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const WorkoutLog(isCreatingPost: false),
-                          ),
-                        );
-                      },
-                      child: const Icon(
-                        Icons.history_rounded,
-                        size: 30.0,
-                        color: AppColors.fitnessMainColor,
-                      ),
+      padding: const EdgeInsets.only(left: 20.0), // Set padding
+      child: Align(
+        alignment: Alignment.centerLeft, // Align to the left
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Align text to the start
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Workout',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const WorkoutLog(isCreatingPost: false),
+                        ),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.history_rounded,
+                      size: 30.0,
+                      color: AppColors.fitnessMainColor,
                     ),
                   ),
-                ],
-              ),
-              Text(
-                'Select a workout to begin', // Subtitle
-                style: Theme.of(context).textTheme.bodyMedium, // Set text style
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+            Text(
+              'Select a workout to begin', // Subtitle
+              style: Theme.of(context).textTheme.bodyMedium, // Set text style
+            ),
+          ],
         ),
       ),
     );
@@ -171,34 +167,15 @@ class _WorkoutPageState extends State<WorkoutPage>
   // Build the WorkoutPage widget
   @override
   Widget build(BuildContext context) {
+    final appBarHeight = MediaQuery.of(context).size.height * 0.09;
+
     return MediaQuery.removePadding(
       context: context,
       removeTop: true,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          flexibleSpace: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Workout',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(appBarHeight),
+          child: _buildAppBar(context),
         ),
         body: Stack(
           children: [
@@ -306,7 +283,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CreateWorkoutPage(
+                          builder: (context) => const CreateWorkoutPage(
                             isAdmin: false,
                           ),
                         ),

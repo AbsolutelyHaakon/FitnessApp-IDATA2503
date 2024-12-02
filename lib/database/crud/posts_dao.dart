@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_follows_dao.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
@@ -13,7 +15,7 @@ class PostsDao {
   final UserFollowsDao _userFollowsDao = UserFollowsDao();
 
   // Function to create a new post in the local database
-  Future<int> LocalCreate(Posts post) async {
+  Future<int> localCreate(Posts post) async {
     final database = await DatabaseService().database;
     return await database.insert(
       tableName,
@@ -103,7 +105,7 @@ class PostsDao {
     await FirebaseFirestore.instance.collection('posts').add({
       'userId': userId,
       'content': content ?? '',
-      'imageURL': imageURL ?? '',
+      'imageURL': imageURL,
       'date': DateTime.now(),
       'userWorkoutsId': userWorkoutsId ?? '',
       'location': location ?? '',

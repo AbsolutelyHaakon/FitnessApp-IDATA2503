@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
@@ -69,12 +71,14 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
                   focusNode: _searchFocusNode, // Set focus node
                   controller: _searchController, // Set controller
                   placeholder: 'Search workouts...',
-                  placeholderStyle: TextStyle(
-                    color: AppColors.fitnessSecondaryTextColor, // Set placeholder text color
-                  ),// Placeholder text
-                  prefix: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(CupertinoIcons.search, color: AppColors.fitnessMainColor), // Search icon
+                  placeholderStyle: const TextStyle(
+                    color: AppColors
+                        .fitnessSecondaryTextColor, // Set placeholder text color
+                  ), // Placeholder text
+                  prefix: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(CupertinoIcons.search,
+                        color: AppColors.fitnessMainColor), // Search icon
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.fitnessModuleColor, // Background color
@@ -85,7 +89,8 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
                     fontWeight: FontWeight.w500, // Text weight
                     fontSize: 15, // Text size
                   ),
-                  onChanged: _filterUsers, // Call filter function on text change
+                  onChanged:
+                      _filterUsers, // Call filter function on text change
                 ),
               ),
               const SizedBox(height: 20),

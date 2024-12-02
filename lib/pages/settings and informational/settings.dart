@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
@@ -53,10 +55,10 @@ class SettingsPage extends StatelessWidget {
     activeWorkoutId.value = '';
     activeWorkoutName.value = '';
 
-    final WorkoutDao _workoutDao = WorkoutDao();
-    final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
-    await _workoutDao.localSetAllInactive();
-    await _userWorkoutsDao.localSetAllInactive();
+    final WorkoutDao workoutDao = WorkoutDao();
+    final UserWorkoutsDao userWorkoutsDao = UserWorkoutsDao();
+    await workoutDao.localSetAllInactive();
+    await userWorkoutsDao.localSetAllInactive();
 
     // Sign out of Firebase
     await FirebaseAuth.instance.signOut();
@@ -103,7 +105,7 @@ class SettingsPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AccountSettingsPage(),
+                              builder: (context) => const AccountSettingsPage(),
                             ),
                           );
                         },
@@ -117,7 +119,7 @@ class SettingsPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AdminPanel()),
+                                  builder: (context) => const AdminPanel()),
                             );
                           },
                         ),
@@ -137,7 +139,8 @@ class SettingsPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DataAndPrivacyPage()),
+                                builder: (context) =>
+                                    const DataAndPrivacyPage()),
                           );
                         },
                       ),

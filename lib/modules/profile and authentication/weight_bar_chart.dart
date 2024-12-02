@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
@@ -103,7 +105,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
           return userDataMap['weightTarget'];
         }
       } catch (e) {
-        rethrow;
+        print('Error fetching goal weight: $e');
       }
     }
     return 0;

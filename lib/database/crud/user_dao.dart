@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,7 +29,6 @@ class UserDao {
 
   Future<int> localCreate(LocalUser user) async {
     final database = await DatabaseService().database;
-    print('User created: ${user.userId}');
     return await database.insert(
       tableName,
       user.toMap(),
@@ -142,33 +143,26 @@ class UserDao {
         await user.reauthenticateWithCredential(credential);
 
         await user.verifyBeforeUpdateEmail(newEmail);
-        print(
-            'Verification email sent to $newEmail. Please verify to complete the update.');
 
         int checkCount = 0;
         const int maxChecks = 20;
         await FirebaseAuth.instance.signOut();
 
-        Timer.periodic(Duration(seconds: 30), (timer) async {
+        Timer.periodic(const Duration(seconds: 30), (timer) async {
           checkCount++;
           await user.reload();
           if (user.emailVerified) {
             await updateEmailInFirestore(uid, newEmail);
             timer.cancel();
           } else if (checkCount >= maxChecks) {
-            print('Email not verified after $maxChecks checks.');
             timer.cancel();
-          } else {
-            print('Email not verified yet.');
-          }
+          } else {}
         });
       }
     } on FirebaseAuthException catch (e) {
-      print('Error updating email: $e');
-      throw e;
+      print(e.message);
     } catch (e) {
-      print('Error updating email: $e');
-      throw e;
+      print(e.toString());
     }
   }
 
@@ -202,16 +196,12 @@ class UserDao {
           );
 
           await localUpdate(updatedLocalUser);
-          print('Email updated successfully');
-        } else {
-          print('Local user not found');
-        }
+        } else {}
       } else {
         throw Exception('Email not verified or does not match the new email');
       }
     } catch (e) {
-      print('Error updating email in Firestore: $e');
-      throw e;
+      print(e.toString());
     }
   }
 
@@ -241,8 +231,6 @@ class UserDao {
     if (profileImage != null) {
       imageURL = await uploadImage(profileImage);
     }
-
-    print(existingData['weight']);
 
     // Replace empty values with existing values
     String updatedName =
@@ -328,7 +316,6 @@ class UserDao {
 
       return data;
     } catch (e) {
-      print('Error fetching users: $e');
       return null;
     }
   }
@@ -391,7 +378,7 @@ class UserDao {
   // Check if user is admin
   // Admin status can only be given on the Firebase console and is not present within the app
   Future<bool> getAdminStatus(String? uid) async {
-    if (uid == null || uid!.isEmpty) {
+    if (uid == null || uid.isEmpty) {
       return false;
     }
     DocumentSnapshot documentSnapshot =

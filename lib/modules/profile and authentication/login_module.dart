@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
@@ -99,7 +101,7 @@ class _LoginModuleState extends State<LoginModule> {
         });
       }
     } catch (e) {
-      rethrow;
+      print(e.toString());
     }
   }
 

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +28,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
   bool isLoading = false; // Loading state
   late AnimationController _animationController; // Animation controller
   late Animation<double> _animation; // Animation
-  late Future<void> _fetchDataFuture; // Future for fetching data
+// Future for fetching data
   DateTime today = DateTime.now(); // Today's date
   double todayIntake = 0; // Today's calorie intake
   double intakePercentage = 0.0; // Percentage of calorie intake goal achieved
@@ -38,7 +40,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
   void initState() {
     super.initState();
     fetchAllUserGoals(); // Fetch user goals from the database
-    _fetchDataFuture = fetchIntakeData(); // Fetch intake data
+// Fetch intake data
 
     // Initialize animation controller
     _animationController = AnimationController(
@@ -344,7 +346,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                         height: 200,
                         child: LineChart(
                           LineChartData(
-                            gridData: FlGridData(show: true),
+                            gridData: const FlGridData(show: true),
                             titlesData: const FlTitlesData(
                               show: true,
                               leftTitles: AxisTitles(
@@ -372,7 +374,8 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                                 barWidth: 4,
                                 belowBarData: BarAreaData(
                                     show: true,
-                                    color: Color(0xFFCC7F48).withOpacity(0.3)),
+                                    color: const Color(0xFFCC7F48)
+                                        .withOpacity(0.3)),
                               ),
                             ],
                             extraLinesData: ExtraLinesData(
@@ -387,7 +390,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                                     alignment: Alignment.topRight,
                                     labelResolver: (line) =>
                                         'Goal', // Goal line
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -450,7 +453,7 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                                 barRods: [
                                   BarChartRodData(
                                     toY: intake.toDouble(), // Bar height
-                                    color: Color(0xFFCC7F48),
+                                    color: const Color(0xFFCC7F48),
                                     width: 16,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -488,7 +491,8 @@ class _CalorieIntakePageState extends State<CalorieIntakePage>
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
-                                      ?.copyWith(color: Color(0xFFCC7F48)),
+                                      ?.copyWith(
+                                          color: const Color(0xFFCC7F48)),
                                 ),
                               ],
                             ),

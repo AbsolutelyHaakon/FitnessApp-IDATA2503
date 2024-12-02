@@ -3,43 +3,61 @@ import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_sea
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
+// Main app widget
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: MainSearchPage(),
+    );
+  }
+}
+
 // Main search page widget
 class MainSearchPage extends StatelessWidget {
+  const MainSearchPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-  length: 2,
-  child: MediaQuery.removePadding(
+      length: 2,
+      child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
         child: Scaffold(
-    body: Column(
-      children: [
-        Container(
-          color: AppColors.fitnessBackgroundColor,
-          child: const TabBar(
-            indicatorColor: AppColors.fitnessMainColor,
-            labelColor: AppColors.fitnessMainColor,
-            unselectedLabelColor: AppColors.fitnessPrimaryTextColor,
-            tabs: [
-              Tab(text: 'Users'),
-              Tab(text: 'Workouts'),
-            ],
-          ),
-        ),
-        const Expanded(
-          child: TabBarView(
+          body: Column(
             children: [
-              SearchUsers(),
-              SearchWorkouts(),
+              Container(
+                color: AppColors.fitnessBackgroundColor,
+                child: const TabBar(
+                  indicatorColor: AppColors.fitnessMainColor,
+                  labelColor: AppColors.fitnessMainColor,
+                  unselectedLabelColor: AppColors.fitnessPrimaryTextColor,
+                  tabs: [
+                    Tab(text: 'Users'),
+                    Tab(text: 'Workouts'),
+                  ],
+                ),
+              ),
+              const Expanded(
+                child: TabBarView(
+                  children: [
+                    SearchUsers(),
+                    SearchWorkouts(),
+                  ],
+                ),
+              ),
             ],
           ),
+          backgroundColor: AppColors.fitnessBackgroundColor,
         ),
-      ],
-    ),
-    backgroundColor: AppColors.fitnessBackgroundColor,
-  ),
-  ),
-);
+      ),
+    );
   }
 }

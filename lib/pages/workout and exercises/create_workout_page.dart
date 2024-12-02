@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,14 +22,14 @@ class CreateWorkoutPage extends StatefulWidget {
   final bool isAdmin;
   final Workouts? preWorkout;
 
-  CreateWorkoutPage({super.key, required this.isAdmin, this.preWorkout});
+  const CreateWorkoutPage({super.key, required this.isAdmin, this.preWorkout});
 
   @override
   State<CreateWorkoutPage> createState() => _CreateWorkoutPageState();
 }
 
 class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
-  final FocusNode _TitleFocusNode = FocusNode();
+  final FocusNode _titleFocusNode = FocusNode();
   final FocusNode _descriptionFocusNode = FocusNode();
   bool _isDescriptionFocused = false;
   final _formKey = GlobalKey<FormState>();
@@ -55,7 +57,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   createIndExerciseBox(Exercises exercise) {
     return IndExerciseBox(
       key: ValueKey(exercise),
-      exerciseId: exercise.exerciseId ?? '',
+      exerciseId: exercise.exerciseId,
       exerciseName: exercise.name,
       repsController: TextEditingController(),
       setsController: TextEditingController(),
@@ -87,15 +89,15 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       _titleController.text = widget.preWorkout!.name;
       _descriptionController.text = widget.preWorkout!.description!;
       _intensity = widget.preWorkout!.intensity!;
-      _isPublic = !widget.preWorkout!.isPrivate!;
+      _isPublic = !widget.preWorkout!.isPrivate;
       _duration = Duration(minutes: widget.preWorkout!.duration!);
       _calories = widget.preWorkout!.calories!;
-      if (widget.preWorkout!.imageURL != null){
+      if (widget.preWorkout!.imageURL != null) {
         imageURL = widget.preWorkout!.imageURL!;
       }
       _selectedCategory = widget.preWorkout!.category!;
       workoutDao
-          .localFetchExercisesForWorkout(widget.preWorkout!.workoutId!)
+          .localFetchExercisesForWorkout(widget.preWorkout!.workoutId)
           .then((value) {
         setState(() {
           for (var exercise in value) {
@@ -144,7 +146,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
           true,
           _calories,
           exercises.length,
-          '',// Number of exercises / sets
+          '', // Number of exercises / sets
         );
 
         for (var exercise in exercises) {
@@ -182,12 +184,8 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
         _calories,
         exercises.length, // Number of exercises / sets
       );
-
-      if (widget.preWorkout!.workoutId == null) {
-        return;
-      }
       await workoutExercisesDao.deleteAllWorkoutExercisesNotInList(
-          selectedExercises, widget.preWorkout!.workoutId!);
+          selectedExercises, widget.preWorkout!.workoutId);
 
       for (var exercise in exercises) {
         final reps = int.tryParse(exercise.repsController.text) ?? 0;
@@ -207,7 +205,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   // Function to show category picker
   void _showCategoryPicker(BuildContext context) {
     _descriptionFocusNode.unfocus();
-    _TitleFocusNode.unfocus();
+    _titleFocusNode.unfocus();
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -238,7 +236,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
   // Function to show intensity picker
   void _showIntensityPicker(BuildContext context) {
     _descriptionFocusNode.unfocus();
-    _TitleFocusNode.unfocus();
+    _titleFocusNode.unfocus();
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -273,7 +271,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   void _showDurationPicker(BuildContext context) {
     _descriptionFocusNode.unfocus();
-    _TitleFocusNode.unfocus();
+    _titleFocusNode.unfocus();
     int selectedHours = 0;
     int selectedMinutes = 0;
 
@@ -333,7 +331,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   void _showCaloriesPicker(BuildContext context) {
     _descriptionFocusNode.unfocus();
-    _TitleFocusNode.unfocus();
+    _titleFocusNode.unfocus();
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -431,7 +429,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextFormField(
                     controller: _titleController,
-                    focusNode: _TitleFocusNode,
+                    focusNode: _titleFocusNode,
                     cursorColor: AppColors.fitnessMainColor,
                     style: const TextStyle(
                         color: AppColors.fitnessPrimaryTextColor, fontSize: 25),
@@ -545,32 +543,39 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                         children: [
                           if (_selectedImage != null || imageURL.isNotEmpty)
                             Positioned.fill(
-                              child: (imageURL.startsWith('http') && _selectedImage == null)
+                              child: (imageURL.startsWith('http') &&
+                                      _selectedImage == null)
                                   ? Image.network(
-                                imageURL,
-                                fit: BoxFit.cover,
-                              )
+                                      imageURL,
+                                      fit: BoxFit.cover,
+                                    )
                                   : Image.file(
-                                File(_selectedImage!.path),
-                                fit: BoxFit.cover,
-                              ),
+                                      File(_selectedImage!.path),
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
                           SizedBox(
-                            height: (_selectedImage != null || imageURL.isNotEmpty) ? 250 : 150,
+                            height:
+                                (_selectedImage != null || imageURL.isNotEmpty)
+                                    ? 250
+                                    : 150,
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _pickImage,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors
                                     .fitnessBackgroundColor
-                                    .withOpacity(
-                                    (_selectedImage != null || imageURL.isNotEmpty) ? 0 : 1.0),
+                                    .withOpacity((_selectedImage != null ||
+                                            imageURL.isNotEmpty)
+                                        ? 0
+                                        : 1.0),
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 12.0, horizontal: 24.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16.0),
                                   side: BorderSide(
-                                      color: (_selectedImage != null || imageURL.isNotEmpty)
+                                      color: (_selectedImage != null ||
+                                              imageURL.isNotEmpty)
                                           ? Colors.transparent
                                           : AppColors.fitnessModuleColor,
                                       width: 1),
@@ -582,10 +587,14 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.image, color: AppColors.fitnessMainColor),
+                                      const Icon(Icons.image,
+                                          color: AppColors.fitnessMainColor),
                                       Text(
-                                        _selectedImage != null ? 'Change Image' : 'Add Image',
-                                        style: TextStyle(color: AppColors.fitnessMainColor),
+                                        _selectedImage != null
+                                            ? 'Change Image'
+                                            : 'Add Image',
+                                        style: const TextStyle(
+                                            color: AppColors.fitnessMainColor),
                                       ),
                                     ],
                                   ),
@@ -805,7 +814,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height - 300,
                   child: exercises.isEmpty
                       ? const Center(
@@ -822,11 +831,11 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                             return Transform.scale(
                               scale: 1.05,
                               child: Material(
-                                child: child,
                                 color: Colors.transparent,
                                 shadowColor: AppColors.fitnessBackgroundColor
                                     .withOpacity(0.3),
                                 elevation: 6,
+                                child: child,
                               ),
                             );
                           },
