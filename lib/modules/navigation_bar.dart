@@ -2,7 +2,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout_exercises.dart';
-import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/profile_page.dart';
 import 'package:fitnessapp_idata2503/pages/main_search_page.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/social_feed.dart';
 import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/during_workout.dart';

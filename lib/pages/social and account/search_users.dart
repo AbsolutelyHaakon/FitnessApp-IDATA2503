@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/Initialization/social_feed_data.dart';
 import 'package:fitnessapp_idata2503/database/tables/user.dart';
-import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/profile_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

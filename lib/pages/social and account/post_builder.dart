@@ -1,8 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/posts.dart';
-import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/profile_page.dart';
+import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/profile_page.dart';
+import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/detailed_workout_log.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -27,7 +32,7 @@ class _PostBuilderState extends State<PostBuilder> {
   late String name; // User's name
   late DateTime date; // Post date
   late String? message; // Post message
-  late String? workoutId; // Workout ID
+  late String? userWorkoutId; // Workout ID
   late List<Map<String, String>>? visibleStats; // Stats to display
   late String? imageUrl; // URL for post image
   late String? location; // Post location
@@ -52,7 +57,7 @@ class _PostBuilderState extends State<PostBuilder> {
         name = userData?['name'] ?? ''; // Set user name
         date = widget.post.date; // Set post date
         message = widget.post.content; // Set post message
-        workoutId = widget.post.userWorkoutsId; // Set workout ID
+        userWorkoutId = widget.post.userWorkoutsId; // Set workout ID
         visibleStats = widget.post.visibleStats?.entries
             .map((entry) => {'name': entry.key, 'value': entry.value})
             .toList(); // Set visible stats
@@ -65,6 +70,9 @@ class _PostBuilderState extends State<PostBuilder> {
         _isReady = true; // Data is ready
       });
     }
+
+    print('PostBuilder: User information fetched');
+    print('userWorkoutId: $userWorkoutId');
   }
 
   Widget statBuilder(Map<String, String> stat) {
@@ -218,10 +226,23 @@ class _PostBuilderState extends State<PostBuilder> {
                               .toList(),
                         ),
                       ),
-                      if (workoutId != null)
+                      if (userWorkoutId != null)
                         ElevatedButton(
-                          onPressed: () {
-                            // Navigate to workout details
+                          onPressed: () async {
+                            final userWorkout = await UserWorkoutsDao()
+                                .fireBaseFetchUserWorkoutById(userWorkoutId!);
+                            final workout = await WorkoutDao().fireBaseFetchWorkout(userWorkout.workoutId);
+                            if (userWorkout == null || workout == null) {
+                              return;
+                            }
+                            final MapEntry<UserWorkouts, Workouts> workoutMapEntry = MapEntry(userWorkout, workout);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailedWorkoutLog(workoutMapEntry: workoutMapEntry,)
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.fitnessModuleColor, // Button background color

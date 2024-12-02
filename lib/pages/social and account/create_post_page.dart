@@ -317,7 +317,7 @@ Future<void> _showStatsSelectionDialog() async {
             },
             child: Text(_userWorkoutId != null
                 ? 'Edit Stats'
-                : 'Attach Workout >',
+                : 'Attach Workout',
                 style: const TextStyle(color: AppColors.fitnessMainColor)),
           ),
         ],

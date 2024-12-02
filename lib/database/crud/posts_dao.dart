@@ -81,14 +81,14 @@ class PostsDao {
   Future<Map<String, dynamic>> fireBaseCreatePost(
       String? content,
       XFile? image,
-      String? workoutId,
+      String? userWorkoutsId,
       String? location,
       Map<String, String>? visibleStats,
       String userId) async {
     // A post cant be made if there is no content, image or workout
     if ((content == null || content.isEmpty) &&
         (image == null) &&
-        (workoutId == null || workoutId.isEmpty)) {
+        (userWorkoutsId == null || userWorkoutsId.isEmpty)) {
       return {
         'success': false,
         'message': 'Post must have content, image or workout to be posted',
@@ -100,24 +100,15 @@ class PostsDao {
       imageURL = await uploadImage(image);
     }
 
-    DocumentReference docRef =
-        await FirebaseFirestore.instance.collection('posts').add({
+    await FirebaseFirestore.instance.collection('posts').add({
       'userId': userId,
       'content': content ?? '',
       'imageURL': imageURL ?? '',
       'date': DateTime.now(),
-      'workoutId': workoutId ?? '',
+      'userWorkoutsId': userWorkoutsId ?? '',
       'location': location ?? '',
       'visibleStats': visibleStats ?? {},
     });
-
-    String newPostId = docRef.id;
-
-    LocalCreate(Posts(
-        postId: newPostId,
-        userId: userId,
-        content: content,
-        date: DateTime.now()));
 
     return {
       'success': true,
@@ -175,6 +166,10 @@ class PostsDao {
       data['postId'] = doc.id;
       return Posts.fromMap(data);
     }).toList();
+
+    for (Posts post in userPosts) {
+      print(post.userWorkoutsId);
+    }
 
     return {
       'posts': userPosts,

@@ -11,7 +11,7 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../pages/social and account/post_builder.dart';
+import 'post_builder.dart';
 
 /// This class represents the profile page of a user in the fitness app.
 /// It displays the user's profile information, posts, and stats.
