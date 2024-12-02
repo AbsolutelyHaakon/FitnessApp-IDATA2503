@@ -205,7 +205,7 @@ class UserDao {
     }
   }
 
-  void fireBaseUpdateUserData(
+  Future<void> fireBaseUpdateUserData(
       String uid,
       String? name,
       double? height,
