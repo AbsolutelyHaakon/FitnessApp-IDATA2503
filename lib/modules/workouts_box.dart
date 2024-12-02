@@ -140,7 +140,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   void _favorite(String workoutId) {
     if (_favorites[workoutId] ?? false) {
       if (FirebaseAuth.instance.currentUser != null) {
-        _favoriteWorkoutsDao.localDeleteByUserIdAndWorkoutId(
+        _favoriteWorkoutsDao.fireBaseDeleteFavoriteWorkout(
             FirebaseAuth.instance.currentUser?.uid ?? '', workoutId);
       }
 
@@ -210,8 +210,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                       color: widget.isHome
                           ? AppColors.fitnessModuleColor
                           : AppColors.fitnessModuleColor,
-                      borderRadius:
-                          BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(30),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                     child: Row(
