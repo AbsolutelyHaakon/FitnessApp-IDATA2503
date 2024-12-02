@@ -27,6 +27,14 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
 
+  @override
+  void initState() {
+    super.initState();
+    _weightController.text = '70';
+    _weightGoalController.text = '70';
+    _heightController.text = '170';
+  }
+
   // Function to update user data in Firebase
   void _updateUserData() {
     if (FirebaseAuth.instance.currentUser == null) {
