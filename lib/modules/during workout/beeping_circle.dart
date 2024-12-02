@@ -3,7 +3,8 @@ import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
 /// This widget represents a circle that changes color every second.
-/// It is used to indicate some form of activity or alert.
+/// It is used to indicate an active workout.
+
 class BeepingCircle extends StatefulWidget {
   const BeepingCircle({super.key});
 
