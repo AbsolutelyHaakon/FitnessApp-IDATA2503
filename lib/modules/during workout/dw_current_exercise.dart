@@ -368,7 +368,13 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                   SingleChildScrollView(
                     child: Column(
                       children: [
-                        if (exercises[activeWorkoutIndex].name != 'Hike')
+                        if (exercises[activeWorkoutIndex].name != 'Hike' &&
+                            !(exercises[activeWorkoutIndex]
+                                .name
+                                .contains('walk')) &&
+                            !(exercises[activeWorkoutIndex]
+                                .name
+                                .contains('run')))
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxHeight: 240),
                             child: RawScrollbar(
@@ -479,7 +485,13 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                               ),
                             ),
                           ),
-                        if (exercises[activeWorkoutIndex].name != 'Hike')
+                        if (exercises[activeWorkoutIndex].name != 'Hike' &&
+                            !(exercises[activeWorkoutIndex]
+                                .name
+                                .contains('walk')) &&
+                            !(exercises[activeWorkoutIndex]
+                                .name
+                                .contains('run')))
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 10.0),
@@ -505,16 +517,24 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                               ),
                             ),
                           ),
-                        if (exercises[activeWorkoutIndex].name == 'Hike')
-                          const Padding(padding: EdgeInsets.all(20.0),
-                          child: Text(
-                            'Sets and reps are not required for this exercise',
-                            style: TextStyle(
-                              color: AppColors.fitnessPrimaryTextColor,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                        if (exercises[activeWorkoutIndex].name == 'Hike' ||
+                            (exercises[activeWorkoutIndex]
+                                .name
+                                .contains('walk')) ||
+                            (exercises[activeWorkoutIndex]
+                                .name
+                                .contains('run')))
+                          const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text(
+                              'Sets and reps are not required for this exercise',
+                              style: TextStyle(
+                                color: AppColors.fitnessPrimaryTextColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),),
+                          ),
                       ],
                     ),
                   ),

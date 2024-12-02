@@ -93,7 +93,7 @@ class _PostBuilderState extends State<PostBuilder> {
                   fontSize: 12.0,
                   fontWeight: FontWeight.w400,
                   color: AppColors.fitnessSecondaryTextColor)), // Stat name
-          if (stat['name'] != 'Hike')
+          if (stat['name'] != 'Hike' && !(stat['name']?.contains('walk') ?? false) && !(stat['name']?.contains('run') ?? false))
             Text(stat['value'] ?? '',
                 style: const TextStyle(
                     fontSize: 16.0,
