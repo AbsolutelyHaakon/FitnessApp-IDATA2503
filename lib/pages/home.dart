@@ -50,45 +50,15 @@ class _HomeState extends State<Home> {
   }
 
   // Fetch the workouts from the server
-  @override
-  Widget build(BuildContext context) {
-    String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
-    final appBarHeight = MediaQuery.of(context).size.height * 0.08;
+@override
+Widget build(BuildContext context) {
+  String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
+  final appBarHeight = MediaQuery.of(context).size.height * 0.08;
 
-    return MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: Scaffold(
-      appBar: AppBar(
-        toolbarHeight: appBarHeight,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        formattedDate,
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      Text(
-                        'Home',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+  return MediaQuery.removePadding(
+    context: context,
+    removeTop: true,
+    child: Scaffold(
       backgroundColor: AppColors.fitnessBackgroundColor,
       body: SingleChildScrollView(
         child: Center(
@@ -99,6 +69,36 @@ class _HomeState extends State<Home> {
                   left: 10.0, right: 10.0, top: 20.0, bottom: 40.0),
               child: Column(
                 children: [
+                  // Custom App Bar
+                  Container(
+                    height: appBarHeight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    formattedDate,
+                                    style: Theme.of(context).textTheme.headlineSmall,
+                                  ),
+                                  Text(
+                                    'Home',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: Align(
@@ -134,9 +134,9 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-        ),
-    );
-  }
+    ),
+  );
+}
 
   // This function navigates to the profile page
   void _navigateToProfile() {

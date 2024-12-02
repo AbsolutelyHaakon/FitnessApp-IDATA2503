@@ -18,9 +18,9 @@ class MainSearchPage extends StatelessWidget {
         Container(
           color: AppColors.fitnessBackgroundColor,
           child: const TabBar(
-            indicatorColor: AppColors.fitnessMainColor,
+            dividerColor: AppColors.fitnessBackgroundColor,
             labelColor: AppColors.fitnessMainColor,
-            unselectedLabelColor: AppColors.fitnessPrimaryTextColor,
+            indicatorColor: AppColors.fitnessMainColor,
             tabs: [
               Tab(text: 'Users'),
               Tab(text: 'Workouts'),

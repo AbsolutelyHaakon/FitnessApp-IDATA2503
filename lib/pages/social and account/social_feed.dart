@@ -81,13 +81,34 @@ class _SocialFeedState extends State<SocialFeed> {
       removeTop: true,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Feed',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.fitnessPrimaryTextColor,
-                ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Feed',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          backgroundColor: AppColors.fitnessBackgroundColor,
         ),
         body: Stack(
           children: [
