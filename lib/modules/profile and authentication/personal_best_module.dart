@@ -136,7 +136,9 @@ class _PersonalBestModuleState extends State<PersonalBestModule> {
               top: 10,
               right: 10,
               child: IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  await UserWorkoutsDao().fireBaseSetPersonalBests(
+                      FirebaseAuth.instance.currentUser!.uid);
                   setState(() {
                     _personalBests = _getPersonalBests();
                   });
