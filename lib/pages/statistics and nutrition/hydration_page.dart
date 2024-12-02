@@ -64,16 +64,17 @@ class _HydrationPageState extends State<HydrationPage>
   }
 
   Future<void> fetchAllUserGoals() async {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userGoalsMap = await UserDao()
-          .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
-      var goalInt =
-          userGoalsMap?["waterTarget"] ?? 2500; // Default goal if not set
-      setState(() {
-        goal = goalInt.toDouble(); // Set goal
-      });
-    }
+  if (FirebaseAuth.instance.currentUser?.uid != null) {
+    var userGoalsMap = await UserDao()
+        .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+    var goalInt = userGoalsMap?["waterTarget"] ?? 2500;
+    if (goalInt == 0) goalInt = 2500; // Ensure goal is never 0
+
+    setState(() {
+      goal = goalInt.toDouble(); // Set goal
+    });
   }
+}
 
   Future<void> fetchHydrationData() async {
     todayIntakew = 0; // Reset today's intake
