@@ -6,7 +6,6 @@ import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/about_
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/account_settings.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/admin_panel.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/data_and_privacy_page.dart';
-import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/route_planner.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -171,18 +170,6 @@ class SettingsPage extends StatelessWidget {
                           Navigator.of(context).pop();
                         },
                       ),
-                      _buildSettingsItem(
-                        context,
-                        icon: Icons.map,
-                        text: 'Map',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RoutePlanner()),
-                          );
-                        },
-                      )
                     ],
                   ),
                 ),

@@ -125,26 +125,34 @@ class UserWorkoutsDao {
 
   /// Fetch upcoming user workouts by user ID from the local database
   Future<List<UserWorkouts>> localFetchUpcomingUserWorkouts(String id) async {
-  final database = await DatabaseService().database;
+    final database = await DatabaseService().database;
 
-  // Set the start of the day
-  DateTime startOfDay = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    // Set the start of the day
+    DateTime startOfDay =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
-  // Fetch all workouts for the user
-  final data = await database.query(
-    tableName,
-    where: 'userId = ? AND date >= ?',
-    whereArgs: [id, startOfDay.toIso8601String()],
-  );
+    // Fetch all workouts for the user
+    final data = await database.query(
+      tableName,
+      where: 'userId = ? AND date >= ?',
+      whereArgs: [id, startOfDay.toIso8601String()],
+    );
 
-  return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
-}
+    return data.map((entry) => UserWorkouts.fromMap(entry)).toList();
+  }
 
   Future<List<UserWorkouts>> localFetchThisWeeksUserWorkouts(String id) async {
     final database = await DatabaseService().database;
 
     DateTime today = DateTime.now();
-    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    DateTime startOfWeek = today
+        .subtract(Duration(days: today.weekday))
+        .subtract(Duration(
+            hours: today.hour,
+            minutes: today.minute,
+            seconds: today.second,
+            milliseconds: today.millisecond,
+            microseconds: today.microsecond));
     DateTime endOfWeek = startOfWeek
         .add(const Duration(days: 6))
         .add(const Duration(hours: 23, minutes: 59, seconds: 59));
@@ -368,7 +376,6 @@ class UserWorkoutsDao {
       DateTime date,
       String? workoutStats,
       double duration) async {
-
     DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
         .collection('userWorkouts')
         .doc(userWorkoutId)

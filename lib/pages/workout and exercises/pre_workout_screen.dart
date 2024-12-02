@@ -66,10 +66,8 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
   Future<void> existing() async {
     final newWorkout = await _workoutDao.fireBaseIsAlreadyDuplicated(
         widget.workouts?.workoutId ?? '', userId);
-    print(newWorkout);
     if (newWorkout != null) {
       final temp = await _workoutDao.localFetchByWorkoutId(newWorkout);
-      print(temp);
       if (temp != null) {
         alreadySubcribed = true;
       }
@@ -90,6 +88,12 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
       workouts = widget.workouts!;
     });
     fetchExercises();
+
+    await UserDao().getAdminStatus(userId).then((value) {
+      setState(() {
+        isAdmin = value;
+      });
+    });
   }
 
   // Fetch user workout data
@@ -316,6 +320,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                           Text(
                             workouts.name ?? '',
                             style: Theme.of(context).textTheme.bodyLarge,
+                            softWrap: true,
                           ),
                           const SizedBox(height: 10),
                           Text(

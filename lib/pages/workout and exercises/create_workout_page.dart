@@ -40,6 +40,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
 
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
+  String imageURL = '';
 
   List<Exercises> selectedExercises = [];
   List<IndExerciseBox> exercises = [];
@@ -90,7 +91,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
       _duration = Duration(minutes: widget.preWorkout!.duration!);
       _calories = widget.preWorkout!.calories!;
       if (widget.preWorkout!.imageURL != null){
-        _selectedImage = XFile(widget.preWorkout!.imageURL!);
+        imageURL = widget.preWorkout!.imageURL!;
       }
       _selectedCategory = widget.preWorkout!.category!;
       workoutDao
@@ -542,11 +543,11 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                       width: double.infinity,
                       child: Stack(
                         children: [
-                          if (_selectedImage != null)
+                          if (_selectedImage != null || imageURL.isNotEmpty)
                             Positioned.fill(
-                              child: _selectedImage!.path.startsWith('http')
+                              child: (imageURL.startsWith('http') && _selectedImage == null)
                                   ? Image.network(
-                                _selectedImage!.path,
+                                imageURL,
                                 fit: BoxFit.cover,
                               )
                                   : Image.file(
@@ -555,7 +556,7 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                               ),
                             ),
                           SizedBox(
-                            height: _selectedImage != null ? 250 : 150,
+                            height: (_selectedImage != null || imageURL.isNotEmpty) ? 250 : 150,
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _pickImage,
@@ -563,13 +564,13 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                                 backgroundColor: AppColors
                                     .fitnessBackgroundColor
                                     .withOpacity(
-                                        _selectedImage != null ? 0 : 1.0),
+                                    (_selectedImage != null || imageURL.isNotEmpty) ? 0 : 1.0),
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 12.0, horizontal: 24.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16.0),
                                   side: BorderSide(
-                                      color: _selectedImage != null
+                                      color: (_selectedImage != null || imageURL.isNotEmpty)
                                           ? Colors.transparent
                                           : AppColors.fitnessModuleColor,
                                       width: 1),
