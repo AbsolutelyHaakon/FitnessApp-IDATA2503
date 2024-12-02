@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
+import 'package:get/get.dart';
 
 // This page allows the user to edit a specific field
 class EditFieldPage extends StatelessWidget {
@@ -21,6 +22,14 @@ class EditFieldPage extends StatelessWidget {
 
   // Controller for the text field
   final TextEditingController _controller = TextEditingController();
+
+  bool _isNumeric(String str) {
+    if (str.isEmpty) {
+      return false;
+    }
+    final number = num.tryParse(str);
+    return number != null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,14 +87,45 @@ class EditFieldPage extends StatelessWidget {
                 height: 50, // Button height
                 child: TextButton(
                   style: const ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(AppColors
-                        .fitnessModuleColor), // Button background color
+                    backgroundColor: WidgetStatePropertyAll(
+                        AppColors.fitnessMainColor), // Button background color
                     foregroundColor: WidgetStatePropertyAll(AppColors
                         .fitnessModuleColor), // Button foreground color
                   ),
                   onPressed: () {
-                    onSave(_controller.text); // Save the text field value
-                    Navigator.of(context).pop(); // Go back to the previous page
+                    if (_controller.text.isNotEmpty &&
+                        _controller.text != initialValue &&
+                        (_isNumeric(_controller.text)
+                            ? int.parse(_controller.text) > 0
+                            : true)) {
+                      onSave(_controller.text); // Save the text field value
+                      Navigator.of(context)
+                          .pop(); // Go back to the previous page
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          backgroundColor: AppColors.fitnessModuleColor,
+                          title:
+                              const Text('Invalid Input'), // Alert dialog title
+                          content: const Text(
+                              'Insert a valid value'), // Alert dialog content
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pop(); // Close the alert dialog
+                              },
+                              child: const Text(
+                                'OK',
+                                style: TextStyle(
+                                    color: AppColors.fitnessMainColor),
+                              ), // Button text
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   },
                   child: const Text(
                     'Save', // Button text
