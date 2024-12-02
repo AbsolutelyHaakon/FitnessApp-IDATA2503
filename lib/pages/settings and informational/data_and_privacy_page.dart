@@ -85,6 +85,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
       length: 2, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
+          surfaceTintColor: AppColors.fitnessBackgroundColor,
           backgroundColor:
               AppColors.fitnessBackgroundColor, // Background color of app bar
           title: const Text('Data and Privacy',

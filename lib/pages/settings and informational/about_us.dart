@@ -34,6 +34,7 @@ class AboutUsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: AppColors.fitnessBackgroundColor,
         centerTitle: true, // Center the title
         title: const Text(
           'Developers',

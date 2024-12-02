@@ -81,6 +81,7 @@ class _SocialFeedState extends State<SocialFeed> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          surfaceTintColor: AppColors.fitnessBackgroundColor,
           flexibleSpace: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Align(

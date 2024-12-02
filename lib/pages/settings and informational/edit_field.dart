@@ -38,6 +38,7 @@ class EditFieldPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: AppColors.fitnessBackgroundColor,
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back,
               color: AppColors.fitnessMainColor), // Back button

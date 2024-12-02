@@ -207,6 +207,7 @@ class _ProfilePageState extends State<ProfilePage>
     return Scaffold(
       appBar: widget.userId != FirebaseAuth.instance.currentUser?.uid
           ? AppBar(
+              surfaceTintColor: AppColors.fitnessBackgroundColor,
               leading: IconButton(
                 icon: const Icon(Icons.chevron_left, color: Colors.green),
                 onPressed: () {

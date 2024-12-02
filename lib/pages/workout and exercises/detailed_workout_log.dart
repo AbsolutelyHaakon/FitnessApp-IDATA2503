@@ -27,6 +27,7 @@ class DetailedWorkoutLog extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: AppColors.fitnessBackgroundColor,
         title: Text(
           workout.name,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(

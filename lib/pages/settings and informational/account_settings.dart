@@ -309,6 +309,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           return Scaffold(
             backgroundColor: AppColors.fitnessBackgroundColor,
             appBar: AppBar(
+              surfaceTintColor: AppColors.fitnessBackgroundColor,
               leading: IconButton(
                 icon: const Icon(CupertinoIcons.back,
                     color: AppColors.fitnessMainColor),
