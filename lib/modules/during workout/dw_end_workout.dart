@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
@@ -53,7 +55,6 @@ class _DwEndWorkoutState extends State<DwEndWorkout> {
                   CupertinoButton(
                     onPressed: () async {
                       await _endWorkout(); // Call the function to end the workout
-                      // ignore: use_build_context_synchronously
                       Navigator.pop(
                           context); // Navigate back to the previous screen
                     },

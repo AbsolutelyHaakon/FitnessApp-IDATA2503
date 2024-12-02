@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/posts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -19,7 +21,10 @@ class PostBuilder extends StatefulWidget {
   final VoidCallback onDelete; // Callback for delete action
 
   const PostBuilder(
-      {super.key, required this.post, required this.isProfile, required this.onDelete});
+      {super.key,
+      required this.post,
+      required this.isProfile,
+      required this.onDelete});
 
   @override
   State<PostBuilder> createState() => _PostBuilderState();
@@ -49,7 +54,8 @@ class _PostBuilderState extends State<PostBuilder> {
   }
 
   Future<void> _getUserInformation() async {
-    final userData = await _userDao.fireBaseGetUserData(widget.post.userId); // Fetch user data
+    final userData = await _userDao
+        .fireBaseGetUserData(widget.post.userId); // Fetch user data
 
     if (mounted) {
       setState(() {
@@ -112,7 +118,9 @@ class _PostBuilderState extends State<PostBuilder> {
       suffix = 'th of';
     }
 
-    return DateFormat('d').format(date) + suffix + DateFormat(' MMMM').format(date);
+    return DateFormat('d').format(date) +
+        suffix +
+        DateFormat(' MMMM').format(date);
   }
 
   @override
@@ -138,8 +146,9 @@ class _PostBuilderState extends State<PostBuilder> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ProfilePage(userId: widget.post.userId), // Navigate to profile page
+                        builder: (context) => ProfilePage(
+                            userId:
+                                widget.post.userId), // Navigate to profile page
                       ),
                     );
                   },
@@ -156,7 +165,8 @@ class _PostBuilderState extends State<PostBuilder> {
                 children: [
                   if (!widget.isProfile)
                     Text(name,
-                        style: const TextStyle(fontWeight: FontWeight.bold)), // Display user name
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold)), // Display user name
                   Text(
                     formatDateWithSuffix(date), // Display post date with suffix
                     style: const TextStyle(
@@ -184,7 +194,8 @@ class _PostBuilderState extends State<PostBuilder> {
                 const SizedBox(height: 10.0), // Add spacing
               if (message != null && message!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0), // Add padding
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0), // Add padding
                   child: Row(
                     children: [
                       Transform.scale(
@@ -197,7 +208,8 @@ class _PostBuilderState extends State<PostBuilder> {
                           child: Text(message!,
                               style: const TextStyle(
                                   fontSize: 15.0,
-                                  fontWeight: FontWeight.w400))), // Display message
+                                  fontWeight:
+                                      FontWeight.w400))), // Display message
                     ],
                   ),
                 ),
@@ -205,7 +217,8 @@ class _PostBuilderState extends State<PostBuilder> {
                 const SizedBox(height: 5.0), // Add spacing
               if (visibleStats != null && visibleStats!.isNotEmpty)
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0), // Add padding
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 15.0), // Add padding
                   child: Divider(
                     color: AppColors.fitnessMainColor, // Divider color
                     thickness: 1.0, // Divider thickness
@@ -213,7 +226,8 @@ class _PostBuilderState extends State<PostBuilder> {
                 ),
               if (visibleStats != null && visibleStats!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0), // Add padding
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0), // Add padding
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -231,24 +245,30 @@ class _PostBuilderState extends State<PostBuilder> {
                           onPressed: () async {
                             final userWorkout = await UserWorkoutsDao()
                                 .fireBaseFetchUserWorkoutById(userWorkoutId!);
-                            final workout = await WorkoutDao().fireBaseFetchWorkout(userWorkout.workoutId);
-                            if (userWorkout == null || workout == null) {
+                            final workout = await WorkoutDao()
+                                .fireBaseFetchWorkout(userWorkout.workoutId);
+                            if (workout == null) {
                               return;
                             }
-                            final MapEntry<UserWorkouts, Workouts> workoutMapEntry = MapEntry(userWorkout, workout);
+                            final MapEntry<UserWorkouts, Workouts>
+                                workoutMapEntry =
+                                MapEntry(userWorkout, workout);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    DetailedWorkoutLog(workoutMapEntry: workoutMapEntry,)
-                              ),
+                                  builder: (context) => DetailedWorkoutLog(
+                                        workoutMapEntry: workoutMapEntry,
+                                      )),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.fitnessModuleColor, // Button background color
-                            foregroundColor: AppColors.fitnessBackgroundColor, // Button text color
+                            backgroundColor: AppColors
+                                .fitnessModuleColor, // Button background color
+                            foregroundColor: AppColors
+                                .fitnessBackgroundColor, // Button text color
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10), // Rounded corners
+                              borderRadius:
+                                  BorderRadius.circular(10), // Rounded corners
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 10), // Add padding
@@ -258,7 +278,8 @@ class _PostBuilderState extends State<PostBuilder> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.fitnessMainColor, // Button text color
+                              color: AppColors
+                                  .fitnessMainColor, // Button text color
                             ),
                           ),
                         ),
@@ -298,7 +319,9 @@ class _PostBuilderState extends State<PostBuilder> {
                         color: AppColors.fitnessMainColor), // Location icon
                   ),
                   const SizedBox(width: 5.0), // Add spacing
-                  Text(location!, style: const TextStyle(fontSize: 12.0)), // Display location
+                  Text(location!,
+                      style:
+                          const TextStyle(fontSize: 12.0)), // Display location
                 ],
               ),
             const Spacer(), // Add spacing
@@ -309,23 +332,27 @@ class _PostBuilderState extends State<PostBuilder> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        backgroundColor: AppColors.fitnessModuleColor, // Dialog background color
+                        backgroundColor: AppColors
+                            .fitnessModuleColor, // Dialog background color
                         title: const Text(
                           'Confirm Delete',
                           style: TextStyle(
-                              color: AppColors.fitnessPrimaryTextColor), // Dialog title color
+                              color: AppColors
+                                  .fitnessPrimaryTextColor), // Dialog title color
                         ),
                         content: const Text(
                           'Are you sure you want to delete this post?',
                           style: TextStyle(
                               color: AppColors.fitnessPrimaryTextColor,
-                              fontWeight: FontWeight.w400), // Dialog content color
+                              fontWeight:
+                                  FontWeight.w400), // Dialog content color
                         ),
                         actions: <Widget>[
                           TextButton(
                             child: const Text('Cancel',
                                 style: TextStyle(
-                                    color: AppColors.fitnessPrimaryTextColor)), // Cancel button
+                                    color: AppColors
+                                        .fitnessPrimaryTextColor)), // Cancel button
                             onPressed: () {
                               Navigator.of(context).pop(); // Close dialog
                             },
@@ -333,10 +360,11 @@ class _PostBuilderState extends State<PostBuilder> {
                           TextButton(
                             child: const Text('Delete',
                                 style: TextStyle(
-                                    color: AppColors.fitnessWarningColor)), // Delete button
+                                    color: AppColors
+                                        .fitnessWarningColor)), // Delete button
                             onPressed: () async {
-                              await PostsDao()
-                                  .fireBaseDeletePost(widget.post.postId); // Delete post
+                              await PostsDao().fireBaseDeletePost(
+                                  widget.post.postId); // Delete post
                               widget.onDelete(); // Call delete callback
                               Navigator.of(context).pop(); // Close dialog
                             },

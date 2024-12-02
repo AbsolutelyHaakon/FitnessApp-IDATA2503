@@ -8,23 +8,23 @@ import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/globals.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../pages/workout and exercises/pre_workout_screen.dart';
 
 class WorkoutsBox extends StatefulWidget {
-  bool isHome = false;
-  bool isSearch = false;
+  final bool isHome;
+  final bool isSearch;
   final List<Workouts> workouts;
 
   // Constructor for WorkoutsBox
-  WorkoutsBox(
-      {super.key,
-      required this.workouts,
-      required this.isHome,
-      required this.isSearch});
+  WorkoutsBox({
+    super.key,
+    required this.workouts,
+    required this.isHome,
+    required this.isSearch,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -164,6 +164,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
   }
 
   // Build the UI for the workouts list
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +210,8 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                       color: widget.isHome
                           ? AppColors.fitnessModuleColor
                           : AppColors.fitnessModuleColor,
-                      borderRadius: BorderRadius.circular(widget.isHome ? 10 : 30),
+                      borderRadius:
+                          BorderRadius.circular(widget.isHome ? 10 : 30),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                     child: Row(

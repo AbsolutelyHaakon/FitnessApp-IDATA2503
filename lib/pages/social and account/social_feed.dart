@@ -17,9 +17,7 @@ class SocialFeed extends StatefulWidget {
 }
 
 class _SocialFeedState extends State<SocialFeed> {
-  final PostsDao _postsDao = PostsDao(); // DAO for handling posts
-  final SocialFeedData _socialFeedData =
-      SocialFeedData(); // Data for social feed
+  final PostsDao _postsDao = PostsDao(); // DAO for handling posts/ Data for social feed
 
   List<Posts> _posts = []; // List to store posts
   bool _isReady = false; // Flag to check if data is ready
@@ -53,7 +51,7 @@ class _SocialFeedState extends State<SocialFeed> {
       final fetchedPosts = await _postsDao
           .fireBaseFetchFeed(user.uid); // Fetch posts from Firebase
 
-      if (fetchedPosts != null && fetchedPosts["posts"] != null) {
+      if (fetchedPosts["posts"] != null) {
         if (!mounted) return;
         setState(() {
           _posts = fetchedPosts["posts"]; // Update posts list
@@ -155,7 +153,8 @@ class _SocialFeedState extends State<SocialFeed> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
               // Set padding
               child: ListView.builder(
                 shrinkWrap: true,

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
 import 'package:fitnessapp_idata2503/database/crud/workout_exercises_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
@@ -39,9 +41,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
       for (final exercise in exercises) {
         final workoutExercise = await WorkoutExercisesDao()
             .localFetchById(widget.userWorkouts.workoutId, exercise.exerciseId);
-        if (workoutExercise != null) {
-          exerciseMap[exercise] = workoutExercise;
-        }
+        exerciseMap[exercise] = workoutExercise;
       }
       setState(() {});
     } catch (e) {
@@ -60,7 +60,7 @@ class _WorkoutPlanModuleState extends State<WorkoutPlanModule> {
             child: Container(
               width: 400,
               height: 400,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.fitnessModuleColor,
               ),
               child: ListView.builder(

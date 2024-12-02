@@ -6,6 +6,8 @@ import 'package:fitnessapp_idata2503/modules/admin/workout_tab.dart';
 
 // Admin panel page. Contains tabs for workout, general settings, and social settings
 class AdminPanel extends StatefulWidget {
+  const AdminPanel({super.key});
+
   @override
   _AdminPanelState createState() => _AdminPanelState();
 }
@@ -15,8 +17,8 @@ class _AdminPanelState extends State<AdminPanel> {
 
   // List of widgets for each tab
   static final List<Widget> _widgetOptions = <Widget>[
-    WorkoutTab(), // Workout tab
-    GeneralTab(), // General settings tab
+    const WorkoutTab(), // Workout tab
+    const GeneralTab(), // General settings tab
     const Text('Social Tab'), // Placeholder for social tab
   ];
 
@@ -31,17 +33,22 @@ class _AdminPanelState extends State<AdminPanel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Panel', style: TextStyle(color: AppColors.fitnessPrimaryTextColor)), // App bar title
-        backgroundColor: AppColors.fitnessBackgroundColor, // App bar background color
+        title: const Text('Admin Panel',
+            style: TextStyle(
+                color: AppColors.fitnessPrimaryTextColor)), // App bar title
+        backgroundColor:
+            AppColors.fitnessBackgroundColor, // App bar background color
         leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: AppColors.fitnessMainColor), // Back button icon
+          icon: const Icon(CupertinoIcons.back,
+              color: AppColors.fitnessMainColor), // Back button icon
           onPressed: () {
             Navigator.of(context).pop(); // Navigate back
           },
         ),
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex), // Display the selected tab
+        child: _widgetOptions
+            .elementAt(_selectedIndex), // Display the selected tab
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -59,12 +66,16 @@ class _AdminPanelState extends State<AdminPanel> {
           ),
         ],
         currentIndex: _selectedIndex, // Current selected index
-        selectedItemColor: AppColors.fitnessMainColor, // Color for selected item
-        unselectedItemColor: AppColors.fitnessSecondaryTextColor, // Color for unselected items
-        backgroundColor: AppColors.fitnessBackgroundColor, // Background color of the navigation bar
+        selectedItemColor:
+            AppColors.fitnessMainColor, // Color for selected item
+        unselectedItemColor:
+            AppColors.fitnessSecondaryTextColor, // Color for unselected items
+        backgroundColor: AppColors
+            .fitnessBackgroundColor, // Background color of the navigation bar
         onTap: _onItemTapped, // Handle tab selection
       ),
-      backgroundColor: AppColors.fitnessBackgroundColor, // Background color of the scaffold
+      backgroundColor:
+          AppColors.fitnessBackgroundColor, // Background color of the scaffold
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
@@ -11,9 +10,9 @@ class DetailedWorkoutLog extends StatelessWidget {
   final MapEntry<UserWorkouts, Workouts> workoutMapEntry;
 
   const DetailedWorkoutLog({
-    Key? key,
+    super.key,
     required this.workoutMapEntry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class DetailedWorkoutLog extends StatelessWidget {
     final workout = workoutMapEntry.value;
 
     // Format the date to be displayed in the app bar
-    String appBarTitle = DateFormat('dd MMMM yyyy').format(userWorkout.date);
+    DateFormat('dd MMMM yyyy').format(userWorkout.date);
     // Format the date to exclude the time part
     String formattedDate = DateFormat('dd.MM.yyyy').format(userWorkout.date);
 
@@ -30,8 +29,8 @@ class DetailedWorkoutLog extends StatelessWidget {
         title: Text(
           workout.name,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppColors.fitnessPrimaryTextColor,
-          ),
+                color: AppColors.fitnessPrimaryTextColor,
+              ),
         ),
         titleSpacing: 40,
         backgroundColor: AppColors.fitnessBackgroundColor,
@@ -43,14 +42,14 @@ class DetailedWorkoutLog extends StatelessWidget {
           },
         ),
         actions: [
-          if (workoutMapEntry.key.userId == FirebaseAuth.instance.currentUser?.uid)
           TextButton(
             onPressed: () async {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => CreatePostPage(
-                      userWorkout: workoutMapEntry.key,),
+                    userWorkout: workoutMapEntry.key,
+                  ),
                 ),
               );
             },
@@ -74,7 +73,8 @@ class DetailedWorkoutLog extends StatelessWidget {
                 const Divider(),
                 _buildInfoRow('Date', formattedDate),
                 const Divider(),
-                _buildInfoRow('Duration', '${userWorkout.duration?.toStringAsFixed(0)} minutes'),
+                _buildInfoRow('Duration',
+                    '${userWorkout.duration?.toStringAsFixed(0)} minutes'),
               ],
             ),
             const SizedBox(height: 20),

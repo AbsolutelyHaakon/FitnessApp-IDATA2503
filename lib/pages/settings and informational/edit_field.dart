@@ -6,11 +6,13 @@ import 'package:fitnessapp_idata2503/styles.dart';
 class EditFieldPage extends StatelessWidget {
   final String title; // Title of the page
   final String initialValue; // Initial value of the field
-  final ValueChanged<String> onSave; // Callback function when the user saves the field
+  final ValueChanged<String>
+      onSave; // Callback function when the user saves the field
   final TextInputType keyboardType; // Type of keyboard to use
 
   // Constructor for the EditFieldPage
-  EditFieldPage({super.key,
+  EditFieldPage({
+    super.key,
     required this.title,
     required this.initialValue,
     required this.onSave,
@@ -30,13 +32,15 @@ class EditFieldPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back,
               color: AppColors.fitnessMainColor), // Back button
-          onPressed: () => Navigator.of(context).pop(), // Go back to the previous page
+          onPressed: () =>
+              Navigator.of(context).pop(), // Go back to the previous page
         ),
         title: Text(
           title, // Title of the app bar
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: AppColors.fitnessBackgroundColor, // Background color of the app bar
+        backgroundColor:
+            AppColors.fitnessBackgroundColor, // Background color of the app bar
       ),
       body: Container(
         color: AppColors.fitnessBackgroundColor, // Background color of the page
@@ -51,26 +55,33 @@ class EditFieldPage extends StatelessWidget {
                 keyboardType: keyboardType, // Keyboard type
                 decoration: const InputDecoration(
                   hintStyle: TextStyle(color: Colors.white), // Hint text style
-                  labelStyle: TextStyle(fontSize: 20, color: Colors.white), // Label text style
-                  suffixStyle: TextStyle(color: Colors.white), // Suffix text style
+                  labelStyle: TextStyle(
+                      fontSize: 20, color: Colors.white), // Label text style
+                  suffixStyle:
+                      TextStyle(color: Colors.white), // Suffix text style
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.fitnessMainColor), // Border color when enabled
+                    borderSide: BorderSide(
+                        color: AppColors
+                            .fitnessMainColor), // Border color when enabled
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: AppColors.fitnessMainColor), // Border color when focused
+                    borderSide: BorderSide(
+                        color: AppColors
+                            .fitnessMainColor), // Border color when focused
                   ),
                 ),
               ),
-              const SizedBox(height: 20), // Space between the text field and the button
+              const SizedBox(
+                  height: 20), // Space between the text field and the button
               SizedBox(
                 width: double.infinity, // Button width
                 height: 50, // Button height
                 child: TextButton(
                   style: const ButtonStyle(
-                    backgroundColor:
-                        WidgetStatePropertyAll(AppColors.fitnessModuleColor), // Button background color
-                    foregroundColor:
-                        WidgetStatePropertyAll(AppColors.fitnessModuleColor), // Button foreground color
+                    backgroundColor: WidgetStatePropertyAll(AppColors
+                        .fitnessModuleColor), // Button background color
+                    foregroundColor: WidgetStatePropertyAll(AppColors
+                        .fitnessModuleColor), // Button foreground color
                   ),
                   onPressed: () {
                     onSave(_controller.text); // Save the text field value
@@ -78,7 +89,8 @@ class EditFieldPage extends StatelessWidget {
                   },
                   child: const Text(
                     'Save', // Button text
-                    style: TextStyle(fontSize: 16, color: Colors.white), // Button text style
+                    style: TextStyle(
+                        fontSize: 16, color: Colors.white), // Button text style
                   ),
                 ),
               ),

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
@@ -96,7 +98,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       }
       return exerciseMap; // Return the map of exercises
     } catch (e) {
-      rethrow;
+      print('Error fetching exercises: $e');
+      return {}; // Return an empty map if there's an error
     }
   }
 

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,17 +52,17 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
             .pop(true); // Return true to indicate a new exercise was created
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+          SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.error, color: AppColors.fitnessPrimaryTextColor),
+                  const Icon(Icons.error,
+                      color: AppColors.fitnessPrimaryTextColor),
                   const SizedBox(width: 8),
                   Text('Error creating exercise: $e'),
                 ],
               ),
-              backgroundColor: AppColors.fitnessWarningColor
-            ),
-          );
+              backgroundColor: AppColors.fitnessWarningColor),
+        );
       }
     }
   }
@@ -103,20 +105,6 @@ class _CreateExercisePageState extends State<CreateExercisePage> {
       });
     }
   }
-
-  // Function to create input decoration for text fields
-  InputDecoration _inputDecoration(String label) => InputDecoration(
-        filled: true,
-        fillColor: AppColors.fitnessBackgroundColor,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        hintText: label,
-        hintStyle: const TextStyle(
-          color: AppColors.fitnessSecondaryTextColor,
-        ),
-      );
 
   @override
   Widget build(BuildContext context) {

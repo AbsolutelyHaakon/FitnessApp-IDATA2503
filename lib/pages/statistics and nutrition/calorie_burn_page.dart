@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +26,6 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
   bool isLoading = false; // Loading state
   late AnimationController _animationController; // Animation controller
   late Animation<double> _animation; // Animation
-  late Future<void> _fetchDataFuture; // Future for fetching data
   DateTime today = DateTime.now(); // Today's date
   double todayBurn = 0; // Calories burned today
   double burnPercentage = 0.0; // Burn percentage
@@ -35,7 +36,7 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
   void initState() {
     super.initState();
     fetchAllUserGoals(); // Fetch user goals
-    _fetchDataFuture = fetchBurnData(); // Fetch burn data
+// Fetch burn data
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000), // Animation duration
@@ -61,7 +62,6 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
     _animationController.dispose(); // Dispose of the animation controller
     super.dispose();
   }
-
 
   Future<void> fetchAllUserGoals() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
@@ -141,8 +141,9 @@ class _CalorieBurnPageState extends State<CalorieBurnPage>
                         icon: const Icon(Icons.remove, color: Colors.red),
                         onPressed: () {
                           setState(() {
-                            if (calorieBurn > 0)
+                            if (calorieBurn > 0) {
                               calorieBurn -= 100; // Decrease burn
+                            }
                           });
                         },
                       ),

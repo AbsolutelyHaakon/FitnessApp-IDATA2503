@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +27,6 @@ class _HydrationPageState extends State<HydrationPage>
   bool isLoading = false; // Loading state
   late AnimationController _animationController; // Animation controller
   late Animation<double> _animation; // Animation
-  late Future<void> _fetchDataFuture; // Future for fetching data
   DateTime today = DateTime.now(); // Today's date
   double todayIntakew = 0; // Today's water intake
   double waterPercentage = 0.0; // Percentage of water intake goal achieved
@@ -36,7 +37,7 @@ class _HydrationPageState extends State<HydrationPage>
   void initState() {
     super.initState();
     fetchAllUserGoals(); // Fetch user goals
-    _fetchDataFuture = fetchHydrationData(); // Fetch hydration data
+// Fetch hydration data
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000), // Animation duration
@@ -146,8 +147,9 @@ class _HydrationPageState extends State<HydrationPage>
                         icon: const Icon(Icons.remove, color: Colors.blue),
                         onPressed: () {
                           setState(() {
-                            if (waterIntake > 0)
+                            if (waterIntake > 0) {
                               waterIntake -= 100; // Decrease intake
+                            }
                           });
                         },
                       ),
@@ -343,7 +345,7 @@ class _HydrationPageState extends State<HydrationPage>
                         height: 200,
                         child: LineChart(
                           LineChartData(
-                            gridData: FlGridData(show: true),
+                            gridData: const FlGridData(show: true),
                             titlesData: const FlTitlesData(
                               show: true,
                               leftTitles: AxisTitles(
@@ -450,7 +452,7 @@ class _HydrationPageState extends State<HydrationPage>
                                 barRods: [
                                   BarChartRodData(
                                     toY: intake.toDouble(), // Bar height
-                                    color: Color(0xFF468CF6),
+                                    color: const Color(0xFF468CF6),
                                     width: 16,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -488,7 +490,8 @@ class _HydrationPageState extends State<HydrationPage>
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
-                                      ?.copyWith(color: Color(0xFF468CF6)),
+                                      ?.copyWith(
+                                          color: const Color(0xFF468CF6)),
                                 ),
                               ],
                             ),

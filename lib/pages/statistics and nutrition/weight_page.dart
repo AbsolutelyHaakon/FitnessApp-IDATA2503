@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_health_data_dao.dart';
 import 'package:flutter/cupertino.dart';
@@ -84,8 +86,6 @@ class _WeightPageState extends State<WeightPage>
       var userDataMap = await UserHealthDataDao()
           .fireBaseFetchUserHealthData(FirebaseAuth.instance.currentUser!.uid);
       List<UserHealthData> userData = userDataMap['userHealthData'];
-      DateTime today = DateTime.now();
-      DateTime todayDate = DateTime(today.year, today.month, today.day);
 
       Map<DateTime, int> aggregatedData = {};
       todayWeight = 0;
@@ -97,35 +97,33 @@ class _WeightPageState extends State<WeightPage>
       for (var entry in userData) {
         DateTime date =
             DateTime(entry.date.year, entry.date.month, entry.date.day);
-        if (entry.weight == null || entry.weight! <= 0) {
+        if (entry.weight <= 0) {
           continue;
         }
-        if (entry.weight != null &&
-            entry.weight != 0 &&
-            entry.date.isAfter(comparisonDate)) {
+        if (entry.weight != 0 && entry.date.isAfter(comparisonDate)) {
           todayWeight = entry.weight;
           comparisonDate = entry.date;
         }
         if (aggregatedData.containsKey(date)) {
-          aggregatedData[date] = aggregatedData[date]! + entry.weight!;
+          aggregatedData[date] = aggregatedData[date]! + entry.weight;
         } else {
-          aggregatedData[date] = entry.weight!;
+          aggregatedData[date] = entry.weight;
         }
       }
       setState(() {
         dailyIntake = {};
         for (var entry in userData) {
-          if (entry.weight == null || entry.weight! <= 0) {
+          if (entry.weight <= 0) {
             continue;
           }
           DateTime date =
               DateTime(entry.date.year, entry.date.month, entry.date.day);
           if (dailyIntake.containsKey(date)) {
-            dailyIntake[date] = entry.weight! > dailyIntake[date]!
-                ? entry.weight!
+            dailyIntake[date] = entry.weight > dailyIntake[date]!
+                ? entry.weight
                 : dailyIntake[date]!;
           } else {
-            dailyIntake[date] = entry.weight!;
+            dailyIntake[date] = entry.weight;
           }
         }
 
@@ -423,7 +421,7 @@ class _WeightPageState extends State<WeightPage>
                                           show: true,
                                           alignment: Alignment.topRight,
                                           labelResolver: (line) => 'Goal',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold,
                                           ),

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:math';
 
@@ -210,7 +212,7 @@ class UserWorkoutsDao {
   }
 
   /// Fetch upcoming workouts by user ID from the local database
-  Future<Map<Workouts, DateTime>> FetchUpcomingWorkouts(String uid) async {
+  Future<Map<Workouts, DateTime>> fetchUpcomingWorkouts(String uid) async {
     final database = await DatabaseService().database;
 
     Map<Workouts, DateTime> upcomingWorkouts = {};
@@ -231,7 +233,7 @@ class UserWorkoutsDao {
   }
 
   /// Fetch previous workouts by user ID from the local database
-  Future<Map<Workouts, DateTime>> FetchPreviousWorkouts(String uid) async {
+  Future<Map<Workouts, DateTime>> fetchPreviousWorkouts(String uid) async {
     final database = await DatabaseService().database;
 
     Map<Workouts, DateTime> upcomingWorkouts = {};
@@ -426,12 +428,8 @@ class UserWorkoutsDao {
   /// Delete a user workout from Firebase
   Future<bool> fireBaseDeleteUserWorkout(UserWorkouts userWorkout) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (userWorkout != null && uid != null) {
+    if (uid != null) {
       // Delete from Firebase
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('userWorkouts')
-          .doc(userWorkout.userWorkoutId)
-          .delete();
 
       // Delete locally
       await localDelete(userWorkout.userWorkoutId);
@@ -508,7 +506,7 @@ class UserWorkoutsDao {
         .where('userId', isEqualTo: uid)
         .get();
 
-    if (personalBestsQuery.docs.length <= 0) {
+    if (personalBestsQuery.docs.isEmpty) {
       await FirebaseFirestore.instance.collection('userPersonalBests').add({
         'userId': uid,
         'personalBestMap': personalBests,

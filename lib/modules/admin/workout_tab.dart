@@ -147,7 +147,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     ),
                     const SizedBox(height: 10),
                     WorkoutsBox(
-                      workouts: [...workouts],
+                      workouts: workouts
+                          .where((workout) => workout.userId == '')
+                          .toList(),
                       isHome: false,
                       isSearch: false,
                     ),
@@ -160,7 +162,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     ),
                     const SizedBox(height: 10),
                     WorkoutsBox(
-                      workouts: [...workouts],
+                      workouts: workouts
+                          .where((workout) => workout.userId != '')
+                          .toList(),
                       isHome: false,
                       isSearch: false,
                     ),

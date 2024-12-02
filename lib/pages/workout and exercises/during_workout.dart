@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
@@ -49,8 +51,8 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
     isDeleted: false,
   );
 
-  Duration countdownDuration = Duration(minutes: 3);
-  Duration remainingTime = Duration(minutes: 3);
+  Duration countdownDuration = const Duration(minutes: 3);
+  Duration remainingTime = const Duration(minutes: 3);
   Timer? countdownTimer;
   bool isRunning = false;
   bool isInBackground = false;
@@ -77,7 +79,7 @@ class _DuringWorkoutScreenState extends State<DuringWorkoutScreen>
     if (workouts.workoutId != '0') {
       WidgetsBinding.instance.addObserver(this);
       _userWorkoutsDao.localSetAllInactive();
-      _userWorkoutsDao.localUpdateActive(widget.userWorkouts!, true);
+      _userWorkoutsDao.localUpdateActive(widget.userWorkouts, true);
       if (!hasActiveWorkout.value) {
         activeWorkoutStartTime = DateTime.now();
       }

@@ -69,7 +69,7 @@ void main() async {
   }
 
   // Run the main application
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 // Initialize Firebase based on the platform (iOS or other)
@@ -77,7 +77,8 @@ Future<void> _initializeFirebase() async {
   if (Firebase.apps.isEmpty) {
     if (Platform.isIOS) {
       await Firebase.initializeApp(
-        name: 'fitnessapp2', // Comment: We could not figure out why this is needed for iOS, and why it breaks is if the name is set in Android
+        name:
+            'fitnessapp2', // Comment: We could not figure out why this is needed for iOS, and why it breaks is if the name is set in Android
         options: DefaultFirebaseOptions.currentPlatform,
       );
     } else {
@@ -90,6 +91,8 @@ Future<void> _initializeFirebase() async {
 
 // Main application widget
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -148,13 +151,15 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false, // Remove debug banner
-      home: AuthWrapper(),
+      home: const AuthWrapper(),
     );
   }
 }
 
 // Wrapper for authentication
 class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -165,7 +170,7 @@ class AuthWrapper extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasData) {
           // If the user is signed in, pass the user data to the navigation bar
-          return CustomNavigationBar(); // Pass user info if needed
+          return const CustomNavigationBar(); // Pass user info if needed
         } else {
           // If no user is logged in, load the app without any user-specific data
           return const CustomNavigationBar();

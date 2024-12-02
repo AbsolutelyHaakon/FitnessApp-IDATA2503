@@ -32,12 +32,10 @@ class _WorkoutLogState extends State<WorkoutLog> {
     'Year',
     'All',
   ];
-  List<Workouts> _workouts = [];
-  List<UserWorkouts> _previousWorkouts = [];
   final WorkoutDao _workoutDao = WorkoutDao();
   final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
 
-  Map<UserWorkouts, Workouts> _workoutMap = {};
+  final Map<UserWorkouts, Workouts> _workoutMap = {};
 
   @override
   void initState() {
@@ -47,23 +45,25 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
   // Fetch the data from the database
   Future<void> fetchData() async {
-      final result = await _userWorkoutsDao.localFetchPreviousUserWorkouts(
-          FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
-      for (var userWorkout in result) {
-        final statistics = userWorkout.statistics;
-        if (statistics == null || statistics.replaceAll('"', '').trim() == "null" || statistics.isEmpty) {
-          continue;
-        }
-        Workouts? temp =
-            await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
-        if (temp != null) {
-          setState(() {
-            _workoutMap[userWorkout] = temp;
-          });
-        }
+    final result = await _userWorkoutsDao.localFetchPreviousUserWorkouts(
+        FirebaseAuth.instance.currentUser?.uid ?? 'localUser');
+    for (var userWorkout in result) {
+      final statistics = userWorkout.statistics;
+      if (statistics == null ||
+          statistics.replaceAll('"', '').trim() == "null" ||
+          statistics.isEmpty) {
+        continue;
       }
+      Workouts? temp =
+          await _workoutDao.localFetchByWorkoutId(userWorkout.workoutId);
+      if (temp != null) {
+        setState(() {
+          _workoutMap[userWorkout] = temp;
+        });
+      }
+    }
   }
-  
+
   //For formatting the date to a string format dd/mm/yyyy
   String formatDate(DateTime date) {
     return DateFormat('dd.MM.yyyy').format(date);
@@ -97,7 +97,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
         return AlertDialog(
           title: const Text("Confirm Deletion",
               style: TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-          content: const Text("Are you sure you want to delete this workout from the log?"),
+          content: const Text(
+              "Are you sure you want to delete this workout from the log?"),
           backgroundColor: AppColors.fitnessModuleColor,
           actions: [
             TextButton(
@@ -241,10 +242,8 @@ class _WorkoutLogState extends State<WorkoutLog> {
 
     for (var entry in filteredWorkouts.entries) {
       String date = entry.key.date.toString();
-      String month =
-          date.substring(5, 7); // Adjusted to get the correct month
-      String year =
-          date.substring(0, 4); // Adjusted to get the correct year
+      String month = date.substring(5, 7); // Adjusted to get the correct month
+      String year = date.substring(0, 4); // Adjusted to get the correct year
 
       String monthYearKey = "$year-$month";
 
@@ -300,95 +299,100 @@ class _WorkoutLogState extends State<WorkoutLog> {
         today.day == workoutDate.day;
   }
 
-SvgPicture _getIconForCategory(String category) {
-  int index = officialWorkoutCategories.indexOf(category);
-  if (index != -1) {
-    return officialFilterCategoryIcons[index + 2]; // +2 to skip 'All' and 'Starred'
+  SvgPicture _getIconForCategory(String category) {
+    int index = officialWorkoutCategories.indexOf(category);
+    if (index != -1) {
+      return officialFilterCategoryIcons[
+          index + 2]; // +2 to skip 'All' and 'Starred'
+    }
+    return SvgPicture.asset('assets/icons/defaultIcon.svg',
+        width: 40, height: 40);
   }
-  return SvgPicture.asset('assets/icons/defaultIcon.svg', width: 40, height: 40);
-}
 
 // Function to build the workout log entry
-Widget _buildWorkoutLogEntry(BuildContext context, {required MapEntry<UserWorkouts, Workouts> workoutMapEntry}) {
-  final UserWorkouts userWorkout = workoutMapEntry.key;
-  final Workouts workout = workoutMapEntry.value;
+  Widget _buildWorkoutLogEntry(BuildContext context,
+      {required MapEntry<UserWorkouts, Workouts> workoutMapEntry}) {
+    final UserWorkouts userWorkout = workoutMapEntry.key;
+    final Workouts workout = workoutMapEntry.value;
 
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10.0),
-    child: Dismissible(
-      key: Key(userWorkout.userWorkoutId.toString()),
-      direction: DismissDirection.endToStart,
-      confirmDismiss: (direction) => _confirmDelete(context),
-      onDismissed: (direction) {
-        setState(() {
-          _workoutMap.remove(userWorkout);
-          _userWorkoutsDao.fireBaseDeleteUserWorkout(userWorkout);
-        });
-      },
-      background: Container(
-        color: AppColors.fitnessWarningColor,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(
-          Icons.delete,
-          color: AppColors.fitnessPrimaryTextColor,
-        ),
-      ),
-      child: InkWell(
-        onTap: () {
-          if (widget.isCreatingPost) {
-            Navigator.of(context).pop(userWorkout.userWorkoutId);
-          } else {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => DetailedWorkoutLog(
-                workoutMapEntry: workoutMapEntry,
-              ),
-            ));
-          }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Dismissible(
+        key: Key(userWorkout.userWorkoutId.toString()),
+        direction: DismissDirection.endToStart,
+        confirmDismiss: (direction) => _confirmDelete(context),
+        onDismissed: (direction) {
+          setState(() {
+            _workoutMap.remove(userWorkout);
+            _userWorkoutsDao.fireBaseDeleteUserWorkout(userWorkout);
+          });
         },
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: AppColors.fitnessModuleColor,
-            borderRadius: BorderRadius.circular(15),
+        background: Container(
+          color: AppColors.fitnessWarningColor,
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: const Icon(
+            Icons.delete,
+            color: AppColors.fitnessPrimaryTextColor,
           ),
-          child: Row(
-            children: [
-              _getIconForCategory(workout.category ?? ''),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        child: InkWell(
+          onTap: () {
+            if (widget.isCreatingPost) {
+              Navigator.of(context).pop(userWorkout.userWorkoutId);
+            } else {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => DetailedWorkoutLog(
+                  workoutMapEntry: workoutMapEntry,
+                ),
+              ));
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: AppColors.fitnessModuleColor,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Row(
+              children: [
+                _getIconForCategory(workout.category ?? ''),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        workout.name,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Text(
+                        workout.description ?? '',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      workout.name,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      '${userWorkout.duration?.toStringAsFixed(0)} min',
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                     Text(
-                      workout.description ?? '',
+                      _isToday(formatDate(userWorkout.date))
+                          ? 'Today'
+                          : formatDate(userWorkout.date),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${userWorkout.duration?.toStringAsFixed(0)} min',
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  Text(
-                    _isToday(formatDate(userWorkout.date)) ? 'Today' : formatDate(userWorkout.date),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
