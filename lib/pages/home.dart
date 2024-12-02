@@ -53,7 +53,6 @@ class _HomeState extends State<Home> {
 @override
 Widget build(BuildContext context) {
   String formattedDate = DateFormat('EEEE, MMM d').format(DateTime.now());
-  final appBarHeight = MediaQuery.of(context).size.height * 0.08;
 
   return MediaQuery.removePadding(
     context: context,
@@ -63,49 +62,42 @@ Widget build(BuildContext context) {
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Padding(
               padding: const EdgeInsets.only(
-                  left: 10.0, right: 10.0, top: 20.0, bottom: 40.0),
+                  top: 20.0, bottom: 40.0),
               child: Column(
                 children: [
                   // Custom App Bar
                   Container(
-                    height: appBarHeight,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    formattedDate,
-                                    style: Theme.of(context).textTheme.headlineSmall,
-                                  ),
-                                  Text(
-                                    'Home',
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                ],
-                              ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  formattedDate,
+                                  style: Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                Text(
+                                  'Home',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Today\'s workout',
-                          style: Theme.of(context).textTheme.headlineMedium),
-                    ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Today\'s workout',
+                        style: Theme.of(context).textTheme.headlineMedium),
                   ),
                   const SizedBox(height: 10),
                   Container(
