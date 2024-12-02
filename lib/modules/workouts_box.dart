@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/texts.dart';
 import 'package:fitnessapp_idata2503/database/crud/favorite_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
@@ -17,6 +18,7 @@ class WorkoutsBox extends StatefulWidget {
   final bool isHome;
   final bool isSearch;
   final List<Workouts> workouts;
+  final bool isToday;
 
   // Constructor for WorkoutsBox
   const WorkoutsBox({
@@ -24,6 +26,7 @@ class WorkoutsBox extends StatefulWidget {
     required this.workouts,
     required this.isHome,
     required this.isSearch,
+    required this.isToday,
   });
 
   @override
@@ -262,16 +265,30 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                       ],
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => PreWorkoutScreen(
-                          workouts: workout,
-                          isSearch: widget.isSearch,
+                  onPressed: () async {
+                    if (widget.isToday) {
+                      final userWorkout =
+                          await UserWorkoutsDao().localFetchTodaysWorkout();
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => PreWorkoutScreen(
+                            userWorkouts: userWorkout,
+                            isSearch: widget.isSearch,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => PreWorkoutScreen(
+                            workouts: workout,
+                            isSearch: widget.isSearch,
+                          ),
+                        ),
+                      );
+                    }
                   },
                 ),
                 if (!widget.isHome && !widget.isSearch)

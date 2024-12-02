@@ -239,6 +239,7 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                 ],
                 isSearch: false,
                 isHome: false,
+                isToday: false,
               ),
             ],
           ), // Build workouts data section

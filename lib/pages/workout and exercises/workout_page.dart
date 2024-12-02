@@ -236,6 +236,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                                           .toList(),
                                       isHome: false,
                                       isSearch: false,
+                                      isToday: false,
                                     ),
                                     if (workouts
                                         .where(
@@ -258,6 +259,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                                             .toList(),
                                         isHome: false,
                                         isSearch: false,
+                                        isToday: false,
                                       ),
                                     ],
                                   ],

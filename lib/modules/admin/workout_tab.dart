@@ -124,6 +124,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                           .toList(),
                       isHome: false,
                       isSearch: false,
+                      isToday: false,
                     ),
                     const SizedBox(height: 40),
                     const Align(
@@ -139,6 +140,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                           .toList(),
                       isHome: false,
                       isSearch: false,
+                      isToday: false,
                     ),
                   ],
                 ),

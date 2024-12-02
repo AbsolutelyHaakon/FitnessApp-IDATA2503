@@ -100,6 +100,7 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
                     workouts: _filteredWorkouts, // Display filtered workouts
                     isHome: false,
                     isSearch: true,
+                    isToday: false,
                   ),
                 ),
               )

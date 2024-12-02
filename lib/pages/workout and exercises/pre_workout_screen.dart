@@ -317,39 +317,59 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  workouts.name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  softWrap: true,
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  workouts.category ?? '',
-                                  style:
-                                      Theme.of(context).textTheme.headlineLarge,
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  workouts.description ?? '',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
+                            Flexible(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    workouts.name,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                    softWrap: true,
+                                    maxLines: null,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    workouts.category ?? '',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge,
+                                    softWrap: true,
+                                    maxLines: null,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    workouts.description ?? '',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                    softWrap: true,
+                                    maxLines: null,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                              width: 100, // Set the desired width
-                              height: 100, // Set the desired height
-                              child: workouts.imageURL != null &&
-                                      workouts.imageURL!.isNotEmpty
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      // Set the desired radius
-                                      child: Image.network(workouts.imageURL!,
-                                          fit: BoxFit.cover),
-                                    )
-                                  : const Icon(Icons.image_not_supported),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              flex: 1,
+                              child: SizedBox(
+                                width: 100, // Set the desired width
+                                height: 100, // Set the desired height
+                                child: workouts.imageURL != null &&
+                                        workouts.imageURL!.isNotEmpty
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        // Set the desired radius
+                                        child: Image.network(
+                                          workouts.imageURL!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : const Icon(Icons.image_not_supported),
+                              ),
                             ),
                           ],
                         ),
@@ -485,6 +505,7 @@ class _PreWorkoutScreenState extends State<PreWorkoutScreen> {
                                         }
                                         if (widget.userWorkouts == null &&
                                             widget.workouts != null) {
+                                          print("does it go here?");
                                           // Check if the user has the workout locally
                                           if (widget.isSearch) {
                                             final result = await _workoutDao
