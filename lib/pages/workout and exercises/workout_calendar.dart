@@ -125,7 +125,7 @@ class _WorkoutCalendarState extends State<WorkoutCalendar> {
   Future<void> replaceExisting(UserWorkouts userWorkout) async {
     if (userId != 'localUser') {
       final success = await _userWorkoutsDao.fireBaseReplaceUserWorkout(
-          userWorkout, _selectedWorkout);
+          userWorkout, _selectedWorkout, userId);
       if (success) {
         await fetchUpcomingWorkouts();
         await fetchWorkoutNames();

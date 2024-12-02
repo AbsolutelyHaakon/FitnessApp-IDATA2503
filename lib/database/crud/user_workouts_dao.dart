@@ -430,7 +430,10 @@ class UserWorkoutsDao {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       // Delete from Firebase
-
+      await FirebaseFirestore.instance
+          .collection('userWorkouts')
+          .doc(userWorkout.userWorkoutId)
+          .delete();
       // Delete locally
       await localDelete(userWorkout.userWorkoutId);
 
@@ -458,11 +461,12 @@ class UserWorkoutsDao {
 
   /// Replace a user workout in Firebase
   Future<bool> fireBaseReplaceUserWorkout(
-      UserWorkouts userWorkout, Workouts newWorkout) async {
+      UserWorkouts userWorkout, Workouts newWorkout, String userId) async {
     final deleted = await fireBaseDeleteUserWorkout(userWorkout);
     if (deleted) {
+      print(newWorkout.userId);
       fireBaseCreateUserWorkout(
-          newWorkout.userId, newWorkout.workoutId, userWorkout.date);
+          userId, newWorkout.workoutId, userWorkout.date);
       return true;
     }
     return false;
