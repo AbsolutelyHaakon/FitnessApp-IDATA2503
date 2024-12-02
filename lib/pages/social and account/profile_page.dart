@@ -7,6 +7,7 @@ import 'package:fitnessapp_idata2503/database/tables/posts.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_best_module.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/weight_bar_chart.dart';
 import 'package:fitnessapp_idata2503/pages/settings%20and%20informational/settings.dart';
+import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -504,7 +505,27 @@ class _ProfilePageState extends State<ProfilePage>
                 color: AppColors.fitnessMainColor,
               ),
             ),
+
       backgroundColor: AppColors.fitnessBackgroundColor,
+    );
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+              const CreatePostPage()), // Navigate to create post page
+        );
+      },
+      backgroundColor: AppColors.fitnessMainColor, // Set button color
+      shape: const CircleBorder(), // Set button shape
+      child: const Icon(
+        Icons.add, // Add icon
+        color: AppColors.fitnessBackgroundColor, // Set icon color
+      ),
     );
   }
 }

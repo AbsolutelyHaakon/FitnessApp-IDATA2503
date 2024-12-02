@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/database/tables/workout.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
@@ -42,6 +43,7 @@ class DetailedWorkoutLog extends StatelessWidget {
           },
         ),
         actions: [
+          if (workoutMapEntry.key.userId == FirebaseAuth.instance.currentUser?.uid)
           TextButton(
             onPressed: () async {
               Navigator.pushReplacement(
