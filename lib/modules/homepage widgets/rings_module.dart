@@ -42,7 +42,10 @@ class _RingsModuleState extends State<RingsModule>
   void initState() {
     super.initState();
     fetchAllUserGoals();
+    startAnimation();
+  }
 
+  void startAnimation(){
     // Initialize the animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
@@ -220,6 +223,10 @@ class _RingsModuleState extends State<RingsModule>
     double screenWidth = MediaQuery.of(context).size.width;
     double ringSize = screenWidth * 0.16;
 
+    if (percentage.isNaN){
+      percentage = 0;
+    }
+
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: () {
@@ -243,8 +250,8 @@ class _RingsModuleState extends State<RingsModule>
               );
             },
           ),
-        ).then((_) {
-          fetchAllRingData();
+        ).then((_) async {
+         fetchAllRingData();
         });
       },
       child: SizedBox(
