@@ -16,6 +16,27 @@ This project uses Firebase for cloud storage.
 ![alt text](assets/images/image-1.png)
 
 ## Installation
+
+### iOS
+
+To join the beta testing for iOS devices, follow these steps:
+
+1. Install the TestFlight app from the App Store.
+2. Open the following link on your iOS device: [Join Beta](https://testflight.apple.com/join/VgpVe6Y4)
+3. Follow the instructions in TestFlight to install the app.
+
+### Android
+
+For Android devices, follow these steps:
+
+1. Download the APK file from the [Releases](https://github.com/your-repo/releases) section.
+2. Open the APK file on your Android device to install the app.
+3. Follow the on-screen instructions to complete the installation.
+
+### Development Setup
+
+To set up the development environment, follow these steps:
+
 Clone the repository locally on your device. Run this in your preferred directory:
 ```
 git clone [https](https://github.com/AbsolutelyHaakon/FitnessApp-IDATA2503.git)
