@@ -8,38 +8,38 @@ class MainSearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-  length: 2,
-  child: MediaQuery.removePadding(
+      length: 2,
+      child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
         child: Scaffold(
-    body: Column(
-      children: [
-        Container(
-          color: AppColors.fitnessBackgroundColor,
-          child: const TabBar(
-            dividerColor: AppColors.fitnessBackgroundColor,
-            labelColor: AppColors.fitnessMainColor,
-            indicatorColor: AppColors.fitnessMainColor,
-            tabs: [
-              Tab(text: 'Users'),
-              Tab(text: 'Workouts'),
-            ],
-          ),
-        ),
-        const Expanded(
-          child: TabBarView(
+          body: Column(
             children: [
-              SearchUsers(),
-              SearchWorkouts(),
+              Container(
+                color: AppColors.fitnessBackgroundColor,
+                child: const TabBar(
+                  dividerColor: AppColors.fitnessBackgroundColor,
+                  labelColor: AppColors.fitnessMainColor,
+                  indicatorColor: AppColors.fitnessMainColor,
+                  tabs: [
+                    Tab(text: 'Users'),
+                    Tab(text: 'Workouts'),
+                  ],
+                ),
+              ),
+              const Expanded(
+                child: TabBarView(
+                  children: [
+                    SearchUsers(),
+                    SearchWorkouts(),
+                  ],
+                ),
+              ),
             ],
           ),
+          backgroundColor: AppColors.fitnessBackgroundColor,
         ),
-      ],
-    ),
-    backgroundColor: AppColors.fitnessBackgroundColor,
-  ),
-  ),
-);
+      ),
+    );
   }
 }
