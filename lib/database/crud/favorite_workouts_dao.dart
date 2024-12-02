@@ -73,7 +73,8 @@ class FavoriteWorkoutsDao {
   }
 
   // Function to delete a favorite workout from the local database by userId and workoutId
-  Future<void> localDeleteByUserIdAndWorkoutId(String userId, String workoutId) async {
+  Future<void> localDeleteByUserIdAndWorkoutId(
+      String userId, String workoutId) async {
     // Get the database instance and delete the favorite workout by userId and workoutId
     final database = await DatabaseService().database;
     await database.delete(
@@ -88,9 +89,11 @@ class FavoriteWorkoutsDao {
   /////////////////////////////////////////////////////////
 
   // Function to create a new favorite workout in Firebase and the local database
-  Future<Map<String, dynamic>> fireBaseCreateFavoriteWorkout(String userId, String workoutId) async {
+  Future<Map<String, dynamic>> fireBaseCreateFavoriteWorkout(
+      String userId, String workoutId) async {
     // Add a new favorite workout to the Firebase collection
-    DocumentReference docRef = await FirebaseFirestore.instance.collection('favoriteWorkouts').add({
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('favoriteWorkouts').add({
       'userId': userId,
       'workoutId': workoutId,
     });
@@ -110,9 +113,14 @@ class FavoriteWorkoutsDao {
   }
 
   // Function to delete a favorite workout from Firebase and the local database
-  Future<Map<String, dynamic>> fireBaseDeleteFavoriteWorkout(String userId, String workoutId) async {
+  Future<Map<String, dynamic>> fireBaseDeleteFavoriteWorkout(
+      String userId, String workoutId) async {
     // Query Firebase for the favorite workout by userId and workoutId
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('favoriteWorkouts').where('userId', isEqualTo: userId).where('workoutId', isEqualTo: workoutId).get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('favoriteWorkouts')
+        .where('userId', isEqualTo: userId)
+        .where('workoutId', isEqualTo: workoutId)
+        .get();
     if (querySnapshot.docs.isEmpty) {
       // If no favorite workout is found, return an error
       return {"Success": false, "Error": "Favorite Workout not found"};
@@ -132,16 +140,20 @@ class FavoriteWorkoutsDao {
   // Function to fetch all favorite workouts for a specific user from Firebase
   Future<Map<String, dynamic>> fireBaseFetchAllFavoriteWorkouts(String userId) {
     // Query Firebase for favorite workouts by userId
-    return FirebaseFirestore.instance.collection('favoriteWorkouts').where('userId', isEqualTo: userId).get().then((QuerySnapshot querySnapshot) {
+    return FirebaseFirestore.instance
+        .collection('favoriteWorkouts')
+        .where('userId', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
       List<FavoriteWorkouts> favoriteWorkouts = [];
       // Map the query results to a list of FavoriteWorkouts objects
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         favoriteWorkouts.add(FavoriteWorkouts(
           favoriteWorkoutId: doc.id,
           userId: doc['userId'],
           workoutId: doc['workoutId'],
         ));
-      });
+      }
       // Return the list of favorite workouts
       return {"favoriteWorkouts": favoriteWorkouts};
     });

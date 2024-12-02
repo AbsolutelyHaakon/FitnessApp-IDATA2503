@@ -19,7 +19,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
   // Boolean to toggle between workout and exercise view
   bool _isExerciseView = false;
   // Controller for the search text field
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   // List to store fetched workouts
   List<Workouts> workouts = [];
 
@@ -50,7 +50,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Workout',
+              const Text('Workout',
                   style: TextStyle(
                       fontSize: 20, color: AppColors.fitnessPrimaryTextColor)),
               const SizedBox(width: 16),
@@ -66,7 +66,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 inactiveThumbColor: AppColors.fitnessMainColor,
               ),
               const SizedBox(width: 16),
-              Text('Exercise',
+              const Text('Exercise',
                   style: TextStyle(
                       fontSize: 20, color: AppColors.fitnessPrimaryTextColor)),
             ],
@@ -75,7 +75,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
         // Search text field
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: Container(
+          child: SizedBox(
             height: 70,
             child: TextField(
               controller: _searchController,
@@ -87,7 +87,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     fontWeight: FontWeight.w500),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
-                  borderSide: const BorderSide(color: AppColors.fitnessMainColor),
+                  borderSide:
+                      const BorderSide(color: AppColors.fitnessMainColor),
                 ),
               ),
               onChanged: (value) {
@@ -107,7 +108,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CreateWorkoutPage(isAdmin: true,),
+                      builder: (context) => CreateWorkoutPage(
+                        isAdmin: true,
+                      ),
                     ),
                   );
                   if (result == true) {
@@ -131,13 +134,16 @@ class _WorkoutTabState extends State<WorkoutTab> {
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 15.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Premade Workouts', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      child: Text('Premade Workouts',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
                     const SizedBox(height: 10),
                     WorkoutsBox(
@@ -148,7 +154,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
                     const SizedBox(height: 40),
                     const Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Public Workouts', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      child: Text('Public Workouts',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
                     const SizedBox(height: 10),
                     WorkoutsBox(

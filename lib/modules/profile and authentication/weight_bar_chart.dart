@@ -45,7 +45,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
 
       // Filter out entries with weight data
       latestDataPerDay.forEach((date, entry) {
-        if (entry.weight != null && entry.weight != 0) {
+        if (entry.weight != 0) {
           returnData[date] = entry.weight;
         }
       });
@@ -85,6 +85,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
         0,
       );
       weightController.clear(); // Clear the input field
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop(); // Close the dialog
       setState(() {}); // Refresh the UI
     }
@@ -102,7 +103,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
           return userDataMap['weightTarget'];
         }
       } catch (e) {
-        print('Error fetching goal weight: $e');
+        rethrow;
       }
     }
     return 0;
@@ -243,14 +244,14 @@ class _WeightBarChartState extends State<WeightBarChart> {
 
               // Group data by month and year
               Map<String, List<MapEntry<DateTime, int>>> groupedData = {};
-              limitedData.forEach((entry) {
+              for (var entry in limitedData) {
                 String monthYear = "${entry.key.month}-${entry.key.year}";
                 if (groupedData.containsKey(monthYear)) {
                   groupedData[monthYear]!.add(entry);
                 } else {
                   groupedData[monthYear] = [entry];
                 }
-              });
+              }
 
               List<BarChartGroupData> barGroups = [];
               int xIndex = 0;
@@ -259,7 +260,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                 Color barColor = isEvenMonth
                     ? AppColors.fitnessMainColor
                     : AppColors.fitnessMainColor.withOpacity(0.6);
-                entries.forEach((entry) {
+                for (var entry in entries) {
                   barGroups.add(
                     BarChartGroupData(
                       x: xIndex,
@@ -272,7 +273,7 @@ class _WeightBarChartState extends State<WeightBarChart> {
                     ),
                   );
                   xIndex++;
-                });
+                }
               });
 
               List<String> monthLabels = [

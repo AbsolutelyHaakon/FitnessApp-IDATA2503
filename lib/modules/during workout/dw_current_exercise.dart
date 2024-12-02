@@ -6,7 +6,7 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
 import 'package:fitnessapp_idata2503/database/tables/user_workouts.dart';
 import 'package:fitnessapp_idata2503/modules/during%20workout/beeping_circle.dart';
-import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress-bar.dart';
+import 'package:fitnessapp_idata2503/modules/during%20workout/dw_progress_bar.dart';
 import 'package:fitnessapp_idata2503/pages/social%20and%20account/create_post_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,8 @@ import '../../styles.dart';
 /// This widget represents the current exercise screen during a workout session.
 /// It displays the current exercise, allows the user to log sets and reps, and navigate to the next exercise.
 class DwCurrentExercise extends StatefulWidget {
-  final Map<Exercises, WorkoutExercises> exerciseMap; // Map of exercises and their details
+  final Map<Exercises, WorkoutExercises>
+      exerciseMap; // Map of exercises and their details
   final UserWorkouts userWorkouts; // User workout details
   final VoidCallback onEndWorkout; // Callback function to end the workout
 
@@ -105,7 +106,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
     DateTime endTime = DateTime.now();
     workoutDuration = endTime.difference(activeWorkoutStartTime);
     finalTime = workoutDuration.inMinutes.toDouble();
-    
+
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       _userWorkoutsDao.fireBaseUpdateUserWorkout(
           widget.userWorkouts.userWorkoutId,
@@ -288,8 +289,8 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                           final pushedUserWorkout =
                               await _userWorkoutsDao.localFetchByUserWorkoutsId(
                                   widget.userWorkouts.userWorkoutId);
-                          print(pushedUserWorkout);
                           if (pushedUserWorkout != null) {
+                            // ignore: use_build_context_synchronously
                             await Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                 builder: (context) => CreatePostPage(
@@ -340,7 +341,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                 color: AppColors.fitnessModuleColor,
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                  color: Color(0xFF262626),
+                  color: const Color(0xFF262626),
                   width: 1.0,
                 ),
               ),
@@ -351,7 +352,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                   Row(
                     children: [
                       const SizedBox(width: 20),
-                      BeepingCircle(),
+                      const BeepingCircle(),
                       const SizedBox(width: 10),
                       Text(
                         exercises[activeWorkoutIndex].name,
@@ -368,11 +369,11 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                     child: Column(
                       children: [
                         ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: 240),
+                          constraints: const BoxConstraints(maxHeight: 240),
                           child: RawScrollbar(
                             thumbVisibility: true,
                             thickness: 4.0,
-                            radius: Radius.circular(20.0),
+                            radius: const Radius.circular(20.0),
                             thumbColor: AppColors.fitnessMainColor,
                             controller: _scrollController,
                             child: SingleChildScrollView(
@@ -517,7 +518,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       color: AppColors.fitnessModuleColor,
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
-                        color: Color(0xFF262626),
+                        color: const Color(0xFF262626),
                         width: 1.0,
                       ),
                     ),
@@ -621,7 +622,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                 color: AppColors.fitnessModuleColor,
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                  color: Color(0xFF262626),
+                  color: const Color(0xFF262626),
                   width: 1.0,
                 ),
               ),
@@ -643,7 +644,7 @@ class _DwCurrentExerciseState extends State<DwCurrentExercise> {
                       width: 410,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: Color(0xFFCC4848),
+                        color: const Color(0xFFCC4848),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       alignment: Alignment.center,

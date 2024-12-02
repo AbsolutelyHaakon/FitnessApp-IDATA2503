@@ -28,9 +28,11 @@ class CustomNavigationBar extends StatefulWidget {
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int _selectedIndex = 0; // Index of the selected navigation item
-  final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao(); // DAO for user workouts
+  final UserWorkoutsDao _userWorkoutsDao =
+      UserWorkoutsDao(); // DAO for user workouts
   final WorkoutDao _workoutDao = WorkoutDao(); // DAO for workouts
-  bool localHasActiveWorkout = false; // Flag to check if there's an active workout
+  bool localHasActiveWorkout =
+      false; // Flag to check if there's an active workout
 
   @override
   void initState() {
@@ -55,7 +57,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       activeWorkoutId.value = temp.workoutId;
       activeWorkoutName.value = temp.name;
       setState(() {
-        localHasActiveWorkout = true; // Set the flag to true if there's an active workout
+        localHasActiveWorkout =
+            true; // Set the flag to true if there's an active workout
       });
     } else {
       final temp2 = await _workoutDao.fetchActiveWorkout();
@@ -64,15 +67,18 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         activeWorkoutId.value = temp2.workoutId;
         activeWorkoutName.value = temp2.name;
         setState(() {
-          localHasActiveWorkout = true; // Set the flag to true if there's an active workout
+          localHasActiveWorkout =
+              true; // Set the flag to true if there's an active workout
         });
       } else if (hasActiveWorkout.value) {
         setState(() {
-          localHasActiveWorkout = true; // Set the flag to true if there's an active workout
+          localHasActiveWorkout =
+              true; // Set the flag to true if there's an active workout
         });
       } else {
         setState(() {
-          localHasActiveWorkout = false; // Set the flag to false if there's no active workout
+          localHasActiveWorkout =
+              false; // Set the flag to false if there's no active workout
         });
       }
     }
@@ -86,15 +92,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       for (final exercise in exercises) {
         final workoutExercise = await WorkoutExercisesDao()
             .localFetchById(activeWorkoutId.value, exercise.exerciseId);
-        if (workoutExercise != null) {
-          exerciseMap[exercise] = workoutExercise; // Add the exercise to the map
-        }
+        exerciseMap[exercise] = workoutExercise; // Add the exercise to the map
       }
       return exerciseMap; // Return the map of exercises
     } catch (e) {
-      print('Error fetching exercises: $e'); // Print an error message if fetching exercises fails
+      rethrow;
     }
-    return {};
   }
 
   @override
@@ -107,7 +110,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               children: [
                 const SizedBox(height: 70), // Spacer
                 Expanded(
-                  child: _getSelectedPage(_selectedIndex), // Display the selected page
+                  child: _getSelectedPage(
+                      _selectedIndex), // Display the selected page
                 ),
               ],
             ),
@@ -134,10 +138,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                       date: DateTime.now(),
                       isActive: true,
                     );
-                    await _userWorkoutsDao.localCreate(userWorkout); // Create a new user workout if it doesn't exist
+                    await _userWorkoutsDao.localCreate(
+                        userWorkout); // Create a new user workout if it doesn't exist
                   }
 
                   Navigator.push(
+                    // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
                       builder: (context) => DuringWorkoutScreen(
@@ -148,7 +154,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                   ).then((result) {
                     _checkForActiveWorkouts(); // Check for active workouts after returning from the workout screen
                   });
-                  ;
                 },
                 child: Container(
                   width: double.infinity,
@@ -237,8 +242,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
               ),
             ],
             currentIndex: _selectedIndex, // Current selected index
-            selectedItemColor: AppColors.fitnessMainColor, // Color of the selected item
-            unselectedItemColor: AppColors.fitnessSecondaryTextColor, // Color of the unselected items
+            selectedItemColor:
+                AppColors.fitnessMainColor, // Color of the selected item
+            unselectedItemColor: AppColors
+                .fitnessSecondaryTextColor, // Color of the unselected items
             backgroundColor: Colors.black, // Background color
             onTap: _onItemTapped, // Handle item tap
             iconSize: 20.0, // Icon size
@@ -263,7 +270,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         return MainSearchPage(); // Search page
       case 4:
         return FirebaseAuth.instance.currentUser?.uid != null
-            ? ProfilePage(userId: FirebaseAuth.instance.currentUser!.uid) // Profile page
+            ? ProfilePage(
+                userId: FirebaseAuth.instance.currentUser!.uid) // Profile page
             : const Me(); // Me page
       default:
         return const Home(); // Default to home page

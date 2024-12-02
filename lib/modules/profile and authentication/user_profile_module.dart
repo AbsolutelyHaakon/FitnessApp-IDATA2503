@@ -1,5 +1,4 @@
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
@@ -19,21 +18,18 @@ class UserProfileModule extends StatelessWidget {
     required this.onLogout,
   });
 
-  /// Logs out the user by signing out from Firebase and calling the onLogout callback.
-  Future<void> _logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    onLogout();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; // Get the screen width
+    final screenWidth =
+        MediaQuery.of(context).size.width; // Get the screen width
     return Center(
       child: SingleChildScrollView(
         child: IntrinsicHeight(
           child: Container(
-            width: screenWidth * 0.9, // Set the container width to 90% of the screen width
-            padding: const EdgeInsets.symmetric(vertical: 20), // Add vertical padding
+            width: screenWidth *
+                0.9, // Set the container width to 90% of the screen width
+            padding: const EdgeInsets.symmetric(
+                vertical: 20), // Add vertical padding
             decoration: BoxDecoration(
               color: AppColors.fitnessModuleColor, // Set the background color
               borderRadius: BorderRadius.circular(30), // Add rounded corners
@@ -43,7 +39,8 @@ class UserProfileModule extends StatelessWidget {
               ),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
+              crossAxisAlignment:
+                  CrossAxisAlignment.start, // Align children to the start
               children: [
                 _buildProfileHeader(context), // Build the profile header
                 const SizedBox(height: 20), // Add some space
@@ -53,11 +50,13 @@ class UserProfileModule extends StatelessWidget {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator(); // Show loading indicator
                     } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}'); // Show error message
+                      return Text(
+                          'Error: ${snapshot.error}'); // Show error message
                     } else if (snapshot.hasData) {
                       return snapshot.data!; // Show user data
                     } else {
-                      return const Text('No data available'); // Show message if no data
+                      return const Text(
+                          'No data available'); // Show message if no data
                     }
                   },
                 ),
@@ -73,31 +72,41 @@ class UserProfileModule extends StatelessWidget {
   /// Builds the profile header with the user's profile image and settings button.
   Row _buildProfileHeader(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between elements
-      crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
+      mainAxisAlignment:
+          MainAxisAlignment.spaceBetween, // Space between elements
+      crossAxisAlignment:
+          CrossAxisAlignment.start, // Align children to the start
       children: [
         Row(
           children: [
             const SizedBox(width: 20), // Add some space
             CircleAvatar(
               radius: 50, // Set the radius of the avatar
-              backgroundImage: imageUrl != null ? NetworkImage(imageUrl!) : null, // Set the profile image
-              backgroundColor: AppColors.fitnessPrimaryTextColor, // Set the background color
+              backgroundImage: imageUrl != null
+                  ? NetworkImage(imageUrl!)
+                  : null, // Set the profile image
+              backgroundColor:
+                  AppColors.fitnessPrimaryTextColor, // Set the background color
               child: imageUrl == null
-                  ? const Icon(Icons.person, size: 50, color: AppColors.fitnessMainColor) // Show default icon if no image
+                  ? const Icon(Icons.person,
+                      size: 50,
+                      color: AppColors
+                          .fitnessMainColor) // Show default icon if no image
                   : null,
             ),
             const SizedBox(width: 10), // Add some space
           ],
         ),
         IconButton(
-          icon: const Icon(Icons.settings, color: AppColors.fitnessMainColor), // Settings icon
+          icon: const Icon(Icons.settings,
+              color: AppColors.fitnessMainColor), // Settings icon
           color: Colors.grey, // Set the icon color
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => SettingsPage(onLogout: onLogout)), // Navigate to settings page
+                  builder: (context) => SettingsPage(
+                      onLogout: onLogout)), // Navigate to settings page
             );
           },
         ),
@@ -108,8 +117,8 @@ class UserProfileModule extends StatelessWidget {
   /// Fetches the user data from Firebase and returns a widget displaying the data.
   Future<Padding> getUserData() async {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      var userDataMap = await UserDao()
-          .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid); // Fetch user data from Firebase
+      var userDataMap = await UserDao().fireBaseGetUserData(FirebaseAuth
+          .instance.currentUser!.uid); // Fetch user data from Firebase
 
       if (userDataMap != null &&
           userDataMap.containsKey('weight') &&
@@ -136,7 +145,8 @@ class UserProfileModule extends StatelessWidget {
           height = int.parse(heightValue.toString()); // Convert height to int
         }
 
-        return _buildProfileDetails(weight, height); // Build profile details widget
+        return _buildProfileDetails(
+            weight, height); // Build profile details widget
       }
     }
     return const Padding(
@@ -155,9 +165,11 @@ class UserProfileModule extends StatelessWidget {
   /// Builds a widget displaying the user's profile details.
   Padding _buildProfileDetails(int weight, int height) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0), // Add horizontal padding
+      padding: const EdgeInsets.symmetric(
+          horizontal: 20.0), // Add horizontal padding
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Align children to the start
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // Align children to the start
         children: [
           _buildProfileDetailText('Email: ${user.email}'), // Show user email
           _buildProfileDetailText('Height: ${height}cm'), // Show user height

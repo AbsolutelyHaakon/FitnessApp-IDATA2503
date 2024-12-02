@@ -13,9 +13,6 @@ import '../pages/workout and exercises/during_workout.dart';
 // Shows the selected workout plan details before deciding to start it
 // Displays workout info and potentially a map of the workout route
 
-//TODO: Implement map functionality
-//TODO: Connect it to the persistent storage
-
 class WorkoutPlanModule extends StatefulWidget {
   final UserWorkouts userWorkouts;
 

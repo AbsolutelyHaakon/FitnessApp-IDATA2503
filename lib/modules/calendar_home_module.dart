@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../pages/workout and exercises/workout_calendar.dart';
 
@@ -20,7 +19,7 @@ class _CalendarHomeModuleState extends State<CalendarHomeModule> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => WorkoutCalendar()),
+            MaterialPageRoute(builder: (context) => const WorkoutCalendar()),
           );
         },
         child: Container(

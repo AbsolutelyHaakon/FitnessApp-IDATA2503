@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 /// This class represents an exercise in the workout app.
 /// It contains details about the exercise such as its name, description, category, etc.
 class Exercises {
@@ -68,15 +66,15 @@ class Exercises {
 
   // Converts an Exercises object to JSON
   Map<String, dynamic> toJson() => {
-    'exerciseId': exerciseId,
-    'name': name,
-    'description': description,
-    'category': category,
-    'videoUrl': videoUrl,
-    'imageURL': imageURL,
-    'isPrivate': isPrivate,
-    'userId': userId,
-  };
+        'exerciseId': exerciseId,
+        'name': name,
+        'description': description,
+        'category': category,
+        'videoUrl': videoUrl,
+        'imageURL': imageURL,
+        'isPrivate': isPrivate,
+        'userId': userId,
+      };
 
   // Returns the name of the exercise as a string
   @override
@@ -88,9 +86,9 @@ class Exercises {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Exercises &&
-              runtimeType == other.runtimeType &&
-              name == other.name;
+      other is Exercises &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
 
   // Returns the hash code for the exercise based on its name
   @override

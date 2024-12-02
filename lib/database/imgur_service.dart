@@ -38,10 +38,8 @@ class ImgurService {
       final jsonResponse = jsonDecode(response.body);
       // Extract the image URL from the response
       final imageUrl = jsonResponse['data']['link'];
-      print('Imgur Image URL: $imageUrl'); // Print the image URL
       return imageUrl; // Return the image URL
     } else {
-      print('Failed to upload image: ${response.statusCode}'); // Print the error status code
       return null; // Return null if the upload failed
     }
   }

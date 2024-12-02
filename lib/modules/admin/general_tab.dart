@@ -59,8 +59,10 @@ class _GeneralTabState extends State<GeneralTab> with TickerProviderStateMixin {
 
     // Initialize animations with default values
     _usersAnimation = IntTween(begin: 0, end: 0).animate(_usersController);
-    _workoutsAnimation = IntTween(begin: 0, end: 0).animate(_workoutsController);
-    _exercisesAnimation = IntTween(begin: 0, end: 0).animate(_exercisesController);
+    _workoutsAnimation =
+        IntTween(begin: 0, end: 0).animate(_workoutsController);
+    _exercisesAnimation =
+        IntTween(begin: 0, end: 0).animate(_exercisesController);
     _postsAnimation = IntTween(begin: 0, end: 0).animate(_postsController);
 
     // Fetch statistics from the database
@@ -78,13 +80,18 @@ class _GeneralTabState extends State<GeneralTab> with TickerProviderStateMixin {
     final allWorkouts = await _workoutDao
         .getAllWorkouts(FirebaseAuth.instance.currentUser?.uid);
     // Delete inactive workout exercises
-    final result = await _workoutExercisesDao.fireBaseDeleteInactiveWorkoutExercises(allWorkouts);
+    final result = await _workoutExercisesDao
+        .fireBaseDeleteInactiveWorkoutExercises(allWorkouts);
 
     // Show a snackbar with the result message
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(result['message'], style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
-        backgroundColor: result['success'] ? AppColors.fitnessMainColor : AppColors.fitnessWarningColor,
+        content: Text(result['message'],
+            style: const TextStyle(color: AppColors.fitnessPrimaryTextColor)),
+        backgroundColor: result['success']
+            ? AppColors.fitnessMainColor
+            : AppColors.fitnessWarningColor,
       ),
     );
   }
@@ -99,10 +106,14 @@ class _GeneralTabState extends State<GeneralTab> with TickerProviderStateMixin {
 
     // Update animations with the fetched counts
     setState(() {
-      _usersAnimation = IntTween(begin: 0, end: usersCount).animate(_usersController);
-      _workoutsAnimation = IntTween(begin: 0, end: workoutsCount).animate(_workoutsController);
-      _exercisesAnimation = IntTween(begin: 0, end: exercisesCount).animate(_exercisesController);
-      _postsAnimation = IntTween(begin: 0, end: postsCount).animate(_postsController);
+      _usersAnimation =
+          IntTween(begin: 0, end: usersCount).animate(_usersController);
+      _workoutsAnimation =
+          IntTween(begin: 0, end: workoutsCount).animate(_workoutsController);
+      _exercisesAnimation =
+          IntTween(begin: 0, end: exercisesCount).animate(_exercisesController);
+      _postsAnimation =
+          IntTween(begin: 0, end: postsCount).animate(_postsController);
     });
 
     // Start the animations

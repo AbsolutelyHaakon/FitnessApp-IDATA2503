@@ -33,7 +33,8 @@ class LoginModule extends StatefulWidget {
 class _LoginModuleState extends State<LoginModule> {
   bool _isRegistering = false; // Flag to check if the user is registering
   String? _errorMessage; // Error message to display
-  final _confirmPasswordController = TextEditingController(); // Controller for confirm password field
+  final _confirmPasswordController =
+      TextEditingController(); // Controller for confirm password field
 
   // Function to handle login
   Future<void> _login() async {
@@ -43,8 +44,8 @@ class _LoginModuleState extends State<LoginModule> {
         widget.passwordController.text.trim(),
       );
       if (result['user'] != null) {
-        final WorkoutDao _workoutDao = WorkoutDao();
-        final UserWorkoutsDao _userWorkoutsDao = UserWorkoutsDao();
+        final WorkoutDao workoutDao = WorkoutDao();
+        final UserWorkoutsDao userWorkoutsDao = UserWorkoutsDao();
 
         setState(() {
           activeWorkoutIndex = 0;
@@ -54,8 +55,8 @@ class _LoginModuleState extends State<LoginModule> {
           hasActiveWorkout.value = false;
         });
 
-        await _workoutDao.localSetAllInactive();
-        await _userWorkoutsDao.localSetAllInactive();
+        await workoutDao.localSetAllInactive();
+        await userWorkoutsDao.localSetAllInactive();
 
         widget.onLoginSuccess(result['user']);
       } else {
@@ -72,23 +73,25 @@ class _LoginModuleState extends State<LoginModule> {
 
   // Function to handle registration
   Future<void> _register() async {
-    if (await widget.userDao.fireBaseCheckIfEmailExists(widget.emailController.text)) {
+    if (await widget.userDao
+        .fireBaseCheckIfEmailExists(widget.emailController.text)) {
       setState(() {
         _errorMessage = 'An account already exists for that email';
         return;
       });
     }
     try {
-      final result = await widget.userDao.fireBaseCreateUserWithEmailAndPassword(
+      final result =
+          await widget.userDao.fireBaseCreateUserWithEmailAndPassword(
         widget.emailController.text,
         widget.passwordController.text,
       );
       if (result['user'] != null) {
         widget.onLoginSuccess(result['user']);
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
-          MaterialPageRoute(
-              builder: (context) => const AccountSetupPage()),
+          MaterialPageRoute(builder: (context) => const AccountSetupPage()),
         );
       } else {
         setState(() {
@@ -96,7 +99,7 @@ class _LoginModuleState extends State<LoginModule> {
         });
       }
     } catch (e) {
-      print('Registration failed: $e');
+      rethrow;
     }
   }
 
@@ -135,30 +138,37 @@ class _LoginModuleState extends State<LoginModule> {
                       controller: widget.emailController,
                       decoration: const InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 14),
+                        labelStyle: TextStyle(
+                            color: AppColors.fitnessMainColor, fontSize: 14),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessModuleColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessModuleColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessMainColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 12.0),
                         errorStyle: TextStyle(
                           color: AppColors.fitnessWarningColor,
                           fontSize: 12,
                         ),
                       ),
-                      style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                      style: const TextStyle(
+                          color: AppColors.fitnessMainColor, fontSize: 16),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
@@ -166,36 +176,44 @@ class _LoginModuleState extends State<LoginModule> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16), // Add spacing between the fields
+                    const SizedBox(
+                        height: 16), // Add spacing between the fields
                     TextFormField(
                       autocorrect: false,
                       controller: widget.passwordController,
                       decoration: const InputDecoration(
                         labelText: 'Password',
-                        labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 14),
+                        labelStyle: TextStyle(
+                            color: AppColors.fitnessMainColor, fontSize: 14),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessModuleColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessModuleColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessMainColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessMainColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.fitnessWarningColor),
+                          borderSide:
+                              BorderSide(color: AppColors.fitnessWarningColor),
                           borderRadius: BorderRadius.all(Radius.circular(16.0)),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 12.0),
                         errorStyle: TextStyle(
                           color: AppColors.fitnessWarningColor,
                           fontSize: 12,
                         ),
                       ),
-                      style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                      style: const TextStyle(
+                          color: AppColors.fitnessMainColor, fontSize: 16),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -210,30 +228,41 @@ class _LoginModuleState extends State<LoginModule> {
                         controller: _confirmPasswordController,
                         decoration: const InputDecoration(
                           labelText: 'Confirm Password',
-                          labelStyle: TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                          labelStyle: TextStyle(
+                              color: AppColors.fitnessMainColor, fontSize: 16),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.fitnessModuleColor),
-                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                            borderSide:
+                                BorderSide(color: AppColors.fitnessModuleColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.fitnessMainColor),
-                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                            borderSide:
+                                BorderSide(color: AppColors.fitnessMainColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.fitnessWarningColor),
-                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                            borderSide: BorderSide(
+                                color: AppColors.fitnessWarningColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.fitnessWarningColor),
-                            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                            borderSide: BorderSide(
+                                color: AppColors.fitnessWarningColor),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16.0)),
                           ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12.0),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 20.0, horizontal: 12.0),
                           errorStyle: TextStyle(
                             color: AppColors.fitnessWarningColor,
                             fontSize: 12,
                           ),
                         ),
-                        style: const TextStyle(color: AppColors.fitnessMainColor, fontSize: 16),
+                        style: const TextStyle(
+                            color: AppColors.fitnessMainColor, fontSize: 16),
                         obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -250,7 +279,8 @@ class _LoginModuleState extends State<LoginModule> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           _errorMessage!,
-                          style: const TextStyle(color: AppColors.fitnessWarningColor),
+                          style: const TextStyle(
+                              color: AppColors.fitnessWarningColor),
                         ),
                       ),
                     const SizedBox(height: 20),
@@ -270,12 +300,15 @@ class _LoginModuleState extends State<LoginModule> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.fitnessMainColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0), // Same border radius as input fields
+                            borderRadius: BorderRadius.circular(
+                                16.0), // Same border radius as input fields
                           ),
                         ),
                         child: Text(
                           _isRegistering ? 'Register' : 'Login',
-                          style: const TextStyle(color: AppColors.fitnessPrimaryTextColor, fontSize: 16),
+                          style: const TextStyle(
+                              color: AppColors.fitnessPrimaryTextColor,
+                              fontSize: 16),
                         ),
                       ),
                     ),
@@ -289,12 +322,16 @@ class _LoginModuleState extends State<LoginModule> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: _isRegistering ? 'Already have an account? ' : 'Don\'t have an account? ',
-                              style: const TextStyle(color: AppColors.fitnessMainColor),
+                              text: _isRegistering
+                                  ? 'Already have an account? '
+                                  : 'Don\'t have an account? ',
+                              style: const TextStyle(
+                                  color: AppColors.fitnessMainColor),
                             ),
                             TextSpan(
                               text: _isRegistering ? 'Login' : 'Register',
-                              style: const TextStyle(color: AppColors.fitnessPrimaryTextColor),
+                              style: const TextStyle(
+                                  color: AppColors.fitnessPrimaryTextColor),
                             ),
                           ],
                         ),
