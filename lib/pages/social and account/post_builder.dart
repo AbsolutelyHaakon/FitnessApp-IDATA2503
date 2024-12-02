@@ -275,7 +275,7 @@ class _PostBuilderState extends State<PostBuilder> {
                                 horizontal: 5, vertical: 10), // Add padding
                           ),
                           child: const Text(
-                            'View >',
+                            'View',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
