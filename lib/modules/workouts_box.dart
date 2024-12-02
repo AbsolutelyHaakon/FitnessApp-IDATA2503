@@ -19,7 +19,7 @@ class WorkoutsBox extends StatefulWidget {
   final List<Workouts> workouts;
 
   // Constructor for WorkoutsBox
-  WorkoutsBox({
+  const WorkoutsBox({
     super.key,
     required this.workouts,
     required this.isHome,

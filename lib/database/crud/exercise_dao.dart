@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitnessapp_idata2503/database/database_service.dart';
 import 'package:fitnessapp_idata2503/database/tables/exercise.dart';

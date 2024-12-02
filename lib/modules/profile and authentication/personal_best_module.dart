@@ -3,7 +3,6 @@ import 'package:fitnessapp_idata2503/database/crud/user_workouts_dao.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_bests_list.dart';
 import 'package:fitnessapp_idata2503/modules/profile%20and%20authentication/personal_best_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// This class represents the Personal Bests module on the profile page.
