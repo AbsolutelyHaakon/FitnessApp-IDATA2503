@@ -22,7 +22,7 @@ List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/coreIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/upperbodyIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/cardioIcon.svg', width: 40, height: 40),
-  SvgPicture.asset('assets/icons/hikerIcon.svg', width: 40, height: 40),
+  SvgPicture.asset('assets/icons/outdoorsIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/armsIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/customIcon.svg', width: 10, height: 10),
 ];
