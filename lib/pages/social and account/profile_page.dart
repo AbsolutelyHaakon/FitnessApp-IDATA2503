@@ -505,27 +505,8 @@ class _ProfilePageState extends State<ProfilePage>
                 color: AppColors.fitnessMainColor,
               ),
             ),
-
       backgroundColor: AppColors.fitnessBackgroundColor,
     );
   }
-
-  Widget _buildFloatingActionButton(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-              const CreatePostPage()), // Navigate to create post page
-        );
-      },
-      backgroundColor: AppColors.fitnessMainColor, // Set button color
-      shape: const CircleBorder(), // Set button shape
-      child: const Icon(
-        Icons.add, // Add icon
-        color: AppColors.fitnessBackgroundColor, // Set icon color
-      ),
-    );
-  }
+  
 }
