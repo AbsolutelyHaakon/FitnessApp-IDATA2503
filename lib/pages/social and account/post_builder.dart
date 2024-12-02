@@ -137,50 +137,6 @@ class _PostBuilderState extends State<PostBuilder> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0), // Add padding
-          child: Row(
-            children: [
-              if (!widget.isProfile)
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePage(
-                            userId:
-                                widget.post.userId), // Navigate to profile page
-                      ),
-                    );
-                  },
-                  child: CircleAvatar(
-                    backgroundImage: profileImageUrl.isNotEmpty
-                        ? NetworkImage(profileImageUrl) // Display profile image
-                        : const AssetImage('assets/images/placeholder_icon.png')
-                            as ImageProvider, // Placeholder image
-                  ),
-                ),
-              const SizedBox(width: 10.0), // Add spacing
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!widget.isProfile)
-                    Text(name,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold)), // Display user name
-                  Text(
-                    formatDateWithSuffix(date), // Display post date with suffix
-                    style: const TextStyle(
-                      color: AppColors.fitnessSecondaryTextColor,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
         const SizedBox(height: 10.0), // Add spacing
         Card(
           color: AppColors.fitnessModuleColor, // Card background color
@@ -190,6 +146,70 @@ class _PostBuilderState extends State<PostBuilder> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0), // Add padding
+                child: Row(
+                  children: [
+                    if (!widget.isProfile)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                  userId:
+                                  widget.post.userId), // Navigate to profile page
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          backgroundImage: profileImageUrl.isNotEmpty
+                              ? NetworkImage(profileImageUrl) // Display profile image
+                              : const AssetImage('assets/images/placeholder_icon.png')
+                          as ImageProvider, // Placeholder image
+                        ),
+                      ),
+                    const SizedBox(width: 10.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!widget.isProfile)
+                          Text(name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        if (location != null && location!.isNotEmpty)
+                          Row(
+                            children: [
+
+                              Transform.scale(
+                                scale: 0.7,
+                                child: const Icon(Icons.location_on,
+                                    color: AppColors.fitnessMainColor), // Location icon
+                              ),
+                              const SizedBox(width: 5.0), // Add spacing
+                              Text(location!,
+                                  style:
+                                  const TextStyle(fontSize: 12.0)), // Display location
+                            ],
+                          ),// Add spacing
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              if (imageUrl != null && imageUrl!.isNotEmpty)
+                SizedBox(
+                  width: double.infinity, // Full width
+                  height: 300, // Fixed height
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(imageUrl!), // Display post image
+                        fit: BoxFit.cover, // Cover the container
+                      ),
+                    ),
+                  ),
+                ),
               if ((message != null && message!.isNotEmpty) ||
                   (visibleStats != null && visibleStats!.isNotEmpty))
                 const SizedBox(height: 10.0), // Add spacing
@@ -287,44 +307,20 @@ class _PostBuilderState extends State<PostBuilder> {
                     ],
                   ),
                 ),
-              const SizedBox(height: 10.0), // Add spacing
-              if (imageUrl != null && imageUrl!.isNotEmpty)
-                SizedBox(
-                  width: double.infinity, // Full width
-                  height: 300, // Fixed height
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(15), // Rounded corners
-                        bottomRight: Radius.circular(15), // Rounded corners
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(imageUrl!), // Display post image
-                        fit: BoxFit.cover, // Cover the container
-                      ),
-                    ),
-                  ),
-                ),
+              const SizedBox(height: 10.0),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0), // Add padding
+                child: Text(formatDateWithSuffix(date),
+                    style: const TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.fitnessSecondaryTextColor)),
+              ),
             ],
           ),
         ),
         const SizedBox(height: 2.0), // Add spacing
         Row(
           children: [
-            if (location != null && location!.isNotEmpty)
-              Row(
-                children: [
-                  Transform.scale(
-                    scale: 0.7,
-                    child: const Icon(Icons.location_on,
-                        color: AppColors.fitnessMainColor), // Location icon
-                  ),
-                  const SizedBox(width: 5.0), // Add spacing
-                  Text(location!,
-                      style:
-                          const TextStyle(fontSize: 12.0)), // Display location
-                ],
-              ),
             const Spacer(), // Add spacing
             if (widget.post.userId == FirebaseAuth.instance.currentUser?.uid)
               IconButton(
