@@ -150,7 +150,7 @@ class _PostBuilderState extends State<PostBuilder> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0), // Add padding
                 child: Row(
                   children: [
-                    if (!widget.isProfile)
+
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -173,7 +173,7 @@ class _PostBuilderState extends State<PostBuilder> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (!widget.isProfile)
+                        
                           Text(name,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold)),
