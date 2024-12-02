@@ -3,20 +3,6 @@ import 'package:fitnessapp_idata2503/pages/workout%20and%20exercises/workout_sea
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-// Main app widget
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MainSearchPage(),
-    );
-  }
-}
-
 // Main search page widget
 class MainSearchPage extends StatelessWidget {
   @override
