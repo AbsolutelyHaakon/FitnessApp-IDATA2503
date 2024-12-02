@@ -110,62 +110,6 @@ class _WorkoutPageState extends State<WorkoutPage>
     });
   }
 
-  Widget _buildAppBar(BuildContext context) {
-  return Container(
-    decoration: const BoxDecoration(
-      color: Colors.black, // Set background color to black
-      border: Border(
-        bottom: BorderSide(
-          color: AppColors.fitnessModuleColor, // Set border color
-        ),
-      ),
-    ),
-    padding: const EdgeInsets.symmetric(vertical: 10.0), // Set padding
-    child: SizedBox(
-      height: 100.0, // Set the desired height
-      child: Align(
-        alignment: Alignment.centerLeft, // Align to the left
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Workout',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 0.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const WorkoutLog(isCreatingPost: false),
-                        ),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.history_rounded,
-                      size: 30.0,
-                      color: AppColors.fitnessMainColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Text(
-              'Select a workout to begin', // Subtitle
-              style: Theme.of(context).textTheme.bodyMedium, // Set text style
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
   // Build the WorkoutPage widget
   @override
   Widget build(BuildContext context) {

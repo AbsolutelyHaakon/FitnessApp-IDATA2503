@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitnessapp_idata2503/database/crud/user_dao.dart';
+import 'package:fitnessapp_idata2503/database/crud/workout_dao.dart';
+import 'package:fitnessapp_idata2503/database/tables/workout.dart';
+import 'package:fitnessapp_idata2503/modules/workouts_box.dart';
 import 'package:fitnessapp_idata2503/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +25,15 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
   late TabController _tabController; // Controller for tab navigation
 
   final UserDao _userDao = UserDao(); // DAO for user data
+  final userId = FirebaseAuth.instance.currentUser?.uid; // User ID
 
   Map<String, dynamic> userData = {}; // Map to store user data
-  Map<String, dynamic> workoutData = {}; // Map to store workout data
+  List<Workouts> workoutData = []; // Map to store workout data
 
   @override
   void initState() {
     super.initState();
+
     _tabController = TabController(
         length: 2, vsync: this); // Initialize tab controller with 2 tabs
   }
@@ -41,17 +46,24 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
 
   // Function to fetch all data
   Future<void> _fetchData() async {
-    if (FirebaseAuth.instance.currentUser != null) {
+    if (userId != null) {
       await _fetchUserData(); // Fetch user data
+      await fetchWorkoutData(); // Fetch workout data
     }
   }
 
   // Function to fetch user data
   Future<void> _fetchUserData() async {
-    final temp = await _userDao
-        .fireBaseGetUserData(FirebaseAuth.instance.currentUser!.uid);
+    final temp = await _userDao.fireBaseGetUserData(userId!);
     setState(() {
       userData = temp ?? {"error": "No Data"}; // Set user data or error message
+    });
+  }
+
+  Future<void> fetchWorkoutData() async {
+    final temp = await WorkoutDao().fireBaseFetchAllWorkouts(userId!);
+    setState(() {
+      workoutData = temp['workouts']; // Set workout data
     });
   }
 
@@ -74,18 +86,20 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                 Navigator.of(context).pop(), // Go back to previous page
           ),
           bottom: TabBar(
-            controller: _tabController, // Tab controller
-            indicator: const BoxDecoration(), // Tab indicator
-            labelColor:
-                AppColors.fitnessMainColor, // Color of selected tab label
-            unselectedLabelColor: AppColors
-                .fitnessSecondaryTextColor, // Color of unselected tab label
-            labelStyle: const TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 16), // Style of selected tab label
-            unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 16), // Style of unselected tab label
+            controller: _tabController,
+            // Tab controller
+            indicator: const BoxDecoration(),
+            // Tab indicator
+            labelColor: AppColors.fitnessMainColor,
+            // Color of selected tab label
+            unselectedLabelColor: AppColors.fitnessSecondaryTextColor,
+            // Color of unselected tab label
+            labelStyle:
+                const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            // Style of selected tab label
+            unselectedLabelStyle:
+                const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+            // Style of unselected tab label
             tabs: const [
               Tab(text: 'Settings'), // Settings tab
               Tab(text: 'Data'), // Data tab
@@ -171,18 +185,19 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                       bool confirmChange = await showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          backgroundColor: AppColors
-                              .fitnessModuleColor, // Background color of dialog
+                          backgroundColor: AppColors.fitnessModuleColor,
+                          // Background color of dialog
                           title: const Text('Are you sure?',
                               style: TextStyle(
-                                  color: AppColors
-                                      .fitnessWarningColor)), // Title of dialog
+                                  color: AppColors.fitnessWarningColor)),
+                          // Title of dialog
                           content: const Text(
-                              'Do you really want to change the cloud backup setting?'), // Content of dialog
+                              'Do you really want to change the cloud backup setting?'),
+                          // Content of dialog
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.of(context)
-                                  .pop(false), // Close dialog without changing
+                              onPressed: () => Navigator.of(context).pop(false),
+                              // Close dialog without changing
                               child: const Text(
                                 'No',
                                 style: TextStyle(
@@ -191,8 +206,8 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                               ),
                             ),
                             TextButton(
-                              onPressed: () => Navigator.of(context)
-                                  .pop(true), // Close dialog and change setting
+                              onPressed: () => Navigator.of(context).pop(true),
+                              // Close dialog and change setting
                               child: const Text(
                                 'Yes',
                                 style: TextStyle(
@@ -273,8 +288,31 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
         children: [
           _buildDataSection(
               'USERDATA', _allData['userdata']), // Build user data section
-          _buildDataSection(
-              'WORKOUTS', _allData['workouts']), // Build workouts data section
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 16.0, bottom: 10.0),
+                child: Text(
+                  'YOUR WORKOUTS',
+                  style: TextStyle(
+                    color: AppColors.fitnessMainColor, // Text color
+                    fontSize: 20, // Text size
+                    fontWeight: FontWeight.bold, // Text weight
+                  ),
+                ),
+              ),
+              WorkoutsBox(
+                workouts: [
+                  ...workoutData.where((workout) =>
+                  workout.userId == userId)
+                      .toList(),
+                ],
+                isSearch: false,
+                isHome: false,
+              ),
+            ],
+          ), // Build workouts data section
           _buildDataSection('EXERCISES',
               _allData['exercises']), // Build exercises data section
           _buildDataSection('USERWORKOUTS',
@@ -364,7 +402,6 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
     setState(() {
       _allData = {
         'userdata': userData, // Set user data
-        'workouts': 'Workouts content', // Set workouts data
         'exercises': 'Exercises content', // Set exercises data
         'userworkouts': 'User workouts content', // Set user workouts data
         'posts': 'Posts content', // Set posts data
@@ -413,8 +450,8 @@ class _DataAndPrivacyPageState extends State<DataAndPrivacyPage>
                     TextStyle(color: AppColors.fitnessMainColor)), // Text style
           ),
           TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(true), // Close dialog and delete data
+            onPressed: () => Navigator.of(context).pop(true),
+            // Close dialog and delete data
             child: const Text('Delete',
                 style: TextStyle(
                     color: AppColors.fitnessWarningColor)), // Text style
