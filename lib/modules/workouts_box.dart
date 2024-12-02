@@ -211,7 +211,7 @@ class _WorkoutsBoxState extends State<WorkoutsBox> {
                           ? AppColors.fitnessModuleColor
                           : AppColors.fitnessModuleColor,
                       borderRadius:
-                          BorderRadius.circular(widget.isHome ? 10 : 30),
+                          BorderRadius.circular(30),
                     ),
                     padding: const EdgeInsets.fromLTRB(25, 15, 30, 15),
                     child: Row(
