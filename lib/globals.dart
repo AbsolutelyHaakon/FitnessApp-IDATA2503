@@ -18,9 +18,9 @@ List<String> officialFilterCategories = ['All', 'Starred'] + officialWorkoutCate
 List<SvgPicture> officialFilterCategoryIcons = [
   SvgPicture.asset('assets/icons/allIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/starIcon.svg', width: 25, height: 25),
-  SvgPicture.asset('assets/icons/lowerBodyIcon.svg', width: 40, height: 40),
+  SvgPicture.asset('assets/icons/lowerbodyIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/coreIcon.svg', width: 40, height: 40),
-  SvgPicture.asset('assets/icons/upperBodyIcon.svg', width: 40, height: 40),
+  SvgPicture.asset('assets/icons/upperbodyIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/cardioIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/hikerIcon.svg', width: 40, height: 40),
   SvgPicture.asset('assets/icons/armsIcon.svg', width: 40, height: 40),

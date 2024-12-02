@@ -450,17 +450,17 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 12.0),
                       errorStyle: TextStyle(
-                        color: Colors.red,
+                        color: AppColors.fitnessWarningColor,
                         fontSize: 12,
                       ),
                       hintText: 'Workout Title..',
@@ -509,17 +509,17 @@ class _CreateWorkoutPageState extends State<CreateWorkoutPage> {
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: BorderSide(color: AppColors.fitnessWarningColor),
                         borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 12.0),
                       errorStyle: TextStyle(
-                        color: Colors.red,
+                        color: AppColors.fitnessWarningColor,
                         fontSize: 12,
                       ),
                       hintText: 'Description..',

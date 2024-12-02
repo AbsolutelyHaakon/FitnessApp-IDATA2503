@@ -136,7 +136,7 @@ class _HomePageCalendarState extends State<HomePageCalendar> {
                               )),
                           workout != null
                               ? SvgPicture.asset(
-                                  'assets/icons/${workout.category?.toLowerCase()}Icon.svg',
+                                  'assets/icons/${workout.category?.toLowerCase().replaceAll(' ', '')}Icon.svg',
                                   width: 24,
                                   height: 24,
                                 )
