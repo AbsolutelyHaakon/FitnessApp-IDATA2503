@@ -66,7 +66,7 @@ class _SearchWorkoutsState extends State<SearchWorkouts> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(0.0),
                 child: CupertinoTextField(
                   focusNode: _searchFocusNode, // Set focus node
                   controller: _searchController, // Set controller
